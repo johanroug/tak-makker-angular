@@ -1,0 +1,35 @@
+<p>login works!</p>
+<h1>Tak Makker</h1>
+
+<form (ngSubmit)="login()">
+  <label>
+    E-mail
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="email"
+      required
+    />
+  </label>
+
+  <label>
+    Adgangskode
+    <input
+      type="password"
+      name="password"
+      [(ngModel)]="password"
+      required
+    />
+  </label>
+
+  <button
+    type="submit"
+    [disabled]="isLoggingIn"
+  >
+    {{ isLoggingIn ? "Logger ind..." : "Log ind" }}
+  </button>
+
+  @if (errorMessage) {
+    <p>{{ errorMessage }}</p>
+  }
+</form>

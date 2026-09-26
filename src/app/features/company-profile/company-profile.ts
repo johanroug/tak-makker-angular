@@ -9,19 +9,27 @@ import {
   CompanyService,
   type CompanyProfile,
 } from "../../core/company/company.service";
+import { RouterLink } from "@angular/router";
+import { Location } from "@angular/common";
 
 @Component({
   selector: "app-company-profile",
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: "./company-profile.html",
   styleUrl: "./company-profile.scss",
 })
 export class CompanyProfileComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
+  private readonly location = inject(Location);
 
+  
   isLoading = signal(true);
   isSaving = signal(false);
   message = signal("");
+  
+  goBack(): void {
+    this.location.back();
+  }
 
   form = new FormGroup({
     companyName: new FormControl("", { nonNullable: true }),

@@ -1,50 +1,70 @@
-<h2>Virksomhedsprofil</h2>
+<div class="company-profile">
+  <button type="button" class="back-link" (click)="goBack()">← Tilbage</button>
 
-@if (isLoading()) {
-  <p>Henter virksomhedsprofil...</p>
-} @else {
-  <form [formGroup]="form" (ngSubmit)="save()">
-    <div>
-      <label for="companyName">Virksomhedsnavn</label>
-      <input id="companyName" formControlName="companyName" />
-    </div>
+  <div class="profile-card">
+    <header class="profile-header">
+      <h1>Virksomhedsprofil</h1>
+      <p>Dine virksomhedsoplysninger bruges, når Tak Makker opretter tilbud.</p>
+    </header>
 
-    <div>
-      <label for="cvr">CVR</label>
-      <input id="cvr" formControlName="cvr" />
-    </div>
+    @if (isLoading()) {
+      <p>Henter virksomhedsprofil...</p>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <label for="companyName">Virksomhedsnavn</label>
+            <input id="companyName" type="text" formControlName="companyName" />
+          </div>
 
-    <div>
-      <label for="contactName">Kontaktperson</label>
-      <input id="contactName" formControlName="contactName" />
-    </div>
+          <div class="form-field">
+            <label for="cvr">CVR-nummer</label>
+            <input id="cvr" type="text" formControlName="cvr" />
+          </div>
 
-    <div>
-      <label for="phone">Telefon</label>
-      <input id="phone" type="tel" formControlName="phone" />
-    </div>
+          <div class="form-field">
+            <label for="contactName">Kontaktperson</label>
+            <input id="contactName" type="text" formControlName="contactName" />
+          </div>
 
-    <div>
-      <label for="email">E-mail</label>
-      <input id="email" type="email" formControlName="email" />
-    </div>
+          <div class="form-field">
+            <label for="phone">Telefon</label>
+            <input id="phone" type="tel" formControlName="phone" />
+          </div>
 
-    <div>
-      <label for="defaultHourlyRate">Standardtimepris</label>
-      <input
-        id="defaultHourlyRate"
-        type="number"
-        min="0"
-        formControlName="defaultHourlyRate"
-      />
-    </div>
+          <div class="form-field">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" formControlName="email" />
+          </div>
+        </div>
 
-    <button type="submit" [disabled]="isSaving()">
-      {{ isSaving() ? "Gemmer..." : "Gem" }}
-    </button>
-  </form>
-}
+        <div class="pricing-section">
+          <h2>Standardtimepris</h2>
+          <p>Bruges som udgangspunkt for nye projekter.</p>
 
-@if (message()) {
-  <p>{{ message() }}</p>
-}
+          <div class="form-field">
+            <label for="defaultHourlyRate">Timepris (kr.)</label>
+            <input
+              id="defaultHourlyRate"
+              type="number"
+              min="0"
+              formControlName="defaultHourlyRate"
+            />
+          </div>
+        </div>
+
+        <div class="form-footer">
+          @if (message()) {
+            <span class="status-message">
+              {{ message() }}
+            </span>
+          }
+
+          <button type="submit" [disabled]="isSaving()">
+            {{ isSaving() ? 'Gemmer...' : 'Gem ændringer' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

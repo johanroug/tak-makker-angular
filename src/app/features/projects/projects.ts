@@ -3,13 +3,12 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ProjectService } from '../../core/projects/project.service';
-import { CompanyProfileComponent } from '../company-profile/company-profile';
 
 type Project = Awaited<ReturnType<ProjectService['getProjects']>>[number];
 
 @Component({
   selector: 'app-projects',
-  imports: [RouterLink, CompanyProfileComponent],
+  imports: [RouterLink],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',
 })

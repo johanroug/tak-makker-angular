@@ -1,0 +1,40 @@
+<section class="offer-preview">
+  <div class="offer-header">
+    <span class="offer-label">TILBUD · UDKAST</span>
+
+    <h1>
+      {{ data().project.title || 'Projekt uden titel' }}
+    </h1>
+
+    <p>Projektnr.: {{ data().project.project_number }}</p>
+
+    <p>Kunde: {{ data().project.customer_name || 'Ikke angivet' }}</p>
+
+    <p>
+      Adresse:
+      {{ data().project.customer_address || 'Ikke angivet' }}
+    </p>
+
+    <p class="mt-5">
+      Beskrivelse:
+      {{ data().project.description || 'Ingen beskrivelse' }}
+    </p>
+  </div>
+
+  <div class="offer-section">
+    <h2>Arbejde</h2>
+
+    @for (item of data().workItems; track item.id) {
+      @if (item.status === 'accepted') {
+        <div class="offer-work-item">
+          <h3>{{ item.trade }}</h3>
+          <p>{{ item.description }}</p>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="offer-footer">
+    <button type="button" disabled>Færdiggør tilbud</button>
+  </div>
+</section>

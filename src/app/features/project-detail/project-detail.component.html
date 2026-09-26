@@ -1,70 +1,50 @@
-<a routerLink="/projects">← Tilbage til projekter</a>
+<div class="min-h-screen bg-stone-50">
+  <div class="mx-auto max-w-[1440px] px-6 py-5">
+    <!-- Header -->
+    <header class="app-header">
+      <a routerLink="/projects" class="app-logo"> Tak Makker </a>
 
-@if (isLoading()) {
-  <p>Henter projekt...</p>
-} @else if (errorMessage()) {
-  <p>{{ errorMessage() }}</p>
-} @else if (project(); as data) {
-  <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
+      <div class="header-actions">
+        <select
+          class="project-selector"
+          [value]="project()?.project?.id ?? ''"
+          (change)="selectProject($any($event.target).value)"
+        >
+          <option value="" disabled>Vælg projekt</option>
 
-  <p>
-    <strong>Projektnummer:</strong>
-    {{ data.project.project_number }}
-  </p>
+          @for (item of projects(); track item.id) {
+            <option [value]="item.id">
+              {{ item.project_number }} ·
+              {{ item.title || 'Projekt uden titel' }}
+            </option>
+          }
+        </select>
 
-  <p>
-    <strong>Kunde:</strong>
-    {{ data.project.customer_name || 'Ikke angivet' }}
-  </p>
+        <button type="button" class="new-project-button" disabled>+ Nyt projekt</button>
+      </div>
 
-  <p>
-    <strong>Beskrivelse:</strong>
-    {{ data.project.description || 'Ingen beskrivelse' }}
-  </p>
+      <a routerLink="/company-profile" class="profile-button"> Virksomhedsprofil </a>
+    </header>
 
-  <hr />
+    @if (isLoading()) {
+      <p>Henter projekt...</p>
+    } @else if (errorMessage()) {
+      <p>{{ errorMessage() }}</p>
+    } @else if (project(); as data) {
+      <!-- Hovedlayout -->
+      <main class="project-layout">
+        <!-- Venstre kolonne -->
+        <app-offer-preview [data]="data" />
 
-  <h2>Arbejdsopgaver ({{ data.workItems.length }})</h2>
+        <!-- Højre kolonne -->
+        <app-project-sidebar [data]="data" />
+      </main>
+    } @else {
+      <main class="empty-workspace">
+        <h1>Velkommen til Tak Makker</h1>
 
-  @for (item of data.workItems; track item.id) {
-    <div>
-      <h3>{{ item.trade }}</h3>
-      <p>{{ item.description }}</p>
-      <p>Status: {{ item.status }}</p>
-      <p>Timer: {{ item.estimated_hours ?? 'Ikke estimeret' }}</p>
-    </div>
-  } @empty {
-    <p>Ingen arbejdsopgaver.</p>
-  }
-
-  <hr />
-
-  <h2>Materialer ({{ data.materials.length }})</h2>
-
-  @for (material of data.materials; track material.id) {
-    <div>
-      <h3>{{ material.name }}</h3>
-      <p>{{ material.description }}</p>
-      <p>Antal: {{ material.quantity ?? 'Ikke angivet' }}</p>
-      <p>Enhed: {{ material.unit || 'Ikke angivet' }}</p>
-    </div>
-  } @empty {
-    <p>Ingen materialer.</p>
-  }
-
-  <hr />
-
-  <h2>Samtale ({{ data.messages.length }})</h2>
-
-  @for (message of data.messages; track message.id) {
-    <div>
-      <strong>
-        {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
-      </strong>
-
-      <p>{{ message.content }}</p>
-    </div>
-  } @empty {
-    <p>Ingen beskeder.</p>
-  }
-}
+        <p>Vælg et eksisterende projekt ovenfor, eller opret et nyt projekt.</p>
+      </main>
+    }
+  </div>
+</div>

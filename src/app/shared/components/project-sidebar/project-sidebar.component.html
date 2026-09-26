@@ -1,0 +1,73 @@
+<aside class="project-sidebar">
+  <nav class="sidebar-tabs">
+    <button type="button" [class.active]="activeTab() === 'tasks'" (click)="selectTab('tasks')">
+      Opgaver
+    </button>
+
+    <button
+      type="button"
+      [class.active]="activeTab() === 'materials'"
+      (click)="selectTab('materials')"
+    >
+      Materialer
+    </button>
+
+    <button type="button" [class.active]="activeTab() === 'chat'" (click)="selectTab('chat')">
+      Samtale
+    </button>
+  </nav>
+
+  <div class="sidebar-content">
+    @switch (activeTab()) {
+      @case ('tasks') {
+        <h2>Arbejdsopgaver</h2>
+
+        @for (item of data().workItems; track item.id) {
+          <article class="work-item-card">
+            <div class="work-item-header">
+              <h3>{{ item.trade }}</h3>
+              <span>{{ item.estimated_hours ?? 0 }} timer</span>
+            </div>
+
+            <p>{{ item.description }}</p>
+            <small>Status: {{ item.status }}</small>
+          </article>
+        } @empty {
+          <p>Ingen arbejdsopgaver.</p>
+        }
+      }
+
+      @case ('materials') {
+        <h2>Materialer</h2>
+
+        @for (material of data().materials; track material.id) {
+          <article class="work-item-card">
+            <h3>{{ material.name }}</h3>
+            <p>{{ material.description }}</p>
+            <p>
+              Antal: {{ material.quantity ?? 'Ikke angivet' }}
+              {{ material.unit }}
+            </p>
+          </article>
+        } @empty {
+          <p>Ingen materialer.</p>
+        }
+      }
+
+      @case ('chat') {
+        <h2>Samtale</h2>
+
+        @for (message of data().messages; track message.id) {
+          <article class="work-item-card">
+            <strong>
+              {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
+            </strong>
+            <p>{{ message.content }}</p>
+          </article>
+        } @empty {
+          <p>Ingen beskeder.</p>
+        }
+      }
+    }
+  </div>
+</aside>

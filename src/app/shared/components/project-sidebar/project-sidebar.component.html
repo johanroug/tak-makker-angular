@@ -55,18 +55,39 @@
       }
 
       @case ('chat') {
-        <h2>Samtale</h2>
+        <div class="chat-panel">
+          <h2>Samtale</h2>
 
-        @for (message of data().messages; track message.id) {
-          <article class="work-item-card">
-            <strong>
-              {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
-            </strong>
-            <p>{{ message.content }}</p>
-          </article>
-        } @empty {
-          <p>Ingen beskeder.</p>
-        }
+          <div class="chat-messages">
+            @for (message of data().messages; track message.id) {
+              <article class="chat-message" [class.chat-message-user]="message.role === 'user'">
+                <strong>
+                  {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
+                </strong>
+
+                <p>{{ message.content }}</p>
+              </article>
+            } @empty {
+              <p>Beskriv dit projekt for at komme i gang.</p>
+            }
+          </div>
+
+          <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
+            <textarea
+              [formControl]="messageControl"
+              placeholder="Beskriv dit projekt..."
+              rows="4"
+            ></textarea>
+
+            @if (sendError()) {
+              <p class="send-error">{{ sendError() }}</p>
+            }
+
+            <button type="submit" [disabled]="isSending() || !messageControl.value.trim()">
+              {{ isSending() ? 'Sender...' : 'Send besked' }}
+            </button>
+          </form>
+        </div>
       }
     }
   </div>

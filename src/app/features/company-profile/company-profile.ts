@@ -9,12 +9,11 @@ import {
   CompanyService,
   type CompanyProfile,
 } from "../../core/company/company.service";
-import { RouterLink } from "@angular/router";
 import { Location } from "@angular/common";
 
 @Component({
   selector: "app-company-profile",
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: "./company-profile.html",
   styleUrl: "./company-profile.scss",
 })

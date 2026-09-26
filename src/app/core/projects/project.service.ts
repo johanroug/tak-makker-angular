@@ -81,4 +81,60 @@ export class ProjectService {
       messages: messagesResult.data,
     };
   }
+
+  async createProject() {
+    // Find den aktuelle bruger
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error('Brugeren er ikke logget ind.');
+    }
+
+    // Find brugerens virksomhed
+    const { data: membership, error: membershipError } = await supabase
+      .from('company_members')
+      .select('company_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (membershipError || !membership) {
+      throw new Error('Kunne ikke finde brugerens virksomhed.');
+    }
+
+    // Opret projektet via vores eksisterende databasefunktion
+    const { data, error } = await supabase.rpc('create_project', {
+      p_company_id: membership.company_id,
+    });
+
+    if (error) {
+      throw new Error(`Kunne ikke oprette projekt: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('Supabase returnerede ikke et projekt-ID.');
+    }
+
+    return data;
+  }
+
+  async addMessage(projectId: string, content: string) {
+    const { data, error } = await supabase
+      .from('project_messages')
+      .insert({
+        project_id: projectId,
+        role: 'user',
+        content,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Kunne ikke gemme beskeden: ${error.message}`);
+    }
+
+    return data;
+  }
 }

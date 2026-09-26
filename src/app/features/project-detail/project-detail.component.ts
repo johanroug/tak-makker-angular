@@ -24,6 +24,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
 
   readonly projects = signal<Awaited<ReturnType<ProjectService['getProjects']>>>([]);
+  readonly isCreatingProject = signal(false);
 
   private routeSubscription?: Subscription;
 
@@ -75,6 +76,48 @@ export class ProjectDetail implements OnInit, OnDestroy {
   selectProject(projectId: string): void {
     if (projectId) {
       void this.router.navigate(['/projects', projectId]);
+    }
+  }
+
+  async createProject(): Promise<void> {
+    if (this.isCreatingProject()) {
+      return;
+    }
+
+    this.isCreatingProject.set(true);
+    this.errorMessage.set('');
+
+    try {
+      const project = await this.projectService.createProject();
+
+      await this.loadProjects();
+
+      await this.router.navigate(['/projects', project.id]);
+    } catch (error) {
+      console.error('Could not create project:', error);
+      this.errorMessage.set('Kunne ikke oprette projektet.');
+    } finally {
+      this.isCreatingProject.set(false);
+    }
+  }
+
+  async refreshProject(): Promise<void> {
+    const projectId = this.project()?.project.id;
+
+    if (!projectId) {
+      return;
+    }
+
+    try {
+      const data = await this.projectService.getProject(projectId);
+
+      // Undgå at vise data fra et projekt, vi har forladt.
+      if (this.route.snapshot.paramMap.get('projectId') === projectId) {
+        this.project.set(data);
+      }
+    } catch (error) {
+      console.error('Could not refresh project:', error);
+      this.errorMessage.set('Kunne ikke opdatere projektet.');
     }
   }
 }

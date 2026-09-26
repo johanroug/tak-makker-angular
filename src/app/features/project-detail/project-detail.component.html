@@ -20,7 +20,14 @@
           }
         </select>
 
-        <button type="button" class="new-project-button" disabled>+ Nyt projekt</button>
+        <button
+          type="button"
+          class="new-project-button"
+          [disabled]="isCreatingProject()"
+          (click)="createProject()"
+        >
+          {{ isCreatingProject() ? 'Opretter...' : '+ Nyt projekt' }}
+        </button>
       </div>
 
       <a routerLink="/company-profile" class="profile-button"> Virksomhedsprofil </a>
@@ -37,7 +44,7 @@
         <app-offer-preview [data]="data" />
 
         <!-- Højre kolonne -->
-        <app-project-sidebar [data]="data" />
+        <app-project-sidebar [data]="data" (messageAdded)="refreshProject()" />
       </main>
     } @else {
       <main class="empty-workspace">

@@ -1,0 +1,50 @@
+<h2>Virksomhedsprofil</h2>
+
+@if (isLoading()) {
+  <p>Henter virksomhedsprofil...</p>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <div>
+      <label for="companyName">Virksomhedsnavn</label>
+      <input id="companyName" formControlName="companyName" />
+    </div>
+
+    <div>
+      <label for="cvr">CVR</label>
+      <input id="cvr" formControlName="cvr" />
+    </div>
+
+    <div>
+      <label for="contactName">Kontaktperson</label>
+      <input id="contactName" formControlName="contactName" />
+    </div>
+
+    <div>
+      <label for="phone">Telefon</label>
+      <input id="phone" type="tel" formControlName="phone" />
+    </div>
+
+    <div>
+      <label for="email">E-mail</label>
+      <input id="email" type="email" formControlName="email" />
+    </div>
+
+    <div>
+      <label for="defaultHourlyRate">Standardtimepris</label>
+      <input
+        id="defaultHourlyRate"
+        type="number"
+        min="0"
+        formControlName="defaultHourlyRate"
+      />
+    </div>
+
+    <button type="submit" [disabled]="isSaving()">
+      {{ isSaving() ? "Gemmer..." : "Gem" }}
+    </button>
+  </form>
+}
+
+@if (message()) {
+  <p>{{ message() }}</p>
+}

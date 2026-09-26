@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { supabase } from "../supabase/supabase.client";
+import { Injectable } from '@angular/core';
+import { supabase } from '../supabase/supabase.client';
 
 export type CompanyProfile = {
   companyName: string;
@@ -11,7 +11,7 @@ export type CompanyProfile = {
 };
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class CompanyService {
   async getCurrentCompanyProfile(): Promise<CompanyProfile | null> {
@@ -25,8 +25,9 @@ export class CompanyService {
     }
 
     const { data, error } = await supabase
-      .from("company_members")
-      .select(`
+      .from('company_members')
+      .select(
+        `
         company:companies!company_members_company_id_fkey (
           id,
           name,
@@ -36,29 +37,65 @@ export class CompanyService {
           email,
           default_hourly_rate
         )
-      `)
-      .eq("user_id", user.id)
+      `,
+      )
+      .eq('user_id', user.id)
       .single();
 
     if (error || !data?.company) {
       return null;
     }
 
-    const company = Array.isArray(data.company)
-      ? data.company[0]
-      : data.company;
+    const company = Array.isArray(data.company) ? data.company[0] : data.company;
 
     if (!company) {
       return null;
     }
 
     return {
-      companyName: company.name ?? "",
-      cvr: company.cvr ?? "",
-      contactName: company.contact_name ?? "",
-      phone: company.phone ?? "",
-      email: company.email ?? "",
+      companyName: company.name ?? '',
+      cvr: company.cvr ?? '',
+      contactName: company.contact_name ?? '',
+      phone: company.phone ?? '',
+      email: company.email ?? '',
       defaultHourlyRate: company.default_hourly_rate,
     };
+  }
+
+  async updateCurrentCompanyProfile(companyProfile: CompanyProfile): Promise<void> {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error('Brugeren er ikke logget ind.');
+    }
+
+    const { data: membership, error: membershipError } = await supabase
+      .from('company_members')
+      .select('company_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (membershipError || !membership) {
+      throw new Error('Kunne ikke finde brugerens virksomhed.');
+    }
+
+    const { error } = await supabase
+      .from('companies')
+      .update({
+        name: companyProfile.companyName,
+        cvr: companyProfile.cvr,
+        contact_name: companyProfile.contactName,
+        phone: companyProfile.phone,
+        email: companyProfile.email,
+        default_hourly_rate: companyProfile.defaultHourlyRate,
+      })
+      .eq('id', membership.company_id);
+
+    if (error) {
+      throw new Error(`Kunne ikke gemme virksomhedsprofil: ${error.message}`);
+    }
   }
 }

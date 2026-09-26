@@ -1,1 +1,25 @@
-<p>projects works!</p>
+<h1>Mine projekter</h1>
+
+@if (isLoading()) {
+  <p>Henter projekter...</p>
+} @else if (errorMessage()) {
+  <p>{{ errorMessage() }}</p>
+} @else if (projects().length === 0) {
+  <p>Du har endnu ingen projekter.</p>
+} @else {
+  <ul>
+    @for (project of projects(); track project.id) {
+      <li>
+        <a [routerLink]="['/projects', project.id]">
+          <strong>{{ project.project_number }}</strong>
+          -
+          {{ project.title || 'Projekt uden titel' }}
+        </a>
+
+        <p>Kunde: {{ project.customer_name || 'Ikke angivet' }}</p>
+      </li>
+    }
+  </ul>
+}
+
+<app-company-profile />

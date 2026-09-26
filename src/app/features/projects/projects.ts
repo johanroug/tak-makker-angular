@@ -1,24 +1,35 @@
-import { Component, inject, OnInit } from "@angular/core";
-import {
-  CompanyService,
-  type CompanyProfile,
-} from "../../core/company/company.service";
+import { Component, inject, OnInit, signal } from '@angular/core';
+
+import { RouterLink } from '@angular/router';
+
+import { ProjectService } from '../../core/projects/project.service';
+import { CompanyProfileComponent } from '../company-profile/company-profile';
+
+type Project = Awaited<ReturnType<ProjectService['getProjects']>>[number];
 
 @Component({
-  selector: "app-projects",
-  imports: [],
-  templateUrl: "./projects.html",
-  styleUrl: "./projects.scss",
+  selector: 'app-projects',
+  imports: [RouterLink, CompanyProfileComponent],
+  templateUrl: './projects.html',
+  styleUrl: './projects.scss',
 })
 export class Projects implements OnInit {
-  private readonly companyService = inject(CompanyService);
+  private readonly projectService = inject(ProjectService);
 
-  companyProfile: CompanyProfile | null = null;
+  projects = signal<Project[]>([]);
+  isLoading = signal(true);
+  errorMessage = signal('');
 
-  async ngOnInit() {
-    this.companyProfile =
-      await this.companyService.getCurrentCompanyProfile();
+  async ngOnInit(): Promise<void> {
+    try {
+      const projects = await this.projectService.getProjects();
 
-    console.log("Company profile:", this.companyProfile);
+      this.projects.set(projects);
+    } catch (error) {
+      console.error('Could not load projects:', error);
+      this.errorMessage.set('Kunne ikke hente projekterne.');
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 }

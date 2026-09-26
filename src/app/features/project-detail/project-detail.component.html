@@ -1,0 +1,70 @@
+<a routerLink="/projects">← Tilbage til projekter</a>
+
+@if (isLoading()) {
+  <p>Henter projekt...</p>
+} @else if (errorMessage()) {
+  <p>{{ errorMessage() }}</p>
+} @else if (project(); as data) {
+  <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
+
+  <p>
+    <strong>Projektnummer:</strong>
+    {{ data.project.project_number }}
+  </p>
+
+  <p>
+    <strong>Kunde:</strong>
+    {{ data.project.customer_name || 'Ikke angivet' }}
+  </p>
+
+  <p>
+    <strong>Beskrivelse:</strong>
+    {{ data.project.description || 'Ingen beskrivelse' }}
+  </p>
+
+  <hr />
+
+  <h2>Arbejdsopgaver ({{ data.workItems.length }})</h2>
+
+  @for (item of data.workItems; track item.id) {
+    <div>
+      <h3>{{ item.trade }}</h3>
+      <p>{{ item.description }}</p>
+      <p>Status: {{ item.status }}</p>
+      <p>Timer: {{ item.estimated_hours ?? 'Ikke estimeret' }}</p>
+    </div>
+  } @empty {
+    <p>Ingen arbejdsopgaver.</p>
+  }
+
+  <hr />
+
+  <h2>Materialer ({{ data.materials.length }})</h2>
+
+  @for (material of data.materials; track material.id) {
+    <div>
+      <h3>{{ material.name }}</h3>
+      <p>{{ material.description }}</p>
+      <p>Antal: {{ material.quantity ?? 'Ikke angivet' }}</p>
+      <p>Enhed: {{ material.unit || 'Ikke angivet' }}</p>
+    </div>
+  } @empty {
+    <p>Ingen materialer.</p>
+  }
+
+  <hr />
+
+  <h2>Samtale ({{ data.messages.length }})</h2>
+
+  @for (message of data.messages; track message.id) {
+    <div>
+      <strong>
+        {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
+      </strong>
+
+      <p>{{ message.content }}</p>
+    </div>
+  } @empty {
+    <p>Ingen beskeder.</p>
+  }
+}

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
+import type { ProjectResponse } from '../ai/project-response';
 
 @Injectable({
   providedIn: 'root',
@@ -154,5 +155,149 @@ export class ProjectService {
     }
 
     return data;
+  }
+
+  async saveAiWorkItems(projectId: string, workItems: ProjectResponse['workItems']): Promise<void> {
+    // Hent eksisterende arbejdsopgaver.
+    const { data: existingItems, error: fetchError } = await supabase
+      .from('project_work_items')
+      .select('*')
+      .eq('project_id', projectId);
+
+    if (fetchError) {
+      throw fetchError;
+    }
+
+    const existingById = new Map(existingItems.map((item) => [item.id, item]));
+
+    const itemsToSave = workItems.map((item) => {
+      const existing = existingById.get(item.id);
+
+      return {
+        project_id: projectId,
+        id: item.id,
+        trade: item.trade,
+
+        description: item.description,
+
+        // Bevar eksisterende status.
+        status:
+          existing?.status === 'accepted' || existing?.status === 'rejected'
+            ? existing.status
+            : item.status,
+
+        // Brugerens egne estimater har altid prioritet.
+        estimated_hours:
+          existing?.estimated_hours_source === 'user'
+            ? existing.estimated_hours
+            : item.estimatedHours,
+
+        estimated_hours_source:
+          existing?.estimated_hours_source === 'user' ? 'user' : item.estimatedHoursSource,
+      };
+    });
+
+    if (itemsToSave.length === 0) {
+      return;
+    }
+
+    const { error: saveError } = await supabase.from('project_work_items').upsert(itemsToSave, {
+      onConflict: 'id',
+    });
+
+    if (saveError) {
+      throw saveError;
+    }
+  }
+
+  async saveAiMaterials(projectId: string, materials: ProjectResponse['materials']): Promise<void> {
+    const { data: existingMaterials, error: fetchError } = await supabase
+      .from('project_materials')
+      .select('*')
+      .eq('project_id', projectId);
+
+    if (fetchError) throw fetchError;
+
+    const existingById = new Map((existingMaterials ?? []).map((item) => [item.id, item]));
+
+    const materialsToSave = materials.map((material) => {
+      const existing = existingById.get(material.id);
+
+      return {
+        project_id: projectId,
+        id: material.id,
+        name: material.name,
+        description: material.description,
+
+        // Bevar accepterede og afviste materialer.
+        status:
+          existing?.status === 'accepted' || existing?.status === 'rejected'
+            ? existing.status
+            : material.status,
+
+        // Bevar brugerens egne mængder.
+        quantity: existing?.quantity_source === 'user' ? existing.quantity : material.quantity,
+
+        quantity_source: existing?.quantity_source === 'user' ? 'user' : material.quantitySource,
+
+        // Bevar brugerens egne enheder.
+        unit: existing?.unit_source === 'user' ? existing.unit : material.unit,
+
+        unit_source: existing?.unit_source === 'user' ? 'user' : material.unitSource,
+
+        // AI må aldrig overskrive eksisterende priser.
+        unit_price: existing?.unit_price ?? null,
+      };
+    });
+
+    if (materialsToSave.length === 0) return;
+
+    const { error: saveError } = await supabase.from('project_materials').upsert(materialsToSave, {
+      onConflict: 'id',
+    });
+
+    if (saveError) throw saveError;
+  }
+
+  async saveAiProjectDetails(projectId: string, response: ProjectResponse): Promise<void> {
+    // Hent de nuværende oplysninger.
+    const { data: existing, error: fetchError } = await supabase
+      .from('projects')
+      .select(
+        `
+      customer_name,
+      customer_address,
+      title,
+      description,
+      offer_description
+    `,
+      )
+      .eq('id', projectId)
+      .single();
+
+    if (fetchError) {
+      throw fetchError;
+    }
+
+    // Bevar eksisterende oplysninger.
+    // AI udfylder foreløbig kun tomme felter.
+    const { error: updateError } = await supabase
+      .from('projects')
+      .update({
+        customer_name: existing.customer_name ?? response.customer.name,
+
+        customer_address: existing.customer_address ?? response.customer.address,
+
+        title: existing.title ?? response.project.title,
+
+        description: existing.description ?? response.project.description,
+
+        offer_description: existing.offer_description ?? response.project.offerDescription,
+      })
+      .eq('id', projectId);
+
+    if (updateError) {
+      throw updateError;
+    }
   }
 }

@@ -57,6 +57,17 @@ export class ProjectSidebar {
       // Hent AI-svaret.
       const aiResponse = await this.aiService.generateOffer(projectId);
 
+      // Gem arbejdsopgaver.
+      await this.projectService.saveAiWorkItems(projectId, aiResponse.workItems);
+
+      // Gem materialer.
+      await this.projectService.saveAiMaterials(projectId, aiResponse.materials);
+
+      // NYT: Gem kunde- og projektoplysninger.
+      await this.projectService.saveAiProjectDetails(projectId, aiResponse);
+
+      // Opdater brugerfladen.
+      this.messageAdded.emit();
       // Omdan spørgsmålene til en chatbesked.
       const assistantMessage = aiResponse.questions
         .map((question, index) => `${index + 1}. ${question}`)

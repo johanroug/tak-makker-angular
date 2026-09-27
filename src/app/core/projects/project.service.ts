@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 import type { ProjectResponse } from '../ai/project-response';
+import { Database } from '../supabase/database.types';
 
 @Injectable({
   providedIn: 'root',
@@ -201,9 +202,9 @@ export class ProjectService {
       return;
     }
 
-    const { error: saveError } = await supabase.from('project_work_items').upsert(itemsToSave, {
-      onConflict: 'id',
-    });
+    const { error: saveError } = await supabase
+      .from('project_work_items')
+      .upsert(itemsToSave, { onConflict: 'project_id,id' });
 
     if (saveError) {
       throw saveError;
@@ -252,24 +253,28 @@ export class ProjectService {
 
     if (materialsToSave.length === 0) return;
 
-    const { error: saveError } = await supabase.from('project_materials').upsert(materialsToSave, {
-      onConflict: 'id',
-    });
+    const { error: saveError } = await supabase
+      .from('project_materials')
+      .upsert(materialsToSave, { onConflict: 'project_id,id' });
 
     if (saveError) throw saveError;
   }
 
   async saveAiProjectDetails(projectId: string, response: ProjectResponse): Promise<void> {
-    // Hent de nuværende oplysninger.
     const { data: existing, error: fetchError } = await supabase
       .from('projects')
       .select(
         `
       customer_name,
+      customer_name_source,
       customer_address,
+      customer_address_source,
       title,
+      title_source,
       description,
-      offer_description
+      description_source,
+      offer_description,
+      offer_description_source
     `,
       )
       .eq('id', projectId)
@@ -279,25 +284,155 @@ export class ProjectService {
       throw fetchError;
     }
 
-    // Bevar eksisterende oplysninger.
-    // AI udfylder foreløbig kun tomme felter.
+    // NYT: AI må kun opdatere tomme felter
+    // eller felter, som AI selv tidligere har udfyldt.
+    function aiValue(
+      currentValue: string | null,
+      currentSource: string | null,
+      newValue: string | null,
+    ) {
+      if (currentSource === 'user') {
+        return {
+          value: currentValue,
+          source: currentSource,
+        };
+      }
+
+      // Beskyt eksisterende felter med ukendt oprindelse.
+      if (currentValue !== null && currentSource !== 'ai') {
+        return {
+          value: currentValue,
+          source: currentSource,
+        };
+      }
+
+      // Et manglende AI-svar må ikke slette eksisterende data.
+      if (newValue === null) {
+        return {
+          value: currentValue,
+          source: currentSource,
+        };
+      }
+
+      return {
+        value: newValue,
+        source: 'ai',
+      };
+    }
+
+    const customerName = aiValue(
+      existing.customer_name,
+      existing.customer_name_source,
+      response.customer.name,
+    );
+
+    const customerAddress = aiValue(
+      existing.customer_address,
+      existing.customer_address_source,
+      response.customer.address,
+    );
+
+    const title = aiValue(existing.title, existing.title_source, response.project.title);
+
+    const description = aiValue(
+      existing.description,
+      existing.description_source,
+      response.project.description,
+    );
+
+    const offerDescription = aiValue(
+      existing.offer_description,
+      existing.offer_description_source,
+      response.project.offerDescription,
+    );
+
     const { error: updateError } = await supabase
       .from('projects')
       .update({
-        customer_name: existing.customer_name ?? response.customer.name,
+        customer_name: customerName.value,
+        customer_name_source: customerName.source,
 
-        customer_address: existing.customer_address ?? response.customer.address,
+        customer_address: customerAddress.value,
+        customer_address_source: customerAddress.source,
 
-        title: existing.title ?? response.project.title,
+        title: title.value,
+        title_source: title.source,
 
-        description: existing.description ?? response.project.description,
+        description: description.value,
+        description_source: description.source,
 
-        offer_description: existing.offer_description ?? response.project.offerDescription,
+        offer_description: offerDescription.value,
+        offer_description_source: offerDescription.source,
       })
       .eq('id', projectId);
 
     if (updateError) {
       throw updateError;
+    }
+  }
+
+  async updateProjectTitle(projectId: string, title: string): Promise<void> {
+    const { error } = await supabase
+      .from('projects')
+      .update({
+        title: title.trim(),
+        title_source: 'user',
+      })
+      .eq('id', projectId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere projekttitlen: ${error.message}`);
+    }
+  }
+
+  async updateProjectDetails(
+    projectId: string,
+    changes: {
+      customerName?: string;
+      customerAddress?: string;
+      title?: string;
+      description?: string;
+      offerDescription?: string;
+    },
+  ): Promise<void> {
+    // NYT: Brug Supabases genererede type.
+    type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
+
+    const updates: ProjectUpdate = {};
+
+    if (changes.customerName !== undefined) {
+      updates.customer_name = changes.customerName.trim();
+      updates.customer_name_source = 'user';
+    }
+
+    if (changes.customerAddress !== undefined) {
+      updates.customer_address = changes.customerAddress.trim();
+      updates.customer_address_source = 'user';
+    }
+
+    if (changes.title !== undefined) {
+      updates.title = changes.title.trim();
+      updates.title_source = 'user';
+    }
+
+    if (changes.description !== undefined) {
+      updates.description = changes.description.trim();
+      updates.description_source = 'user';
+    }
+
+    if (changes.offerDescription !== undefined) {
+      updates.offer_description = changes.offerDescription.trim();
+      updates.offer_description_source = 'user';
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return;
+    }
+
+    const { error } = await supabase.from('projects').update(updates).eq('id', projectId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere projektoplysninger: ${error.message}`);
     }
   }
 }

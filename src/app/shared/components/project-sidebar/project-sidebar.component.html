@@ -44,6 +44,7 @@
           <article class="work-item-card">
             <h3>{{ material.name }}</h3>
             <p>{{ material.description }}</p>
+
             <p>
               Antal: {{ material.quantity ?? 'Ikke angivet' }}
               {{ material.unit }}
@@ -58,20 +59,7 @@
         <div class="chat-panel">
           <h2>Samtale</h2>
 
-          <div class="chat-messages">
-            @for (message of data().messages; track message.id) {
-              <article class="chat-message" [class.chat-message-user]="message.role === 'user'">
-                <strong>
-                  {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
-                </strong>
-
-                <p>{{ message.content }}</p>
-              </article>
-            } @empty {
-              <p>Beskriv dit projekt for at komme i gang.</p>
-            }
-          </div>
-
+          <!-- ÆNDRET: Inputfeltet ligger øverst. -->
           <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
             <textarea
               [formControl]="messageControl"
@@ -87,6 +75,21 @@
               {{ isSending() ? 'Sender...' : 'Send besked' }}
             </button>
           </form>
+
+          <!-- ÆNDRET: Nyeste beskeder vises først. -->
+          <div class="chat-messages">
+            @for (message of newestMessages; track message.id) {
+              <article class="chat-message" [class.chat-message-user]="message.role === 'user'">
+                <strong>
+                  {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
+                </strong>
+
+                <p>{{ message.content }}</p>
+              </article>
+            } @empty {
+              <p>Beskriv dit projekt for at komme i gang.</p>
+            }
+          </div>
         </div>
       }
     }

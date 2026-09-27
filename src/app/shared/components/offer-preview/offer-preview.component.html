@@ -1,26 +1,114 @@
 <section class="offer-preview">
   <div class="offer-header">
-    <span class="offer-label">TILBUD · UDKAST</span>
+    <div class="offer-toolbar">
+      <span class="offer-label">TILBUD · UDKAST</span>
 
-    <h1>
-      {{ data().project.title || 'Projekt uden titel' }}
-    </h1>
+      @if (!isEditing()) {
+        <button type="button" class="edit-details-button" (click)="startEditing()">
+          ✎ Rediger
+        </button>
+      }
+    </div>
 
-    <p>Projektnr.: {{ data().project.project_number }}</p>
+    @if (isEditing()) {
+      <!-- NYT: Redigering af projektoplysninger -->
+      <form
+        class="offer-details-form"
+        [formGroup]="detailsForm"
+        (submit)="$event.preventDefault(); saveDetails()"
+      >
+        <label>
+          Projekttitel
+          <input type="text" formControlName="title" placeholder="Projekttitel" />
+        </label>
 
-    <p>Kunde: {{ data().project.customer_name || 'Ikke angivet' }}</p>
+        <p class="project-number">Projektnr.: {{ data().project.project_number }}</p>
 
-    <p>
-      Adresse:
-      {{ data().project.customer_address || 'Ikke angivet' }}
-    </p>
+        <label>
+          Kundenavn
+          <input type="text" formControlName="customerName" placeholder="Kundenavn" />
+        </label>
 
-    <p class="mt-5">
-      Beskrivelse:
-      {{ data().project.description || 'Ingen beskrivelse' }}
-    </p>
+        <label>
+          Kundeadresse
+          <input type="text" formControlName="customerAddress" placeholder="Kundeadresse" />
+        </label>
+
+        <label>
+          Projektbeskrivelse
+          <textarea
+            formControlName="description"
+            rows="4"
+            placeholder="Beskriv projektet"
+          ></textarea>
+        </label>
+
+        <label>
+          Tilbudsbeskrivelse
+          <textarea
+            formControlName="offerDescription"
+            rows="5"
+            placeholder="Beskrivelse til tilbuddet"
+          ></textarea>
+        </label>
+
+        @if (saveError()) {
+          <p class="save-error">
+            {{ saveError() }}
+          </p>
+        }
+
+        <div class="form-actions">
+          <button type="submit" class="save-button" [disabled]="isSaving()">
+            {{ isSaving() ? 'Gemmer...' : 'Gem ændringer' }}
+          </button>
+
+          <button
+            type="button"
+            class="cancel-button"
+            [disabled]="isSaving()"
+            (click)="cancelEditing()"
+          >
+            Annuller
+          </button>
+        </div>
+      </form>
+    } @else {
+      <!-- Eksisterende tilbudsvisning -->
+      <h1>
+        {{ data().project.title || 'Projekt uden titel' }}
+      </h1>
+
+      <p>Projektnr.: {{ data().project.project_number }}</p>
+
+      <p>Kunde: {{ data().project.customer_name || 'Ikke angivet' }}</p>
+
+      <p>
+        Adresse:
+        {{ data().project.customer_address || 'Ikke angivet' }}
+      </p>
+
+      <div class="offer-description">
+        <h2>Projektbeskrivelse</h2>
+
+        <p>
+          {{ data().project.description || 'Ingen beskrivelse' }}
+        </p>
+      </div>
+
+      @if (data().project.offer_description) {
+        <div class="offer-description">
+          <h2>Tilbudsbeskrivelse</h2>
+
+          <p>
+            {{ data().project.offer_description }}
+          </p>
+        </div>
+      }
+    }
   </div>
 
+  <!-- Eksisterende arbejdsopgaver -->
   <div class="offer-section">
     <h2>Arbejde</h2>
 
@@ -34,6 +122,7 @@
     }
   </div>
 
+  <!-- Eksisterende knap -->
   <div class="offer-footer">
     <button type="button" disabled>Færdiggør tilbud</button>
   </div>

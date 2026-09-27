@@ -101,3 +101,70 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* NYT: Redigering af projekttitel */
+
+.project-title-section {
+  margin-bottom: 20px;
+}
+
+.project-title-display,
+.project-title-editor {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.project-title-display {
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #292524;
+  }
+}
+
+.edit-title-button {
+  border: 0;
+  background: transparent;
+  color: #78716c;
+  font-size: 22px;
+  cursor: pointer;
+
+  &:hover {
+    color: #292524;
+  }
+}
+
+.project-title-editor {
+  input {
+    min-width: 240px;
+    padding: 9px 12px;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    background: white;
+  }
+
+  button {
+    padding: 9px 14px;
+    border-radius: 8px;
+    background: #e7e5e4;
+    cursor: pointer;
+
+    &[type='submit'] {
+      background: #292524;
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.title-error {
+  margin-top: 8px;
+  color: #b91c1c;
+}

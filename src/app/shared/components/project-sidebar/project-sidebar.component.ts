@@ -1,5 +1,5 @@
-import { Component, inject, input, output, signal } from '@angular/core';
 
+import { Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ProjectService } from '../../../core/projects/project.service';
@@ -17,11 +17,15 @@ type SidebarTab = 'tasks' | 'materials' | 'chat';
 })
 export class ProjectSidebar {
   readonly data = input.required<ProjectData>();
+
   private readonly aiService = inject(AiService);
+  private readonly projectService = inject(ProjectService);
 
   readonly messageAdded = output<void>();
 
-  readonly activeTab = signal<SidebarTab>('tasks');
+  // ÆNDRET: Samtale er standardfanen.
+  readonly activeTab = signal<SidebarTab>('chat');
+
   readonly isSending = signal(false);
   readonly sendError = signal('');
 
@@ -30,14 +34,18 @@ export class ProjectSidebar {
     validators: [Validators.required],
   });
 
-  private readonly projectService = inject(ProjectService);
-
   selectTab(tab: SidebarTab): void {
     this.activeTab.set(tab);
   }
 
+  // NYT: Nyeste beskeder vises først.
+  // Vi ændrer ikke rækkefølgen i databasen.
+  get newestMessages() {
+    return [...this.data().messages].reverse();
+  }
+
   async sendMessage(): Promise<void> {
-    const message = this.messageControl.value?.trim();
+    const message = this.messageControl.value.trim();
     const projectId = this.data().project.id;
 
     if (!message || this.isSending()) {
@@ -58,30 +66,46 @@ export class ProjectSidebar {
       const aiResponse = await this.aiService.generateOffer(projectId);
 
       // Gem arbejdsopgaver.
-      await this.projectService.saveAiWorkItems(projectId, aiResponse.workItems);
+      await this.projectService.saveAiWorkItems(
+        projectId,
+        aiResponse.workItems,
+      );
 
       // Gem materialer.
-      await this.projectService.saveAiMaterials(projectId, aiResponse.materials);
+      await this.projectService.saveAiMaterials(
+        projectId,
+        aiResponse.materials,
+      );
 
-      // NYT: Gem kunde- og projektoplysninger.
-      await this.projectService.saveAiProjectDetails(projectId, aiResponse);
+      // Gem kunde- og projektoplysninger.
+      await this.projectService.saveAiProjectDetails(
+        projectId,
+        aiResponse,
+      );
 
       // Opdater brugerfladen.
       this.messageAdded.emit();
+
       // Omdan spørgsmålene til en chatbesked.
       const assistantMessage = aiResponse.questions
         .map((question, index) => `${index + 1}. ${question}`)
         .join('\n\n');
 
       if (assistantMessage) {
-        await this.projectService.addAssistantMessage(projectId, assistantMessage);
+        await this.projectService.addAssistantMessage(
+          projectId,
+          assistantMessage,
+        );
 
         // Opdater chatten med den nye besked.
         this.messageAdded.emit();
       }
     } catch (error) {
       console.error(error);
-      this.sendError.set('Der opstod en fejl. Kontrollér chatten, før du prøver igen.');
+
+      this.sendError.set(
+        'Der opstod en fejl. Kontrollér chatten, før du prøver igen.',
+      );
     } finally {
       this.isSending.set(false);
     }

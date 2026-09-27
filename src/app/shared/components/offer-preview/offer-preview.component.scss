@@ -19,10 +19,123 @@
   }
 }
 
+.offer-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
 .offer-label {
   color: #888;
   font-size: 11px;
   letter-spacing: 1px;
+}
+
+.edit-details-button {
+  padding: 6px 10px;
+  border: 1px solid #d6d3d1;
+  border-radius: 6px;
+  background: white;
+  color: #44403c;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f5f4;
+  }
+}
+
+.offer-description {
+  margin-top: 20px;
+
+  h2 {
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  p {
+    white-space: pre-wrap;
+  }
+}
+
+.offer-details-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #44403c;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d6d3d1;
+    border-radius: 8px;
+    background: white;
+    color: #292524;
+    font: inherit;
+    font-weight: 400;
+
+    &:focus {
+      outline: 2px solid #a8a29e;
+      outline-offset: 1px;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .project-number {
+    margin: 0;
+    color: #78716c;
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.save-button,
+.cancel-button {
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.save-button {
+  background: #292524;
+  color: white;
+}
+
+.cancel-button {
+  border: 1px solid #d6d3d1;
+  background: white;
+  color: #44403c;
+}
+
+.save-error {
+  color: #b91c1c;
+  font-size: 13px;
 }
 
 .offer-section {

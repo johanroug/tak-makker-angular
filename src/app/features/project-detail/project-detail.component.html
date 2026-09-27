@@ -38,10 +38,11 @@
     } @else if (errorMessage()) {
       <p>{{ errorMessage() }}</p>
     } @else if (project(); as data) {
+
       <!-- Hovedlayout -->
       <main class="project-layout">
         <!-- Venstre kolonne -->
-        <app-offer-preview [data]="data" />
+        <app-offer-preview [data]="data" (detailsSaved)="onDetailsSaved()" />
 
         <!-- Højre kolonne -->
         <app-project-sidebar [data]="data" (messageAdded)="refreshProject()" />

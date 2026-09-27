@@ -3,6 +3,7 @@ import { Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ProjectService } from '../../../core/projects/project.service';
+import { AiService } from '../../../core/ai/ai.service';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -16,6 +17,7 @@ type SidebarTab = 'tasks' | 'materials' | 'chat';
 })
 export class ProjectSidebar {
   readonly data = input.required<ProjectData>();
+  private readonly aiService = inject(AiService);
 
   readonly messageAdded = output<void>();
 
@@ -35,10 +37,10 @@ export class ProjectSidebar {
   }
 
   async sendMessage(): Promise<void> {
-    console.log("Angular sendMessage blev kaldt");
-    const content = this.messageControl.value.trim();
+    const message = this.messageControl.value?.trim();
+    const projectId = this.data().project.id;
 
-    if (!content || this.isSending()) {
+    if (!message || this.isSending()) {
       return;
     }
 
@@ -46,13 +48,29 @@ export class ProjectSidebar {
     this.sendError.set('');
 
     try {
-      await this.projectService.addMessage(this.data().project.id, content);
+      // Gem brugerens besked.
+      await this.projectService.addMessage(projectId, message);
 
       this.messageControl.reset();
       this.messageAdded.emit();
+
+      // Hent AI-svaret.
+      const aiResponse = await this.aiService.generateOffer(projectId);
+
+      // Omdan spørgsmålene til en chatbesked.
+      const assistantMessage = aiResponse.questions
+        .map((question, index) => `${index + 1}. ${question}`)
+        .join('\n\n');
+
+      if (assistantMessage) {
+        await this.projectService.addAssistantMessage(projectId, assistantMessage);
+
+        // Opdater chatten med den nye besked.
+        this.messageAdded.emit();
+      }
     } catch (error) {
-      console.error('Could not send message:', error);
-      this.sendError.set('Kunne ikke sende beskeden.');
+      console.error(error);
+      this.sendError.set('Der opstod en fejl. Kontrollér chatten, før du prøver igen.');
     } finally {
       this.isSending.set(false);
     }

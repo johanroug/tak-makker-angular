@@ -137,4 +137,22 @@ export class ProjectService {
 
     return data;
   }
+
+  async addAssistantMessage(projectId: string, content: string) {
+    const { data, error } = await supabase
+      .from('project_messages')
+      .insert({
+        project_id: projectId,
+        role: 'assistant',
+        content,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  }
 }

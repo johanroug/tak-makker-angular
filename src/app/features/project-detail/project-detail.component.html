@@ -9,8 +9,8 @@
       <div class="header-actions">
         <select
           class="project-selector"
-          [value]="project()?.project?.id ?? ''"
-          (change)="selectProject($any($event.target).value)"
+          [formControl]="projectControl"
+          (change)="selectProject(projectControl.value)"
         >
           <option value="" disabled>Vælg projekt</option>
 
@@ -40,7 +40,6 @@
     } @else if (errorMessage()) {
       <p>{{ errorMessage() }}</p>
     } @else if (project(); as data) {
-
       <!-- Hovedlayout -->
       <main class="project-layout">
         <!-- Venstre kolonne -->

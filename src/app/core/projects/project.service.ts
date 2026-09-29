@@ -385,6 +385,7 @@ export class ProjectService {
     }
   }
 
+  // Opdatere projektoplysninger.
   async updateProjectDetails(
     projectId: string,
     changes: {
@@ -433,6 +434,50 @@ export class ProjectService {
 
     if (error) {
       throw new Error(`Kunne ikke opdatere projektoplysninger: ${error.message}`);
+    }
+  }
+
+  // Opdatere status for en arbejdsopgave.
+  async updateWorkItemStatus(
+    projectId: string,
+    workItemId: string,
+    status: 'accepted' | 'rejected',
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('project_work_items')
+      .update({
+        status,
+      })
+      .eq('project_id', projectId)
+      .eq('id', workItemId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
+    }
+  }
+
+  async updateWorkItem(
+    projectId: string,
+    workItemId: string,
+    changes: {
+      trade: string;
+      description: string;
+      estimatedHours: number | null;
+    },
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('project_work_items')
+      .update({
+        trade: changes.trade.trim(),
+        description: changes.description.trim(),
+        estimated_hours: changes.estimatedHours,
+        estimated_hours_source: 'user',
+      })
+      .eq('project_id', projectId)
+      .eq('id', workItemId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
     }
   }
 }

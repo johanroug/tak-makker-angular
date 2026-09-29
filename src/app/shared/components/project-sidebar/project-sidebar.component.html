@@ -24,13 +24,88 @@
 
         @for (item of data().workItems; track item.id) {
           <article class="work-item-card">
-            <div class="work-item-header">
-              <h3>{{ item.trade }}</h3>
-              <span>{{ item.estimated_hours ?? 0 }} timer</span>
-            </div>
+            @if (editingWorkItemId() === item.id) {
+              <div class="work-item-edit">
+                <label>
+                  Fag
+                  <input
+                    type="text"
+                    [value]="editTrade()"
+                    (input)="editTrade.set($any($event.target).value)"
+                  />
+                </label>
 
-            <p>{{ item.description }}</p>
-            <small>Status: {{ item.status }}</small>
+                <label>
+                  Beskrivelse
+                  <textarea
+                    rows="3"
+                    [value]="editDescription()"
+                    (input)="editDescription.set($any($event.target).value)"
+                  ></textarea>
+                </label>
+
+                <label>
+                  Estimerede timer
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    [value]="editEstimatedHours() ?? ''"
+                    (input)="
+                      editEstimatedHours.set(
+                        $any($event.target).value === '' ? null : +$any($event.target).value
+                      )
+                    "
+                  />
+                </label>
+
+                <div class="work-item-actions">
+                  <button class="action-save" type="button" (click)="saveWorkItem(item.id)">Gem</button>
+
+                  <button class="action-cancel" type="button" (click)="cancelEditingWorkItem()">Annuller</button>
+                </div>
+              </div>
+            } @else {
+              <div class="work-item-header">
+                <h3>{{ item.trade }}</h3>
+                <span>{{ item.estimated_hours ?? 0 }} timer</span>
+              </div>
+
+              <p>{{ item.description }}</p>
+
+              <small
+                class="work-item-status"
+                [class.accepted]="item.status === 'accepted'"
+                [class.rejected]="item.status === 'rejected'"
+              >
+                @switch (item.status) {
+                  @case ('suggested') {
+                    Foreslået
+                  }
+                  @case ('accepted') {
+                    Accepteret
+                  }
+                  @case ('rejected') {
+                    Afvist
+                  }
+                }
+              </small>
+              <div class="work-item-actions">
+                @if (item.status !== 'accepted') {
+                  <button class="action-accept" type="button" (click)="updateWorkItemStatus(item.id, 'accepted')">
+                    Acceptér
+                  </button>
+                }
+
+                @if (item.status !== 'rejected') {
+                  <button class="action-reject" type="button" (click)="updateWorkItemStatus(item.id, 'rejected')">
+                    Afvis
+                  </button>
+                }
+
+                <button class="action-edit" type="button" (click)="startEditingWorkItem(item)">Redigér</button>
+              </div>
+            }
           </article>
         } @empty {
           <p>Ingen arbejdsopgaver.</p>
@@ -71,7 +146,7 @@
               <p class="send-error">{{ sendError() }}</p>
             }
 
-            <button type="submit" [disabled]="isSending() || !messageControl.value.trim()">
+            <button class="action-save" type="submit" [disabled]="isSending() || !messageControl.value.trim()">
               {{ isSending() ? 'Sender...' : 'Send besked' }}
             </button>
           </form>

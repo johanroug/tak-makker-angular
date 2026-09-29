@@ -1,9 +1,9 @@
-
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
+import { supabase } from '../../../core/supabase/supabase.client';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -23,11 +23,13 @@ export class ProjectSidebar {
 
   readonly messageAdded = output<void>();
 
-  // ÆNDRET: Samtale er standardfanen.
   readonly activeTab = signal<SidebarTab>('chat');
-
   readonly isSending = signal(false);
   readonly sendError = signal('');
+  readonly editingWorkItemId = signal<string | null>(null);
+  readonly editTrade = signal('');
+  readonly editDescription = signal('');
+  readonly editEstimatedHours = signal<number | null>(null);
 
   readonly messageControl = new FormControl('', {
     nonNullable: true,
@@ -38,10 +40,76 @@ export class ProjectSidebar {
     this.activeTab.set(tab);
   }
 
-  // NYT: Nyeste beskeder vises først.
-  // Vi ændrer ikke rækkefølgen i databasen.
   get newestMessages() {
     return [...this.data().messages].reverse();
+  }
+
+  async updateWorkItemStatus(workItemId: string, status: 'accepted' | 'rejected'): Promise<void> {
+    const projectId = this.data().project.id;
+
+    try {
+      await this.projectService.updateWorkItemStatus(projectId, workItemId, status);
+
+      // Hent projektdata igen i parent.
+      this.messageAdded.emit();
+    } catch (error) {
+      console.error('Could not update work item status:', error);
+    }
+  }
+
+  async updateWorkItem(
+    projectId: string,
+    workItemId: string,
+    changes: {
+      trade: string;
+      description: string;
+      estimatedHours: number | null;
+    },
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('project_work_items')
+      .update({
+        trade: changes.trade.trim(),
+        description: changes.description.trim(),
+        estimated_hours: changes.estimatedHours,
+
+        // Brugerens estimat må ikke senere overskrives af AI.
+        estimated_hours_source: 'user',
+      })
+      .eq('project_id', projectId)
+      .eq('id', workItemId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
+    }
+  }
+
+  startEditingWorkItem(item: ProjectData['workItems'][number]): void {
+  this.editingWorkItemId.set(item.id);
+  this.editTrade.set(item.trade ?? '');
+  this.editDescription.set(item.description ?? '');
+  this.editEstimatedHours.set(item.estimated_hours);
+}
+
+  cancelEditingWorkItem(): void {
+    this.editingWorkItemId.set(null);
+  }
+
+  async saveWorkItem(workItemId: string): Promise<void> {
+    const projectId = this.data().project.id;
+
+    try {
+      await this.projectService.updateWorkItem(projectId, workItemId, {
+        trade: this.editTrade(),
+        description: this.editDescription(),
+        estimatedHours: this.editEstimatedHours(),
+      });
+
+      this.editingWorkItemId.set(null);
+      this.messageAdded.emit();
+    } catch (error) {
+      console.error('Could not update work item:', error);
+    }
   }
 
   async sendMessage(): Promise<void> {
@@ -66,22 +134,13 @@ export class ProjectSidebar {
       const aiResponse = await this.aiService.generateOffer(projectId);
 
       // Gem arbejdsopgaver.
-      await this.projectService.saveAiWorkItems(
-        projectId,
-        aiResponse.workItems,
-      );
+      await this.projectService.saveAiWorkItems(projectId, aiResponse.workItems);
 
       // Gem materialer.
-      await this.projectService.saveAiMaterials(
-        projectId,
-        aiResponse.materials,
-      );
+      await this.projectService.saveAiMaterials(projectId, aiResponse.materials);
 
       // Gem kunde- og projektoplysninger.
-      await this.projectService.saveAiProjectDetails(
-        projectId,
-        aiResponse,
-      );
+      await this.projectService.saveAiProjectDetails(projectId, aiResponse);
 
       // Opdater brugerfladen.
       this.messageAdded.emit();
@@ -92,10 +151,7 @@ export class ProjectSidebar {
         .join('\n\n');
 
       if (assistantMessage) {
-        await this.projectService.addAssistantMessage(
-          projectId,
-          assistantMessage,
-        );
+        await this.projectService.addAssistantMessage(projectId, assistantMessage);
 
         // Opdater chatten med den nye besked.
         this.messageAdded.emit();
@@ -103,9 +159,7 @@ export class ProjectSidebar {
     } catch (error) {
       console.error(error);
 
-      this.sendError.set(
-        'Der opstod en fejl. Kontrollér chatten, før du prøver igen.',
-      );
+      this.sendError.set('Der opstod en fejl. Kontrollér chatten, før du prøver igen.');
     } finally {
       this.isSending.set(false);
     }

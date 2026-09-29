@@ -23,12 +23,8 @@ export class ProjectDetail implements OnInit, OnDestroy {
   readonly project = signal<ProjectData | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
-
   readonly projects = signal<Awaited<ReturnType<ProjectService['getProjects']>>>([]);
-
   readonly isCreatingProject = signal(false);
-
-  // NYT: Redigering af projekttitel
   readonly isEditingTitle = signal(false);
   readonly isSavingTitle = signal(false);
   readonly titleError = signal('');
@@ -37,13 +33,17 @@ export class ProjectDetail implements OnInit, OnDestroy {
     nonNullable: true,
   });
 
+  readonly projectControl = new FormControl('', {
+    nonNullable: true,
+  });
   private routeSubscription?: Subscription;
 
   ngOnInit(): void {
     void this.loadProjects();
 
     this.routeSubscription = this.route.paramMap.subscribe((params) => {
-      const projectId = params.get('projectId');
+      const projectId = params.get('projectId') ?? '';
+      this.projectControl.setValue(projectId, { emitEvent: false });
 
       this.isEditingTitle.set(false);
       this.titleError.set('');

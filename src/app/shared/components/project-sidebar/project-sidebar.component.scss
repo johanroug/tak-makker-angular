@@ -60,6 +60,87 @@
   }
 }
 
+.work-item-status {
+  display: block;
+  margin-top: 16px;
+  color: #777;
+  font-size: 14px;
+}
+
+.work-item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+
+  button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+}
+
+.work-item-status {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 16px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #eef3ff;
+  color: #315bc7;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.work-item-status.accepted {
+  background: #e8f7ee;
+  color: #247447;
+}
+
+.work-item-status.rejected {
+  background: #fcebea;
+  color: #a33a35;
+}
+
+.work-item-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font: inherit;
+    font-weight: 400;
+
+    &:focus {
+      outline: 1px solid #555;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
 .chat-panel {
   display: flex;
   flex-direction: column;
@@ -118,6 +199,78 @@
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+  }
+}
+
+.work-item-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+
+  button {
+    padding: 8px 14px;
+    border: 1px solid #d8d8d8;
+    border-radius: 7px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+
+  button.action-accept {
+    border-color: #a8d5b9;
+    background: #edf8f1;
+    color: #247447;
+
+    &:hover {
+      background: #dff2e6;
+    }
+  }
+
+  button.action-reject {
+    border-color: #efc1be;
+    background: #fdf1f0;
+    color: #a33a35;
+
+    &:hover {
+      background: #f9e4e2;
+    }
+  }
+
+  button.action-edit {
+    border-color: #c8d5f0;
+    background: #f1f5fd;
+    color: #315bc7;
+
+    &:hover {
+      background: #e5edfb;
+    }
+  }
+
+  button.action-save {
+    border-color: #a8d5b9;
+    background: #edf8f1;
+    color: #247447;
+
+    &:hover {
+      background: #dff2e6;
+    }
+  }
+
+  button.action-cancel {
+    border-color: #d8d8d8;
+    background: #fff;
+    color: #555;
+
+    &:hover {
+      background: #f5f5f5;
     }
   }
 }

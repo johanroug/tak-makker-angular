@@ -1,35 +1,44 @@
-<p>login works!</p>
-<h1>Tak Makker</h1>
+<div class="login-page">
+  <main class="login-card">
+    <div class="login-header">
+      <img class="login-logo" src="/favicon.png" alt="Tak Makker" />
 
-<form (ngSubmit)="login()">
-  <label>
-    E-mail
-    <input
-      type="email"
-      name="email"
-      [(ngModel)]="email"
-      required
-    />
-  </label>
+      <h1>Tak Makker</h1>
+      <p>Din digitale makker til tilbud</p>
+    </div>
 
-  <label>
-    Adgangskode
-    <input
-      type="password"
-      name="password"
-      [(ngModel)]="password"
-      required
-    />
-  </label>
+    <form class="login-form" (ngSubmit)="login()">
+      <label>
+        E-mail
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          autocomplete="email"
+          placeholder="navn@firma.dk"
+          required
+        />
+      </label>
 
-  <button
-    type="submit"
-    [disabled]="isLoggingIn"
-  >
-    {{ isLoggingIn ? "Logger ind..." : "Log ind" }}
-  </button>
+      <label>
+        Adgangskode
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          autocomplete="current-password"
+          placeholder="Din adgangskode"
+          required
+        />
+      </label>
 
-  @if (errorMessage) {
-    <p>{{ errorMessage }}</p>
-  }
-</form>
+      @if (errorMessage) {
+        <p class="login-error">{{ errorMessage }}</p>
+      }
+
+      <button type="submit" [disabled]="isLoggingIn">
+        {{ isLoggingIn ? 'Logger ind...' : 'Log ind' }}
+      </button>
+    </form>
+  </main>
+</div>

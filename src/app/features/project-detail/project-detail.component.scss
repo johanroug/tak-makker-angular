@@ -168,3 +168,22 @@
   margin-top: 8px;
   color: #b91c1c;
 }
+
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout-button {
+  padding: 8px 12px;
+  border: 1px solid #d8d8d8;
+  border-radius: 7px;
+  background: white;
+  color: #555;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+}

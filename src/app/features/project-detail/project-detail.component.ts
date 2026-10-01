@@ -2,7 +2,7 @@ import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-
+import { supabase } from '../../core/supabase/supabase.client';
 import { ProjectService } from '../../core/projects/project.service';
 import { OfferPreview } from '../../shared/components/offer-preview/offer-preview.component';
 import { ProjectSidebar } from '../../shared/components/project-sidebar/project-sidebar.component';
@@ -100,6 +100,18 @@ export class ProjectDetail implements OnInit, OnDestroy {
     if (projectId) {
       void this.router.navigate(['/projects', projectId]);
     }
+  }
+
+  async logout(): Promise<void> {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error('Could not sign out:', error);
+      this.errorMessage.set('Kunne ikke logge ud.');
+      return;
+    }
+
+    await this.router.navigate(['/login']);
   }
 
   async createProject(): Promise<void> {

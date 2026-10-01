@@ -1,9 +1,9 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
-import { supabase } from '../../../core/supabase/supabase.client';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -11,7 +11,7 @@ type SidebarTab = 'tasks' | 'materials' | 'chat';
 
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DecimalPipe],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
@@ -26,10 +26,10 @@ export class ProjectSidebar {
   readonly activeTab = signal<SidebarTab>('chat');
   readonly isSending = signal(false);
   readonly sendError = signal('');
+
   readonly editingWorkItemId = signal<string | null>(null);
   readonly editTrade = signal('');
   readonly editDescription = signal('');
-  readonly editEstimatedHours = signal<number | null>(null);
 
   readonly messageControl = new FormControl('', {
     nonNullable: true,
@@ -50,46 +50,41 @@ export class ProjectSidebar {
     try {
       await this.projectService.updateWorkItemStatus(projectId, workItemId, status);
 
-      // Hent projektdata igen i parent.
       this.messageAdded.emit();
     } catch (error) {
       console.error('Could not update work item status:', error);
     }
   }
 
-  async updateWorkItem(
-    projectId: string,
-    workItemId: string,
-    changes: {
-      trade: string;
-      description: string;
-      estimatedHours: number | null;
-    },
-  ): Promise<void> {
-    const { error } = await supabase
-      .from('project_work_items')
-      .update({
-        trade: changes.trade.trim(),
-        description: changes.description.trim(),
-        estimated_hours: changes.estimatedHours,
+  async updateEstimatedHours(item: ProjectData['workItems'][number], value: string): Promise<void> {
+    const estimatedHours = value === '' ? null : Number(value);
 
-        // Brugerens estimat må ikke senere overskrives af AI.
-        estimated_hours_source: 'user',
-      })
-      .eq('project_id', projectId)
-      .eq('id', workItemId);
+    if (estimatedHours === item.estimated_hours) {
+      return;
+    }
 
-    if (error) {
-      throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
+    if (estimatedHours !== null && (Number.isNaN(estimatedHours) || estimatedHours < 0)) {
+      return;
+    }
+
+    try {
+      await this.projectService.updateWorkItemEstimatedHours(
+        this.data().project.id,
+        item.id,
+        estimatedHours,
+      );
+
+      this.messageAdded.emit();
+    } catch (error) {
+      console.error('Could not update estimated hours:', error);
     }
   }
 
   startEditingWorkItem(item: ProjectData['workItems'][number]): void {
-  this.editingWorkItemId.set(item.id);
-  this.editTrade.set(item.trade ?? '');
-  this.editDescription.set(item.description ?? '');
-  this.editEstimatedHours.set(item.estimated_hours);
-}
+    this.editingWorkItemId.set(item.id);
+    this.editTrade.set(item.trade ?? '');
+    this.editDescription.set(item.description ?? '');
+  }
 
   cancelEditingWorkItem(): void {
     this.editingWorkItemId.set(null);
@@ -102,7 +97,6 @@ export class ProjectSidebar {
       await this.projectService.updateWorkItem(projectId, workItemId, {
         trade: this.editTrade(),
         description: this.editDescription(),
-        estimatedHours: this.editEstimatedHours(),
       });
 
       this.editingWorkItemId.set(null);
@@ -124,28 +118,21 @@ export class ProjectSidebar {
     this.sendError.set('');
 
     try {
-      // Gem brugerens besked.
       await this.projectService.addMessage(projectId, message);
 
       this.messageControl.reset();
       this.messageAdded.emit();
 
-      // Hent AI-svaret.
       const aiResponse = await this.aiService.generateOffer(projectId);
 
-      // Gem arbejdsopgaver.
       await this.projectService.saveAiWorkItems(projectId, aiResponse.workItems);
 
-      // Gem materialer.
       await this.projectService.saveAiMaterials(projectId, aiResponse.materials);
 
-      // Gem kunde- og projektoplysninger.
       await this.projectService.saveAiProjectDetails(projectId, aiResponse);
 
-      // Opdater brugerfladen.
       this.messageAdded.emit();
 
-      // Omdan spørgsmålene til en chatbesked.
       const assistantMessage = aiResponse.questions
         .map((question, index) => `${index + 1}. ${question}`)
         .join('\n\n');
@@ -153,7 +140,6 @@ export class ProjectSidebar {
       if (assistantMessage) {
         await this.projectService.addAssistantMessage(projectId, assistantMessage);
 
-        // Opdater chatten med den nye besked.
         this.messageAdded.emit();
       }
     } catch (error) {

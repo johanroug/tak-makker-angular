@@ -32,7 +32,11 @@
         </button>
       </div>
 
-      <a routerLink="/company-profile" class="profile-button"> Virksomhedsprofil </a>
+      <div class="account-actions">
+        <a routerLink="/company-profile" class="profile-button"> Virksomhedsprofil </a>
+
+        <button type="button" class="logout-button" (click)="logout()">Log ud</button>
+      </div>
     </header>
 
     @if (isLoading()) {

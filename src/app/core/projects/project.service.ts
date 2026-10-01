@@ -60,7 +60,7 @@ export class ProjectService {
       throw new Error(`Kunne ikke hente projekt: ${projectError.message}`);
     }
 
-    const [workItemsResult, materialsResult, messagesResult] = await Promise.all([
+    const [workItemsResult, materialsResult, messagesResult, companyResult] = await Promise.all([
       supabase.from('project_work_items').select('*').eq('project_id', projectId),
 
       supabase.from('project_materials').select('*').eq('project_id', projectId),
@@ -70,22 +70,40 @@ export class ProjectService {
         .select('*')
         .eq('project_id', projectId)
         .order('created_at', { ascending: true }),
+
+      supabase
+        .from('companies')
+        .select('default_hourly_rate')
+        .eq('id', project.company_id)
+        .single(),
     ]);
 
-    if (workItemsResult.error) throw workItemsResult.error;
-    if (materialsResult.error) throw materialsResult.error;
-    if (messagesResult.error) throw messagesResult.error;
+    if (workItemsResult.error) {
+      throw workItemsResult.error;
+    }
+
+    if (materialsResult.error) {
+      throw materialsResult.error;
+    }
+
+    if (messagesResult.error) {
+      throw messagesResult.error;
+    }
+
+    if (companyResult.error) {
+      throw companyResult.error;
+    }
 
     return {
       project,
       workItems: workItemsResult.data,
       materials: materialsResult.data,
       messages: messagesResult.data,
+      defaultHourlyRate: companyResult.data.default_hourly_rate,
     };
   }
 
   async createProject() {
-    // Find den aktuelle bruger
     const {
       data: { user },
       error: userError,
@@ -95,7 +113,6 @@ export class ProjectService {
       throw new Error('Brugeren er ikke logget ind.');
     }
 
-    // Find brugerens virksomhed
     const { data: membership, error: membershipError } = await supabase
       .from('company_members')
       .select('company_id')
@@ -106,7 +123,6 @@ export class ProjectService {
       throw new Error('Kunne ikke finde brugerens virksomhed.');
     }
 
-    // Opret projektet via vores eksisterende databasefunktion
     const { data, error } = await supabase.rpc('create_project', {
       p_company_id: membership.company_id,
     });
@@ -159,7 +175,6 @@ export class ProjectService {
   }
 
   async saveAiWorkItems(projectId: string, workItems: ProjectResponse['workItems']): Promise<void> {
-    // Hent eksisterende arbejdsopgaver.
     const { data: existingItems, error: fetchError } = await supabase
       .from('project_work_items')
       .select('*')
@@ -178,16 +193,13 @@ export class ProjectService {
         project_id: projectId,
         id: item.id,
         trade: item.trade,
-
         description: item.description,
 
-        // Bevar eksisterende status.
         status:
           existing?.status === 'accepted' || existing?.status === 'rejected'
             ? existing.status
-            : item.status,
+            : 'suggested',
 
-        // Brugerens egne estimater har altid prioritet.
         estimated_hours:
           existing?.estimated_hours_source === 'user'
             ? existing.estimated_hours
@@ -217,7 +229,9 @@ export class ProjectService {
       .select('*')
       .eq('project_id', projectId);
 
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+      throw fetchError;
+    }
 
     const existingById = new Map((existingMaterials ?? []).map((item) => [item.id, item]));
 
@@ -230,34 +244,34 @@ export class ProjectService {
         name: material.name,
         description: material.description,
 
-        // Bevar accepterede og afviste materialer.
         status:
           existing?.status === 'accepted' || existing?.status === 'rejected'
             ? existing.status
             : material.status,
 
-        // Bevar brugerens egne mængder.
         quantity: existing?.quantity_source === 'user' ? existing.quantity : material.quantity,
 
         quantity_source: existing?.quantity_source === 'user' ? 'user' : material.quantitySource,
 
-        // Bevar brugerens egne enheder.
         unit: existing?.unit_source === 'user' ? existing.unit : material.unit,
 
         unit_source: existing?.unit_source === 'user' ? 'user' : material.unitSource,
 
-        // AI må aldrig overskrive eksisterende priser.
         unit_price: existing?.unit_price ?? null,
       };
     });
 
-    if (materialsToSave.length === 0) return;
+    if (materialsToSave.length === 0) {
+      return;
+    }
 
     const { error: saveError } = await supabase
       .from('project_materials')
       .upsert(materialsToSave, { onConflict: 'project_id,id' });
 
-    if (saveError) throw saveError;
+    if (saveError) {
+      throw saveError;
+    }
   }
 
   async saveAiProjectDetails(projectId: string, response: ProjectResponse): Promise<void> {
@@ -265,17 +279,17 @@ export class ProjectService {
       .from('projects')
       .select(
         `
-      customer_name,
-      customer_name_source,
-      customer_address,
-      customer_address_source,
-      title,
-      title_source,
-      description,
-      description_source,
-      offer_description,
-      offer_description_source
-    `,
+        customer_name,
+        customer_name_source,
+        customer_address,
+        customer_address_source,
+        title,
+        title_source,
+        description,
+        description_source,
+        offer_description,
+        offer_description_source
+      `,
       )
       .eq('id', projectId)
       .single();
@@ -284,8 +298,6 @@ export class ProjectService {
       throw fetchError;
     }
 
-    // NYT: AI må kun opdatere tomme felter
-    // eller felter, som AI selv tidligere har udfyldt.
     function aiValue(
       currentValue: string | null,
       currentSource: string | null,
@@ -298,7 +310,6 @@ export class ProjectService {
         };
       }
 
-      // Beskyt eksisterende felter med ukendt oprindelse.
       if (currentValue !== null && currentSource !== 'ai') {
         return {
           value: currentValue,
@@ -306,7 +317,6 @@ export class ProjectService {
         };
       }
 
-      // Et manglende AI-svar må ikke slette eksisterende data.
       if (newValue === null) {
         return {
           value: currentValue,
@@ -385,7 +395,6 @@ export class ProjectService {
     }
   }
 
-  // Opdatere projektoplysninger.
   async updateProjectDetails(
     projectId: string,
     changes: {
@@ -396,7 +405,6 @@ export class ProjectService {
       offerDescription?: string;
     },
   ): Promise<void> {
-    // NYT: Brug Supabases genererede type.
     type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
 
     const updates: ProjectUpdate = {};
@@ -437,7 +445,6 @@ export class ProjectService {
     }
   }
 
-  // Opdatere status for en arbejdsopgave.
   async updateWorkItemStatus(
     projectId: string,
     workItemId: string,
@@ -462,7 +469,6 @@ export class ProjectService {
     changes: {
       trade: string;
       description: string;
-      estimatedHours: number | null;
     },
   ): Promise<void> {
     const { error } = await supabase
@@ -470,14 +476,31 @@ export class ProjectService {
       .update({
         trade: changes.trade.trim(),
         description: changes.description.trim(),
-        estimated_hours: changes.estimatedHours,
-        estimated_hours_source: 'user',
       })
       .eq('project_id', projectId)
       .eq('id', workItemId);
 
     if (error) {
       throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
+    }
+  }
+
+  async updateWorkItemEstimatedHours(
+    projectId: string,
+    workItemId: string,
+    estimatedHours: number | null,
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('project_work_items')
+      .update({
+        estimated_hours: estimatedHours,
+        estimated_hours_source: 'user',
+      })
+      .eq('project_id', projectId)
+      .eq('id', workItemId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere estimerede timer: ${error.message}`);
     }
   }
 }

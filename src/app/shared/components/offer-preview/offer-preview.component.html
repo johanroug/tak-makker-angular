@@ -1,7 +1,7 @@
 <section class="offer-preview">
   <div class="offer-header">
     <div class="offer-toolbar">
-      <span class="offer-label">TILBUD · UDKAST</span>
+      <span class="offer-label"> TILBUD · UDKAST </span>
 
       @if (!isEditing()) {
         <button type="button" class="edit-details-button" (click)="startEditing()">
@@ -11,7 +11,6 @@
     </div>
 
     @if (isEditing()) {
-      <!-- NYT: Redigering af projektoplysninger -->
       <form
         class="offer-details-form"
         [formGroup]="detailsForm"
@@ -19,23 +18,30 @@
       >
         <label>
           Projekttitel
+
           <input type="text" formControlName="title" placeholder="Projekttitel" />
         </label>
 
-        <p class="project-number">Projektnr.: {{ data().project.project_number }}</p>
+        <p class="project-number">
+          Projektnr.:
+          {{ data().project.project_number }}
+        </p>
 
         <label>
           Kundenavn
+
           <input type="text" formControlName="customerName" placeholder="Kundenavn" />
         </label>
 
         <label>
           Kundeadresse
+
           <input type="text" formControlName="customerAddress" placeholder="Kundeadresse" />
         </label>
 
         <label>
           Projektbeskrivelse
+
           <textarea
             formControlName="description"
             rows="4"
@@ -45,6 +51,7 @@
 
         <label>
           Tilbudsbeskrivelse
+
           <textarea
             formControlName="offerDescription"
             rows="5"
@@ -74,14 +81,19 @@
         </div>
       </form>
     } @else {
-      <!-- Eksisterende tilbudsvisning -->
       <h1>
         {{ data().project.title || 'Projekt uden titel' }}
       </h1>
 
-      <p>Projektnr.: {{ data().project.project_number }}</p>
+      <p>
+        Projektnr.:
+        {{ data().project.project_number }}
+      </p>
 
-      <p>Kunde: {{ data().project.customer_name || 'Ikke angivet' }}</p>
+      <p>
+        Kunde:
+        {{ data().project.customer_name || 'Ikke angivet' }}
+      </p>
 
       <p>
         Adresse:
@@ -108,22 +120,155 @@
     }
   </div>
 
-  <!-- Eksisterende arbejdsopgaver -->
   <div class="offer-section">
     <h2>Arbejde</h2>
 
-    @for (item of data().workItems; track item.id) {
-      @if (item.status === 'accepted') {
-        <div class="offer-work-item">
+    @for (item of acceptedWorkItems; track item.id) {
+      <div class="offer-work-item">
+        <div class="offer-line-header">
           <h3>{{ item.trade }}</h3>
-          <p>{{ item.description }}</p>
+
+          <strong>
+            {{ getWorkItemPrice(item) | number: '1.0-0' }}
+            kr.
+          </strong>
         </div>
-      }
+
+        <p>{{ item.description }}</p>
+
+        @if (item.estimated_hours !== null && data().project.hourly_rate !== null) {
+          <small>
+            {{ item.estimated_hours | number: '1.0-2' }}
+            timer ×
+            {{ data().project.hourly_rate | number: '1.0-0' }}
+            kr.
+          </small>
+        }
+      </div>
+    } @empty {
+      <p class="offer-empty">Ingen accepterede arbejdsopgaver.</p>
     }
   </div>
 
-  <!-- Eksisterende knap -->
+  <div class="offer-section">
+    <h2>Materialer</h2>
+
+    @for (material of acceptedMaterials; track material.id) {
+      <div class="offer-material">
+        <div class="offer-line-header">
+          <h3>{{ material.name }}</h3>
+
+          <strong>
+            {{ getMaterialPrice(material) | number: '1.0-0' }}
+            kr.
+          </strong>
+        </div>
+
+        @if (material.description) {
+          <p>
+            {{ material.description }}
+          </p>
+        }
+
+        @if (material.quantity !== null && material.unit_price !== null) {
+          <small>
+            {{ material.quantity | number: '1.0-2' }}
+            {{ material.unit }}
+            ×
+            {{ material.unit_price | number: '1.0-2' }}
+            kr.
+          </small>
+        }
+      </div>
+    } @empty {
+      <p class="offer-empty">Ingen accepterede materialer.</p>
+    }
+  </div>
+
+  <div class="offer-pricing">
+    <div class="pricing-row">
+      <span>Arbejde</span>
+
+      <strong>
+        {{ laborTotal | number: '1.0-0' }}
+        kr.
+      </strong>
+    </div>
+
+    <div class="pricing-row">
+      <span>Materialer</span>
+
+      <strong>
+        {{ materialsTotal | number: '1.0-0' }}
+        kr.
+      </strong>
+    </div>
+
+    <div class="pricing-divider"></div>
+
+    <div class="pricing-row pricing-subtotal">
+      <span>Subtotal</span>
+
+      <strong>
+        {{ subtotal | number: '1.0-0' }}
+        kr.
+      </strong>
+    </div>
+
+    <div class="pricing-row">
+      <span>Moms (25%)</span>
+
+      <strong>
+        {{ vatAmount | number: '1.0-0' }}
+        kr.
+      </strong>
+    </div>
+
+    <div class="pricing-total">
+      <span>I alt</span>
+
+      <strong>
+        {{ total | number: '1.0-0' }}
+        kr.
+      </strong>
+    </div>
+  </div>
+
   <div class="offer-footer">
-    <button type="button" disabled>Færdiggør tilbud</button>
+    @if (finalizedOfferNumber(); as offerNumber) {
+      <div class="finalized-message">
+        <strong>Tilbuddet er færdiggjort</strong>
+        <span>Tilbudsnr. {{ offerNumber }}</span>
+      </div>
+    }
+
+    @if (finalizeError()) {
+      <p class="finalize-error">
+        {{ finalizeError() }}
+      </p>
+    }
+
+    <button
+      type="button"
+      [disabled]="!canFinalizeOffer"
+      [title]="canFinalizeOffer ? '' : finalizeDisabledReason"
+      (click)="finalizeOffer()"
+    >
+      @if (isFinalizing()) {
+        Færdiggør tilbud...
+      } @else if (finalizedOfferNumber()) {
+        Tilbud færdiggjort
+      } @else {
+        Færdiggør tilbud
+      }
+    </button>
+
+    @if (
+      !canFinalizeOffer && !finalizedOfferNumber() && !isFinalizing() && finalizeDisabledReason
+    ) {
+      <p class="finalize-hint">
+        {{ finalizeDisabledReason }}
+      </p>
+    }
   </div>
 </section>

@@ -1,6 +1,10 @@
 <aside class="project-sidebar">
   <nav class="sidebar-tabs">
-    <button type="button" [class.active]="activeTab() === 'tasks'" (click)="selectTab('tasks')">
+    <button
+      type="button"
+      [class.active]="activeTab() === 'tasks'"
+      (click)="selectTab('tasks')"
+    >
       Opgaver
     </button>
 
@@ -12,7 +16,11 @@
       Materialer
     </button>
 
-    <button type="button" [class.active]="activeTab() === 'chat'" (click)="selectTab('chat')">
+    <button
+      type="button"
+      [class.active]="activeTab() === 'chat'"
+      (click)="selectTab('chat')"
+    >
       Samtale
     </button>
   </nav>
@@ -24,129 +32,164 @@
 
         @for (item of data().workItems; track item.id) {
           <article class="work-item-card">
-            @if (editingWorkItemId() === item.id) {
-              <div class="work-item-edit">
-                <label>
-                  Fag
-                  <input
-                    type="text"
-                    [value]="editTrade()"
-                    (input)="editTrade.set($any($event.target).value)"
-                  />
+            <input
+              class="inline-title"
+              type="text"
+              aria-label="Fag"
+              [value]="getWorkItemTrade(item)"
+              (input)="
+                setWorkItemTrade(
+                  item.id,
+                  $any($event.target).value
+                )
+              "
+              (blur)="
+                saveWorkItemTrade(
+                  item,
+                  $any($event.target).value
+                )
+              "
+            />
+
+            <textarea
+              class="inline-description"
+              rows="2"
+              aria-label="Beskrivelse"
+              [value]="getWorkItemDescription(item)"
+              (input)="
+                setWorkItemDescription(
+                  item.id,
+                  $any($event.target).value
+                )
+              "
+              (blur)="
+                saveWorkItemDescription(
+                  item,
+                  $any($event.target).value
+                )
+              "
+            ></textarea>
+
+            <div class="work-item-estimate">
+              <div class="work-item-hours">
+                <label for="hours-{{ item.id }}">
+                  Estimeret tid
                 </label>
 
-                <label>
-                  Beskrivelse
-                  <textarea
-                    rows="3"
-                    [value]="editDescription()"
-                    (input)="editDescription.set($any($event.target).value)"
-                  ></textarea>
-                </label>
+                <input
+                  id="hours-{{ item.id }}"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  [value]="getWorkItemHours(item)"
+                  (input)="
+                    setWorkItemHours(
+                      item.id,
+                      $any($event.target).value
+                    )
+                  "
+                  (blur)="
+                    updateEstimatedHours(
+                      item,
+                      $any($event.target).value
+                    )
+                  "
+                />
 
-                <div class="work-item-actions">
-                  <button class="action-save" type="button" (click)="saveWorkItem(item.id)">
-                    Gem
-                  </button>
-
-                  <button class="action-cancel" type="button" (click)="cancelEditingWorkItem()">
-                    Annuller
-                  </button>
-                </div>
+                <span>timer</span>
               </div>
-            } @else {
-              <div class="work-item-header">
-                <h3>{{ item.trade }}</h3>
-              </div>
 
-              <p class="work-item-description">
-                {{ item.description }}
+              <p class="work-item-labor-cost">
+                <span>Arbejdsløn</span>
+
+                <strong>
+                  @if (
+                    getWorkItemLaborCost(item) !== null
+                  ) {
+                    {{
+                      getWorkItemLaborCost(item)!
+                        | number: '1.0-0'
+                    }}
+                    kr.
+                  } @else {
+                    Ikke angivet
+                  }
+                </strong>
               </p>
 
-              <div class="work-item-estimate">
-                <div class="work-item-hours">
-                  <label for="hours-{{ item.id }}"> Estimeret tid </label>
+              <p class="work-item-source">
+                {{
+                  item.estimated_hours_source ===
+                  'user'
+                    ? 'Rettet af dig'
+                    : 'Foreslået af Tak Makker'
+                }}
+              </p>
+            </div>
 
-                  <input
-                    id="hours-{{ item.id }}"
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    [value]="item.estimated_hours ?? ''"
-                    (blur)="updateEstimatedHours(item, $any($event.target).value)"
-                  />
-
-                  <span>timer</span>
-                </div>
-
-                <p class="work-item-labor-cost">
-                  <span>Arbejdsløn</span>
-
-                  <strong>
-                    @if (data().defaultHourlyRate !== null && item.estimated_hours !== null) {
-                      {{ item.estimated_hours! * data().defaultHourlyRate! | number: '1.0-0' }}
-                      kr.
-                    } @else {
-                      Ikke angivet
-                    }
-                  </strong>
-                </p>
-
-                <p class="work-item-source">
-                  {{
-                    item.estimated_hours_source === 'user'
-                      ? 'Rettet af dig'
-                      : 'Foreslået af Tak Makker'
-                  }}
-                </p>
-              </div>
-
-              <small
-                class="work-item-status"
-                [class.accepted]="item.status === 'accepted'"
-                [class.rejected]="item.status === 'rejected'"
-              >
-                @switch (item.status) {
-                  @case ('suggested') {
-                    Foreslået
-                  }
-
-                  @case ('accepted') {
-                    Accepteret
-                  }
-
-                  @case ('rejected') {
-                    Afvist
-                  }
-                }
-              </small>
-
-              <div class="work-item-actions">
-                @if (item.status !== 'accepted') {
-                  <button
-                    class="action-accept"
-                    type="button"
-                    (click)="updateWorkItemStatus(item.id, 'accepted')"
-                  >
-                    Acceptér
-                  </button>
+            <small
+              class="work-item-status"
+              [class.accepted]="
+                item.status === 'accepted'
+              "
+              [class.rejected]="
+                item.status === 'rejected'
+              "
+            >
+              @switch (item.status) {
+                @case ('suggested') {
+                  Foreslået
                 }
 
-                @if (item.status !== 'rejected') {
-                  <button
-                    class="action-reject"
-                    type="button"
-                    (click)="updateWorkItemStatus(item.id, 'rejected')"
-                  >
-                    Afvis
-                  </button>
+                @case ('accepted') {
+                  Accepteret
                 }
 
-                <button class="action-edit" type="button" (click)="startEditingWorkItem(item)">
-                  Redigér
+                @case ('rejected') {
+                  Afvist
+                }
+              }
+            </small>
+
+            <div class="work-item-actions">
+              @if (item.status !== 'accepted') {
+                <button
+                  class="action-accept"
+                  type="button"
+                  [disabled]="
+                    !canAcceptWorkItem(item)
+                  "
+                  [title]="
+                    canAcceptWorkItem(item)
+                      ? ''
+                      : 'Udfyld fag, beskrivelse og estimeret tid først'
+                  "
+                  (click)="
+                    updateWorkItemStatus(
+                      item.id,
+                      'accepted'
+                    )
+                  "
+                >
+                  Acceptér
                 </button>
-              </div>
-            }
+              }
+
+              @if (item.status !== 'rejected') {
+                <button
+                  class="action-reject"
+                  type="button"
+                  (click)="
+                    updateWorkItemStatus(
+                      item.id,
+                      'rejected'
+                    )
+                  "
+                >
+                  Afvis
+                </button>
+              }
+            </div>
           </article>
         } @empty {
           <p>Ingen arbejdsopgaver.</p>
@@ -156,17 +199,244 @@
       @case ('materials') {
         <h2>Materialer</h2>
 
-        @for (material of data().materials; track material.id) {
-          <article class="work-item-card">
-            <h3>{{ material.name }}</h3>
+        @for (
+          material of data().materials;
+          track material.id
+        ) {
+          <article class="material-card">
+            <input
+              class="inline-title"
+              type="text"
+              aria-label="Materialenavn"
+              [value]="
+                getMaterialName(material)
+              "
+              (input)="
+                setMaterialName(
+                  material.id,
+                  $any($event.target).value
+                )
+              "
+              (blur)="
+                saveMaterialName(
+                  material,
+                  $any($event.target).value
+                )
+              "
+            />
 
-            <p>{{ material.description }}</p>
+            <textarea
+              class="inline-description"
+              rows="2"
+              aria-label="Materialebeskrivelse"
+              [value]="
+                getMaterialDescription(material)
+              "
+              (input)="
+                setMaterialDescription(
+                  material.id,
+                  $any($event.target).value
+                )
+              "
+              (blur)="
+                saveMaterialDescription(
+                  material,
+                  $any($event.target).value
+                )
+              "
+            ></textarea>
 
-            <p>
-              Antal:
-              {{ material.quantity ?? 'Ikke angivet' }}
-              {{ material.unit }}
-            </p>
+            <div class="material-pricing">
+              <div class="material-field">
+                <label
+                  for="quantity-{{ material.id }}"
+                >
+                  Antal
+                </label>
+
+                <div class="material-field-value">
+                  <input
+                    id="quantity-{{ material.id }}"
+                    class="material-number-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [value]="
+                      getMaterialQuantity(material)
+                    "
+                    (input)="
+                      setMaterialQuantity(
+                        material.id,
+                        $any($event.target).value
+                      )
+                    "
+                    (blur)="
+                      updateMaterialQuantity(
+                        material,
+                        $any($event.target).value
+                      )
+                    "
+                  />
+
+                  <input
+                    class="material-unit-input"
+                    type="text"
+                    placeholder="enhed"
+                    [value]="
+                      getMaterialUnit(material)
+                    "
+                    (input)="
+                      setMaterialUnit(
+                        material.id,
+                        $any($event.target).value
+                      )
+                    "
+                    (blur)="
+                      updateMaterialUnit(
+                        material,
+                        $any($event.target).value
+                      )
+                    "
+                  />
+                </div>
+              </div>
+
+              <div class="material-field">
+                <label
+                  for="unit-price-{{ material.id }}"
+                >
+                  Enhedspris
+                </label>
+
+                <div class="material-field-value">
+                  <input
+                    id="unit-price-{{ material.id }}"
+                    class="material-price-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    [value]="
+                      getMaterialUnitPrice(material)
+                    "
+                    (input)="
+                      setMaterialUnitPrice(
+                        material.id,
+                        $any($event.target).value
+                      )
+                    "
+                    (blur)="
+                      updateMaterialUnitPrice(
+                        material,
+                        $any($event.target).value
+                      )
+                    "
+                  />
+
+                  <span>kr.</span>
+                </div>
+              </div>
+
+              <p
+                class="material-line material-total"
+              >
+                <span>Materialepris</span>
+
+                <strong>
+                  @if (
+                    getMaterialTotal(material) !==
+                    null
+                  ) {
+                    {{
+                      getMaterialTotal(material)!
+                        | number: '1.0-0'
+                    }}
+                    kr.
+                  } @else {
+                    Ikke angivet
+                  }
+                </strong>
+              </p>
+
+              <p class="material-source">
+                {{
+                  material.quantity_source ===
+                    'user' ||
+                  material.unit_source ===
+                    'user' ||
+                  material.unit_price !== null
+                    ? 'Rettet af dig'
+                    : 'Foreslået af Tak Makker'
+                }}
+              </p>
+            </div>
+
+            <small
+              class="material-status"
+              [class.accepted]="
+                material.status === 'accepted'
+              "
+              [class.rejected]="
+                material.status === 'rejected'
+              "
+            >
+              @switch (material.status) {
+                @case ('suggested') {
+                  Foreslået
+                }
+
+                @case ('accepted') {
+                  Accepteret
+                }
+
+                @case ('rejected') {
+                  Afvist
+                }
+              }
+            </small>
+
+            <div class="material-actions">
+              @if (
+                material.status !== 'accepted'
+              ) {
+                <button
+                  class="action-accept"
+                  type="button"
+                  [disabled]="
+                    !canAcceptMaterial(material)
+                  "
+                  [title]="
+                    canAcceptMaterial(material)
+                      ? ''
+                      : 'Udfyld navn, beskrivelse, antal, enhed og enhedspris først'
+                  "
+                  (click)="
+                    updateMaterialStatus(
+                      material.id,
+                      'accepted'
+                    )
+                  "
+                >
+                  Acceptér
+                </button>
+              }
+
+              @if (
+                material.status !== 'rejected'
+              ) {
+                <button
+                  class="action-reject"
+                  type="button"
+                  (click)="
+                    updateMaterialStatus(
+                      material.id,
+                      'rejected'
+                    )
+                  "
+                >
+                  Afvis
+                </button>
+              }
+            </div>
           </article>
         } @empty {
           <p>Ingen materialer.</p>
@@ -177,7 +447,13 @@
         <div class="chat-panel">
           <h2>Samtale</h2>
 
-          <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
+          <form
+            class="chat-form"
+            (submit)="
+              $event.preventDefault();
+              sendMessage()
+            "
+          >
             <textarea
               [formControl]="messageControl"
               placeholder="Beskriv dit projekt..."
@@ -193,23 +469,44 @@
             <button
               class="action-save"
               type="submit"
-              [disabled]="isSending() || !messageControl.value.trim()"
+              [disabled]="
+                isSending() ||
+                !messageControl.value.trim()
+              "
             >
-              {{ isSending() ? 'Sender...' : 'Send besked' }}
+              {{
+                isSending()
+                  ? 'Sender...'
+                  : 'Send besked'
+              }}
             </button>
           </form>
 
           <div class="chat-messages">
-            @for (message of newestMessages; track message.id) {
-              <article class="chat-message" [class.chat-message-user]="message.role === 'user'">
+            @for (
+              message of newestMessages;
+              track message.id
+            ) {
+              <article
+                class="chat-message"
+                [class.chat-message-user]="
+                  message.role === 'user'
+                "
+              >
                 <strong>
-                  {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
+                  {{
+                    message.role === 'user'
+                      ? 'Dig'
+                      : 'Tak Makker'
+                  }}
                 </strong>
 
                 <p>{{ message.content }}</p>
               </article>
             } @empty {
-              <p>Beskriv dit projekt for at komme i gang.</p>
+              <p>
+                Beskriv dit projekt for at komme i gang.
+              </p>
             }
           </div>
         </div>

@@ -60,7 +60,7 @@ export class ProjectService {
       throw new Error(`Kunne ikke hente projekt: ${projectError.message}`);
     }
 
-    const [workItemsResult, materialsResult, messagesResult, companyResult] = await Promise.all([
+    const [workItemsResult, materialsResult, messagesResult] = await Promise.all([
       supabase.from('project_work_items').select('*').eq('project_id', projectId),
 
       supabase.from('project_materials').select('*').eq('project_id', projectId),
@@ -70,12 +70,6 @@ export class ProjectService {
         .select('*')
         .eq('project_id', projectId)
         .order('created_at', { ascending: true }),
-
-      supabase
-        .from('companies')
-        .select('default_hourly_rate')
-        .eq('id', project.company_id)
-        .single(),
     ]);
 
     if (workItemsResult.error) {
@@ -90,16 +84,11 @@ export class ProjectService {
       throw messagesResult.error;
     }
 
-    if (companyResult.error) {
-      throw companyResult.error;
-    }
-
     return {
       project,
       workItems: workItemsResult.data,
       materials: materialsResult.data,
       messages: messagesResult.data,
-      defaultHourlyRate: companyResult.data.default_hourly_rate,
     };
   }
 
@@ -192,8 +181,8 @@ export class ProjectService {
       return {
         project_id: projectId,
         id: item.id,
-        trade: item.trade,
-        description: item.description,
+        trade: existing?.trade ?? item.trade,
+        description: existing?.description ?? item.description,
 
         status:
           existing?.status === 'accepted' || existing?.status === 'rejected'
@@ -214,9 +203,9 @@ export class ProjectService {
       return;
     }
 
-    const { error: saveError } = await supabase
-      .from('project_work_items')
-      .upsert(itemsToSave, { onConflict: 'project_id,id' });
+    const { error: saveError } = await supabase.from('project_work_items').upsert(itemsToSave, {
+      onConflict: 'project_id,id',
+    });
 
     if (saveError) {
       throw saveError;
@@ -241,13 +230,15 @@ export class ProjectService {
       return {
         project_id: projectId,
         id: material.id,
-        name: material.name,
-        description: material.description,
+
+        name: existing?.name ?? material.name,
+
+        description: existing?.description ?? material.description,
 
         status:
           existing?.status === 'accepted' || existing?.status === 'rejected'
             ? existing.status
-            : material.status,
+            : 'suggested',
 
         quantity: existing?.quantity_source === 'user' ? existing.quantity : material.quantity,
 
@@ -265,9 +256,9 @@ export class ProjectService {
       return;
     }
 
-    const { error: saveError } = await supabase
-      .from('project_materials')
-      .upsert(materialsToSave, { onConflict: 'project_id,id' });
+    const { error: saveError } = await supabase.from('project_materials').upsert(materialsToSave, {
+      onConflict: 'project_id,id',
+    });
 
     if (saveError) {
       throw saveError;
@@ -411,11 +402,13 @@ export class ProjectService {
 
     if (changes.customerName !== undefined) {
       updates.customer_name = changes.customerName.trim();
+
       updates.customer_name_source = 'user';
     }
 
     if (changes.customerAddress !== undefined) {
       updates.customer_address = changes.customerAddress.trim();
+
       updates.customer_address_source = 'user';
     }
 
@@ -426,11 +419,13 @@ export class ProjectService {
 
     if (changes.description !== undefined) {
       updates.description = changes.description.trim();
+
       updates.description_source = 'user';
     }
 
     if (changes.offerDescription !== undefined) {
       updates.offer_description = changes.offerDescription.trim();
+
       updates.offer_description_source = 'user';
     }
 
@@ -442,6 +437,76 @@ export class ProjectService {
 
     if (error) {
       throw new Error(`Kunne ikke opdatere projektoplysninger: ${error.message}`);
+    }
+  }
+
+  async updateMaterialStatus(
+    projectId: string,
+    materialId: string,
+    status: 'accepted' | 'rejected',
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('project_materials')
+      .update({
+        status,
+      })
+      .eq('project_id', projectId)
+      .eq('id', materialId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere materialet: ${error.message}`);
+    }
+  }
+
+  async updateMaterial(
+    projectId: string,
+    materialId: string,
+    changes: {
+      name?: string;
+      description?: string;
+      quantity?: number | null;
+      unit?: string;
+      unitPrice?: number | null;
+    },
+  ): Promise<void> {
+    type MaterialUpdate = Database['public']['Tables']['project_materials']['Update'];
+
+    const updates: MaterialUpdate = {};
+
+    if (changes.name !== undefined) {
+      updates.name = changes.name.trim();
+    }
+
+    if (changes.description !== undefined) {
+      updates.description = changes.description.trim();
+    }
+
+    if (changes.quantity !== undefined) {
+      updates.quantity = changes.quantity;
+      updates.quantity_source = 'user';
+    }
+
+    if (changes.unit !== undefined) {
+      updates.unit = changes.unit.trim();
+      updates.unit_source = 'user';
+    }
+
+    if (changes.unitPrice !== undefined) {
+      updates.unit_price = changes.unitPrice;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('project_materials')
+      .update(updates)
+      .eq('project_id', projectId)
+      .eq('id', materialId);
+
+    if (error) {
+      throw new Error(`Kunne ikke opdatere materialet: ${error.message}`);
     }
   }
 
@@ -467,16 +532,29 @@ export class ProjectService {
     projectId: string,
     workItemId: string,
     changes: {
-      trade: string;
-      description: string;
+      trade?: string;
+      description?: string;
     },
   ): Promise<void> {
+    type WorkItemUpdate = Database['public']['Tables']['project_work_items']['Update'];
+
+    const updates: WorkItemUpdate = {};
+
+    if (changes.trade !== undefined) {
+      updates.trade = changes.trade.trim();
+    }
+
+    if (changes.description !== undefined) {
+      updates.description = changes.description.trim();
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return;
+    }
+
     const { error } = await supabase
       .from('project_work_items')
-      .update({
-        trade: changes.trade.trim(),
-        description: changes.description.trim(),
-      })
+      .update(updates)
       .eq('project_id', projectId)
       .eq('id', workItemId);
 
@@ -502,5 +580,17 @@ export class ProjectService {
     if (error) {
       throw new Error(`Kunne ikke opdatere estimerede timer: ${error.message}`);
     }
+  }
+
+  async finalizeOffer(projectId: string) {
+    const { data, error } = await supabase.rpc('finalize_offer', {
+      p_project_id: projectId,
+    });
+
+    if (error) {
+      throw new Error(`Kunne ikke færdiggøre tilbuddet: ${error.message}`);
+    }
+
+    return data;
   }
 }

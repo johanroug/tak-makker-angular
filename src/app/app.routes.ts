@@ -4,6 +4,7 @@ import { authGuard } from './core/auth/auth-guard';
 import { Login } from './features/login/login';
 import { ProjectDetail } from './features/project-detail/project-detail.component';
 import { CompanyProfileComponent } from './features/company-profile/company-profile';
+import { OfferDetail } from './features/offer-detail/offer-detail.component';
 
 export const routes: Routes = [
   {
@@ -23,6 +24,11 @@ export const routes: Routes = [
         component: ProjectDetail,
       },
     ],
+  },
+  {
+    path: 'offers/:offerId',
+    canActivate: [authGuard],
+    component: OfferDetail,
   },
   {
     path: 'company-profile',

@@ -1,10 +1,6 @@
 <aside class="project-sidebar">
   <nav class="sidebar-tabs">
-    <button
-      type="button"
-      [class.active]="activeTab() === 'tasks'"
-      (click)="selectTab('tasks')"
-    >
+    <button type="button" [class.active]="activeTab() === 'tasks'" (click)="selectTab('tasks')">
       Opgaver
     </button>
 
@@ -16,12 +12,12 @@
       Materialer
     </button>
 
-    <button
-      type="button"
-      [class.active]="activeTab() === 'chat'"
-      (click)="selectTab('chat')"
-    >
+    <button type="button" [class.active]="activeTab() === 'chat'" (click)="selectTab('chat')">
       Samtale
+    </button>
+
+    <button type="button" [class.active]="activeTab() === 'offers'" (click)="selectTab('offers')">
+      Tilbud
     </button>
   </nav>
 
@@ -37,18 +33,8 @@
               type="text"
               aria-label="Fag"
               [value]="getWorkItemTrade(item)"
-              (input)="
-                setWorkItemTrade(
-                  item.id,
-                  $any($event.target).value
-                )
-              "
-              (blur)="
-                saveWorkItemTrade(
-                  item,
-                  $any($event.target).value
-                )
-              "
+              (input)="setWorkItemTrade(item.id, $any($event.target).value)"
+              (blur)="saveWorkItemTrade(item, $any($event.target).value)"
             />
 
             <textarea
@@ -56,25 +42,13 @@
               rows="2"
               aria-label="Beskrivelse"
               [value]="getWorkItemDescription(item)"
-              (input)="
-                setWorkItemDescription(
-                  item.id,
-                  $any($event.target).value
-                )
-              "
-              (blur)="
-                saveWorkItemDescription(
-                  item,
-                  $any($event.target).value
-                )
-              "
+              (input)="setWorkItemDescription(item.id, $any($event.target).value)"
+              (blur)="saveWorkItemDescription(item, $any($event.target).value)"
             ></textarea>
 
             <div class="work-item-estimate">
               <div class="work-item-hours">
-                <label for="hours-{{ item.id }}">
-                  Estimeret tid
-                </label>
+                <label for="hours-{{ item.id }}"> Estimeret tid </label>
 
                 <input
                   id="hours-{{ item.id }}"
@@ -82,18 +56,8 @@
                   min="0"
                   step="0.5"
                   [value]="getWorkItemHours(item)"
-                  (input)="
-                    setWorkItemHours(
-                      item.id,
-                      $any($event.target).value
-                    )
-                  "
-                  (blur)="
-                    updateEstimatedHours(
-                      item,
-                      $any($event.target).value
-                    )
-                  "
+                  (input)="setWorkItemHours(item.id, $any($event.target).value)"
+                  (blur)="updateEstimatedHours(item, $any($event.target).value)"
                 />
 
                 <span>timer</span>
@@ -103,13 +67,8 @@
                 <span>Arbejdsløn</span>
 
                 <strong>
-                  @if (
-                    getWorkItemLaborCost(item) !== null
-                  ) {
-                    {{
-                      getWorkItemLaborCost(item)!
-                        | number: '1.0-0'
-                    }}
+                  @if (getWorkItemLaborCost(item) !== null) {
+                    {{ getWorkItemLaborCost(item)! | number: '1.0-0' }}
                     kr.
                   } @else {
                     Ikke angivet
@@ -119,8 +78,7 @@
 
               <p class="work-item-source">
                 {{
-                  item.estimated_hours_source ===
-                  'user'
+                  item.estimated_hours_source === 'user'
                     ? 'Rettet af dig'
                     : 'Foreslået af Tak Makker'
                 }}
@@ -129,12 +87,8 @@
 
             <small
               class="work-item-status"
-              [class.accepted]="
-                item.status === 'accepted'
-              "
-              [class.rejected]="
-                item.status === 'rejected'
-              "
+              [class.accepted]="item.status === 'accepted'"
+              [class.rejected]="item.status === 'rejected'"
             >
               @switch (item.status) {
                 @case ('suggested') {
@@ -156,20 +110,11 @@
                 <button
                   class="action-accept"
                   type="button"
-                  [disabled]="
-                    !canAcceptWorkItem(item)
-                  "
+                  [disabled]="!canAcceptWorkItem(item)"
                   [title]="
-                    canAcceptWorkItem(item)
-                      ? ''
-                      : 'Udfyld fag, beskrivelse og estimeret tid først'
+                    canAcceptWorkItem(item) ? '' : 'Udfyld fag, beskrivelse og estimeret tid først'
                   "
-                  (click)="
-                    updateWorkItemStatus(
-                      item.id,
-                      'accepted'
-                    )
-                  "
+                  (click)="updateWorkItemStatus(item.id, 'accepted')"
                 >
                   Acceptér
                 </button>
@@ -179,12 +124,7 @@
                 <button
                   class="action-reject"
                   type="button"
-                  (click)="
-                    updateWorkItemStatus(
-                      item.id,
-                      'rejected'
-                    )
-                  "
+                  (click)="updateWorkItemStatus(item.id, 'rejected')"
                 >
                   Afvis
                 </button>
@@ -199,60 +139,29 @@
       @case ('materials') {
         <h2>Materialer</h2>
 
-        @for (
-          material of data().materials;
-          track material.id
-        ) {
+        @for (material of data().materials; track material.id) {
           <article class="material-card">
             <input
               class="inline-title"
               type="text"
               aria-label="Materialenavn"
-              [value]="
-                getMaterialName(material)
-              "
-              (input)="
-                setMaterialName(
-                  material.id,
-                  $any($event.target).value
-                )
-              "
-              (blur)="
-                saveMaterialName(
-                  material,
-                  $any($event.target).value
-                )
-              "
+              [value]="getMaterialName(material)"
+              (input)="setMaterialName(material.id, $any($event.target).value)"
+              (blur)="saveMaterialName(material, $any($event.target).value)"
             />
 
             <textarea
               class="inline-description"
               rows="2"
               aria-label="Materialebeskrivelse"
-              [value]="
-                getMaterialDescription(material)
-              "
-              (input)="
-                setMaterialDescription(
-                  material.id,
-                  $any($event.target).value
-                )
-              "
-              (blur)="
-                saveMaterialDescription(
-                  material,
-                  $any($event.target).value
-                )
-              "
+              [value]="getMaterialDescription(material)"
+              (input)="setMaterialDescription(material.id, $any($event.target).value)"
+              (blur)="saveMaterialDescription(material, $any($event.target).value)"
             ></textarea>
 
             <div class="material-pricing">
               <div class="material-field">
-                <label
-                  for="quantity-{{ material.id }}"
-                >
-                  Antal
-                </label>
+                <label for="quantity-{{ material.id }}"> Antal </label>
 
                 <div class="material-field-value">
                   <input
@@ -261,52 +170,24 @@
                     type="number"
                     min="0"
                     step="0.01"
-                    [value]="
-                      getMaterialQuantity(material)
-                    "
-                    (input)="
-                      setMaterialQuantity(
-                        material.id,
-                        $any($event.target).value
-                      )
-                    "
-                    (blur)="
-                      updateMaterialQuantity(
-                        material,
-                        $any($event.target).value
-                      )
-                    "
+                    [value]="getMaterialQuantity(material)"
+                    (input)="setMaterialQuantity(material.id, $any($event.target).value)"
+                    (blur)="updateMaterialQuantity(material, $any($event.target).value)"
                   />
 
                   <input
                     class="material-unit-input"
                     type="text"
                     placeholder="enhed"
-                    [value]="
-                      getMaterialUnit(material)
-                    "
-                    (input)="
-                      setMaterialUnit(
-                        material.id,
-                        $any($event.target).value
-                      )
-                    "
-                    (blur)="
-                      updateMaterialUnit(
-                        material,
-                        $any($event.target).value
-                      )
-                    "
+                    [value]="getMaterialUnit(material)"
+                    (input)="setMaterialUnit(material.id, $any($event.target).value)"
+                    (blur)="updateMaterialUnit(material, $any($event.target).value)"
                   />
                 </div>
               </div>
 
               <div class="material-field">
-                <label
-                  for="unit-price-{{ material.id }}"
-                >
-                  Enhedspris
-                </label>
+                <label for="unit-price-{{ material.id }}"> Enhedspris </label>
 
                 <div class="material-field-value">
                   <input
@@ -315,41 +196,21 @@
                     type="number"
                     min="0"
                     step="0.01"
-                    [value]="
-                      getMaterialUnitPrice(material)
-                    "
-                    (input)="
-                      setMaterialUnitPrice(
-                        material.id,
-                        $any($event.target).value
-                      )
-                    "
-                    (blur)="
-                      updateMaterialUnitPrice(
-                        material,
-                        $any($event.target).value
-                      )
-                    "
+                    [value]="getMaterialUnitPrice(material)"
+                    (input)="setMaterialUnitPrice(material.id, $any($event.target).value)"
+                    (blur)="updateMaterialUnitPrice(material, $any($event.target).value)"
                   />
 
                   <span>kr.</span>
                 </div>
               </div>
 
-              <p
-                class="material-line material-total"
-              >
+              <p class="material-line material-total">
                 <span>Materialepris</span>
 
                 <strong>
-                  @if (
-                    getMaterialTotal(material) !==
-                    null
-                  ) {
-                    {{
-                      getMaterialTotal(material)!
-                        | number: '1.0-0'
-                    }}
+                  @if (getMaterialTotal(material) !== null) {
+                    {{ getMaterialTotal(material)! | number: '1.0-0' }}
                     kr.
                   } @else {
                     Ikke angivet
@@ -359,10 +220,8 @@
 
               <p class="material-source">
                 {{
-                  material.quantity_source ===
-                    'user' ||
-                  material.unit_source ===
-                    'user' ||
+                  material.quantity_source === 'user' ||
+                  material.unit_source === 'user' ||
                   material.unit_price !== null
                     ? 'Rettet af dig'
                     : 'Foreslået af Tak Makker'
@@ -372,12 +231,8 @@
 
             <small
               class="material-status"
-              [class.accepted]="
-                material.status === 'accepted'
-              "
-              [class.rejected]="
-                material.status === 'rejected'
-              "
+              [class.accepted]="material.status === 'accepted'"
+              [class.rejected]="material.status === 'rejected'"
             >
               @switch (material.status) {
                 @case ('suggested') {
@@ -395,43 +250,27 @@
             </small>
 
             <div class="material-actions">
-              @if (
-                material.status !== 'accepted'
-              ) {
+              @if (material.status !== 'accepted') {
                 <button
                   class="action-accept"
                   type="button"
-                  [disabled]="
-                    !canAcceptMaterial(material)
-                  "
+                  [disabled]="!canAcceptMaterial(material)"
                   [title]="
                     canAcceptMaterial(material)
                       ? ''
                       : 'Udfyld navn, beskrivelse, antal, enhed og enhedspris først'
                   "
-                  (click)="
-                    updateMaterialStatus(
-                      material.id,
-                      'accepted'
-                    )
-                  "
+                  (click)="updateMaterialStatus(material.id, 'accepted')"
                 >
                   Acceptér
                 </button>
               }
 
-              @if (
-                material.status !== 'rejected'
-              ) {
+              @if (material.status !== 'rejected') {
                 <button
                   class="action-reject"
                   type="button"
-                  (click)="
-                    updateMaterialStatus(
-                      material.id,
-                      'rejected'
-                    )
-                  "
+                  (click)="updateMaterialStatus(material.id, 'rejected')"
                 >
                   Afvis
                 </button>
@@ -447,13 +286,7 @@
         <div class="chat-panel">
           <h2>Samtale</h2>
 
-          <form
-            class="chat-form"
-            (submit)="
-              $event.preventDefault();
-              sendMessage()
-            "
-          >
+          <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
             <textarea
               [formControl]="messageControl"
               placeholder="Beskriv dit projekt..."
@@ -469,46 +302,84 @@
             <button
               class="action-save"
               type="submit"
-              [disabled]="
-                isSending() ||
-                !messageControl.value.trim()
-              "
+              [disabled]="isSending() || !messageControl.value.trim()"
             >
-              {{
-                isSending()
-                  ? 'Sender...'
-                  : 'Send besked'
-              }}
+              {{ isSending() ? 'Sender...' : 'Send besked' }}
             </button>
           </form>
 
           <div class="chat-messages">
-            @for (
-              message of newestMessages;
-              track message.id
-            ) {
-              <article
-                class="chat-message"
-                [class.chat-message-user]="
-                  message.role === 'user'
-                "
-              >
+            @for (message of newestMessages; track message.id) {
+              <article class="chat-message" [class.chat-message-user]="message.role === 'user'">
                 <strong>
-                  {{
-                    message.role === 'user'
-                      ? 'Dig'
-                      : 'Tak Makker'
-                  }}
+                  {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
                 </strong>
 
-                <p>{{ message.content }}</p>
+                <p>
+                  {{ message.content }}
+                </p>
               </article>
             } @empty {
-              <p>
-                Beskriv dit projekt for at komme i gang.
-              </p>
+              <p>Beskriv dit projekt for at komme i gang.</p>
             }
           </div>
+        </div>
+      }
+
+      @case ('offers') {
+        <div class="offers-panel">
+          <h2>Tilbudshistorik</h2>
+
+          @if (isLoadingOffers()) {
+            <p class="offers-message">Henter tilbud...</p>
+          } @else if (offersError()) {
+            <p class="offers-error">
+              {{ offersError() }}
+            </p>
+          } @else {
+            <div class="offer-history">
+              @for (offer of offers(); track offer.id) {
+                <article class="offer-history-card">
+                  <div class="offer-history-header">
+                    <div>
+                      <strong>
+                        {{ offer.offer_number }}
+                      </strong>
+
+                      <span>
+                        {{ offer.finalized_at | date: 'dd.MM.yyyy HH:mm' }}
+                      </span>
+                    </div>
+
+                    <span class="offer-history-status"> Færdiggjort </span>
+                  </div>
+
+                  <div class="offer-history-project">
+                    {{ offer.project_title }}
+                  </div>
+
+                  <div class="offer-history-total">
+                    <span> Total inkl. moms </span>
+
+                    <strong>
+                      {{ offer.pricing_total | number: '1.0-0' }}
+                      kr.
+                    </strong>
+                  </div>
+
+                  <button type="button" class="view-history-offer" (click)="viewOffer(offer.id)">
+                    Se tilbud
+                  </button>
+                </article>
+              } @empty {
+                <div class="empty-offers">
+                  <strong> Ingen færdiggjorte tilbud endnu </strong>
+
+                  <p>Når du færdiggør et tilbud, bliver det gemt her.</p>
+                </div>
+              }
+            </div>
+          }
         </div>
       }
     }

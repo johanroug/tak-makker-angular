@@ -237,8 +237,14 @@
   <div class="offer-footer">
     @if (finalizedOfferNumber(); as offerNumber) {
       <div class="finalized-message">
-        <strong>Tilbuddet er færdiggjort</strong>
-        <span>Tilbudsnr. {{ offerNumber }}</span>
+        <div>
+          <strong>Tilbuddet er færdiggjort</strong>
+          <span>Tilbudsnr. {{ offerNumber }}</span>
+        </div>
+
+        <button type="button" class="view-offer-button" (click)="viewFinalizedOffer()">
+          Se tilbud
+        </button>
       </div>
     }
 
@@ -248,20 +254,20 @@
       </p>
     }
 
-    <button
-      type="button"
-      [disabled]="!canFinalizeOffer"
-      [title]="canFinalizeOffer ? '' : finalizeDisabledReason"
-      (click)="finalizeOffer()"
-    >
-      @if (isFinalizing()) {
-        Færdiggør tilbud...
-      } @else if (finalizedOfferNumber()) {
-        Tilbud færdiggjort
-      } @else {
-        Færdiggør tilbud
-      }
-    </button>
+    @if (!finalizedOfferNumber()) {
+      <button
+        type="button"
+        [disabled]="!canFinalizeOffer"
+        [title]="canFinalizeOffer ? '' : finalizeDisabledReason"
+        (click)="finalizeOffer()"
+      >
+        @if (isFinalizing()) {
+          Færdiggør tilbud...
+        } @else {
+          Færdiggør tilbud
+        }
+      </button>
+    }
 
     @if (
       !canFinalizeOffer && !finalizedOfferNumber() && !isFinalizing() && finalizeDisabledReason

@@ -1,0 +1,303 @@
+<div class="offer-page">
+  <div class="offer-page-inner">
+    @if (isLoading()) {
+      <p>Henter tilbud...</p>
+    } @else if (errorMessage()) {
+      <div class="offer-error">
+        <p>{{ errorMessage() }}</p>
+
+        <button
+          type="button"
+          (click)="backToProject()"
+        >
+          Tilbage
+        </button>
+      </div>
+    } @else if (data(); as data) {
+      <div class="page-toolbar">
+        <button
+          type="button"
+          class="back-button"
+          (click)="backToProject()"
+        >
+          ← Tilbage til projekt
+        </button>
+
+        <span class="offer-status">
+          Færdiggjort
+        </span>
+      </div>
+
+      <main class="offer-document">
+        <header class="offer-header">
+          <div>
+            <span class="offer-label">
+              TILBUD
+            </span>
+
+            <h1>
+              {{ data.offer.project_title }}
+            </h1>
+
+            <p>
+              Tilbudsnr.
+              {{ data.offer.offer_number }}
+            </p>
+
+            <p>
+              Projektnr.
+              {{ data.offer.project_number }}
+            </p>
+
+            <p>
+              Dato:
+              {{
+                data.offer.finalized_at
+                  | date: 'dd.MM.yyyy'
+              }}
+            </p>
+          </div>
+
+          <div class="company-details">
+            <strong>
+              {{ data.offer.company_name }}
+            </strong>
+
+            @if (data.offer.company_cvr) {
+              <span>
+                CVR:
+                {{ data.offer.company_cvr }}
+              </span>
+            }
+
+            @if (
+              data.offer.company_contact_name
+            ) {
+              <span>
+                {{
+                  data.offer
+                    .company_contact_name
+                }}
+              </span>
+            }
+
+            @if (data.offer.company_phone) {
+              <span>
+                {{ data.offer.company_phone }}
+              </span>
+            }
+
+            @if (data.offer.company_email) {
+              <span>
+                {{ data.offer.company_email }}
+              </span>
+            }
+          </div>
+        </header>
+
+        <section class="customer-section">
+          <h2>Kunde</h2>
+
+          <strong>
+            {{ data.offer.customer_name }}
+          </strong>
+
+          <p>
+            {{ data.offer.customer_address }}
+          </p>
+        </section>
+
+        <section class="description-section">
+          <h2>Projektbeskrivelse</h2>
+
+          <p>
+            {{
+              data.offer.project_description
+            }}
+          </p>
+        </section>
+
+        @if (data.offer.offer_description) {
+          <section class="description-section">
+            <h2>Tilbudsbeskrivelse</h2>
+
+            <p>
+              {{
+                data.offer.offer_description
+              }}
+            </p>
+          </section>
+        }
+
+        @if (data.workItems.length > 0) {
+          <section class="offer-section">
+            <h2>Arbejde</h2>
+
+            @for (
+              item of data.workItems;
+              track item.id
+            ) {
+              <div class="offer-line">
+                <div class="offer-line-main">
+                  <div>
+                    <h3>
+                      {{ item.trade }}
+                    </h3>
+
+                    <p>
+                      {{ item.description }}
+                    </p>
+
+                    <small>
+                      {{
+                        item.estimated_hours
+                          | number: '1.0-2'
+                      }}
+                      timer ×
+                      {{
+                        item.hourly_rate
+                          | number: '1.0-2'
+                      }}
+                      kr.
+                    </small>
+                  </div>
+
+                  <strong>
+                    {{
+                      item.total_price
+                        | number: '1.0-0'
+                    }}
+                    kr.
+                  </strong>
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        @if (data.materials.length > 0) {
+          <section class="offer-section">
+            <h2>Materialer</h2>
+
+            @for (
+              material of data.materials;
+              track material.id
+            ) {
+              <div class="offer-line">
+                <div class="offer-line-main">
+                  <div>
+                    <h3>
+                      {{ material.name }}
+                    </h3>
+
+                    @if (
+                      material.description
+                    ) {
+                      <p>
+                        {{
+                          material.description
+                        }}
+                      </p>
+                    }
+
+                    <small>
+                      {{
+                        material.quantity
+                          | number: '1.0-2'
+                      }}
+                      {{ material.unit }}
+                      ×
+                      {{
+                        material.unit_price
+                          | number: '1.0-2'
+                      }}
+                      kr.
+                    </small>
+                  </div>
+
+                  <strong>
+                    {{
+                      material.total_price
+                        | number: '1.0-0'
+                    }}
+                    kr.
+                  </strong>
+                </div>
+              </div>
+            }
+          </section>
+        }
+
+        <section class="pricing">
+          <div class="pricing-row">
+            <span>Arbejde</span>
+
+            <strong>
+              {{
+                data.offer.pricing_labor
+                  | number: '1.0-0'
+              }}
+              kr.
+            </strong>
+          </div>
+
+          <div class="pricing-row">
+            <span>Materialer</span>
+
+            <strong>
+              {{
+                data.offer.pricing_materials
+                  | number: '1.0-0'
+              }}
+              kr.
+            </strong>
+          </div>
+
+          <div class="pricing-divider"></div>
+
+          <div class="pricing-row">
+            <span>Subtotal</span>
+
+            <strong>
+              {{
+                data.offer.pricing_subtotal
+                  | number: '1.0-0'
+              }}
+              kr.
+            </strong>
+          </div>
+
+          <div class="pricing-row">
+            <span>
+              Moms ({{
+                data.offer.pricing_vat_rate *
+                  100
+                  | number: '1.0-0'
+              }}%)
+            </span>
+
+            <strong>
+              {{
+                data.offer.pricing_vat_amount
+                  | number: '1.0-0'
+              }}
+              kr.
+            </strong>
+          </div>
+
+          <div class="pricing-total">
+            <span>I alt</span>
+
+            <strong>
+              {{
+                data.offer.pricing_total
+                  | number: '1.0-0'
+              }}
+              kr.
+            </strong>
+          </div>
+        </section>
+      </main>
+    }
+  </div>
+</div>

@@ -1,22 +1,11 @@
-import {
-  Component,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { ProjectService } from '../../../core/projects/project.service';
+import { Router } from '@angular/router';
 
-type ProjectData = Awaited<
-  ReturnType<ProjectService['getProject']>
->;
+type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 type EditableDetails = {
   customerName: string;
@@ -33,8 +22,8 @@ type EditableDetails = {
   styleUrl: './offer-preview.component.scss',
 })
 export class OfferPreview {
-  private readonly projectService =
-    inject(ProjectService);
+  private readonly projectService = inject(ProjectService);
+  private readonly router = inject(Router);
 
   readonly data = input.required<ProjectData>();
 
@@ -47,6 +36,8 @@ export class OfferPreview {
   readonly isFinalizing = signal(false);
   readonly finalizeError = signal('');
   readonly finalizedOfferNumber = signal<string | null>(null);
+
+  readonly finalizedOfferId = signal<string | null>(null);
 
   private originalDetails: EditableDetails | null = null;
 
@@ -69,65 +60,41 @@ export class OfferPreview {
   });
 
   get acceptedWorkItems() {
-    return this.data().workItems.filter(
-      (item) => item.status === 'accepted',
-    );
+    return this.data().workItems.filter((item) => item.status === 'accepted');
   }
 
   get acceptedMaterials() {
-    return this.data().materials.filter(
-      (material) => material.status === 'accepted',
-    );
+    return this.data().materials.filter((material) => material.status === 'accepted');
   }
 
   get laborTotal(): number {
-    const hourlyRate =
-      this.data().project.hourly_rate;
+    const hourlyRate = this.data().project.hourly_rate;
 
     if (hourlyRate === null) {
       return 0;
     }
 
-    return this.acceptedWorkItems.reduce(
-      (total, item) => {
-        if (item.estimated_hours === null) {
-          return total;
-        }
+    return this.acceptedWorkItems.reduce((total, item) => {
+      if (item.estimated_hours === null) {
+        return total;
+      }
 
-        return (
-          total +
-          item.estimated_hours * hourlyRate
-        );
-      },
-      0,
-    );
+      return total + item.estimated_hours * hourlyRate;
+    }, 0);
   }
 
   get materialsTotal(): number {
-    return this.acceptedMaterials.reduce(
-      (total, material) => {
-        if (
-          material.quantity === null ||
-          material.unit_price === null
-        ) {
-          return total;
-        }
+    return this.acceptedMaterials.reduce((total, material) => {
+      if (material.quantity === null || material.unit_price === null) {
+        return total;
+      }
 
-        return (
-          total +
-          material.quantity *
-            material.unit_price
-        );
-      },
-      0,
-    );
+      return total + material.quantity * material.unit_price;
+    }, 0);
   }
 
   get subtotal(): number {
-    return (
-      this.laborTotal +
-      this.materialsTotal
-    );
+    return this.laborTotal + this.materialsTotal;
   }
 
   get vatRate(): number {
@@ -169,44 +136,36 @@ export class OfferPreview {
       return false;
     }
 
-    if (
-      project.hourly_rate === null ||
-      project.hourly_rate < 0
-    ) {
+    if (project.hourly_rate === null || project.hourly_rate < 0) {
       return false;
     }
 
-    if (
-      this.acceptedWorkItems.length === 0 &&
-      this.acceptedMaterials.length === 0
-    ) {
+    if (this.acceptedWorkItems.length === 0 && this.acceptedMaterials.length === 0) {
       return false;
     }
 
-    const workItemsAreValid =
-      this.acceptedWorkItems.every(
-        (item) =>
-          !!item.trade?.trim() &&
-          !!item.description?.trim() &&
-          item.estimated_hours !== null &&
-          item.estimated_hours >= 0,
-      );
+    const workItemsAreValid = this.acceptedWorkItems.every(
+      (item) =>
+        !!item.trade?.trim() &&
+        !!item.description?.trim() &&
+        item.estimated_hours !== null &&
+        item.estimated_hours >= 0,
+    );
 
     if (!workItemsAreValid) {
       return false;
     }
 
-    const materialsAreValid =
-      this.acceptedMaterials.every(
-        (material) =>
-          !!material.name?.trim() &&
-          !!material.description?.trim() &&
-          material.quantity !== null &&
-          material.quantity >= 0 &&
-          !!material.unit?.trim() &&
-          material.unit_price !== null &&
-          material.unit_price >= 0,
-      );
+    const materialsAreValid = this.acceptedMaterials.every(
+      (material) =>
+        !!material.name?.trim() &&
+        !!material.description?.trim() &&
+        material.quantity !== null &&
+        material.quantity >= 0 &&
+        !!material.unit?.trim() &&
+        material.unit_price !== null &&
+        material.unit_price >= 0,
+    );
 
     return materialsAreValid;
   }
@@ -230,55 +189,33 @@ export class OfferPreview {
       return 'Projektbeskrivelse mangler';
     }
 
-    if (
-      project.hourly_rate === null ||
-      project.hourly_rate < 0
-    ) {
+    if (project.hourly_rate === null || project.hourly_rate < 0) {
       return 'Projektets timepris mangler';
     }
 
-    if (
-      this.acceptedWorkItems.length === 0 &&
-      this.acceptedMaterials.length === 0
-    ) {
+    if (this.acceptedWorkItems.length === 0 && this.acceptedMaterials.length === 0) {
       return 'Acceptér mindst én arbejdsopgave eller ét materiale';
     }
 
     return '';
   }
 
-  getWorkItemPrice(
-    item: ProjectData['workItems'][number],
-  ): number {
-    const hourlyRate =
-      this.data().project.hourly_rate;
+  getWorkItemPrice(item: ProjectData['workItems'][number]): number {
+    const hourlyRate = this.data().project.hourly_rate;
 
-    if (
-      hourlyRate === null ||
-      item.estimated_hours === null
-    ) {
+    if (hourlyRate === null || item.estimated_hours === null) {
       return 0;
     }
 
-    return (
-      item.estimated_hours * hourlyRate
-    );
+    return item.estimated_hours * hourlyRate;
   }
 
-  getMaterialPrice(
-    material: ProjectData['materials'][number],
-  ): number {
-    if (
-      material.quantity === null ||
-      material.unit_price === null
-    ) {
+  getMaterialPrice(material: ProjectData['materials'][number]): number {
+    if (material.quantity === null || material.unit_price === null) {
       return 0;
     }
 
-    return (
-      material.quantity *
-      material.unit_price
-    );
+    return material.quantity * material.unit_price;
   }
 
   async finalizeOffer(): Promise<void> {
@@ -290,24 +227,16 @@ export class OfferPreview {
     this.finalizeError.set('');
 
     try {
-      const offer =
-        await this.projectService.finalizeOffer(
-          this.data().project.id,
-        );
+      const offer = await this.projectService.finalizeOffer(this.data().project.id);
 
-      this.finalizedOfferNumber.set(
-        offer.offer_number,
-      );
+      this.finalizedOfferId.set(offer.id);
+
+      this.finalizedOfferNumber.set(offer.offer_number);
     } catch (error) {
-      console.error(
-        'Could not finalize offer:',
-        error,
-      );
+      console.error('Could not finalize offer:', error);
 
       this.finalizeError.set(
-        error instanceof Error
-          ? error.message
-          : 'Kunne ikke færdiggøre tilbuddet.',
+        error instanceof Error ? error.message : 'Kunne ikke færdiggøre tilbuddet.',
       );
     } finally {
       this.isFinalizing.set(false);
@@ -318,20 +247,14 @@ export class OfferPreview {
     const project = this.data().project;
 
     this.originalDetails = {
-      customerName:
-        project.customer_name ?? '',
-      customerAddress:
-        project.customer_address ?? '',
+      customerName: project.customer_name ?? '',
+      customerAddress: project.customer_address ?? '',
       title: project.title ?? '',
-      description:
-        project.description ?? '',
-      offerDescription:
-        project.offer_description ?? '',
+      description: project.description ?? '',
+      offerDescription: project.offer_description ?? '',
     };
 
-    this.detailsForm.setValue(
-      this.originalDetails,
-    );
+    this.detailsForm.setValue(this.originalDetails);
 
     this.saveError.set('');
     this.isEditing.set(true);
@@ -348,18 +271,13 @@ export class OfferPreview {
   }
 
   async saveDetails(): Promise<void> {
-    if (
-      this.isSaving() ||
-      !this.originalDetails
-    ) {
+    if (this.isSaving() || !this.originalDetails) {
       return;
     }
 
-    const current =
-      this.detailsForm.getRawValue();
+    const current = this.detailsForm.getRawValue();
 
-    const original =
-      this.originalDetails;
+    const original = this.originalDetails;
 
     const changes: {
       customerName?: string;
@@ -369,58 +287,33 @@ export class OfferPreview {
       offerDescription?: string;
     } = {};
 
-    if (
-      current.customerName !==
-      original.customerName
-    ) {
-      changes.customerName =
-        current.customerName;
+    if (current.customerName !== original.customerName) {
+      changes.customerName = current.customerName;
     }
 
-    if (
-      current.customerAddress !==
-      original.customerAddress
-    ) {
-      changes.customerAddress =
-        current.customerAddress;
+    if (current.customerAddress !== original.customerAddress) {
+      changes.customerAddress = current.customerAddress;
     }
 
-    if (
-      current.title !== original.title
-    ) {
+    if (current.title !== original.title) {
       changes.title = current.title;
     }
 
-    if (
-      current.description !==
-      original.description
-    ) {
-      changes.description =
-        current.description;
+    if (current.description !== original.description) {
+      changes.description = current.description;
     }
 
-    if (
-      current.offerDescription !==
-      original.offerDescription
-    ) {
-      changes.offerDescription =
-        current.offerDescription;
+    if (current.offerDescription !== original.offerDescription) {
+      changes.offerDescription = current.offerDescription;
     }
 
-    if (
-      Object.keys(changes).length === 0
-    ) {
+    if (Object.keys(changes).length === 0) {
       this.cancelEditing();
       return;
     }
 
-    if (
-      changes.title !== undefined &&
-      !changes.title.trim()
-    ) {
-      this.saveError.set(
-        'Projekttitlen må ikke være tom.',
-      );
+    if (changes.title !== undefined && !changes.title.trim()) {
+      this.saveError.set('Projekttitlen må ikke være tom.');
 
       return;
     }
@@ -429,27 +322,28 @@ export class OfferPreview {
     this.saveError.set('');
 
     try {
-      await this.projectService
-        .updateProjectDetails(
-          this.data().project.id,
-          changes,
-        );
+      await this.projectService.updateProjectDetails(this.data().project.id, changes);
 
       this.isEditing.set(false);
       this.originalDetails = null;
 
       this.detailsSaved.emit();
     } catch (error) {
-      console.error(
-        'Could not save project details:',
-        error,
-      );
+      console.error('Could not save project details:', error);
 
-      this.saveError.set(
-        'Kunne ikke gemme projektoplysningerne.',
-      );
+      this.saveError.set('Kunne ikke gemme projektoplysningerne.');
     } finally {
       this.isSaving.set(false);
     }
+  }
+
+  viewFinalizedOffer(): void {
+    const offerId = this.finalizedOfferId();
+
+    if (!offerId) {
+      return;
+    }
+
+    void this.router.navigate(['/offers', offerId]);
   }
 }

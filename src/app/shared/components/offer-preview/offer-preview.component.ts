@@ -1,9 +1,9 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { ProjectService } from '../../../core/projects/project.service';
-import { Router } from '@angular/router';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -28,6 +28,7 @@ export class OfferPreview {
   readonly data = input.required<ProjectData>();
 
   readonly detailsSaved = output<void>();
+  readonly offerFinalized = output<void>();
 
   readonly isEditing = signal(false);
   readonly isSaving = signal(false);
@@ -36,7 +37,6 @@ export class OfferPreview {
   readonly isFinalizing = signal(false);
   readonly finalizeError = signal('');
   readonly finalizedOfferNumber = signal<string | null>(null);
-
   readonly finalizedOfferId = signal<string | null>(null);
 
   private originalDetails: EditableDetails | null = null;
@@ -230,8 +230,9 @@ export class OfferPreview {
       const offer = await this.projectService.finalizeOffer(this.data().project.id);
 
       this.finalizedOfferId.set(offer.id);
-
       this.finalizedOfferNumber.set(offer.offer_number);
+
+      this.offerFinalized.emit();
     } catch (error) {
       console.error('Could not finalize offer:', error);
 
@@ -276,7 +277,6 @@ export class OfferPreview {
     }
 
     const current = this.detailsForm.getRawValue();
-
     const original = this.originalDetails;
 
     const changes: {
@@ -314,7 +314,6 @@ export class OfferPreview {
 
     if (changes.title !== undefined && !changes.title.trim()) {
       this.saveError.set('Projekttitlen må ikke være tom.');
-
       return;
     }
 

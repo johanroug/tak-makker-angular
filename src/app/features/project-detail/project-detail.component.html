@@ -47,7 +47,12 @@
       <!-- Hovedlayout -->
       <main class="project-layout">
         <!-- Venstre kolonne -->
-        <app-offer-preview [data]="data" (detailsSaved)="onDetailsSaved()" />
+        
+        <app-offer-preview
+          [data]="data"
+          (detailsSaved)="onDetailsSaved()"
+          (offerFinalized)="onOfferFinalized()"
+        />
 
         <!-- Højre kolonne -->
         <app-project-sidebar [data]="data" (messageAdded)="refreshProject()" />

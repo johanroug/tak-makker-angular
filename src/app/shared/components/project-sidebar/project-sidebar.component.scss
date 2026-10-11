@@ -509,3 +509,51 @@
     line-height: 1.5;
   }
 }
+
+
+.project-sidebar {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar-tabs {
+  flex-shrink: 0;
+}
+
+.sidebar-content {
+  min-height: 0;
+  overscroll-behavior: contain;
+
+  &:has(.chat-panel) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+}
+
+.chat-panel {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chat-panel > h2,
+.chat-form {
+  flex-shrink: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+
+@media (max-width: 900px) {
+  .project-sidebar {
+    height: min(75dvh, 750px);
+    min-height: 400px;
+  }
+}

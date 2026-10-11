@@ -3,6 +3,7 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { OfferService } from '../../core/offers/offer.service';
+import { OfferPdfService } from '../../core/offers/offer-pdf.service';
 
 type OfferData = Awaited<ReturnType<OfferService['getOffer']>>;
 
@@ -16,17 +17,19 @@ export class OfferDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly offerService = inject(OfferService);
+  private readonly offerPdfService = inject(OfferPdfService);
 
   readonly data = signal<OfferData | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
+  readonly isDownloadingPdf = signal(false);
+  readonly pdfError = signal('');
 
   ngOnInit(): void {
     const offerId = this.route.snapshot.paramMap.get('offerId');
 
     if (!offerId) {
       this.errorMessage.set('Tilbuddet blev ikke fundet.');
-
       this.isLoading.set(false);
       return;
     }
@@ -40,14 +43,32 @@ export class OfferDetail implements OnInit {
 
     try {
       const data = await this.offerService.getOffer(offerId);
-
       this.data.set(data);
     } catch (error) {
       console.error('Could not load offer:', error);
-
       this.errorMessage.set('Kunne ikke hente tilbuddet.');
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  async downloadPdf(): Promise<void> {
+    const data = this.data();
+
+    if (!data || this.isDownloadingPdf()) {
+      return;
+    }
+
+    this.isDownloadingPdf.set(true);
+    this.pdfError.set('');
+
+    try {
+      await this.offerPdfService.download(data);
+    } catch (error) {
+      console.error('Could not generate PDF:', error);
+      this.pdfError.set('Kunne ikke generere PDF-filen.');
+    } finally {
+      this.isDownloadingPdf.set(false);
     }
   }
 

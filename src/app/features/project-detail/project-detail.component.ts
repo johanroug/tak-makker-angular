@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -20,6 +20,8 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
 
+  private readonly sidebar = viewChild(ProjectSidebar);
+
   readonly project = signal<ProjectData | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
@@ -36,6 +38,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
   readonly projectControl = new FormControl('', {
     nonNullable: true,
   });
+
   private routeSubscription?: Subscription;
 
   ngOnInit(): void {
@@ -43,6 +46,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
 
     this.routeSubscription = this.route.paramMap.subscribe((params) => {
       const projectId = params.get('projectId') ?? '';
+
       this.projectControl.setValue(projectId, { emitEvent: false });
 
       this.isEditingTitle.set(false);
@@ -70,7 +74,6 @@ export class ProjectDetail implements OnInit, OnDestroy {
     try {
       const data = await this.projectService.getProject(projectId);
 
-      // Undgå at vise et projekt, vi allerede har forladt.
       if (this.route.snapshot.paramMap.get('projectId') === projectId) {
         this.project.set(data);
       }
@@ -143,20 +146,16 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
 
     try {
-      // ÆNDRET: Hent både projektet og den opdaterede projektliste.
       const [data, projects] = await Promise.all([
         this.projectService.getProject(projectId),
         this.projectService.getProjects(),
       ]);
 
-      // Undgå at vise data fra et projekt, vi har forladt.
       if (this.route.snapshot.paramMap.get('projectId') !== projectId) {
         return;
       }
 
       this.project.set(data);
-
-      // NYT: Opdater dropdownen.
       this.projects.set(projects);
     } catch (error) {
       console.error('Could not refresh project:', error);
@@ -164,7 +163,6 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
   }
 
-  // NYT: Start redigering
   startEditingTitle(): void {
     const title = this.project()?.project.title ?? '';
 
@@ -173,13 +171,11 @@ export class ProjectDetail implements OnInit, OnDestroy {
     this.isEditingTitle.set(true);
   }
 
-  // NYT: Annuller redigering
   cancelEditingTitle(): void {
     this.isEditingTitle.set(false);
     this.titleError.set('');
   }
 
-  // NYT: Gem titel og marker den som brugerredigeret
   async saveTitle(): Promise<void> {
     const projectId = this.project()?.project.id;
     const title = this.titleControl.value.trim();
@@ -205,7 +201,6 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
   }
 
-  // NYT: Opdater projekt og projektvælger efter gemning.
   async onDetailsSaved(): Promise<void> {
     const projectId = this.project()?.project.id;
 
@@ -228,6 +223,14 @@ export class ProjectDetail implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Could not refresh project details:', error);
       this.errorMessage.set('Kunne ikke opdatere projektvisningen.');
+    }
+  }
+
+  async onOfferFinalized(): Promise<void> {
+    const sidebar = this.sidebar();
+
+    if (sidebar?.activeTab() === 'offers') {
+      await sidebar.loadOffers();
     }
   }
 }

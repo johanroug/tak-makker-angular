@@ -6,6 +6,7 @@ import { supabase } from '../supabase/supabase.client';
   providedIn: 'root',
 })
 export class OfferService {
+  // Betingelser læses fra tilbudskopien, aldrig fra den aktuelle virksomhedsprofil.
   async getOffer(offerId: string) {
     const [
       offerResult,

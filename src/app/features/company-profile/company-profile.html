@@ -53,6 +53,16 @@
           </div>
         </div>
 
+        <div class="pricing-section terms-section">
+          <h2>Tilbudsbetingelser</h2>
+          <p>Standarder kopieres til nye projekter. Eksisterende projekter og færdige tilbud ændres ikke.</p>
+          <div class="form-grid">
+            <div class="form-field"><label for="validityDays">Gyldighed (dage fra tilbudsdato)</label><input id="validityDays" type="number" min="1" step="1" formControlName="validityDays" /></div>
+            <div class="form-field full-width"><label for="paymentTerms">Betalingsbetingelser</label><textarea id="paymentTerms" rows="3" formControlName="paymentTerms"></textarea></div>
+            <div class="form-field full-width"><label for="reservations">Forbehold</label><textarea id="reservations" rows="4" formControlName="reservations"></textarea></div>
+          </div>
+        </div>
+
         <div class="form-footer">
           @if (message()) {
             <span class="status-message">

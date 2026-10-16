@@ -190,6 +190,13 @@
           </section>
         }
 
+        <section class="offer-section offer-terms">
+          <h2>Tilbudsbetingelser</h2>
+          <p>Gyldighed: {{ data.offer.validity_days === null ? 'Ikke angivet' : data.offer.validity_days + ' dage fra tilbudsdato' }}</p>
+          <h3>Betalingsbetingelser</h3><p>{{ data.offer.payment_terms || 'Ikke angivet' }}</p>
+          <h3>Forbehold</h3><p>{{ data.offer.reservations || 'Ingen angivet' }}</p>
+        </section>
+
         <section class="pricing">
           <div class="pricing-row">
             <span>Arbejde</span>

@@ -8,6 +8,9 @@ export type CompanyProfile = {
   phone: string;
   email: string;
   defaultHourlyRate: number | null;
+  validityDays: number | null;
+  paymentTerms: string;
+  reservations: string;
 };
 
 @Injectable({
@@ -35,7 +38,10 @@ export class CompanyService {
           contact_name,
           phone,
           email,
-          default_hourly_rate
+          default_hourly_rate,
+          default_validity_days,
+          default_payment_terms,
+          default_reservations
         )
       `,
       )
@@ -59,6 +65,9 @@ export class CompanyService {
       phone: company.phone ?? '',
       email: company.email ?? '',
       defaultHourlyRate: company.default_hourly_rate,
+      validityDays: company.default_validity_days,
+      paymentTerms: company.default_payment_terms ?? '',
+      reservations: company.default_reservations ?? '',
     };
   }
 
@@ -91,6 +100,9 @@ export class CompanyService {
         phone: companyProfile.phone,
         email: companyProfile.email,
         default_hourly_rate: companyProfile.defaultHourlyRate,
+        default_validity_days: companyProfile.validityDays,
+        default_payment_terms: companyProfile.paymentTerms.trim(),
+        default_reservations: companyProfile.reservations.trim(),
       })
       .eq('id', membership.company_id);
 

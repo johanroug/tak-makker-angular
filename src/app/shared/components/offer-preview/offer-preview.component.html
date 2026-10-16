@@ -59,6 +59,10 @@
           ></textarea>
         </label>
 
+        <label>Gyldighed (dage fra tilbudsdato)<input type="number" min="1" step="1" formControlName="validityDays" /></label>
+        <label>Betalingsbetingelser<textarea rows="3" formControlName="paymentTerms"></textarea></label>
+        <label>Forbehold<textarea rows="4" formControlName="reservations"></textarea></label>
+
         @if (saveError()) {
           <p class="save-error">
             {{ saveError() }}
@@ -184,6 +188,13 @@
       <p class="offer-empty">Ingen accepterede materialer.</p>
     }
   </div>
+
+  <section class="offer-section offer-terms">
+    <h2>Tilbudsbetingelser</h2>
+    <p>Gyldighed: {{ data().project.validity_days === null ? 'Ikke angivet' : data().project.validity_days + ' dage fra tilbudsdato' }}</p>
+    <h3>Betalingsbetingelser</h3><p>{{ data().project.payment_terms || 'Ikke angivet' }}</p>
+    <h3>Forbehold</h3><p>{{ data().project.reservations || 'Ingen angivet' }}</p>
+  </section>
 
   <div class="offer-pricing">
     <div class="pricing-row">

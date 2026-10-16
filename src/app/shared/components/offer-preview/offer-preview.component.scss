@@ -330,3 +330,5 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+
+.offer-terms p { white-space: pre-wrap; overflow-wrap: anywhere; }

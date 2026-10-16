@@ -67,6 +67,14 @@ export class OfferPdfService {
     }
 
     content.push(this.pricingAndTerms(data));
+    content.push(
+      { text: 'TILBUDSBETINGELSER', style: 'sectionHeading', margin: [0, 18, 0, 6] },
+      { text: `Gyldighed: ${offer.validity_days == null ? 'Ikke angivet' : offer.validity_days + ' dage fra tilbudsdato'}`, margin: [0, 0, 0, 6] },
+      { text: 'Betalingsbetingelser', bold: true },
+      { text: offer.payment_terms || 'Ikke angivet', margin: [0, 0, 0, 6] },
+      { text: 'Forbehold', bold: true },
+      { text: offer.reservations || 'Ingen angivet' },
+    );
 
     return {
       pageSize: 'A4',

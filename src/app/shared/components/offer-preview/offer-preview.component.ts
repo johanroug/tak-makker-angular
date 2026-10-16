@@ -13,6 +13,9 @@ type EditableDetails = {
   title: string;
   description: string;
   offerDescription: string;
+  validityDays: number | null;
+  paymentTerms: string;
+  reservations: string;
 };
 
 @Component({
@@ -42,6 +45,9 @@ export class OfferPreview {
   private originalDetails: EditableDetails | null = null;
 
   readonly detailsForm = new FormGroup({
+    validityDays: new FormControl<number | null>(null),
+    paymentTerms: new FormControl('', { nonNullable: true }),
+    reservations: new FormControl('', { nonNullable: true }),
     customerName: new FormControl('', {
       nonNullable: true,
     }),
@@ -112,7 +118,7 @@ export class OfferPreview {
   get canFinalizeOffer(): boolean {
     const project = this.data().project;
 
-    if (this.isFinalizing()) {
+    if (this.isFinalizing() || this.isEditing() || this.isSaving()) {
       return false;
     }
 
@@ -253,6 +259,9 @@ export class OfferPreview {
       title: project.title ?? '',
       description: project.description ?? '',
       offerDescription: project.offer_description ?? '',
+      validityDays: project.validity_days ?? null,
+      paymentTerms: project.payment_terms ?? '',
+      reservations: project.reservations ?? '',
     };
 
     this.detailsForm.setValue(this.originalDetails);
@@ -285,6 +294,9 @@ export class OfferPreview {
       title?: string;
       description?: string;
       offerDescription?: string;
+      validityDays?: number | null;
+      paymentTerms?: string;
+      reservations?: string;
     } = {};
 
     if (current.customerName !== original.customerName) {
@@ -306,6 +318,14 @@ export class OfferPreview {
     if (current.offerDescription !== original.offerDescription) {
       changes.offerDescription = current.offerDescription;
     }
+
+    if (current.validityDays !== null && (!Number.isInteger(current.validityDays) || current.validityDays < 1)) {
+      this.saveError.set('Gyldighed skal være et helt antal dage på mindst 1, eller være tom.');
+      return;
+    }
+    if (current.validityDays !== original.validityDays) changes.validityDays = current.validityDays;
+    if (current.paymentTerms !== original.paymentTerms) changes.paymentTerms = current.paymentTerms;
+    if (current.reservations !== original.reservations) changes.reservations = current.reservations;
 
     if (Object.keys(changes).length === 0) {
       this.cancelEditing();

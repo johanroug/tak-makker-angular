@@ -3,6 +3,7 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
+  Validators,
 } from "@angular/forms";
 
 import {
@@ -37,6 +38,9 @@ export class CompanyProfileComponent implements OnInit {
     phone: new FormControl("", { nonNullable: true }),
     email: new FormControl("", { nonNullable: true }),
     defaultHourlyRate: new FormControl<number | null>(null),
+    validityDays: new FormControl<number | null>(null, [Validators.min(1), Validators.pattern(/^\d+$/)]),
+    paymentTerms: new FormControl('', { nonNullable: true }),
+    reservations: new FormControl('', { nonNullable: true }),
   });
 
   async ngOnInit(): Promise<void> {
@@ -59,6 +63,11 @@ export class CompanyProfileComponent implements OnInit {
 
   async save(): Promise<void> {
     if (this.isSaving() || this.isLoading()) {
+      return;
+    }
+
+    if (this.form.invalid) {
+      this.message.set('Gyldighed skal være et helt antal dage på mindst 1, eller være tom.');
       return;
     }
 

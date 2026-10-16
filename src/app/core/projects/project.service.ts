@@ -394,6 +394,9 @@ export class ProjectService {
       title?: string;
       description?: string;
       offerDescription?: string;
+      validityDays?: number | null;
+      paymentTerms?: string;
+      reservations?: string;
     },
   ): Promise<void> {
     type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
@@ -428,6 +431,15 @@ export class ProjectService {
 
       updates.offer_description_source = 'user';
     }
+
+    if (changes.validityDays !== undefined) {
+      if (changes.validityDays !== null && (!Number.isInteger(changes.validityDays) || changes.validityDays < 1)) {
+        throw new Error('Gyldighed skal være et helt antal dage på mindst 1.');
+      }
+      updates.validity_days = changes.validityDays;
+    }
+    if (changes.paymentTerms !== undefined) updates.payment_terms = changes.paymentTerms.trim();
+    if (changes.reservations !== undefined) updates.reservations = changes.reservations.trim();
 
     if (Object.keys(updates).length === 0) {
       return;

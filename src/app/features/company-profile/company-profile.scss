@@ -61,7 +61,7 @@
     font-weight: 600;
   }
 
-  input {
+  input, textarea {
     width: 100%;
     padding: 12px;
     background: white;
@@ -138,3 +138,5 @@
     grid-template-columns: 1fr;
   }
 }
+
+.terms-section .form-field { max-width: none; }

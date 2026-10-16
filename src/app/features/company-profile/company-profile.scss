@@ -141,3 +141,11 @@
 
 .terms-section .form-field { max-width: none; }
 .field-error { color: #b42318; }
+.logo-preview {
+  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid #e7e5e4;
+  background: white;
+  img { display: block; max-width: 100%; width: auto; max-height: 100px; object-fit: contain; }
+}
+#companyLogo { max-width: 100%; }

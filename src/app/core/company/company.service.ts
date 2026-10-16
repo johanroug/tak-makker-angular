@@ -4,6 +4,7 @@ import { supabase } from '../supabase/supabase.client';
 export type CompanyProfile = {
   companyName: string;
   address: string;
+  logoDataUrl?: string | null;
   cvr: string;
   contactName: string;
   phone: string;
@@ -36,6 +37,7 @@ export class CompanyService {
           id,
           name,
           address,
+          logo_data_url,
           cvr,
           contact_name,
           phone,
@@ -66,6 +68,7 @@ export class CompanyService {
     return {
       companyName: company.name ?? '',
       address: company.address ?? '',
+      logoDataUrl: company.logo_data_url,
       cvr: company.cvr ?? '',
       contactName: company.contact_name ?? '',
       phone: company.phone ?? '',
@@ -102,6 +105,7 @@ export class CompanyService {
       .update({
         name: companyProfile.companyName.trim(),
         address: companyProfile.address.trim(),
+        logo_data_url: companyProfile.logoDataUrl ?? null,
         cvr: companyProfile.cvr.trim(),
         contact_name: companyProfile.contactName.trim(),
         phone: companyProfile.phone.trim(),

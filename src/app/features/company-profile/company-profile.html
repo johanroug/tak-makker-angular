@@ -51,6 +51,21 @@
         </div>
 
         <div class="pricing-section">
+          <h2>Virksomhedslogo</h2>
+          <p>Logoet vises på nye færdige tilbud og PDF’er. Eksisterende tilbud beholder deres logo. PNG eller JPG, højst 2 MB.</p>
+          @if (form.controls.logoDataUrl.value; as logo) {
+            <div class="logo-preview"><img [src]="logo" alt="Virksomhedens logo" /></div>
+            <button type="button" (click)="removeLogo()" [disabled]="isSaving() || isProcessingLogo()">Fjern logo</button>
+          }
+          <div class="form-field full-width">
+            <label for="companyLogo">Vælg logo</label>
+            <input id="companyLogo" type="file" accept="image/png,image/jpeg" (change)="selectLogo($event)" [disabled]="isSaving() || isProcessingLogo()" />
+          </div>
+          @if (isProcessingLogo()) { <p role="status">Behandler logo...</p> }
+          @if (logoError()) { <p class="field-error" role="alert">{{ logoError() }}</p> }
+        </div>
+
+        <div class="pricing-section">
           <h2>Standardtimepris</h2>
           <p>Bruges som udgangspunkt for nye projekter.</p>
 
@@ -85,7 +100,7 @@
             </span>
           }
 
-          <button type="submit" [disabled]="isSaving()">
+          <button type="submit" [disabled]="isSaving() || isProcessingLogo()">
             {{ isSaving() ? 'Gemmer...' : 'Gem ændringer' }}
           </button>
         </div>

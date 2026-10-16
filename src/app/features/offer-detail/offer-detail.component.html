@@ -58,6 +58,9 @@
           </div>
 
           <div class="company-details">
+            @if (data.offer.company_logo_data_url) {
+              <img class="company-logo" [src]="data.offer.company_logo_data_url" alt="Virksomhedens logo" />
+            }
             <strong>
               {{ data.offer.company_name }}
             </strong>

@@ -174,6 +174,14 @@ export class OfferPdfService {
             {
               fillColor: this.charcoalDark,
               stack: [
+                ...(offer.company_logo_data_url ? [{
+                  table: { widths: ['*'], body: [[{
+                    image: offer.company_logo_data_url,
+                    fit: [130, 52], alignment: 'center', fillColor: this.white,
+                    margin: [4, 4, 4, 4],
+                  }]] },
+                  layout: 'noBorders', margin: [0, 0, 0, 10],
+                } satisfies Content] : []),
                 {
                   text: offer.company_name ?? '',
                   fontSize: 13,

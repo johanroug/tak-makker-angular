@@ -44,6 +44,7 @@ export type Database = {
           default_validity_days: number | null
           default_payment_terms: string | null
           default_reservations: string | null
+          logo_data_url: string | null
           address: string | null
           contact_name: string | null
           created_at: string
@@ -58,6 +59,7 @@ export type Database = {
           default_validity_days?: number | null
           default_payment_terms?: string | null
           default_reservations?: string | null
+          logo_data_url?: string | null
           address?: string | null
           contact_name?: string | null
           created_at?: string
@@ -72,6 +74,7 @@ export type Database = {
           default_validity_days?: number | null
           default_payment_terms?: string | null
           default_reservations?: string | null
+          logo_data_url?: string | null
           address?: string | null
           contact_name?: string | null
           created_at?: string
@@ -197,6 +200,7 @@ export type Database = {
           validity_days: number | null
           payment_terms: string | null
           reservations: string | null
+          company_logo_data_url: string | null
           company_address: string | null
           company_contact_name: string
           company_cvr: string
@@ -227,6 +231,7 @@ export type Database = {
           validity_days?: number | null
           payment_terms?: string | null
           reservations?: string | null
+          company_logo_data_url?: string | null
           company_address?: string | null
           company_contact_name: string
           company_cvr: string
@@ -257,6 +262,7 @@ export type Database = {
           validity_days?: number | null
           payment_terms?: string | null
           reservations?: string | null
+          company_logo_data_url?: string | null
           company_address?: string | null
           company_contact_name?: string
           company_cvr?: string

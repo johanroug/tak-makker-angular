@@ -4,7 +4,7 @@
 
 - [x] **Tilbudsbetingelser** — Gyldighed, betalingsbetingelser og eventuelle forbehold.
 - [x] **Virksomhedsprofil** — Sikre at firmanavn, CVR, adresse, telefon og e-mail er udfyldt og bruges korrekt.
-- [ ] **Logo på PDF** — Mulighed for at uploade virksomhedens logo.
+- [x] **Logo på PDF** — Mulighed for at uploade virksomhedens logo.
 - [ ] **Tilbudsstatus** — Kladde, færdiggjort, sendt, accepteret og afvist.
 - [ ] **Korrekt håndtering af ændringer** — Manuelle rettelser må ikke blive overskrevet af AI.
 - [ ] **Test af hele tilbudsflowet** — Fra første AI-besked til færdig PDF, også efter reload.
@@ -17,6 +17,7 @@
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **PDF-finpudsning** — Sideskift, lange beskrivelser, mange opgaver og materialer.
 - [ ] **Deployment** — Miljøvariabler, produktionsdatabase, domæne og fejllogning.
+- [ ] **Vercel: skift fra React til Angular** — Vercel bruger i dag det gamle React-projekt i et andet repo. Tilknyt dette Angular-projekts repo, konfigurér Angular-build, outputmappe, miljøvariabler og routing, og kontrollér deployment samt genindlæsning af undersider.
 
 ## 3. Efter MVP
 
@@ -63,9 +64,22 @@ Status: Afsluttet — Johan har bekræftet de beskrevne app- og PDF-kontroller.
 - [x] Johan har testet gem/genindlæs profil og fejl ved ugyldige felter.
 - [x] Johan har testet virksomhedsoplysninger i nyt tilbud/PDF, og at ændret profil ikke ændrer adressen på det færdige tilbud.
 
-## Næste session
+## Afsluttet disciplin: Logo på PDF
 
-- Næste disciplin er Logo på PDF. Arbejdet er stoppet for i dag efter Johans ønske.
+Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
+
+- [x] Upload af PNG/JPG (højst 2 MB), skalering, forhåndsvisning og fjernelse i virksomhedsprofilen.
+- [x] Logo fra tilbudskopien i færdigt tilbud og PDF med bevarede proportioner.
+- [x] Lokal SQL-migration med logo på virksomhed og tilbud; ingen ændring af historiske tilbud.
+- [x] Angular-produktionsbuild bestået uden fejl; eksisterende størrelses- og CommonJS-advarsler består. Ingen nye spec-filer.
+- [x] Johan har kørt `supabase/migrations/202610160003_company_logo.sql` i Supabase SQL Editor og bekræftet resultatet: “Success. No rows returned”.
+- [x] Johan har bekræftet upload, gem/genindlæs, fjernelse samt afvisning af ugyldige filer.
+- [x] Johan har bekræftet logo i nyt tilbud og PDF med korrekte proportioner samt tilbud uden logo.
+- [x] Johan har bekræftet, at udskiftning/fjernelse af virksomhedens logo ikke ændrer logoet på færdige tilbud.
+
+## Næste disciplin
+
+- Tilbudsstatus: kladde, færdiggjort, sendt, accepteret og afvist.
 
 Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punkter er endnu ikke gennemgået og godkendt som afsluttede.
 

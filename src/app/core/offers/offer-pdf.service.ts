@@ -250,7 +250,7 @@ export class OfferPdfService {
   private companyLines(data: OfferData): Content[] {
     const offer = data.offer;
 
-    const lines = [offer.company_contact_name, offer.company_phone, offer.company_email].filter(
+    const lines = [offer.company_address, offer.company_contact_name, offer.company_phone, offer.company_email].filter(
       (value): value is string => Boolean(value),
     );
 

@@ -69,6 +69,10 @@
               </span>
             }
 
+            @if (data.offer.company_address) {
+              <span style="white-space: pre-line; overflow-wrap: anywhere">{{ data.offer.company_address }}</span>
+            }
+
             @if (data.offer.company_contact_name) {
               <span>
                 {{ data.offer.company_contact_name }}

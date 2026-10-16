@@ -3,6 +3,7 @@ import { supabase } from '../supabase/supabase.client';
 
 export type CompanyProfile = {
   companyName: string;
+  address: string;
   cvr: string;
   contactName: string;
   phone: string;
@@ -34,6 +35,7 @@ export class CompanyService {
         company:companies!company_members_company_id_fkey (
           id,
           name,
+          address,
           cvr,
           contact_name,
           phone,
@@ -48,7 +50,10 @@ export class CompanyService {
       .eq('user_id', user.id)
       .single();
 
-    if (error || !data?.company) {
+    if (error) {
+      throw new Error(`Kunne ikke hente virksomhedsprofil: ${error.message}`);
+    }
+    if (!data?.company) {
       return null;
     }
 
@@ -60,6 +65,7 @@ export class CompanyService {
 
     return {
       companyName: company.name ?? '',
+      address: company.address ?? '',
       cvr: company.cvr ?? '',
       contactName: company.contact_name ?? '',
       phone: company.phone ?? '',
@@ -94,17 +100,20 @@ export class CompanyService {
     const { error } = await supabase
       .from('companies')
       .update({
-        name: companyProfile.companyName,
-        cvr: companyProfile.cvr,
-        contact_name: companyProfile.contactName,
-        phone: companyProfile.phone,
-        email: companyProfile.email,
+        name: companyProfile.companyName.trim(),
+        address: companyProfile.address.trim(),
+        cvr: companyProfile.cvr.trim(),
+        contact_name: companyProfile.contactName.trim(),
+        phone: companyProfile.phone.trim(),
+        email: companyProfile.email.trim(),
         default_hourly_rate: companyProfile.defaultHourlyRate,
         default_validity_days: companyProfile.validityDays,
         default_payment_terms: companyProfile.paymentTerms.trim(),
         default_reservations: companyProfile.reservations.trim(),
       })
-      .eq('id', membership.company_id);
+      .eq('id', membership.company_id)
+      .select('id')
+      .single();
 
     if (error) {
       throw new Error(`Kunne ikke gemme virksomhedsprofil: ${error.message}`);

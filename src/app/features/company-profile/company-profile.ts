@@ -26,18 +26,20 @@ export class CompanyProfileComponent implements OnInit {
   isLoading = signal(true);
   isSaving = signal(false);
   message = signal("");
+  hasProfile = signal(false);
   
   goBack(): void {
     this.location.back();
   }
 
   form = new FormGroup({
-    companyName: new FormControl("", { nonNullable: true }),
-    cvr: new FormControl("", { nonNullable: true }),
+    companyName: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
+    address: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
+    cvr: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\d{8}$/)] }),
     contactName: new FormControl("", { nonNullable: true }),
-    phone: new FormControl("", { nonNullable: true }),
-    email: new FormControl("", { nonNullable: true }),
-    defaultHourlyRate: new FormControl<number | null>(null),
+    phone: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/^(?=(?:\D*\d){6,15}\D*$)\+?[\d\s().-]{6,25}$/)] }),
+    email: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.email] }),
+    defaultHourlyRate: new FormControl<number | null>(null, Validators.min(0)),
     validityDays: new FormControl<number | null>(null, [Validators.min(1), Validators.pattern(/^\d+$/)]),
     paymentTerms: new FormControl('', { nonNullable: true }),
     reservations: new FormControl('', { nonNullable: true }),
@@ -50,6 +52,7 @@ export class CompanyProfileComponent implements OnInit {
 
       if (profile) {
         this.form.setValue(profile);
+        this.hasProfile.set(true);
       } else {
         this.message.set("Virksomhedsprofilen blev ikke fundet.");
       }
@@ -62,12 +65,13 @@ export class CompanyProfileComponent implements OnInit {
   }
 
   async save(): Promise<void> {
-    if (this.isSaving() || this.isLoading()) {
+    if (this.isSaving() || this.isLoading() || !this.hasProfile()) {
       return;
     }
 
     if (this.form.invalid) {
-      this.message.set('Gyldighed skal være et helt antal dage på mindst 1, eller være tom.');
+      this.form.markAllAsTouched();
+      this.message.set('Kontrollér felterne nedenfor, før du gemmer.');
       return;
     }
 

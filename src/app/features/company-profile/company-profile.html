@@ -9,17 +9,27 @@
 
     @if (isLoading()) {
       <p>Henter virksomhedsprofil...</p>
+    } @else if (!hasProfile()) {
+      <p role="alert">{{ message() }}</p>
     } @else {
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="form-grid">
           <div class="form-field full-width">
             <label for="companyName">Virksomhedsnavn</label>
             <input id="companyName" type="text" formControlName="companyName" />
+            @if (form.controls.companyName.touched && form.controls.companyName.invalid) { <small class="field-error">Udfyld virksomhedsnavn.</small> }
+          </div>
+
+          <div class="form-field full-width">
+            <label for="address">Virksomhedsadresse</label>
+            <textarea id="address" rows="2" autocomplete="street-address" formControlName="address"></textarea>
+            @if (form.controls.address.touched && form.controls.address.invalid) { <small class="field-error">Udfyld gade, husnummer, postnummer og by.</small> }
           </div>
 
           <div class="form-field">
             <label for="cvr">CVR-nummer</label>
             <input id="cvr" type="text" formControlName="cvr" />
+            @if (form.controls.cvr.touched && form.controls.cvr.invalid) { <small class="field-error">CVR skal bestå af 8 cifre.</small> }
           </div>
 
           <div class="form-field">
@@ -30,11 +40,13 @@
           <div class="form-field">
             <label for="phone">Telefon</label>
             <input id="phone" type="tel" formControlName="phone" />
+            @if (form.controls.phone.touched && form.controls.phone.invalid) { <small class="field-error">Udfyld et gyldigt telefonnummer.</small> }
           </div>
 
           <div class="form-field">
             <label for="email">E-mail</label>
             <input id="email" type="email" formControlName="email" />
+            @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Udfyld en gyldig e-mailadresse.</small> }
           </div>
         </div>
 
@@ -50,6 +62,7 @@
               min="0"
               formControlName="defaultHourlyRate"
             />
+            @if (form.controls.defaultHourlyRate.touched && form.controls.defaultHourlyRate.invalid) { <small class="field-error">Timepris skal være mindst 0.</small> }
           </div>
         </div>
 
@@ -57,7 +70,9 @@
           <h2>Tilbudsbetingelser</h2>
           <p>Standarder kopieres til nye projekter. Eksisterende projekter og færdige tilbud ændres ikke.</p>
           <div class="form-grid">
-            <div class="form-field"><label for="validityDays">Gyldighed (dage fra tilbudsdato)</label><input id="validityDays" type="number" min="1" step="1" formControlName="validityDays" /></div>
+            <div class="form-field"><label for="validityDays">Gyldighed (dage fra tilbudsdato)</label><input id="validityDays" type="number" min="1" step="1" formControlName="validityDays" />
+              @if (form.controls.validityDays.touched && form.controls.validityDays.invalid) { <small class="field-error">Angiv et helt antal dage på mindst 1, eller lad feltet være tomt.</small> }
+            </div>
             <div class="form-field full-width"><label for="paymentTerms">Betalingsbetingelser</label><textarea id="paymentTerms" rows="3" formControlName="paymentTerms"></textarea></div>
             <div class="form-field full-width"><label for="reservations">Forbehold</label><textarea id="reservations" rows="4" formControlName="reservations"></textarea></div>
           </div>
@@ -65,7 +80,7 @@
 
         <div class="form-footer">
           @if (message()) {
-            <span class="status-message">
+            <span class="status-message" role="status">
               {{ message() }}
             </span>
           }

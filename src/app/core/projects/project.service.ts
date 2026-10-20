@@ -7,6 +7,40 @@ import { Database } from '../supabase/database.types';
   providedIn: 'root',
 })
 export class ProjectService {
+  async saveAiResponse(projectId: string, response: ProjectResponse): Promise<void> {
+    const started = performance.now();
+    try {
+      const results = await Promise.allSettled([
+        this.saveAiWorkItems(projectId, response.workItems),
+        this.saveAiMaterials(projectId, response.materials),
+        this.saveAiProjectDetails(projectId, response),
+      ]);
+      const failure = results.find((result) => result.status === 'rejected');
+      if (failure?.status === 'rejected') throw failure.reason;
+    } finally {
+      console.debug('[Tak Makker] Gemning af AI-data', {
+        durationMs: Math.round(performance.now() - started),
+      });
+    }
+  }
+
+  private async runAiWrites(writes: Array<() => Promise<void>>): Promise<void> {
+    let next = 0;
+    const errors: unknown[] = [];
+    const worker = async () => {
+      while (next < writes.length) {
+        const write = writes[next++];
+        try {
+          await write();
+        } catch (error) {
+          errors.push(error);
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(4, writes.length) }, worker));
+    if (errors.length) throw errors[0];
+  }
+
   async getProjects() {
     const {
       data: { user },
@@ -50,46 +84,21 @@ export class ProjectService {
   }
 
   async getProject(projectId: string) {
-    const { data: project, error: projectError } = await supabase
+    const { data, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(
+        '*, workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
+      )
       .eq('id', projectId)
+      .order('created_at', { referencedTable: 'messages', ascending: true })
       .single();
 
-    if (projectError) {
-      throw new Error(`Kunne ikke hente projekt: ${projectError.message}`);
+    if (error) {
+      throw new Error('Kunne ikke hente projekt: ' + error.message);
     }
 
-    const [workItemsResult, materialsResult, messagesResult] = await Promise.all([
-      supabase.from('project_work_items').select('*').eq('project_id', projectId),
-
-      supabase.from('project_materials').select('*').eq('project_id', projectId),
-
-      supabase
-        .from('project_messages')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: true }),
-    ]);
-
-    if (workItemsResult.error) {
-      throw workItemsResult.error;
-    }
-
-    if (materialsResult.error) {
-      throw materialsResult.error;
-    }
-
-    if (messagesResult.error) {
-      throw messagesResult.error;
-    }
-
-    return {
-      project,
-      workItems: workItemsResult.data,
-      materials: materialsResult.data,
-      messages: messagesResult.data,
-    };
+    const { workItems, materials, messages, ...project } = data;
+    return { project, workItems, materials, messages };
   }
 
   async createProject() {
@@ -164,6 +173,7 @@ export class ProjectService {
   }
 
   async saveAiWorkItems(projectId: string, workItems: ProjectResponse['workItems']): Promise<void> {
+    if (!workItems.length) return;
     const { data: existingItems, error: fetchError } = await supabase
       .from('project_work_items')
       .select('*')
@@ -174,28 +184,41 @@ export class ProjectService {
     }
 
     const existingById = new Map(existingItems.map((item) => [item.id, item]));
+    const writes: Array<() => Promise<void>> = [];
+    const newItems: Database['public']['Tables']['project_work_items']['Insert'][] = [];
 
-    for (const item of workItems) {
+    for (const item of new Map(workItems.map((item) => [item.id, item])).values()) {
       const existing = existingById.get(item.id);
       if (existing) {
-        if (existing.estimated_hours_source === 'user' || item.estimatedHours === null) continue;
+        if (
+          existing.estimated_hours_source === 'user' ||
+          item.estimatedHours === null ||
+          existing.estimated_hours === item.estimatedHours
+        )
+          continue;
 
         // Compare the snapshot in the UPDATE itself. A manual save after the
         // SELECT must win, including a deliberately cleared value or new status.
-        let query = supabase.from('project_work_items').update({
-          estimated_hours: item.estimatedHours,
-          estimated_hours_source: 'ai',
-        }).eq('project_id', projectId).eq('id', item.id);
+        let query = supabase
+          .from('project_work_items')
+          .update({
+            estimated_hours: item.estimatedHours,
+            estimated_hours_source: 'ai',
+          })
+          .eq('project_id', projectId)
+          .eq('id', item.id);
         for (const [column, value] of Object.entries(existing)) {
           query = value === null ? query.is(column, null) : query.eq(column, value);
         }
-        const { error } = await query;
-        if (error) throw error;
+        writes.push(async () => {
+          const { error } = await query;
+          if (error) throw error;
+        });
         continue;
       }
 
       // A row inserted by another request since our SELECT must not be replaced.
-      const { error } = await supabase.from('project_work_items').upsert({
+      newItems.push({
         project_id: projectId,
         id: item.id,
         trade: item.trade,
@@ -203,12 +226,21 @@ export class ProjectService {
         status: 'suggested',
         estimated_hours: item.estimatedHours,
         estimated_hours_source: 'ai',
-      }, { onConflict: 'project_id,id', ignoreDuplicates: true });
-      if (error) throw error;
+      });
     }
+    if (newItems.length)
+      writes.push(async () => {
+        const { error } = await supabase.from('project_work_items').upsert(newItems, {
+          onConflict: 'project_id,id',
+          ignoreDuplicates: true,
+        });
+        if (error) throw error;
+      });
+    await this.runAiWrites(writes);
   }
 
   async saveAiMaterials(projectId: string, materials: ProjectResponse['materials']): Promise<void> {
+    if (!materials.length) return;
     const { data: existingMaterials, error: fetchError } = await supabase
       .from('project_materials')
       .select('*')
@@ -219,32 +251,47 @@ export class ProjectService {
     }
 
     const existingById = new Map((existingMaterials ?? []).map((item) => [item.id, item]));
+    const writes: Array<() => Promise<void>> = [];
+    const newItems: Database['public']['Tables']['project_materials']['Insert'][] = [];
 
-    for (const material of materials) {
+    for (const material of new Map(materials.map((item) => [item.id, item])).values()) {
       const existing = existingById.get(material.id);
       if (existing) {
         const updates: Database['public']['Tables']['project_materials']['Update'] = {};
-        if (existing.quantity_source !== 'user' && material.quantity !== null) {
+        if (
+          existing.quantity_source !== 'user' &&
+          material.quantity !== null &&
+          material.quantity !== existing.quantity
+        ) {
           updates.quantity = material.quantity;
           updates.quantity_source = 'ai';
         }
-        if (existing.unit_source !== 'user' && material.unit !== null) {
+        if (
+          existing.unit_source !== 'user' &&
+          material.unit !== null &&
+          material.unit !== existing.unit
+        ) {
           updates.unit = material.unit;
           updates.unit_source = 'ai';
         }
         if (Object.keys(updates).length === 0) continue;
 
-        let query = supabase.from('project_materials').update(updates)
-          .eq('project_id', projectId).eq('id', material.id);
+        let query = supabase
+          .from('project_materials')
+          .update(updates)
+          .eq('project_id', projectId)
+          .eq('id', material.id);
         for (const [column, value] of Object.entries(existing)) {
           query = value === null ? query.is(column, null) : query.eq(column, value);
         }
-        const { error } = await query;
-        if (error) throw error;
+        writes.push(async () => {
+          const { error } = await query;
+          if (error) throw error;
+        });
         continue;
       }
 
-      const { error } = await supabase.from('project_materials').upsert({
+      newItems.push({
         project_id: projectId,
         id: material.id,
         name: material.name,
@@ -255,9 +302,17 @@ export class ProjectService {
         unit: material.unit,
         unit_source: 'ai',
         unit_price: null,
-      }, { onConflict: 'project_id,id', ignoreDuplicates: true });
-      if (error) throw error;
+      });
     }
+    if (newItems.length)
+      writes.push(async () => {
+        const { error } = await supabase.from('project_materials').upsert(newItems, {
+          onConflict: 'project_id,id',
+          ignoreDuplicates: true,
+        });
+        if (error) throw error;
+      });
+    await this.runAiWrites(writes);
   }
 
   async saveAiProjectDetails(projectId: string, response: ProjectResponse): Promise<void> {
@@ -342,25 +397,30 @@ export class ProjectService {
       response.project.offerDescription,
     );
 
-    let query = supabase
-      .from('projects')
-      .update({
-        customer_name: customerName.value,
-        customer_name_source: customerName.source,
+    const candidates = {
+      customer_name: customerName.value,
+      customer_name_source: customerName.source,
 
-        customer_address: customerAddress.value,
-        customer_address_source: customerAddress.source,
+      customer_address: customerAddress.value,
+      customer_address_source: customerAddress.source,
 
-        title: title.value,
-        title_source: title.source,
+      title: title.value,
+      title_source: title.source,
 
-        description: description.value,
-        description_source: description.source,
+      description: description.value,
+      description_source: description.source,
 
-        offer_description: offerDescription.value,
-        offer_description_source: offerDescription.source,
-      })
-      .eq('id', projectId);
+      offer_description: offerDescription.value,
+      offer_description_source: offerDescription.source,
+    };
+    const updates = Object.fromEntries(
+      Object.entries(candidates).filter(
+        ([column, value]) => existing[column as keyof typeof existing] !== value,
+      ),
+    ) as Database['public']['Tables']['projects']['Update'];
+    if (!Object.keys(updates).length) return;
+
+    let query = supabase.from('projects').update(updates).eq('id', projectId);
 
     for (const [column, value] of Object.entries(existing)) {
       query = value === null ? query.is(column, null) : query.eq(column, value);
@@ -433,7 +493,10 @@ export class ProjectService {
     }
 
     if (changes.validityDays !== undefined) {
-      if (changes.validityDays !== null && (!Number.isInteger(changes.validityDays) || changes.validityDays < 1)) {
+      if (
+        changes.validityDays !== null &&
+        (!Number.isInteger(changes.validityDays) || changes.validityDays < 1)
+      ) {
         throw new Error('Gyldighed skal være et helt antal dage på mindst 1.');
       }
       updates.validity_days = changes.validityDays;

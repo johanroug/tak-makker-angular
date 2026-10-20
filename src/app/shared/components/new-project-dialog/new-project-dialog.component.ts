@@ -100,9 +100,7 @@ export class NewProjectDialog implements OnDestroy {
       if (!this.isPrepared) {
         this.response ??= await this.aiService.generateOffer(projectId);
         if (this.destroyed) return;
-        await this.projectService.saveAiWorkItems(projectId, this.response.workItems);
-        await this.projectService.saveAiMaterials(projectId, this.response.materials);
-        await this.projectService.saveAiProjectDetails(projectId, this.response);
+        await this.projectService.saveAiResponse(projectId, this.response);
         const questions = this.response.questions
           .map((question, index) => `${index + 1}. ${question}`)
           .join('\n\n');

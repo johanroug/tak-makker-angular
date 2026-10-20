@@ -146,17 +146,13 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
 
     try {
-      const [data, projects] = await Promise.all([
-        this.projectService.getProject(projectId),
-        this.projectService.getProjects(),
-      ]);
+      const data = await this.projectService.getProject(projectId);
 
       if (this.route.snapshot.paramMap.get('projectId') !== projectId) {
         return;
       }
 
-      this.project.set(data);
-      this.projects.set(projects);
+      this.onAiCompleted(data);
     } catch (error) {
       console.error('Could not refresh project:', error);
       this.errorMessage.set('Kunne ikke opdatere projektet.');
@@ -166,7 +162,18 @@ export class ProjectDetail implements OnInit, OnDestroy {
   onAiCompleted(data: ProjectData): void {
     if (this.route.snapshot.paramMap.get('projectId') !== data.project.id) return;
     this.project.set(data);
-    void this.loadProjects();
+    this.projects.update((projects) =>
+      projects.map((project) =>
+        project.id === data.project.id
+          ? {
+              ...project,
+              title: data.project.title,
+              customer_name: data.project.customer_name,
+              customer_address: data.project.customer_address,
+            }
+          : project,
+      ),
+    );
   }
 
   startEditingTitle(): void {
@@ -198,7 +205,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
 
       this.isEditingTitle.set(false);
 
-      await Promise.all([this.refreshProject(), this.loadProjects()]);
+      await this.refreshProject();
     } catch (error) {
       console.error('Could not save project title:', error);
       this.titleError.set('Kunne ikke gemme projekttitlen.');
@@ -215,17 +222,13 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
 
     try {
-      const [data, projects] = await Promise.all([
-        this.projectService.getProject(projectId),
-        this.projectService.getProjects(),
-      ]);
+      const data = await this.projectService.getProject(projectId);
 
       if (this.route.snapshot.paramMap.get('projectId') !== projectId) {
         return;
       }
 
-      this.project.set(data);
-      this.projects.set(projects);
+      this.onAiCompleted(data);
     } catch (error) {
       console.error('Could not refresh project details:', error);
       this.errorMessage.set('Kunne ikke opdatere projektvisningen.');

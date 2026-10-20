@@ -209,6 +209,19 @@ Status: Funktionelt afsluttet — Johan har bekræftet statusskift, gemning, gen
 Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punkter er endnu ikke gennemgået og godkendt som afsluttede.
 
 ## Arbejdsgang
+### Optimering af gemning efter AI-svar — 20. oktober 2026
+
+- [x] Projekt, opgaver, materialer og sorterede beskeder hentes med ét GET via eksisterende relationer. Ingen ændring af RLS eller database.
+- [x] Afsendt besked vises fra indsættelsens svar uden fuld genindlæsning. Projektvælgeren opdateres lokalt efter AI-svar og redigering; gentagne oversigtskald er fjernet.
+- [x] Kontrol med den installerede Supabase-klients query builder og simulerede HTTP-svar: ét GET, relationer, samtalerækkefølge, returformat og adgangsfejl bestået. Produktionsbuild bestået med kendte advarsler.
+- [ ] Johan: Kontrollér projektindlæsning, samtalerækkefølge, AI-svar og titel i projektvælgeren efter redigering. Sammenlign GET-kald i loggen.
+- [x] Uændrede værdier springes over; nye opgaver og materialer indsættes samlet pr. tabel.
+- [x] Opgaver, materialer og projektoplysninger gemmes parallelt. Eksisterende linjer opdateres med højst fire samtidige skrivninger pr. kategori.
+- [x] Beskyttelse af manuelle værdier, samtidige rettelser, priser og status bevares. Ved fejl afventes igangværende skrivninger før genforsøg.
+- [x] Produktionsbuild og otte målrettede kontroller med simuleret database bestået. Ingen spec-filer eller databaseændringer.
+- [x] Varighed for AI-endpoint og efterfølgende gemning logges separat i browserkonsollen på Debug/Verbose-niveau.
+- [ ] Johan: Afprøv ny AI-besked og nyt projekt; kontrollér gemte forslag og færre databasekald. Faktisk tidsgevinst afventer måling i appen.
+
 - Vis den opdaterede TODO-liste, hver gang en disciplin afsluttes.
 - Arbejd kun i projektmappen; adgang udenfor kræver Johans godkendelse.
 - Databaseændringer kræver Johans godkendelse.

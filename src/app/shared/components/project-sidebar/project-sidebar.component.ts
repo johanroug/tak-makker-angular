@@ -678,21 +678,20 @@ export class ProjectSidebar implements OnDestroy {
     this.dismissAiResult();
 
     try {
-      await this.projectService.addMessage(projectId, message);
+      const savedMessage = await this.projectService.addMessage(projectId, message);
       messageSaved = true;
 
-      if (!this.destroyed) {
+      if (!this.destroyed && this.data().project.id === projectId) {
         this.messageControl.reset();
-        this.messageAdded.emit();
+        this.aiCompleted.emit({
+          ...this.data(),
+          messages: [...this.data().messages, savedMessage],
+        });
       }
 
       const aiResponse = await this.aiService.generateOffer(projectId);
 
-      await this.projectService.saveAiWorkItems(projectId, aiResponse.workItems);
-
-      await this.projectService.saveAiMaterials(projectId, aiResponse.materials);
-
-      await this.projectService.saveAiProjectDetails(projectId, aiResponse);
+      await this.projectService.saveAiResponse(projectId, aiResponse);
 
       const assistantMessage = aiResponse.questions
         .map((question, index) => `${index + 1}. ${question}`)

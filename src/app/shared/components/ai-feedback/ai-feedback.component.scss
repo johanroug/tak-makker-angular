@@ -1,0 +1,113 @@
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+.feedback {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  background: linear-gradient(125deg, #faf5ff, #fff);
+  color: #581c87;
+}
+.working {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-color: #f5deb4;
+  background: linear-gradient(125deg, #fffbeb, #fff);
+  color: #92400e;
+}
+.eyebrow {
+  display: block;
+  padding-right: 18px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+}
+.changing-text,
+.result-title {
+  margin: 6px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.changing-text {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+small {
+  display: block;
+  color: #78716c;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.spark {
+  display: grid;
+  place-items: center;
+  position: relative;
+  flex: 0 0 36px;
+  height: 36px;
+  color: #a16207;
+  font-size: 22px;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 2px solid #f5e7cf;
+    border-top-color: #b7791f;
+    border-radius: 50%;
+    animation: orbit 1.3s linear infinite;
+  }
+}
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+  button {
+    padding: 7px 10px;
+    border: 1px solid #e9d5ff;
+    border-radius: 7px;
+    background: white;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .conversation-link {
+    border-color: transparent;
+    background: transparent;
+  }
+}
+.dismiss {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 0 5px;
+  font-size: 20px;
+  color: #78716c;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 2px solid #a855f7;
+  outline-offset: 2px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spark::after {
+    animation: none;
+  }
+}

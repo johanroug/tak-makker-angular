@@ -38,6 +38,22 @@ export class NewProjectDialog implements OnDestroy {
     'Samler trådene til en stærk start…',
     'Dit projekt tager form…',
     'Lader din makker tage det første træk…',
+    'Omsætter dine idéer til et brugbart overblik…',
+    'Ser på de små ting, der gør en stor forskel…',
+    'Giver opgaven et ekstra sæt digitale øjne…',
+    'Holder styr på både helheden og detaljerne…',
+    'Bygger bro mellem din idé og dit næste tilbud…',
+    'Finder en god struktur til dit projekt…',
+    'Får brikkerne til at passe sammen…',
+    'Tænker et skridt videre, så du er godt på vej…',
+    'Din makker har arbejdshandskerne på…',
+    'Giver dine planer en flyvende start…',
+    'Gør de løse idéer lidt mere håndgribelige…',
+    'Tager første runde med projektets detaljer…',
+    'Skaber plads til dit faglige overblik…',
+    'Ser på opgaven fra flere vinkler…',
+    'Fra de første tanker til noget, du kan arbejde videre med…',
+    'Et godt tilbud begynder med et godt overblik…',
   ];
 
   open(): void {

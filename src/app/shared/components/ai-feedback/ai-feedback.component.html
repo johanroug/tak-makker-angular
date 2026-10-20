@@ -1,0 +1,54 @@
+@if (isWorking()) {
+  <section class="feedback working" aria-busy="true">
+    <span class="spark" aria-hidden="true">✦</span>
+    <div>
+      <span class="eyebrow">DIN MAKKER ER PÅ SAGEN</span>
+      <p class="changing-text" aria-hidden="true">{{ message() }}</p>
+      <span class="sr-only" role="status">Tak Makker arbejder på dit svar.</span>
+      <small>Du kan fortsat kigge på opgaver og materialer.</small>
+    </div>
+  </section>
+} @else if (result(); as summary) {
+  <section class="feedback complete" aria-label="Seneste AI-svar">
+    <button
+      type="button"
+      class="dismiss"
+      aria-label="Luk overblik over AI-svar"
+      (click)="dismiss.emit()"
+    >
+      ×
+    </button>
+    <span class="eyebrow">KLAR TIL DIT NÆSTE TRÆK</span>
+    <p class="result-title" role="status">
+      @if (summary.workItems || summary.materials) {
+        Nye forslag er klar til dig
+      } @else {
+        Din makker har svaret
+      }
+    </p>
+    <div class="result-actions">
+      @if (summary.workItems) {
+        <button type="button" (click)="openTab.emit('tasks')">
+          {{ summary.workItems }} {{ summary.workItems === 1 ? 'ny opgave' : 'nye opgaver' }}
+          <span aria-hidden="true">→</span>
+        </button>
+      }
+      @if (summary.materials) {
+        <button type="button" (click)="openTab.emit('materials')">
+          {{ summary.materials }} {{ summary.materials === 1 ? 'nyt materiale' : 'nye materialer' }}
+          <span aria-hidden="true">→</span>
+        </button>
+      }
+      <button type="button" class="conversation-link" (click)="openTab.emit('chat')">
+        Se samtalen <span aria-hidden="true">→</span>
+      </button>
+    </div>
+    @if (!summary.workItems && !summary.materials) {
+      <small
+        >Ingen nye opgaver eller materialer denne gang. Se samtalen for eventuelle spørgsmål.</small
+      >
+    } @else {
+      <small>Nye forslag er markeret, så du nemt kan finde dem.</small>
+    }
+  </section>
+}

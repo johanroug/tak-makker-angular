@@ -28,6 +28,14 @@
 - [ ] **AI-forbedringer** — Bedre faglige forslag og hjælp til estimering af tid og materialer.
 - [ ] **Dashboard** — Overblik over tilbud, samlet værdi og acceptprocent.
 
+## Brugeroplevelse — nye forbedringer
+
+- [x] **AI i samtalepanelet** — Animation og skiftende ventetekster som i startmodalen. Johan har bekræftet, at det virker.
+- [x] **Tydelige nye forslag** — Overblik med antal nye opgaver/materialer, knapper til fanerne og markering af nye forslag. Johan har bekræftet, at det virker; efterfølgende ankerforbedring afventer appkontrol.
+- [ ] **God afslutning ved færdiggørelse** — Kort succesanimation og modal med tilbudsnummer, pris, Se tilbud og Download PDF.
+- [ ] **Diskret gemmestatus ved felter** — Gemmer… → Gemt ✓ tæt på den redigerede værdi.
+- [ ] **PDF-generering med personlighed** — Animation og ventetekster under faktisk PDF-generering.
+
 ## Afsluttet disciplin: Tilbudsbetingelser
 Status: Funktionelt afsluttet — Johan har bekræftet alle beskrevne tests.
 
@@ -79,7 +87,21 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Fejlhåndtering — tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
+- Brugeroplevelse: AI-feedback i samtalepanelet og tydeligt overblik over nye forslag. Derefter de øvrige UX-punkter og Fejlhåndtering.
+
+### AI-feedback og nye forslag — funktionelt bekræftet
+
+- [x] Johan har bekræftet, at AI-feedback og overblik over nye forslag virker rigtig godt.
+- [x] Overblikkets knapper skifter nu fane og scroller efter rendering til første nye opgave/materiale. Se samtalen scroller til den nyeste besked. Målet får tastaturfokus; reduceret bevægelse respekteres.
+- [x] Startmodalens pulje af ventetekster er udvidet fra 8 til 24 beskeder. Skifteinterval er fortsat 1,8 sekund.
+- [ ] Johan: Kontrollér, at knapperne scroller til det nye forslag både fra en anden fane og ved klik på den allerede aktive fane.
+
+- [x] Produktionsbuild bestået med kendte størrelses- og CommonJS-advarsler. Målrettede kontroller med faktiske klasser og simulerede afhængigheder bestået: optælling af gemte entydige forslag, udelukkelse af eksisterende/afviste linjer, tomt resultat, dobbeltklik, fejl uden falsk succes, navigation og oprydning af teksttimer. Ingen nye spec-filer eller databaseændringer.
+- [x] Spinner og tilfældigt skiftende tekster hver 1,8 sekund under beskedgemning, AI-kald og gemning af svar. Status er også synlig ved skift til Opgaver/Materialer. Timer ryddes ved afslutning og komponentens fjernelse; reduceret bevægelse respekteres.
+- [x] Overblik over faktisk gemte nye forslag med entydige ID'er. Eksisterende/afviste linjer tælles ikke som nye. Knapper åbner Opgaver, Materialer eller Samtale. Nye foreslåede linjer får mærket Nyt forslag.
+- [x] Tydelig afslutning også når der ikke er nye forslag. Overblik og markeringer gælder seneste svar i den åbne session, kan lukkes og nulstilles ved næste AI-besked eller genindlæsning. Selve forslagene er gemt i databasen.
+- [x] Succes vises først, når svar og eventuelle spørgsmål er gemt og projektet genlæst. Dobbeltklik blokeres, indtastning låses under afsendelse, og fejl viser om beskeden blev gemt.
+- [x] Johan har bekræftet appkontrollen af AI-feedback og nye forslag. Ankerforbedringen står særskilt ovenfor.
 
 ## Afsluttet disciplin: Sikkerhed og adgang
 

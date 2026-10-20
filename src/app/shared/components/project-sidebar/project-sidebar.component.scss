@@ -516,6 +516,11 @@
   overflow: hidden;
 }
 
+.work-item-card, .material-card, .chat-message {
+  scroll-margin-block: 12px;
+  &:focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
+}
+
 .sidebar-tabs {
   flex-shrink: 0;
 }

@@ -22,6 +22,8 @@
   </nav>
 
   <div class="sidebar-content">
+    <app-ai-feedback [isWorking]="isSending()" [result]="aiResult()"
+      (openTab)="openAiTarget($event)" (dismiss)="dismissAiResult()" />
     @if (editError()) {
       <p class="offers-error" role="alert">{{ editError() }}</p>
     }
@@ -30,7 +32,11 @@
         <h2>Arbejdsopgaver</h2>
 
         @for (item of data().workItems; track item.id) {
-          <article class="work-item-card">
+          <article class="work-item-card" tabindex="-1"
+            [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null">
+            @if (newWorkItemIds().has(item.id) && item.status === 'suggested') {
+              <app-new-suggestion-badge />
+            }
             <input
               class="inline-title"
               type="text"
@@ -143,7 +149,11 @@
         <h2>Materialer</h2>
 
         @for (material of data().materials; track material.id) {
-          <article class="material-card">
+          <article class="material-card" tabindex="-1"
+            [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null">
+            @if (newMaterialIds().has(material.id) && material.status === 'suggested') {
+              <app-new-suggestion-badge />
+            }
             <input
               class="inline-title"
               type="text"
@@ -292,6 +302,7 @@
           <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
             <textarea
               [formControl]="messageControl"
+              [readOnly]="isSending()"
               placeholder="Beskriv dit projekt..."
               rows="4"
             ></textarea>
@@ -307,13 +318,13 @@
               type="submit"
               [disabled]="isSending() || !messageControl.value.trim()"
             >
-              {{ isSending() ? 'Sender...' : 'Send besked' }}
+              {{ isSending() ? 'Din makker arbejder...' : 'Send besked' }}
             </button>
           </form>
 
           <div class="chat-messages">
             @for (message of newestMessages; track message.id) {
-              <article class="chat-message" [class.chat-message-user]="message.role === 'user'">
+              <article class="chat-message" tabindex="-1" [class.chat-message-user]="message.role === 'user'">
                 <strong>
                   {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
                 </strong>

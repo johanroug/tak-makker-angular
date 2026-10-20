@@ -1,6 +1,7 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { afterNextRender, Component, effect, ElementRef, inject, Injector, input, output, signal } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -8,6 +9,7 @@ import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
 import { OfferService } from '../../../core/offers/offer.service';
 import { offerStatusLabel } from '../../../core/offers/offer-status';
+import { AiFeedback, AiSuggestionSummary, NewSuggestionBadge } from '../ai-feedback/ai-feedback.component';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -15,11 +17,11 @@ type SidebarTab = 'tasks' | 'materials' | 'chat' | 'offers';
 
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe],
+  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, NewSuggestionBadge],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
-export class ProjectSidebar {
+export class ProjectSidebar implements OnDestroy {
   readonly statusLabel = offerStatusLabel;
   readonly data = input.required<ProjectData>();
 
@@ -31,6 +33,8 @@ export class ProjectSidebar {
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly messageAdded = output<void>();
 
@@ -43,6 +47,34 @@ export class ProjectSidebar {
 
   readonly isSending = signal(false);
   readonly sendError = signal('');
+  readonly aiResult = signal<AiSuggestionSummary | null>(null);
+  readonly newWorkItemIds = signal<ReadonlySet<string>>(new Set());
+  readonly newMaterialIds = signal<ReadonlySet<string>>(new Set());
+  readonly aiCompleted = output<ProjectData>();
+  private destroyed = false;
+
+  ngOnDestroy(): void { this.destroyed = true; }
+
+  dismissAiResult(): void {
+    this.aiResult.set(null);
+    this.newWorkItemIds.set(new Set());
+    this.newMaterialIds.set(new Set());
+  }
+
+  openAiTarget(tab: 'tasks' | 'materials' | 'chat'): void {
+    this.selectTab(tab);
+    afterNextRender(() => {
+      if (this.destroyed || this.activeTab() !== tab) return;
+      const root = this.host.nativeElement;
+      const selector = tab === 'chat' ? '.chat-messages .chat-message' : '[data-new-suggestion="true"]';
+      const target = root.querySelector<HTMLElement>(selector)
+        ?? root.querySelector<HTMLElement>('.sidebar-content h2');
+      if (!target) return;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start', inline: 'nearest' });
+      target.focus({ preventScroll: true });
+    }, { injector: this.injector });
+  }
   readonly editError = signal('');
   readonly pendingSaves = signal(0);
 
@@ -637,14 +669,22 @@ export class ProjectSidebar {
       return;
     }
 
+    const priorWorkIds = new Set(this.data().workItems.map((item) => item.id));
+    const priorMaterialIds = new Set(this.data().materials.map((item) => item.id));
+    let messageSaved = false;
+
     this.isSending.set(true);
     this.sendError.set('');
+    this.dismissAiResult();
 
     try {
       await this.projectService.addMessage(projectId, message);
+      messageSaved = true;
 
-      this.messageControl.reset();
-      this.messageAdded.emit();
+      if (!this.destroyed) {
+        this.messageControl.reset();
+        this.messageAdded.emit();
+      }
 
       const aiResponse = await this.aiService.generateOffer(projectId);
 
@@ -654,8 +694,6 @@ export class ProjectSidebar {
 
       await this.projectService.saveAiProjectDetails(projectId, aiResponse);
 
-      this.messageAdded.emit();
-
       const assistantMessage = aiResponse.questions
         .map((question, index) => `${index + 1}. ${question}`)
         .join('\n\n');
@@ -663,14 +701,31 @@ export class ProjectSidebar {
       if (assistantMessage) {
         await this.projectService.addAssistantMessage(projectId, assistantMessage);
 
-        this.messageAdded.emit();
       }
+
+      if (this.destroyed) return;
+      const saved = await this.projectService.getProject(projectId);
+      if (this.destroyed) return;
+      const responseWorkIds = new Set(aiResponse.workItems.map((item) => item.id));
+      const responseMaterialIds = new Set(aiResponse.materials.map((item) => item.id));
+      const workIds = new Set(saved.workItems.filter((item) =>
+        responseWorkIds.has(item.id) && !priorWorkIds.has(item.id) && item.status === 'suggested',
+      ).map((item) => item.id));
+      const materialIds = new Set(saved.materials.filter((item) =>
+        responseMaterialIds.has(item.id) && !priorMaterialIds.has(item.id) && item.status === 'suggested',
+      ).map((item) => item.id));
+      this.newWorkItemIds.set(workIds);
+      this.newMaterialIds.set(materialIds);
+      this.aiCompleted.emit(saved);
+      this.aiResult.set({ workItems: workIds.size, materials: materialIds.size });
     } catch (error) {
       console.error(error);
 
-      this.sendError.set('Der opstod en fejl. Kontrollér chatten, før du prøver igen.');
+      if (!this.destroyed) this.sendError.set(messageSaved
+        ? 'Din besked er gemt, men AI-svaret kunne ikke færdigbehandles. Genindlæs projektet, og kontrollér samtalen, før du prøver igen.'
+        : 'Din besked kunne ikke gemmes. Prøv igen.');
     } finally {
-      this.isSending.set(false);
+      if (!this.destroyed) this.isSending.set(false);
     }
   }
 }

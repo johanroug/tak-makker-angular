@@ -59,7 +59,8 @@
         />
 
         <!-- Højre kolonne -->
-        <app-project-sidebar #projectSidebar [data]="data" (messageAdded)="refreshProject()" />
+        <app-project-sidebar #projectSidebar [data]="data" (messageAdded)="refreshProject()"
+          (aiCompleted)="onAiCompleted($event)" />
       </main>
     } @else {
       <main class="empty-workspace">

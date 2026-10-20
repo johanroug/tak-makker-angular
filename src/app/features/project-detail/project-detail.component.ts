@@ -163,6 +163,12 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
   }
 
+  onAiCompleted(data: ProjectData): void {
+    if (this.route.snapshot.paramMap.get('projectId') !== data.project.id) return;
+    this.project.set(data);
+    void this.loadProjects();
+  }
+
   startEditingTitle(): void {
     const title = this.project()?.project.title ?? '';
 

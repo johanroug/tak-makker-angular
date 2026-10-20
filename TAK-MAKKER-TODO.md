@@ -6,8 +6,8 @@
 - [x] **Virksomhedsprofil** — Sikre at firmanavn, CVR, adresse, telefon og e-mail er udfyldt og bruges korrekt.
 - [x] **Logo på PDF** — Mulighed for at uploade virksomhedens logo.
 - [x] **Tilbudsstatus** — Kladde, færdiggjort, sendt, accepteret og afvist. Funktionelt bekræftet; særskilt kontrol af adgang og nyt tilbud står nedenfor.
-- [ ] **Korrekt håndtering af ændringer** — Manuelle rettelser må ikke blive overskrevet af AI.
-- [ ] **Test af hele tilbudsflowet** — Fra første AI-besked til færdig PDF, også efter reload.
+- [x] **Korrekt håndtering af ændringer** — Manuelle rettelser må ikke blive overskrevet af AI. Johan har bekræftet appkontrollerne.
+- [x] **Test af hele tilbudsflowet** — Johan har bekræftet det samlede flow fra første AI-besked til færdig PDF, også efter genindlæsning.
 
 ## 2. Vigtigt til en solid MVP
 
@@ -79,7 +79,30 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Korrekt håndtering af ændringer: Manuelle rettelser må ikke blive overskrevet af AI.
+- Afventer Johans nye TODO-punkt. Alle punkter i afsnit 1 er funktionelt afsluttet; MVP- og udrulningskontroller er fortsat åbne.
+
+## Afsluttet disciplin: Hele tilbudsflowet
+
+Status: Funktionelt afsluttet — Johan har bekræftet den samlede appkontrol 20. oktober 2026.
+
+- [x] Produktionsbuild bestået efter PDF-rettelsen 20. oktober 2026; kendte størrelses- og CommonJS-advarsler består.
+- [x] Gennemgået AI-besked → gemning → kladde → valg af linjer → færdiggørelse → genåbning → PDF.
+- [x] Rettet PDF-flowet til at afvente asynkron download, så loading, beskyttelse mod dobbeltklik og fejlbesked følger PDF-genereringen.
+- [x] Midlertidige kontroller af faktiske Angular-klasser med simulerede afhængigheder bestået: beregninger, ikke-accepterede linjer, manglende kundenavn, dobbelt færdiggørelse, genåbning, tilbudskopi, PDF-indhold, ventetid, fejl og nyt forsøg. Kontrolscriptet er fjernet; ingen nye spec-filer.
+- [x] Johan har bekræftet `TILBUDSFLOW-KONTROL.md` på et helt nyt projekt: første AI-besked, genindlæsning af kladde, priser, startstatus på nyt tilbud, genåbning og PDF samt uændret historisk tilbud efter ændring af kladden.
+
+## Afsluttet disciplin: Manuelle rettelser
+
+Status: Funktionelt afsluttet — Johan har bekræftet alle de beskrevne appkontroller. Den supplerende AI-kontekstforbedring afventer næste udrulning og er ikke nødvendig for gemmebeskyttelsen.
+
+- [x] AI opdaterer kun eksisterende timer, mængder og enheder, når de ikke er markeret som manuelt rettede. Eksisterende tekster, priser og accepterede/afviste valg genskrives ikke af AI.
+- [x] Betingede opdateringer sammenligner de læste værdier i selve databaseskrivningen. En samtidig manuel ændring gør, at AI springer opdateringen over. Nye AI-rækker indsættes uden at overskrive samtidige indsættelser.
+- [x] AI kan ikke selv markere egne estimater som brugerrettelser. Tomme manuelle værdier og nulværdier bevares.
+- [x] Produktionsbuild bestået 20. oktober 2026 med kendte størrelses- og CommonJS-advarsler.
+- [x] Midlertidig målrettet kontrol af den faktiske ProjectService med simuleret database: manuelle tomme værdier/null/0, normale AI-opdateringer, samtidige brugerrettelser på projekt/opgaver/materialer, samtidige indsættelser og nye forslag bestået. Kontrollen er fjernet; ingen nye spec-filer.
+- [x] Johan har bekræftet rettelser af kunde, projekttitel, beskrivelser, opgavetimer og materialefelter efter ny AI-besked og genindlæsning; manuelle værdier og accepterede/afviste valg bevares.
+- [x] Johan har bekræftet tomme valgfrie værdier, værdien 0, og at AI stadig kan tilføje nye forslag.
+- [ ] Ekstra forbedring af AI-kontekst i `generate-offer` er forberedt lokalt: send de faktiske kildemarkeringer for kunde/projekt og instruér modellen om at bevare manuelle felter. Træder i kraft efter næste udrulning af Edge-funktionen; appens gemmebeskyttelse kræver ikke denne udrulning. Codex har ikke udrullet eller ændret databasen.
 
 ## Afsluttet disciplin: Tilbudsstatus
 
@@ -96,7 +119,7 @@ Status: Funktionelt afsluttet — Johan har bekræftet statusskift, gemning, gen
 - [x] Gemning bruger `update_offer_status` med kontrol af virksomhedsmedlemskab og samtidig statusændring. Appen genlæser status før succesbesked og beskytter mod dobbeltklik.
 - [x] Statusfunktionen er tilgængelig i Johans miljø; gemning via funktionen er bekræftet. Codex har ikke kørt migrationerne eller kontrolleret migrationshistorikken.
 - [x] Projektets udkast bevares som kladde indtil færdiggørelse.
-- [ ] Kontrollér et nyt tilbud: startstatus skal være `finalized` (Færdiggjort).
+- [x] Startstatus Færdiggjort på nyt tilbud er bekræftet som del af den samlede tilbudsflowtest.
 - [x] Johan har bekræftet skift mellem Sendt, Accepteret og Afvist samt genindlæsning; oversigt og dropdown viser gemt status.
 - [x] Johan har bekræftet, at PDF er uændret efter statusskift. Statusfunktionen opdaterer kun statusfeltet.
 - [ ] Kontrollér adgang til andre virksomheders tilbud. Gemning på eget tilbud er bekræftet; adgang på tværs af virksomheder er endnu ikke afprøvet. Codex har ikke kørt databaseændringer.
@@ -109,7 +132,7 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - Databaseændringer kræver Johans godkendelse.
 - Opret ikke spec-filer fremover, efter Johans ønske. Kontrollér ændringer med build og relevante manuelle kontroller.
 
-## Seneste gennemgang
+## Gennemgang af tilbudsbetingelser — 16. oktober 2026
 - Ingen konkrete fejl fundet ved kodegennemgangen. Migrationen er kun læst, ikke kørt.
 - Build: `npm.cmd run build` bestået. Advarsler: initial bundle 629,52 kB mod 500 kB; offer-preview SCSS 4,12 kB og project-sidebar SCSS 7,34 kB mod 4 kB; CommonJS-afhængigheder fra pdfmake.
 - Tidligere målrettede kontroller ovenfor er registreret fra den eksisterende liste; de er ikke genkørt ved denne gennemgang.

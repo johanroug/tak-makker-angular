@@ -125,17 +125,17 @@ Deno.serve(async (request) => {
     const customer = {
       name: project.customer_name,
       address: project.customer_address,
-      nameSource: null,
-      addressSource: null,
+      nameSource: project.customer_name_source,
+      addressSource: project.customer_address_source,
     };
 
     const projectDetails = {
       title: project.title,
       description: project.description,
       offerDescription: project.offer_description,
-      titleSource: null,
-      descriptionSource: null,
-      offerDescriptionSource: null,
+      titleSource: project.title_source,
+      descriptionSource: project.description_source,
+      offerDescriptionSource: project.offer_description_source,
     };
 
     // 5. Send projektets eksisterende samtale til OpenAI.

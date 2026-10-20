@@ -13,6 +13,8 @@ ${JSON.stringify({ customer, project })}
 
 Bevar eksisterende oplysninger, medmindre samtalen indeholder en rettelse
 eller en mere præcis, men stadig faktabaseret oplysning.
+Felter med source "user" er manuelt rettet og skal altid bevares,
+også når værdien er tom. Håndværkeren retter disse felter i formularen.
 
 project.description er den interne projektkontekst.
 project.offerDescription er den kundeforståelige tilbudsbeskrivelse,

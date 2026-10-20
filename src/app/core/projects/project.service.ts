@@ -175,40 +175,36 @@ export class ProjectService {
 
     const existingById = new Map(existingItems.map((item) => [item.id, item]));
 
-    const itemsToSave = workItems.map((item) => {
+    for (const item of workItems) {
       const existing = existingById.get(item.id);
+      if (existing) {
+        if (existing.estimated_hours_source === 'user' || item.estimatedHours === null) continue;
 
-      return {
+        // Compare the snapshot in the UPDATE itself. A manual save after the
+        // SELECT must win, including a deliberately cleared value or new status.
+        let query = supabase.from('project_work_items').update({
+          estimated_hours: item.estimatedHours,
+          estimated_hours_source: 'ai',
+        }).eq('project_id', projectId).eq('id', item.id);
+        for (const [column, value] of Object.entries(existing)) {
+          query = value === null ? query.is(column, null) : query.eq(column, value);
+        }
+        const { error } = await query;
+        if (error) throw error;
+        continue;
+      }
+
+      // A row inserted by another request since our SELECT must not be replaced.
+      const { error } = await supabase.from('project_work_items').upsert({
         project_id: projectId,
         id: item.id,
-        trade: existing?.trade ?? item.trade,
-        description: existing?.description ?? item.description,
-
-        status:
-          existing?.status === 'accepted' || existing?.status === 'rejected'
-            ? existing.status
-            : 'suggested',
-
-        estimated_hours:
-          existing?.estimated_hours_source === 'user'
-            ? existing.estimated_hours
-            : item.estimatedHours,
-
-        estimated_hours_source:
-          existing?.estimated_hours_source === 'user' ? 'user' : item.estimatedHoursSource,
-      };
-    });
-
-    if (itemsToSave.length === 0) {
-      return;
-    }
-
-    const { error: saveError } = await supabase.from('project_work_items').upsert(itemsToSave, {
-      onConflict: 'project_id,id',
-    });
-
-    if (saveError) {
-      throw saveError;
+        trade: item.trade,
+        description: item.description,
+        status: 'suggested',
+        estimated_hours: item.estimatedHours,
+        estimated_hours_source: 'ai',
+      }, { onConflict: 'project_id,id', ignoreDuplicates: true });
+      if (error) throw error;
     }
   }
 
@@ -224,44 +220,43 @@ export class ProjectService {
 
     const existingById = new Map((existingMaterials ?? []).map((item) => [item.id, item]));
 
-    const materialsToSave = materials.map((material) => {
+    for (const material of materials) {
       const existing = existingById.get(material.id);
+      if (existing) {
+        const updates: Database['public']['Tables']['project_materials']['Update'] = {};
+        if (existing.quantity_source !== 'user' && material.quantity !== null) {
+          updates.quantity = material.quantity;
+          updates.quantity_source = 'ai';
+        }
+        if (existing.unit_source !== 'user' && material.unit !== null) {
+          updates.unit = material.unit;
+          updates.unit_source = 'ai';
+        }
+        if (Object.keys(updates).length === 0) continue;
 
-      return {
+        let query = supabase.from('project_materials').update(updates)
+          .eq('project_id', projectId).eq('id', material.id);
+        for (const [column, value] of Object.entries(existing)) {
+          query = value === null ? query.is(column, null) : query.eq(column, value);
+        }
+        const { error } = await query;
+        if (error) throw error;
+        continue;
+      }
+
+      const { error } = await supabase.from('project_materials').upsert({
         project_id: projectId,
         id: material.id,
-
-        name: existing?.name ?? material.name,
-
-        description: existing?.description ?? material.description,
-
-        status:
-          existing?.status === 'accepted' || existing?.status === 'rejected'
-            ? existing.status
-            : 'suggested',
-
-        quantity: existing?.quantity_source === 'user' ? existing.quantity : material.quantity,
-
-        quantity_source: existing?.quantity_source === 'user' ? 'user' : material.quantitySource,
-
-        unit: existing?.unit_source === 'user' ? existing.unit : material.unit,
-
-        unit_source: existing?.unit_source === 'user' ? 'user' : material.unitSource,
-
-        unit_price: existing?.unit_price ?? null,
-      };
-    });
-
-    if (materialsToSave.length === 0) {
-      return;
-    }
-
-    const { error: saveError } = await supabase.from('project_materials').upsert(materialsToSave, {
-      onConflict: 'project_id,id',
-    });
-
-    if (saveError) {
-      throw saveError;
+        name: material.name,
+        description: material.description,
+        status: 'suggested',
+        quantity: material.quantity,
+        quantity_source: 'ai',
+        unit: material.unit,
+        unit_source: 'ai',
+        unit_price: null,
+      }, { onConflict: 'project_id,id', ignoreDuplicates: true });
+      if (error) throw error;
     }
   }
 
@@ -347,7 +342,7 @@ export class ProjectService {
       response.project.offerDescription,
     );
 
-    const { error: updateError } = await supabase
+    let query = supabase
       .from('projects')
       .update({
         customer_name: customerName.value,
@@ -366,6 +361,11 @@ export class ProjectService {
         offer_description_source: offerDescription.source,
       })
       .eq('id', projectId);
+
+    for (const [column, value] of Object.entries(existing)) {
+      query = value === null ? query.is(column, null) : query.eq(column, value);
+    }
+    const { error: updateError } = await query;
 
     if (updateError) {
       throw updateError;

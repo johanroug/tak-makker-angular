@@ -32,7 +32,7 @@ export class OfferPdfService {
     const document = this.createDocument(data);
     const offerNumber = data.offer.offer_number ?? data.offer.id;
 
-    pdfMake.createPdf(document).download(`Tilbud-${offerNumber}.pdf`);
+    await pdfMake.createPdf(document).download(`Tilbud-${offerNumber}.pdf`);
   }
 
   private createDocument(data: OfferData): TDocumentDefinitions {

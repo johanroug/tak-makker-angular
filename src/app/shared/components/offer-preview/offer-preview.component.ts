@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { afterNextRender, Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -29,6 +29,9 @@ export class OfferPreview {
   private readonly router = inject(Router);
 
   readonly data = input.required<ProjectData>();
+  readonly openDetailsInitially = input(false);
+  readonly detailsOpened = output<void>();
+  private readonly detailsDialog = viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
 
   readonly detailsSaved = output<void>();
   readonly offerFinalized = output<void>();
@@ -43,6 +46,12 @@ export class OfferPreview {
   readonly finalizedOfferId = signal<string | null>(null);
 
   private originalDetails: EditableDetails | null = null;
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.openDetailsInitially()) this.startEditing();
+    });
+  }
 
   readonly detailsForm = new FormGroup({
     validityDays: new FormControl<number | null>(null),
@@ -251,6 +260,7 @@ export class OfferPreview {
   }
 
   startEditing(): void {
+    if (this.isSaving() || this.isEditing()) return;
     const project = this.data().project;
 
     this.originalDetails = {
@@ -268,6 +278,8 @@ export class OfferPreview {
 
     this.saveError.set('');
     this.isEditing.set(true);
+    this.detailsDialog().nativeElement.showModal();
+    this.detailsOpened.emit();
   }
 
   cancelEditing(): void {
@@ -276,6 +288,7 @@ export class OfferPreview {
     }
 
     this.isEditing.set(false);
+    this.detailsDialog().nativeElement.close();
     this.originalDetails = null;
     this.saveError.set('');
   }
@@ -344,6 +357,7 @@ export class OfferPreview {
       await this.projectService.updateProjectDetails(this.data().project.id, changes);
 
       this.isEditing.set(false);
+      this.detailsDialog().nativeElement.close();
       this.originalDetails = null;
 
       this.detailsSaved.emit();

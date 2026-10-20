@@ -3,124 +3,44 @@
     <div class="offer-toolbar">
       <span class="offer-label"> TILBUD · KLADDE </span>
 
-      @if (!isEditing()) {
-        <button type="button" class="edit-details-button" (click)="startEditing()">
-          ✎ Rediger
-        </button>
-      }
+      <button type="button" class="edit-details-button" (click)="startEditing()">✎ Rediger</button>
     </div>
 
-    @if (isEditing()) {
-      <form
-        class="offer-details-form"
-        [formGroup]="detailsForm"
-        (submit)="$event.preventDefault(); saveDetails()"
-      >
-        <label>
-          Projekttitel
+    <h1>
+      {{ data().project.title || 'Projekt uden titel' }}
+    </h1>
 
-          <input type="text" formControlName="title" placeholder="Projekttitel" />
-        </label>
+    <p>
+      Projektnr.:
+      {{ data().project.project_number }}
+    </p>
 
-        <p class="project-number">
-          Projektnr.:
-          {{ data().project.project_number }}
-        </p>
+    <p>
+      Kunde:
+      {{ data().project.customer_name || 'Ikke angivet' }}
+    </p>
 
-        <label>
-          Kundenavn
+    <p>
+      Adresse:
+      {{ data().project.customer_address || 'Ikke angivet' }}
+    </p>
 
-          <input type="text" formControlName="customerName" placeholder="Kundenavn" />
-        </label>
-
-        <label>
-          Kundeadresse
-
-          <input type="text" formControlName="customerAddress" placeholder="Kundeadresse" />
-        </label>
-
-        <label>
-          Projektbeskrivelse
-
-          <textarea
-            formControlName="description"
-            rows="4"
-            placeholder="Beskriv projektet"
-          ></textarea>
-        </label>
-
-        <label>
-          Tilbudsbeskrivelse
-
-          <textarea
-            formControlName="offerDescription"
-            rows="5"
-            placeholder="Beskrivelse til tilbuddet"
-          ></textarea>
-        </label>
-
-        <label>Gyldighed (dage fra tilbudsdato)<input type="number" min="1" step="1" formControlName="validityDays" /></label>
-        <label>Betalingsbetingelser<textarea rows="3" formControlName="paymentTerms"></textarea></label>
-        <label>Forbehold<textarea rows="4" formControlName="reservations"></textarea></label>
-
-        @if (saveError()) {
-          <p class="save-error">
-            {{ saveError() }}
-          </p>
-        }
-
-        <div class="form-actions">
-          <button type="submit" class="save-button" [disabled]="isSaving()">
-            {{ isSaving() ? 'Gemmer...' : 'Gem ændringer' }}
-          </button>
-
-          <button
-            type="button"
-            class="cancel-button"
-            [disabled]="isSaving()"
-            (click)="cancelEditing()"
-          >
-            Annuller
-          </button>
-        </div>
-      </form>
-    } @else {
-      <h1>
-        {{ data().project.title || 'Projekt uden titel' }}
-      </h1>
+    <div class="offer-description">
+      <h2>Projektbeskrivelse</h2>
 
       <p>
-        Projektnr.:
-        {{ data().project.project_number }}
+        {{ data().project.description || 'Ingen beskrivelse' }}
       </p>
+    </div>
 
-      <p>
-        Kunde:
-        {{ data().project.customer_name || 'Ikke angivet' }}
-      </p>
-
-      <p>
-        Adresse:
-        {{ data().project.customer_address || 'Ikke angivet' }}
-      </p>
-
+    @if (data().project.offer_description) {
       <div class="offer-description">
-        <h2>Projektbeskrivelse</h2>
+        <h2>Tilbudsbeskrivelse</h2>
 
         <p>
-          {{ data().project.description || 'Ingen beskrivelse' }}
+          {{ data().project.offer_description }}
         </p>
       </div>
-
-      @if (data().project.offer_description) {
-        <div class="offer-description">
-          <h2>Tilbudsbeskrivelse</h2>
-
-          <p>
-            {{ data().project.offer_description }}
-          </p>
-        </div>
-      }
     }
   </div>
 
@@ -191,9 +111,18 @@
 
   <section class="offer-section offer-terms">
     <h2>Tilbudsbetingelser</h2>
-    <p>Gyldighed: {{ data().project.validity_days === null ? 'Ikke angivet' : data().project.validity_days + ' dage fra tilbudsdato' }}</p>
-    <h3>Betalingsbetingelser</h3><p>{{ data().project.payment_terms || 'Ikke angivet' }}</p>
-    <h3>Forbehold</h3><p>{{ data().project.reservations || 'Ingen angivet' }}</p>
+    <p>
+      Gyldighed:
+      {{
+        data().project.validity_days === null
+          ? 'Ikke angivet'
+          : data().project.validity_days + ' dage fra tilbudsdato'
+      }}
+    </p>
+    <h3>Betalingsbetingelser</h3>
+    <p>{{ data().project.payment_terms || 'Ikke angivet' }}</p>
+    <h3>Forbehold</h3>
+    <p>{{ data().project.reservations || 'Ingen angivet' }}</p>
   </section>
 
   <div class="offer-pricing">
@@ -266,7 +195,10 @@
     }
 
     @if (!finalizedOfferNumber()) {
-      <p class="finalize-hint">Status: Kladde. Når du færdiggør kladden, oprettes et fast tilbud, som kan markeres som sendt, accepteret eller afvist.</p>
+      <p class="finalize-hint">
+        Status: Kladde. Når du færdiggør kladden, oprettes et fast tilbud, som kan markeres som
+        sendt, accepteret eller afvist.
+      </p>
       <button
         type="button"
         [disabled]="!canFinalizeOffer"
@@ -290,3 +222,104 @@
     }
   </div>
 </section>
+<dialog
+  #detailsDialog
+  class="details-dialog"
+  aria-labelledby="project-details-title"
+  (cancel)="$event.preventDefault(); cancelEditing()"
+>
+  <div class="modal-header">
+    <div>
+      <h2 id="project-details-title">Projekt- og kundeoplysninger</h2>
+      <p>Kunde, beskrivelser og tilbudsbetingelser</p>
+    </div>
+    <button
+      type="button"
+      class="modal-close"
+      aria-label="Luk uden at gemme"
+      [disabled]="isSaving()"
+      (click)="cancelEditing()"
+    >
+      ×
+    </button>
+  </div>
+  <form
+    class="offer-details-form"
+    [formGroup]="detailsForm"
+    (submit)="$event.preventDefault(); saveDetails()"
+  >
+    <fieldset class="modal-fields" [disabled]="isSaving()">
+      <label>
+        Projekttitel
+
+        <input type="text" formControlName="title" placeholder="Projekttitel" autofocus />
+      </label>
+
+      <p class="project-number">
+        Projektnr.:
+        {{ data().project.project_number }}
+      </p>
+
+      <label>
+        Kundenavn
+
+        <input type="text" formControlName="customerName" placeholder="Kundenavn" />
+      </label>
+
+      <label>
+        Kundeadresse
+
+        <input type="text" formControlName="customerAddress" placeholder="Kundeadresse" />
+      </label>
+
+      <label>
+        Projektbeskrivelse
+
+        <textarea formControlName="description" rows="4" placeholder="Beskriv projektet"></textarea>
+      </label>
+
+      <label>
+        Tilbudsbeskrivelse
+
+        <textarea
+          formControlName="offerDescription"
+          rows="5"
+          placeholder="Beskrivelse til tilbuddet"
+        ></textarea>
+      </label>
+
+      <label
+        >Gyldighed (dage fra tilbudsdato)<input
+          type="number"
+          min="1"
+          step="1"
+          formControlName="validityDays"
+      /></label>
+      <label
+        >Betalingsbetingelser<textarea rows="3" formControlName="paymentTerms"></textarea>
+      </label>
+      <label>Forbehold<textarea rows="4" formControlName="reservations"></textarea></label>
+
+      @if (saveError()) {
+        <p class="save-error" role="alert">
+          {{ saveError() }}
+        </p>
+      }
+
+      <div class="form-actions">
+        <button type="submit" class="save-button" [disabled]="isSaving()">
+          {{ isSaving() ? 'Gemmer...' : 'Gem ændringer' }}
+        </button>
+
+        <button
+          type="button"
+          class="cancel-button"
+          [disabled]="isSaving()"
+          (click)="cancelEditing()"
+        >
+          Annuller
+        </button>
+      </div>
+    </fieldset>
+  </form>
+</dialog>

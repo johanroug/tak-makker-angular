@@ -1,0 +1,61 @@
+<dialog
+  #startDialog
+  class="start-dialog"
+  aria-labelledby="new-project-title"
+  (cancel)="$event.preventDefault(); close()"
+  [attr.aria-busy]="isWorking()"
+>
+  @if (isWorking()) {
+    <div class="ai-working">
+      <div class="ai-orbit" aria-hidden="true"><span>✦</span></div>
+      <span class="eyebrow">DIN AI-MAKKER ER PÅ SAGEN</span>
+      <h2 id="new-project-title">En god start på dit næste projekt</h2>
+      <p class="changing-message" aria-hidden="true">{{ loadingMessage() }}</p>
+      <p class="working-note" role="status">
+        Tak Makker arbejder med din beskrivelse. Om lidt kan du gennemgå projektets oplysninger.
+      </p>
+      <div class="journey" aria-hidden="true">
+        <span>Din idé</span><span>→</span><strong>AI-overblik</strong><span>→</span
+        ><span>Dit projekt</span>
+      </div>
+    </div>
+  } @else {
+    <div class="dialog-header">
+      <span class="eyebrow">ET NYT PROJEKT STARTER HER</span>
+      <button type="button" class="close-button" aria-label="Luk" (click)="close()">×</button>
+    </div>
+    <h2 id="new-project-title">Hvad skal vi hjælpe dig med?</h2>
+    <p class="intro">
+      Beskriv opgaven med dine egne ord. Din AI-makker tager første runde med overblikket, så du kan
+      koncentrere dig om detaljerne.
+    </p>
+    <form (submit)="$event.preventDefault(); continue()">
+      <label for="new-project-description">Fortæl om projektet</label>
+      <textarea
+        id="new-project-description"
+        [formControl]="prompt"
+        [readOnly]="hasSavedMessage()"
+        rows="6"
+        autofocus
+        placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
+      ></textarea>
+      <p class="hint">
+        Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger
+        bagefter.
+      </p>
+      @if (error()) {
+        <p class="start-error" role="alert">{{ error() }}</p>
+      }
+      <div class="dialog-actions">
+        @if (error() && projectId()) {
+          <button type="button" class="secondary-button" (click)="openDraft()">Åbn kladden</button>
+        } @else {
+          <button type="button" class="secondary-button" (click)="close()">Annuller</button>
+        }
+        <button type="submit" class="continue-button" [disabled]="!prompt.value.trim()">
+          {{ error() ? 'Prøv igen' : 'Fortsæt' }} <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </form>
+  }
+</dialog>

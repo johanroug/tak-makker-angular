@@ -25,10 +25,9 @@
         <button
           type="button"
           class="new-project-button"
-          [disabled]="isCreatingProject()"
           (click)="createProject()"
         >
-          {{ isCreatingProject() ? 'Opretter...' : '+ Nyt projekt' }}
+          + Nyt projekt
         </button>
       </div>
 
@@ -50,6 +49,8 @@
         
         <app-offer-preview
           [data]="data"
+          [openDetailsInitially]="newProjectId() === data.project.id"
+          (detailsOpened)="onDetailsOpened()"
           (detailsSaved)="onDetailsSaved()"
           (offerFinalized)="onOfferFinalized()"
         />
@@ -66,3 +67,5 @@
     }
   </div>
 </div>
+
+<app-new-project-dialog (projectCreated)="loadProjects()" />

@@ -79,7 +79,33 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Afventer Johans nye TODO-punkt. Alle punkter i afsnit 1 er funktionelt afsluttet; MVP- og udrulningskontroller er fortsat åbne.
+- Næste åbne hovedpunkt er Sikkerhed og adgang. Ingen ny disciplin er påbegyndt.
+
+## Afsluttet disciplin: AI-start på nyt projekt
+
+Status: Funktionelt afsluttet — Johan har bekræftet, at det nye flow med beskrivelse, AI-ventetid og efterfølgende oplysningsmodal virker som ønsket. Supplerende mobil- og annulleringskontrol står fortsat åben nedenfor.
+
+- [x] Produktionsbuild bestået med kendte størrelses- og CommonJS-advarsler. Ingen databaseændringer eller udrulning af Edge-funktion er nødvendig for dette flow.
+- [x] Nyt projekt åbner først en beskrivelsesmodal med tekstfelt og Fortsæt. Intet projekt oprettes, før brugeren fortsætter med en ikke-tom beskrivelse.
+- [x] Under oprettelse, AI-kald og gemning vises en spinner med tilfældigt skiftende tekster hver 1,8 sekund. Samme tekst gentages ikke direkte. Animation respekterer reduceret bevægelse.
+- [x] Første besked gemmes i samtalen. AI-forslag, kunde-/projektoplysninger og eventuelle spørgsmål gemmes, før navigationen åbner oplysningsmodalen. Samme flow fra projektoversigt og eksisterende projekt.
+- [x] Dobbeltklik og lukning under behandling blokeres. Ved fejl kan brugeren prøve igen på samme kladde eller åbne den. Gemt besked og modtaget AI-svar genbruges, så et nyt forsøg ikke opretter et nyt projekt eller gentager et allerede modtaget AI-kald.
+- [x] Målrettede kontroller af den faktiske dialogklasse med simulerede afhængigheder bestået: tom besked, annullering, dobbeltklik, tekstskift, gemning før navigation, AI-/gemme-/navigationsfejl, genforsøg og oprydning af timer. Ingen nye spec-filer.
+- [x] Johan har bekræftet, at det nye AI-startflow virker som ønsket efter appkontrollen.
+- [ ] Johan: Kontrollér, at Annuller før Fortsæt ikke opretter en kladde, og afprøv layout på en lille skærm.
+
+## Afsluttet disciplin: Projektoplysninger i modal
+
+Status: Funktionelt afsluttet — Johan har bekræftet, at løsningen virker efter rettelsen af navigationen fra projektoversigten. Detaljeret mobil- og tastaturkontrol hører fortsat til MVP-kontrollen nedenfor.
+
+- [x] Eksisterende formular flyttet til en modal: projekttitel, kunde, adresse, projekt-/tilbudsbeskrivelse, gyldighed, betalingsbetingelser og forbehold.
+- [x] Rediger åbner modalen med de aktuelle gemte værdier. Gemning bruger den eksisterende service og bevarer markering af manuelle rettelser.
+- [x] Nyt projekt åbner modalen automatisk efter indlæsning. Åbningen forbruges én gang og gentages ikke ved normal opdatering eller genåbning af et eksisterende projekt.
+- [x] Rettet tab af åbningssignal ved oprettelse fra `/projects`: signalet følger nu navigationen, læses af destinationssiden og fjernes fra URL'en, når modalen er åbnet.
+- [x] Johan har bekræftet rettelsen: Nyt projekt åbner nu modalen også fra `/projects`, og modalflowet virker som ønsket.
+- [x] Native dialog med fokus i titelfelt, tastaturnavigation, Escape, lukknap og Annuller. Formular og lukning låses under gemning. Scroll og bredde tilpasses mindre skærme.
+- [x] Produktionsbuild bestået med størrelses- og CommonJS-advarsler; modalens styling øger offer-preview SCSS til cirka 4,98 kB. Ingen databaseændringer eller nye spec-filer.
+- [ ] Supplerende MVP-kontrol: Afprøv modalen på en lille skærm og kontrollér tastaturnavigation, Escape og fokus ved genåbning.
 
 ## Afsluttet disciplin: Hele tilbudsflowet
 

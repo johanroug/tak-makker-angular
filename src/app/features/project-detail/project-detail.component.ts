@@ -6,12 +6,13 @@ import { supabase } from '../../core/supabase/supabase.client';
 import { ProjectService } from '../../core/projects/project.service';
 import { OfferPreview } from '../../shared/components/offer-preview/offer-preview.component';
 import { ProjectSidebar } from '../../shared/components/project-sidebar/project-sidebar.component';
+import { NewProjectDialog } from '../../shared/components/new-project-dialog/new-project-dialog.component';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink, ReactiveFormsModule, OfferPreview, ProjectSidebar],
+  imports: [RouterLink, ReactiveFormsModule, OfferPreview, ProjectSidebar, NewProjectDialog],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })
@@ -21,12 +22,13 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly projectService = inject(ProjectService);
 
   private readonly sidebar = viewChild(ProjectSidebar);
+  private readonly newProjectDialog = viewChild.required(NewProjectDialog);
 
   readonly project = signal<ProjectData | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
   readonly projects = signal<Awaited<ReturnType<ProjectService['getProjects']>>>([]);
-  readonly isCreatingProject = signal(false);
+  readonly newProjectId = signal<string | null>(null);
   readonly isEditingTitle = signal(false);
   readonly isSavingTitle = signal(false);
   readonly titleError = signal('');
@@ -75,6 +77,9 @@ export class ProjectDetail implements OnInit, OnDestroy {
       const data = await this.projectService.getProject(projectId);
 
       if (this.route.snapshot.paramMap.get('projectId') === projectId) {
+        this.newProjectId.set(
+          this.route.snapshot.queryParamMap.get('editDetails') === '1' ? projectId : null,
+        );
         this.project.set(data);
       }
     } catch (error) {
@@ -117,24 +122,19 @@ export class ProjectDetail implements OnInit, OnDestroy {
     await this.router.navigate(['/login']);
   }
 
-  async createProject(): Promise<void> {
-    if (this.isCreatingProject()) {
-      return;
-    }
+  createProject(): void {
+    this.newProjectDialog().open();
+  }
 
-    this.isCreatingProject.set(true);
-    this.errorMessage.set('');
-
-    try {
-      const project = await this.projectService.createProject();
-
-      await this.loadProjects();
-      await this.router.navigate(['/projects', project.id]);
-    } catch (error) {
-      console.error('Could not create project:', error);
-      this.errorMessage.set('Kunne ikke oprette projektet.');
-    } finally {
-      this.isCreatingProject.set(false);
+  onDetailsOpened(): void {
+    this.newProjectId.set(null);
+    if (this.route.snapshot.queryParamMap.get('editDetails') === '1') {
+      void this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { editDetails: null },
+        queryParamsHandling: 'merge',
+        replaceUrl: true,
+      });
     }
   }
 

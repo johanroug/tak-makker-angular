@@ -329,6 +329,7 @@
       @case ('offers') {
         <div class="offers-panel">
           <h2>Tilbudshistorik</h2>
+          <p class="offers-message">Den aktuelle kladde vises i projektets tilbudsvisning. Herunder finder du de færdiggjorte tilbud.</p>
 
           @if (isLoadingOffers()) {
             <p class="offers-message">Henter tilbud...</p>
@@ -351,7 +352,7 @@
                       </span>
                     </div>
 
-                    <span class="offer-history-status"> Færdiggjort </span>
+                    <span class="offer-history-status">{{ statusLabel(offer.status) }}</span>
                   </div>
 
                   <div class="offer-history-project">

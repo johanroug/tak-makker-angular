@@ -1,7 +1,7 @@
 <section class="offer-preview">
   <div class="offer-header">
     <div class="offer-toolbar">
-      <span class="offer-label"> TILBUD · UDKAST </span>
+      <span class="offer-label"> TILBUD · KLADDE </span>
 
       @if (!isEditing()) {
         <button type="button" class="edit-details-button" (click)="startEditing()">
@@ -266,6 +266,7 @@
     }
 
     @if (!finalizedOfferNumber()) {
+      <p class="finalize-hint">Status: Kladde. Når du færdiggør kladden, oprettes et fast tilbud, som kan markeres som sendt, accepteret eller afvist.</p>
       <button
         type="button"
         [disabled]="!canFinalizeOffer"

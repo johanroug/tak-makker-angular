@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { OfferService } from '../../core/offers/offer.service';
 import { OfferPdfService } from '../../core/offers/offer-pdf.service';
+import { OFFER_STATUSES, OfferStatus, offerStatusLabel } from '../../core/offers/offer-status';
 
 type OfferData = Awaited<ReturnType<OfferService['getOffer']>>;
 
@@ -24,6 +25,38 @@ export class OfferDetail implements OnInit {
   readonly errorMessage = signal('');
   readonly isDownloadingPdf = signal(false);
   readonly pdfError = signal('');
+  readonly statusOptions = OFFER_STATUSES;
+  readonly statusLabel = offerStatusLabel;
+  readonly isSavingStatus = signal(false);
+  readonly statusError = signal('');
+  readonly statusMessage = signal('');
+
+  async changeStatus(select: HTMLSelectElement): Promise<void> {
+    const value = select.value;
+    await this.updateStatus(value);
+    select.value = this.data()?.offer.status ?? '';
+  }
+
+  async updateStatus(value: string): Promise<void> {
+    const data = this.data();
+    if (!data || this.isSavingStatus() || value === data.offer.status ||
+      !OFFER_STATUSES.some((option) => option.value === value)) {
+      return;
+    }
+
+    this.isSavingStatus.set(true);
+    this.statusError.set('');
+    this.statusMessage.set('');
+    try {
+      const offer = await this.offerService.updateStatus(data.offer.id, data.offer.status, value as OfferStatus);
+      this.data.set({ ...data, offer });
+      this.statusMessage.set(`Status gemt: ${offerStatusLabel(offer.status)}.`);
+    } catch (error) {
+      this.statusError.set(error instanceof Error ? error.message : 'Kunne ikke gemme status.');
+    } finally {
+      this.isSavingStatus.set(false);
+    }
+  }
 
   ngOnInit(): void {
     const offerId = this.route.snapshot.paramMap.get('offerId');

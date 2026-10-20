@@ -1,11 +1,11 @@
-# Tak Makker TODO — 16. oktober 2026
+# Tak Makker TODO — 20. oktober 2026
 
 ## 1. Nødvendigt før første kunde
 
 - [x] **Tilbudsbetingelser** — Gyldighed, betalingsbetingelser og eventuelle forbehold.
 - [x] **Virksomhedsprofil** — Sikre at firmanavn, CVR, adresse, telefon og e-mail er udfyldt og bruges korrekt.
 - [x] **Logo på PDF** — Mulighed for at uploade virksomhedens logo.
-- [ ] **Tilbudsstatus** — Kladde, færdiggjort, sendt, accepteret og afvist.
+- [x] **Tilbudsstatus** — Kladde, færdiggjort, sendt, accepteret og afvist. Funktionelt bekræftet; særskilt kontrol af adgang og nyt tilbud står nedenfor.
 - [ ] **Korrekt håndtering af ændringer** — Manuelle rettelser må ikke blive overskrevet af AI.
 - [ ] **Test af hele tilbudsflowet** — Fra første AI-besked til færdig PDF, også efter reload.
 
@@ -79,7 +79,27 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Tilbudsstatus: kladde, færdiggjort, sendt, accepteret og afvist.
+- Korrekt håndtering af ændringer: Manuelle rettelser må ikke blive overskrevet af AI.
+
+## Afsluttet disciplin: Tilbudsstatus
+
+Status: Funktionelt afsluttet — Johan har bekræftet statusskift, gemning, genåbning, oversigt og uændret PDF. Resterende kontrol af nyt tilbud og adgang på tværs af virksomheder er registreret særskilt nedenfor.
+
+- [x] Johan har bekræftet, at status gemmes og vises korrekt i oversigten efter SQL-rettelsen.
+- [x] Rettet dropdownens startværdi: den gemte status markeres på selve valgmuligheden, når tilbuddet åbnes.
+- [x] Johan har bekræftet, at dropdown og gemt status nu vises korrekt, når tilbuddet åbnes igen.
+- [x] SQL-rettelsen `supabase/migrations/202610200002_offer_status_id_types.sql` virker i Johans miljø: gemning og genindlæsning er bekræftet efter den tidligere `text = uuid`-fejl. Codex har ikke kørt SQL eller kontrolleret migrationshistorikken.
+- [x] Projektets tilbudsvisning viser eksplicit Kladde og forklarer overgangen til færdiggjort tilbud.
+- [x] Produktionsbuild bestået 20. oktober 2026; kendte størrelses- og CommonJS-advarsler består. Ingen nye spec-filer.
+- [x] Statusvalg på færdigt tilbud og aktuel status i tilbudshistorikken.
+- [x] Manuel markering som sendt samt accepteret/afvist; status kan rettes igen.
+- [x] Gemning bruger `update_offer_status` med kontrol af virksomhedsmedlemskab og samtidig statusændring. Appen genlæser status før succesbesked og beskytter mod dobbeltklik.
+- [x] Statusfunktionen er tilgængelig i Johans miljø; gemning via funktionen er bekræftet. Codex har ikke kørt migrationerne eller kontrolleret migrationshistorikken.
+- [x] Projektets udkast bevares som kladde indtil færdiggørelse.
+- [ ] Kontrollér et nyt tilbud: startstatus skal være `finalized` (Færdiggjort).
+- [x] Johan har bekræftet skift mellem Sendt, Accepteret og Afvist samt genindlæsning; oversigt og dropdown viser gemt status.
+- [x] Johan har bekræftet, at PDF er uændret efter statusskift. Statusfunktionen opdaterer kun statusfeltet.
+- [ ] Kontrollér adgang til andre virksomheders tilbud. Gemning på eget tilbud er bekræftet; adgang på tværs af virksomheder er endnu ikke afprøvet. Codex har ikke kørt databaseændringer.
 
 Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punkter er endnu ikke gennemgået og godkendt som afsluttede.
 

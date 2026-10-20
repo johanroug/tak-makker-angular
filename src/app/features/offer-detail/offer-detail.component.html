@@ -23,7 +23,22 @@
           {{ isDownloadingPdf() ? 'Genererer PDF...' : 'Download PDF' }}
         </button>
 
-        <span class="offer-status"> Færdiggjort </span>
+        <span class="offer-status">{{ statusLabel(data.offer.status) }}</span>
+      </div>
+
+      <div class="status-controls" [attr.aria-busy]="isSavingStatus()">
+        <label for="offer-status">Tilbudsstatus</label>
+        <select #statusSelect id="offer-status"
+          [disabled]="isSavingStatus()"
+          (change)="changeStatus(statusSelect)">
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value" [selected]="option.value === data.offer.status">{{ option.label }}</option>
+          }
+        </select>
+        <p>Markér selv tilbuddet som sendt, når du har sendt det til kunden.</p>
+        @if (isSavingStatus()) { <p role="status">Gemmer status...</p> }
+        @if (statusMessage()) { <p role="status">{{ statusMessage() }}</p> }
+        @if (statusError()) { <p class="offer-error" role="alert">{{ statusError() }}</p> }
       </div>
 
       @if (pdfError()) {

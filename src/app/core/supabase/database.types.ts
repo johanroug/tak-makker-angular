@@ -527,6 +527,16 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      update_offer_status: {
+        Args: { p_offer_id: string; p_expected_status: string; p_status: string }
+        Returns: Database["public"]["Tables"]["offers"]["Row"]
+        SetofOptions: {
+          from: "*"
+          to: "offers"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never

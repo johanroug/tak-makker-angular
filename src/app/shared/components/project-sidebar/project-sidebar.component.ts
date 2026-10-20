@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
 import { OfferService } from '../../../core/offers/offer.service';
+import { offerStatusLabel } from '../../../core/offers/offer-status';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -18,6 +19,7 @@ type SidebarTab = 'tasks' | 'materials' | 'chat' | 'offers';
   styleUrl: './project-sidebar.component.scss',
 })
 export class ProjectSidebar {
+  readonly statusLabel = offerStatusLabel;
   readonly data = input.required<ProjectData>();
 
   private readonly aiService = inject(AiService);

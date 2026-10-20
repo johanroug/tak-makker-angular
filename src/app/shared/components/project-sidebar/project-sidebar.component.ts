@@ -1,5 +1,6 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, effect, inject, input, output, signal } from '@angular/core';
+import type { WritableSignal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -42,6 +43,8 @@ export class ProjectSidebar {
 
   readonly isSending = signal(false);
   readonly sendError = signal('');
+  readonly editError = signal('');
+  readonly pendingSaves = signal(0);
 
   readonly workItemTrades = signal<Record<string, string>>({});
 
@@ -59,6 +62,41 @@ export class ProjectSidebar {
 
   readonly materialUnitPrices = signal<Record<string, string>>({});
 
+  // Only the preview receives these values. Persisted data remains the source
+  // for saving, so finishing cannot race ahead of the blur save.
+  getPreviewData(data: ProjectData): ProjectData {
+    const number = (value: string | undefined, fallback: number | null) => {
+      if (value === undefined) return fallback;
+      const parsed = Number(value);
+      return value.trim() && Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+    };
+    return {
+      ...data,
+      workItems: data.workItems.map((item) => ({
+        ...item,
+        trade: this.workItemTrades()[item.id]?.trim() ?? item.trade,
+        description: this.workItemDescriptions()[item.id]?.trim() ?? item.description,
+        estimated_hours: number(this.workItemHours()[item.id], item.estimated_hours),
+      })),
+      materials: data.materials.map((item) => ({
+        ...item,
+        name: this.materialNames()[item.id]?.trim() ?? item.name,
+        description: this.materialDescriptions()[item.id]?.trim() ?? item.description,
+        quantity: number(this.materialQuantities()[item.id], item.quantity),
+        unit: this.materialUnits()[item.id]?.trim() ?? item.unit,
+        unit_price: number(this.materialUnitPrices()[item.id], item.unit_price),
+      })),
+    };
+  }
+
+  hasPendingChanges(data: ProjectData): boolean {
+    const preview = this.getPreviewData(data);
+    return (
+      JSON.stringify(preview.workItems) !== JSON.stringify(data.workItems) ||
+      JSON.stringify(preview.materials) !== JSON.stringify(data.materials)
+    );
+  }
+
   readonly messageControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.required],
@@ -66,12 +104,72 @@ export class ProjectSidebar {
 
   constructor() {
     effect(() => {
+      const data = this.data();
+      this.acknowledge(
+        this.workItemTrades,
+        Object.fromEntries(data.workItems.map((item) => [item.id, item.trade])),
+      );
+      this.acknowledge(
+        this.workItemDescriptions,
+        Object.fromEntries(data.workItems.map((item) => [item.id, item.description])),
+      );
+      this.acknowledge(
+        this.workItemHours,
+        Object.fromEntries(data.workItems.map((item) => [item.id, item.estimated_hours])),
+        true,
+      );
+      this.acknowledge(
+        this.materialNames,
+        Object.fromEntries(data.materials.map((item) => [item.id, item.name])),
+      );
+      this.acknowledge(
+        this.materialDescriptions,
+        Object.fromEntries(data.materials.map((item) => [item.id, item.description])),
+      );
+      this.acknowledge(
+        this.materialQuantities,
+        Object.fromEntries(data.materials.map((item) => [item.id, item.quantity])),
+        true,
+      );
+      this.acknowledge(
+        this.materialUnits,
+        Object.fromEntries(data.materials.map((item) => [item.id, item.unit])),
+      );
+      this.acknowledge(
+        this.materialUnitPrices,
+        Object.fromEntries(data.materials.map((item) => [item.id, item.unit_price])),
+        true,
+      );
+    });
+    effect(() => {
       const activeTab = this.activeTab();
 
       if (activeTab === 'offers') {
         void this.loadOffers();
       }
     });
+  }
+
+  private acknowledge(
+    values: WritableSignal<Record<string, string>>,
+    saved: Record<string, string | number | null>,
+    numeric = false,
+  ): void {
+    const edits = values();
+    const remaining = Object.entries(edits).filter(([id, raw]) => {
+      const value = numeric ? (raw.trim() === '' ? null : Number(raw)) : raw.trim();
+      return value !== saved[id];
+    });
+    if (remaining.length !== Object.keys(edits).length) values.set(Object.fromEntries(remaining));
+  }
+
+  private async saveEdit(save: () => Promise<void>): Promise<void> {
+    this.pendingSaves.update((count) => count + 1);
+    try {
+      await save();
+    } finally {
+      this.pendingSaves.update((count) => count - 1);
+    }
   }
 
   selectTab(tab: SidebarTab): void {
@@ -143,10 +241,16 @@ export class ProjectSidebar {
     }
 
     try {
-      await this.projectService.updateWorkItem(this.data().project.id, item.id, { trade });
+      await this.saveEdit(() =>
+        this.projectService.updateWorkItem(this.data().project.id, item.id, { trade }),
+      );
 
+      this.editError.set('');
       this.messageAdded.emit();
     } catch (error) {
+      this.editError.set(
+        'Ændringen kunne ikke gemmes. Dine rettelser vises stadig i kladden. Gå tilbage til feltet og prøv igen.',
+      );
       console.error('Could not update work item trade:', error);
     }
   }
@@ -175,10 +279,16 @@ export class ProjectSidebar {
     }
 
     try {
-      await this.projectService.updateWorkItem(this.data().project.id, item.id, { description });
+      await this.saveEdit(() =>
+        this.projectService.updateWorkItem(this.data().project.id, item.id, { description }),
+      );
 
+      this.editError.set('');
       this.messageAdded.emit();
     } catch (error) {
+      this.editError.set(
+        'Ændringen kunne ikke gemmes. Dine rettelser vises stadig i kladden. Gå tilbage til feltet og prøv igen.',
+      );
       console.error('Could not update work item description:', error);
     }
   }
@@ -244,10 +354,16 @@ export class ProjectSidebar {
     }
 
     try {
-      await this.projectService.updateWorkItemStatus(this.data().project.id, workItemId, status);
+      await this.saveEdit(() =>
+        this.projectService.updateWorkItemStatus(this.data().project.id, workItemId, status),
+      );
 
+      this.editError.set('');
       this.messageAdded.emit();
     } catch (error) {
+      this.editError.set(
+        'Ændringen kunne ikke gemmes. Dine rettelser vises stadig i kladden. Gå tilbage til feltet og prøv igen.',
+      );
       console.error('Could not update work item status:', error);
     }
   }
@@ -264,14 +380,20 @@ export class ProjectSidebar {
     }
 
     try {
-      await this.projectService.updateWorkItemEstimatedHours(
-        this.data().project.id,
-        item.id,
-        estimatedHours,
+      await this.saveEdit(() =>
+        this.projectService.updateWorkItemEstimatedHours(
+          this.data().project.id,
+          item.id,
+          estimatedHours,
+        ),
       );
 
+      this.editError.set('');
       this.messageAdded.emit();
     } catch (error) {
+      this.editError.set(
+        'Ændringen kunne ikke gemmes. Dine rettelser vises stadig i kladden. Gå tilbage til feltet og prøv igen.',
+      );
       console.error('Could not update estimated hours:', error);
     }
   }
@@ -420,10 +542,16 @@ export class ProjectSidebar {
     }
 
     try {
-      await this.projectService.updateMaterialStatus(this.data().project.id, materialId, status);
+      await this.saveEdit(() =>
+        this.projectService.updateMaterialStatus(this.data().project.id, materialId, status),
+      );
 
+      this.editError.set('');
       this.messageAdded.emit();
     } catch (error) {
+      this.editError.set(
+        'Ændringen kunne ikke gemmes. Dine rettelser vises stadig i kladden. Gå tilbage til feltet og prøv igen.',
+      );
       console.error('Could not update material status:', error);
     }
   }
@@ -486,10 +614,16 @@ export class ProjectSidebar {
     },
   ): Promise<void> {
     try {
-      await this.projectService.updateMaterial(this.data().project.id, material.id, changes);
+      await this.saveEdit(() =>
+        this.projectService.updateMaterial(this.data().project.id, material.id, changes),
+      );
 
+      this.editError.set('');
       this.messageAdded.emit();
     } catch (error) {
+      this.editError.set(
+        'Ændringen kunne ikke gemmes. Dine rettelser vises stadig i kladden. Gå tilbage til feltet og prøv igen.',
+      );
       console.error('Could not update material:', error);
     }
   }

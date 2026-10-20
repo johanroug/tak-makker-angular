@@ -81,6 +81,20 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 - Næste åbne hovedpunkt er Sikkerhed og adgang. Ingen ny disciplin er påbegyndt.
 
+## Afsluttet disciplin: Manglende oplysninger og levende kladde
+
+Status: Funktionelt afsluttet — Johan har bekræftet, at alle ændringer virker. Materialernes antal og enhedspris er efterfølgende justeret til trin på 1 efter Johans ønske.
+
+- [x] Produktionsbuild bestået med kendte størrelses- og CommonJS-advarsler. Offer-preview SCSS er nu cirka 5,74 kB.
+- [x] Synlig liste øverst i kladden over alle manglende projekt-/kundeoplysninger samt ugyldige accepterede opgaver og materialer. Samme validering styrer knappen til færdiggørelse.
+- [x] Klik på fx Udfyld kundeadresse åbner oplysningsmodalen med fokus i det relevante felt. Mangler ved linjer åbner fanen Opgaver eller Materialer. Påkrævede projekt-/kundefelter er markeret i modalen.
+- [x] Tekst, timer, materialenavn, beskrivelse, antal, enhed og pris afspejles straks i kladden under indtastning. Kun accepterede linjer indgår i tilbuddet og beregningerne.
+- [x] Gemning sker fortsat, når feltet forlades. Færdiggørelse blokeres ved lokale ændringer og igangværende gemning; status og gemmefejl vises. Bekræftede lokale værdier ryddes, når de genlæste data matcher, så senere opdateringer ikke skjules.
+- [x] Målrettede kontroller med faktiske klasser og simulerede afhængigheder: visning før blur, priser, blokering mens ugemt/gemmer, bekræftede værdier, null/0/ugyldige tal og liste med manglende kundeadresse bestået. Ekstra kontrol af første rendering før sidebar-input er tildelt bestået. Ingen nye spec-filer eller databaseændringer.
+- [x] Johan har bekræftet listen med manglende oplysninger og klik til udfyldning.
+- [x] Johan har bekræftet øjeblikkelig kladdeopdatering under indtastning samt de beskrevne gemme- og genindlæsningskontroller.
+- [x] Antal og enhedspris i materialefanen bruger nu trin på 1 i stedet for 0,01.
+
 ## Afsluttet disciplin: AI-start på nyt projekt
 
 Status: Funktionelt afsluttet — Johan har bekræftet, at det nye flow med beskrivelse, AI-ventetid og efterfølgende oplysningsmodal virker som ønsket. Supplerende mobil- og annulleringskontrol står fortsat åben nedenfor.

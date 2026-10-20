@@ -4,6 +4,60 @@
   padding: 20px;
 }
 
+.readiness-panel {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 13px;
+  strong {
+    font-size: 14px;
+  }
+  p {
+    margin: 5px 0 10px;
+  }
+  ul {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding-left: 18px;
+    list-style: disc;
+  }
+  button {
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+.pending-changes,
+.ready-message {
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.pending-changes {
+  background: #fffbeb;
+  color: #92400e;
+}
+.ready-message {
+  background: #f0fdf4;
+  color: #166534;
+}
+.modal-fields small {
+  color: #78716c;
+  font-size: 11px;
+  font-weight: 400;
+}
+
 .offer-header {
   padding-bottom: 24px;
   border-bottom: 1px solid #ddd;
@@ -115,7 +169,9 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  &::backdrop { background: #1c191799; }
+  &::backdrop {
+    background: #1c191799;
+  }
   .form-actions {
     position: sticky;
     bottom: -24px;
@@ -129,8 +185,16 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  h2 { margin: 0; font-size: 20px; font-weight: 700; }
-  p { margin: 6px 0 0; color: #78716c; font-size: 13px; }
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  p {
+    margin: 6px 0 0;
+    color: #78716c;
+    font-size: 13px;
+  }
 }
 
 .modal-close {
@@ -138,8 +202,13 @@
   border-radius: 6px;
   font-size: 28px;
   cursor: pointer;
-  &:focus-visible { outline: 2px solid #78716c; }
-  &:disabled { opacity: 0.5; cursor: wait; }
+  &:focus-visible {
+    outline: 2px solid #78716c;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: wait;
+  }
 }
 
 .modal-fields {
@@ -381,4 +450,7 @@
   overscroll-behavior: contain;
 }
 
-.offer-terms p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.offer-terms p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

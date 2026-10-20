@@ -1,9 +1,19 @@
-import { afterNextRender, Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { ProjectService } from '../../../core/projects/project.service';
+import { offerRequirements, OfferRequirement } from '../../../core/offers/offer-readiness';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -30,8 +40,12 @@ export class OfferPreview {
 
   readonly data = input.required<ProjectData>();
   readonly openDetailsInitially = input(false);
+  readonly hasPendingChanges = input(false);
+  readonly isSavingChanges = input(false);
+  readonly requestTab = output<'tasks' | 'materials'>();
   readonly detailsOpened = output<void>();
-  private readonly detailsDialog = viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
+  private readonly detailsDialog =
+    viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
 
   readonly detailsSaved = output<void>();
   readonly offerFinalized = output<void>();
@@ -124,95 +138,40 @@ export class OfferPreview {
     return this.subtotal + this.vatAmount;
   }
 
+  get missingRequirements(): OfferRequirement[] {
+    return offerRequirements(this.data());
+  }
+
   get canFinalizeOffer(): boolean {
-    const project = this.data().project;
-
-    if (this.isFinalizing() || this.isEditing() || this.isSaving()) {
-      return false;
-    }
-
-    if (this.finalizedOfferNumber()) {
-      return false;
-    }
-
-    if (!project.title?.trim()) {
-      return false;
-    }
-
-    if (!project.customer_name?.trim()) {
-      return false;
-    }
-
-    if (!project.customer_address?.trim()) {
-      return false;
-    }
-
-    if (!project.description?.trim()) {
-      return false;
-    }
-
-    if (project.hourly_rate === null || project.hourly_rate < 0) {
-      return false;
-    }
-
-    if (this.acceptedWorkItems.length === 0 && this.acceptedMaterials.length === 0) {
-      return false;
-    }
-
-    const workItemsAreValid = this.acceptedWorkItems.every(
-      (item) =>
-        !!item.trade?.trim() &&
-        !!item.description?.trim() &&
-        item.estimated_hours !== null &&
-        item.estimated_hours >= 0,
+    return (
+      !this.isFinalizing() &&
+      !this.isEditing() &&
+      !this.isSaving() &&
+      !this.finalizedOfferId() &&
+      !this.hasPendingChanges() &&
+      this.missingRequirements.length === 0
     );
-
-    if (!workItemsAreValid) {
-      return false;
-    }
-
-    const materialsAreValid = this.acceptedMaterials.every(
-      (material) =>
-        !!material.name?.trim() &&
-        !!material.description?.trim() &&
-        material.quantity !== null &&
-        material.quantity >= 0 &&
-        !!material.unit?.trim() &&
-        material.unit_price !== null &&
-        material.unit_price >= 0,
-    );
-
-    return materialsAreValid;
   }
 
   get finalizeDisabledReason(): string {
-    const project = this.data().project;
+    return this.hasPendingChanges()
+      ? 'Afslut feltet i højre kolonne for at gemme dine ændringer først'
+      : this.missingRequirements.map((issue) => issue.label).join('. ');
+  }
 
-    if (!project.title?.trim()) {
-      return 'Projekttitel mangler';
+  fixRequirement(issue: OfferRequirement): void {
+    if (issue.action === 'details') {
+      this.startEditing();
+      if (issue.field) {
+        this.detailsDialog()
+          .nativeElement.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+            `[formControlName="${issue.field}"]`,
+          )
+          ?.focus();
+      }
+    } else if (issue.action) {
+      this.requestTab.emit(issue.action);
     }
-
-    if (!project.customer_name?.trim()) {
-      return 'Kundenavn mangler';
-    }
-
-    if (!project.customer_address?.trim()) {
-      return 'Kundeadresse mangler';
-    }
-
-    if (!project.description?.trim()) {
-      return 'Projektbeskrivelse mangler';
-    }
-
-    if (project.hourly_rate === null || project.hourly_rate < 0) {
-      return 'Projektets timepris mangler';
-    }
-
-    if (this.acceptedWorkItems.length === 0 && this.acceptedMaterials.length === 0) {
-      return 'Acceptér mindst én arbejdsopgave eller ét materiale';
-    }
-
-    return '';
   }
 
   getWorkItemPrice(item: ProjectData['workItems'][number]): number {
@@ -332,7 +291,10 @@ export class OfferPreview {
       changes.offerDescription = current.offerDescription;
     }
 
-    if (current.validityDays !== null && (!Number.isInteger(current.validityDays) || current.validityDays < 1)) {
+    if (
+      current.validityDays !== null &&
+      (!Number.isInteger(current.validityDays) || current.validityDays < 1)
+    ) {
       this.saveError.set('Gyldighed skal være et helt antal dage på mindst 1, eller være tom.');
       return;
     }

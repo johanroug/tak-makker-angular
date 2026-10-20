@@ -1,4 +1,23 @@
 <section class="offer-preview">
+  @if (!finalizedOfferId() && missingRequirements.length) {
+    <section class="readiness-panel" aria-labelledby="offer-missing-title">
+      <strong id="offer-missing-title">Det mangler, før tilbuddet er klar</strong>
+      <p>Udfyld punkterne herunder for at kunne færdiggøre tilbuddet.</p>
+      <ul>
+        @for (issue of missingRequirements; track issue.key) {
+          <li>
+            @if (issue.action) {
+              <button type="button" (click)="fixRequirement(issue)">
+                {{ issue.label }} <span aria-hidden="true">→</span>
+              </button>
+            } @else {
+              {{ issue.label }}
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  }
   <div class="offer-header">
     <div class="offer-toolbar">
       <span class="offer-label"> TILBUD · KLADDE </span>
@@ -195,6 +214,15 @@
     }
 
     @if (!finalizedOfferNumber()) {
+      @if (hasPendingChanges()) {
+        <p class="pending-changes" role="status">
+          {{
+            isSavingChanges()
+              ? 'Gemmer dine ændringer…'
+              : 'Kladden viser dine ændringer med det samme. Afslut feltet i højre kolonne for at gemme, før du færdiggør.'
+          }}
+        </p>
+      }
       <p class="finalize-hint">
         Status: Kladde. Når du færdiggør kladden, oprettes et fast tilbud, som kan markeres som
         sendt, accepteret eller afvist.
@@ -213,11 +241,9 @@
       </button>
     }
 
-    @if (
-      !canFinalizeOffer && !finalizedOfferNumber() && !isFinalizing() && finalizeDisabledReason
-    ) {
-      <p class="finalize-hint">
-        {{ finalizeDisabledReason }}
+    @if (!finalizedOfferId() && !hasPendingChanges() && !missingRequirements.length) {
+      <p class="ready-message">
+        Alle nødvendige oplysninger er udfyldt. Tilbuddet er klar til at blive færdiggjort.
       </p>
     }
   </div>
@@ -250,7 +276,7 @@
   >
     <fieldset class="modal-fields" [disabled]="isSaving()">
       <label>
-        Projekttitel
+        Projekttitel <small>Påkrævet før færdiggørelse</small>
 
         <input type="text" formControlName="title" placeholder="Projekttitel" autofocus />
       </label>
@@ -261,19 +287,19 @@
       </p>
 
       <label>
-        Kundenavn
+        Kundenavn <small>Påkrævet før færdiggørelse</small>
 
         <input type="text" formControlName="customerName" placeholder="Kundenavn" />
       </label>
 
       <label>
-        Kundeadresse
+        Kundeadresse <small>Påkrævet før færdiggørelse</small>
 
         <input type="text" formControlName="customerAddress" placeholder="Kundeadresse" />
       </label>
 
       <label>
-        Projektbeskrivelse
+        Projektbeskrivelse <small>Påkrævet før færdiggørelse</small>
 
         <textarea formControlName="description" rows="4" placeholder="Beskriv projektet"></textarea>
       </label>

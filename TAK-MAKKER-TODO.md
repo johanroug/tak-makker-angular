@@ -11,7 +11,7 @@
 
 ## 2. Vigtigt til en solid MVP
 
-- [ ] **Sikkerhed og adgang** — Gennemgå Supabase RLS og sikre, at virksomheder kun ser egne data.
+- [x] **Sikkerhed og adgang** — RLS, rettigheder, databasefunktioner, appadgang og direkte AI-adgang kontrolleret med to virksomheder i begge retninger.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
 - [ ] **Mobil og tablet** — Tilpasse layout, faner, formularer og tilbudsvisning.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
@@ -79,7 +79,27 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Næste åbne hovedpunkt er Sikkerhed og adgang. Ingen ny disciplin er påbegyndt.
+- Fejlhåndtering — tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
+
+## Afsluttet disciplin: Sikkerhed og adgang
+
+Status: Afsluttet for det gennemgåede scope i Johans miljø — opsætningskontrol, 22 databasekontroller, browserkontrol og direkte Edge-AI-kontrol med to virksomheder i begge retninger er bekræftet. Kontrollerne er ikke en garanti for alle tænkelige sikkerhedsforhold; nye ændringer og andre miljøer kræver relevant kontrol.
+
+- [x] Gennemgået login/rutebeskyttelse, virksomhedskald, AI-funktionens token-/medlemskontrol og statusfunktionens medlemskontrol og EXECUTE-rettigheder i repoet.
+- [x] Ingen service-role-/private-nøglemarkører fundet ved afgrænset tekstsøgning i `src` og `supabase`.
+- [x] Oprettet `SIKKERHED-OG-ADGANG.md` med fund og åbne kontroller samt `supabase/audits/security_access_audit.sql`, som kun læser databaseopsætning og ikke kundedata. Ingen databaseændringer eller live forespørgsler er kørt af Codex.
+- [x] Johan har delt metadataeksporten. RLS er aktiv på alle ni tabeller, og politikkerne afgrænser efter virksomhedsmedlemskab. Den efterfølgende databaseadgangstest er registreret nedenfor.
+- [x] Fundet direkte INSERT-adgang til færdige tilbud/linjer samt for brede tabel-/funktionsrettigheder. Rettelse klargjort i `supabase/migrations/202610200003_access_hardening.sql`; efterkontrol i `supabase/audits/security_access_verify.sql`.
+- [x] Lokalt sammenlignet de to nye RPC'er med originalerne: eksisterende forretningslogik er bevaret. Codex har ikke kørt SQL; Johan har efterfølgende kørt migrationen og databasekontrollerne i sit miljø.
+- [x] Johan har kørt rettelsen og bekræftet true på alle rækker i efterkontrollen.
+- [x] Johan har bekræftet appflowet efter rettighedsændringen: Nyt projekt, AI, udfyldning/linjer, færdiggørelse og PDF. Profil- og statusrettigheder er desuden afprøvet i databasekontrollen.
+- [x] Efter afvisning af det oprindelige bruger-ID er valgt en ny testbruger. Johan har bekræftet opsætningen af den separate bruger/virksomhed. Codex har ikke oprettet bruger eller kørt SQL.
+- [x] Klargjort `supabase/audits/security_two_company_test.sql` med de to bruger-ID'er fra opsætningen. Tester egne og fremmede data/RPC'er som authenticated i begge retninger, inkl. midlertidig projekt- og tilbudsoprettelse. Afslutter med ROLLBACK. Scriptet er ikke runtime-testet lokalt.
+- [x] Johan har delt alle 22 beståede databasekontroller: egne oprettelser/redigeringer/færdiggørelse/status, egen/fremmed læsning på alle ni tabeller og afvist fremmed skrivning, medlemskab, referencer, tilbudsændring og RPC i begge retninger.
+- [x] Johan har bekræftet afvisning af fremmede projekt- og tilbudslinks ved den beskrevne browserkontrol i begge retninger. Ingen fremmede data vises.
+- [x] Klargjort `supabase/audits/security_ai_browser_check.js`: benytter eksisterende login og et indsat fremmed projektlink til den sidste direkte Edge-kontrol. Logger kun resultater/statusser, ikke tokens. Afviser at kalde AI, hvis projektet kan læses. Testet lokalt med simuleret HTTP; ikke kørt mod Supabase af Codex.
+- [x] Johan har vist bestået direkte Edge-kontrol som testbrugeren: gyldigt login 200, AI-kald mod Fætter BR's projekt 404 og AI-kald uden login 401.
+- [x] Johan har også vist bestået direkte Edge-kontrol som oprindelig bruger mod testvirksomheden: login 200, fremmed AI-kald 404 og AI-kald uden login 401. Alle tre resultater er true i begge retninger.
 
 ## Afsluttet disciplin: Manglende oplysninger og levende kladde
 

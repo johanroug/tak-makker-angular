@@ -27,6 +27,17 @@ Deno.serve(async (request) => {
     return Response.json({ error: 'Method not allowed' }, { status: 405, headers: corsHeaders });
   }
 
+  const started = performance.now();
+  const timings: Record<string, number> = {};
+  const measure = async <T>(name: string, action: () => PromiseLike<T>): Promise<T> => {
+    const phaseStarted = performance.now();
+    try {
+      return await action();
+    } finally {
+      timings[name] = Math.round(performance.now() - phaseStarted);
+    }
+  };
+
   try {
     // 1. Kontrollér brugerens adgangstoken.
     const authorization = request.headers.get('Authorization');
@@ -46,7 +57,9 @@ Deno.serve(async (request) => {
     );
 
     const token = authorization.substring(7);
-    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    const { data: authData, error: authError } = await measure('authMs', () =>
+      supabase.auth.getUser(token),
+    );
 
     if (authError || !authData.user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
@@ -60,40 +73,48 @@ Deno.serve(async (request) => {
       return Response.json({ error: 'Missing projectId' }, { status: 400, headers: corsHeaders });
     }
 
-    const { data: project, error: projectError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', projectId)
-      .single();
+    const { data: project, error: projectError } = await measure('projectMs', () =>
+      supabase.from('projects').select('*').eq('id', projectId).single(),
+    );
 
     if (projectError || !project) {
       return Response.json({ error: 'Project not found' }, { status: 404, headers: corsHeaders });
     }
 
     // 3. Kontrollér medlemskab af projektets virksomhed.
-    const { data: membership, error: membershipError } = await supabase
-      .from('company_members')
-      .select('id')
-      .eq('user_id', authData.user.id)
-      .eq('company_id', project.company_id)
-      .maybeSingle();
+    const { data: membership, error: membershipError } = await measure('membershipMs', () =>
+      supabase
+        .from('company_members')
+        .select('id')
+        .eq('user_id', authData.user.id)
+        .eq('company_id', project.company_id)
+        .maybeSingle(),
+    );
 
     if (membershipError || !membership) {
       return Response.json({ error: 'Forbidden' }, { status: 403, headers: corsHeaders });
     }
 
     // 4. Hent eksisterende projektdata.
-    const [workItemsResult, materialsResult, messagesResult] = await Promise.all([
-      supabase.from('project_work_items').select('*').eq('project_id', projectId),
+    const [workItemsResult, materialsResult, messagesResult] = await measure('contextMs', () =>
+      Promise.all([
+        measure('workItemsMs', () =>
+          supabase.from('project_work_items').select('*').eq('project_id', projectId),
+        ),
 
-      supabase.from('project_materials').select('*').eq('project_id', projectId),
+        measure('materialsMs', () =>
+          supabase.from('project_materials').select('*').eq('project_id', projectId),
+        ),
 
-      supabase
-        .from('project_messages')
-        .select('role, content')
-        .eq('project_id', projectId)
-        .order('created_at', { ascending: true }),
-    ]);
+        measure('messagesMs', () =>
+          supabase
+            .from('project_messages')
+            .select('role, content')
+            .eq('project_id', projectId)
+            .order('created_at', { ascending: true }),
+        ),
+      ]),
+    );
 
     if (workItemsResult.error || materialsResult.error || messagesResult.error) {
       throw new Error('Could not load project data');
@@ -153,35 +174,49 @@ Deno.serve(async (request) => {
       );
     }
 
-    const response = await openai.responses.parse({
-      model: 'gpt-5.6-luna',
-      input: [
-        { role: 'system', content: aiInstructions },
-        {
-          role: 'system',
-          content: createProjectDetailsContext({
-            customer,
-            project: projectDetails,
-          }),
+    const response = await measure('aiMs', () =>
+      openai.responses.parse({
+        model: 'gpt-5.6-luna',
+        input: [
+          { role: 'system', content: aiInstructions },
+          {
+            role: 'system',
+            content: createProjectDetailsContext({
+              customer,
+              project: projectDetails,
+            }),
+          },
+          {
+            role: 'system',
+            content: createWorkItemsContext(workItems),
+          },
+          {
+            role: 'system',
+            content: createMaterialsContext(materials),
+          },
+          ...messages,
+        ],
+        text: {
+          format: zodTextFormat(ProjectResponseSchema, 'project_response'),
         },
-        {
-          role: 'system',
-          content: createWorkItemsContext(workItems),
-        },
-        {
-          role: 'system',
-          content: createMaterialsContext(materials),
-        },
-        ...messages,
-      ],
-      text: {
-        format: zodTextFormat(ProjectResponseSchema, 'project_response'),
-      },
-    });
+      }),
+    );
 
     if (!response.output_parsed) {
       throw new Error('OpenAI returned no structured response');
     }
+
+    console.info('GENERATE OFFER SIZE', {
+      inputTokens: response.usage?.input_tokens ?? null,
+      outputTokens: response.usage?.output_tokens ?? null,
+      cachedInputTokens: response.usage?.input_tokens_details?.cached_tokens ?? null,
+      reasoningTokens: response.usage?.output_tokens_details?.reasoning_tokens ?? null,
+      existingWorkItems: workItems.length,
+      existingMaterials: materials.length,
+      returnedWorkItems: response.output_parsed.workItems.length,
+      returnedMaterials: response.output_parsed.materials.length,
+      conversationMessages: messages.length,
+    });
 
     return Response.json(response.output_parsed, {
       headers: corsHeaders,
@@ -193,5 +228,10 @@ Deno.serve(async (request) => {
       { error: 'Could not generate offer' },
       { status: 500, headers: corsHeaders },
     );
+  } finally {
+    console.info('GENERATE OFFER TIMING', {
+      ...timings,
+      totalMs: Math.round(performance.now() - started),
+    });
   }
 });

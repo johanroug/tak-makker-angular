@@ -211,6 +211,14 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 ## Arbejdsgang
 ### Optimering af gemning efter AI-svar — 20. oktober 2026
 
+- [x] Seneste måling: AI 11.333 ms, kontekst 8.116 ms, samlet 20.477 ms. Separat måling af workItemsMs, materialsMs og messagesMs tilføjet; simuleret langsom samtale og bevaret parallel hentning kontrolleret.
+- [ ] Udrul og indsam­l nye TIMING-målinger med de tre separate konteksttider; årsagen til den langsomme kontekst er endnu ikke fastslået.
+- [x] Måling fra udrullet funktion: AI 16.286 ms af i alt 16.936 ms; adgang og projektdata cirka 645 ms.
+- [x] AI-instruktioner beder nu om nye forslag og ændrede AI-estimater frem for at gentage uændrede linjer. Uændrede kunde-/projektfelter returneres som null; gemningen bevarer eksisterende værdier.
+- [x] GENERATE OFFER SIZE logger input-, output-, cache- og reasoning-tokens samt antal linjer/beskeder uden indhold. Simulerede kontroller af null/[]-gemning og tokenlog bestået; ingen betalte AI-kald.
+- [ ] Udrul de opdaterede instruktioner/funktion. Kontrollér nye projekter, opfølgende estimater, bevarelse af eksisterende linjer og manuelle rettelser; sammenlign SIZE og TIMING for flere beskeder. Den faktiske kvalitets- og tidsgevinst er endnu ikke målt.
+- [x] Lokale tidsmålinger i generate-offer: authMs, projectMs, membershipMs, contextMs, aiMs og totalMs. Logger kun varigheder; kontrol af succes, afvist adgang og preflight med simulerede afhængigheder bestået.
+- [ ] Udrul generate-offer og aflæs GENERATE OFFER TIMING efter en ny AI-besked. Browsermålingen viste 18,56 sekunders serverventetid; fordelingen er endnu ukendt. Codex har ikke udrullet funktionen.
 - [x] Projekt, opgaver, materialer og sorterede beskeder hentes med ét GET via eksisterende relationer. Ingen ændring af RLS eller database.
 - [x] Afsendt besked vises fra indsættelsens svar uden fuld genindlæsning. Projektvælgeren opdateres lokalt efter AI-svar og redigering; gentagne oversigtskald er fjernet.
 - [x] Kontrol med den installerede Supabase-klients query builder og simulerede HTTP-svar: ét GET, relationer, samtalerækkefølge, returformat og adgangsfejl bestået. Produktionsbuild bestået med kendte advarsler.

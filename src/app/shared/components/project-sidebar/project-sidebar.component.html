@@ -317,7 +317,7 @@
             <textarea
               [formControl]="messageControl"
               [readOnly]="isSending()"
-              placeholder="Beskriv dit projekt..."
+              [placeholder]="data().messages.length ? 'Kom med flere input…' : 'Beskriv dit projekt…'"
               rows="4"
             ></textarea>
 

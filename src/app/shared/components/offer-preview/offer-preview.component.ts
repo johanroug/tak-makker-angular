@@ -34,7 +34,7 @@ type EditableDetails = {
   selector: 'app-offer-preview',
   imports: [ReactiveFormsModule, DecimalPipe],
   templateUrl: './offer-preview.component.html',
-  styleUrl: './offer-preview.component.scss',
+  styleUrls: ['./offer-preview.component.scss', './offer-preview.mobile.scss'],
 })
 export class OfferPreview {
   private readonly projectService = inject(ProjectService);

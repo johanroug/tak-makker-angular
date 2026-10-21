@@ -1,0 +1,42 @@
+<div class="header-shell">
+  <header class="app-header">
+    <a routerLink="/projects" class="app-logo">Tak Makker</a>
+    <div class="header-actions">
+      <select
+        class="project-selector"
+        aria-label="Vælg projekt"
+        [ngModel]="workspace.activeProjectId()"
+        (ngModelChange)="selectProject($event)"
+      >
+        <option value="" disabled>Vælg projekt</option>
+        @for (item of workspace.projects(); track item.id) {
+          <option [value]="item.id">
+            {{ item.project_number }} · {{ item.title || 'Projekt uden titel' }}
+          </option>
+        }
+      </select>
+      <button type="button" class="new-project-button" (click)="createProject()">
+        + Nyt projekt
+      </button>
+    </div>
+    <div class="account-actions">
+      <a routerLink="/company-profile" class="profile-button">Virksomhedsprofil</a>
+      <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()">
+        {{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}
+      </button>
+    </div>
+  </header>
+  @if (logoutError()) {
+    <p role="alert">{{ logoutError() }}</p>
+  }
+  @if (workspace.error()) {
+    <p role="alert">
+      {{ workspace.error() }}
+      <button type="button" (click)="workspace.loadProjects()" [disabled]="workspace.isLoading()">
+        Prøv igen
+      </button>
+    </p>
+  }
+</div>
+<router-outlet />
+<app-new-project-dialog (projectCreated)="workspace.loadProjects()" />

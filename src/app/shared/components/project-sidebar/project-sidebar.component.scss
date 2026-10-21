@@ -556,13 +556,6 @@
   padding-right: 4px;
 }
 
-@media (max-width: 900px) {
-  .project-sidebar {
-    height: min(75dvh, 750px);
-    min-height: 400px;
-  }
-}
-
 .field-save-status { display: block; min-height: 16px; font-size: 11px; line-height: 1.4; color: #647468; font-weight: 400; overflow-wrap: anywhere; }
 
 .field-save-status.save-failed { color: #b91c1c; }

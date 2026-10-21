@@ -1,0 +1,38 @@
+
+:host { display: block; height: auto; }
+.project-sidebar, .sidebar-content, .sidebar-content:has(.chat-panel), .chat-panel, .chat-messages {
+  height: auto; min-height: 0; overflow: visible; flex: none; overscroll-behavior: auto;
+}
+.sidebar-tabs { overflow-x: auto; overscroll-behavior-x: contain;
+  button { flex: 1 0 auto; min-height: 44px; padding: 12px 10px; white-space: nowrap; }
+}
+.sidebar-content { padding: 12px; }
+.work-item-card, .material-card { padding: 12px; }
+input, textarea { font-size: 16px; }
+.material-field-value { max-width: 100%; justify-content: flex-start; }
+.chat-message, .offer-history-card { overflow-wrap: anywhere; }
+.material-field { display: grid; grid-template-columns: 1fr; gap: 6px;
+  > label { padding-top: 0; }
+}
+.work-item-hours { flex-wrap: wrap;
+  label { flex-basis: 100%; padding-top: 0; }
+}
+.work-item-actions, .material-actions { flex-wrap: wrap;
+  button { min-height: 44px; flex: 1; }
+}
+@media (min-width: 481px) {
+  .material-field { display: flex; gap: 16px; > label { padding-top: 8px; } }
+  .material-field-value { justify-content: flex-end; }
+  .work-item-hours { flex-wrap: nowrap; label { flex-basis: auto; padding-top: 8px; } }
+  .work-item-actions, .material-actions { flex-wrap: nowrap; button { min-height: 0; flex: 0 1 auto; } }
+}
+@media (min-width: 901px) {
+  :host { height: 100%; }
+  .project-sidebar { height: 100%; overflow: hidden; }
+  .sidebar-content { flex: 1; padding: 16px; overflow-y: auto; overscroll-behavior: contain; }
+  .sidebar-content:has(.chat-panel) { flex: 1; overflow: hidden; }
+  .chat-panel { flex: 1; height: 100%; overflow: hidden; }
+  .chat-messages { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  .sidebar-tabs { overflow-x: visible; button { flex: 0 1 auto; min-height: 0; padding: 12px 16px; } }
+  .work-item-card, .material-card { padding: 16px; }
+}

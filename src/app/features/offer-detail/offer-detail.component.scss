@@ -227,19 +227,7 @@
   }
 }
 
-@media (max-width: 700px) {
-  .offer-document {
-    padding: 24px;
-  }
 
-  .offer-header {
-    flex-direction: column;
-  }
-
-  .company-details {
-    text-align: left;
-  }
-}
 
 
 .download-pdf-button {
@@ -265,3 +253,33 @@
 
 .offer-terms p { white-space: pre-wrap; overflow-wrap: anywhere; }
 .company-logo { max-width: 180px; max-height: 72px; object-fit: contain; background: white; padding: 8px; }
+
+
+
+
+.offer-page { padding: 16px 12px 32px; }
+.offer-document { padding: 20px 16px; overflow-wrap: anywhere; }
+.offer-header { flex-direction: column; gap: 20px; }
+.company-details { min-width: 0; text-align: left; }
+.offer-line-main { flex-direction: column; gap: 8px; }
+.pricing-row, .pricing-total { flex-wrap: wrap; gap: 8px; }
+.pricing-total strong { font-size: 22px; }
+.status-controls label { display: block; margin: 0 0 8px; }
+.page-toolbar button { min-height: 44px; }
+
+@media (min-width: 601px) {
+  .offer-page { padding: 32px 24px 64px; }
+  .offer-document { padding: 24px; }
+  .offer-header { gap: 40px; }
+  .company-details { min-width: 220px; }
+  .offer-line-main { flex-direction: row; gap: 32px; }
+  .pricing-row, .pricing-total { flex-wrap: nowrap; gap: 24px; }
+  .pricing-total strong { font-size: 24px; }
+  .status-controls label { display: inline; margin: 0 12px 0 0; }
+  .page-toolbar button { min-height: 0; }
+}
+@media (min-width: 701px) {
+  .offer-document { padding: 40px; }
+  .offer-header { flex-direction: row; }
+  .company-details { text-align: right; }
+}

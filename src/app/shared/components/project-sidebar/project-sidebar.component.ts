@@ -19,7 +19,7 @@ type SidebarTab = 'tasks' | 'materials' | 'chat' | 'offers';
   selector: 'app-project-sidebar',
   imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, NewSuggestionBadge],
   templateUrl: './project-sidebar.component.html',
-  styleUrl: './project-sidebar.component.scss',
+  styleUrls: ['./project-sidebar.component.scss', './project-sidebar.mobile.scss'],
 })
 export class ProjectSidebar implements OnDestroy {
   readonly statusLabel = offerStatusLabel;

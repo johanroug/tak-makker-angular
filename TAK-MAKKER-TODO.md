@@ -12,7 +12,7 @@
 ## 2. Vigtigt til en solid MVP
 
 - [x] **Sikkerhed og adgang** — RLS, rettigheder, databasefunktioner, appadgang og direkte AI-adgang kontrolleret med to virksomheder i begge retninger.
-- [ ] **Mobil og tablet** — Tilpasse layout, faner, formularer og tilbudsvisning.
+- [ ] **Mobil og tablet** — Responsive tilpasninger implementeret 21. oktober; afventer visuel kontrol på mobil/tablet.
 - [ ] **Vercel: skift fra React til Angular** — Vercel bruger i dag det gamle React-projekt i et andet repo. Tilknyt dette Angular-projekts repo, konfigurér Angular-build, outputmappe, miljøvariabler og routing, og kontrollér deployment samt genindlæsning af undersider.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
@@ -87,7 +87,22 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Fejlhåndtering er implementeret og afventer appkontrol. PDF-feedback er fravalgt af Johan.
+- Mobil og tablet: Afprøv de responsive tilpasninger. Fejlhåndtering er implementeret; den sidste loginrettelse afventer bekræftelse. PDF-feedback er fravalgt af Johan.
+
+### Mobil og tablet — 21. oktober 2026
+
+- [x] Header og nyt-projekt-dialog flyttet til et fælles layout over router-outlet for indloggede sider. Projektvælgerens data bevares ved navigation mellem projekter, tilbud og profil; login er uden header. Projektændringer opdaterer den delte liste lokalt.
+- [x] Fælles header bruger mobile-first styles med min-width. Produktionsbuild og kontroller af route-struktur og delt projektstate bestået; ingen nye databaseændringer eller spec-filer.
+- [ ] Johan: Skift mellem /projects, et projekt, et tilbud og virksomhedsprofilen; headeren skal blive stående. Kontrollér projektvælger, ændret projekttitel, Nyt projekt → AI → oplysningsmodal og logud/login.
+- [x] Efter Johans instruktion er alle breddebaserede media queries i src omlagt til min-width. Mobil er grundlayoutet; større layouts tilføjes ved 481, 601, 701 og 901 px. Kompileret CSS kontrolleret ved ti bredder, inkl. normal sidescroll til og med 900 px og panelscroll fra 901 px. Produktionsbuild bestået med størrelses-/CommonJS-advarsler.
+- [x] Kladden følger også sidens rulning ved højst 900 px: fjernet intern scroll og overscroll-containment i selve tilbudsvisningen. Modaler bevarer egen scroll.
+- [x] Efter Johans ønske har højrepanelet ved højst 900 px automatisk højde og følger sidens rulning. Intern lodret scroll og højdebegrænsning er fjernet for både fanernes indhold og samtalen; desktop bevarer separat scroll.
+- [x] Projektvælger begrænses til skærmbredden, og header/knapper tilpasses smalle skærme. Mindre sidemarginer og afstande på mobil.
+- [x] Faner kan rulles vandret; materialefelter får labels ovenover på smalle mobiler, og handlingsknapper kan brydes på flere rækker. Separate mobile styles bevarer desktop-layoutet.
+- [x] Tilbudslinjer og totaler kan brydes, lange dokumenttekster kan ombrydes, og virksomhedsoplysninger har ikke længere en fast minimumsbredde på mobil.
+- [x] Profil og modaler har mindre padding samt 16 px inputtekst på mobil. Ingen ændring af PDF-layout eller database.
+- [x] Produktionsbuild bestået med kendte størrelses-/CommonJS-advarsler. Ingen nye spec-filer. Visuel kontrol i en browser eller på en fysisk enhed er endnu ikke udført af Codex.
+- [ ] Johan: F12 → mobilikon, kontrollér bredder 375, 768 og 1024 px: projektvælger, alle faner, materialefelter, oplysningsmodal, nyt projekt, virksomhedsprofil og færdigt tilbud. Ingen vandret sidescroll; felter og knapper skal være tilgængelige.
 
 ### Fejlhåndtering — 21. oktober 2026
 
@@ -242,6 +257,7 @@ Status: Funktionelt afsluttet — Johan har bekræftet statusskift, gemning, gen
 Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punkter er endnu ikke gennemgået og godkendt som afsluttede.
 
 ## Arbejdsgang
+- Følg mobile first: Mobil er grundlayoutet. Brug min-width til breddebaserede media queries, aldrig max-width. Media queries for fx reduceret bevægelse bevares.
 ### Optimering af gemning efter AI-svar — 20. oktober 2026
 
 - [x] Seneste måling: AI 11.333 ms, kontekst 8.116 ms, samlet 20.477 ms. Separat måling af workItemsMs, materialsMs og messagesMs tilføjet; simuleret langsom samtale og bevaret parallel hentning kontrolleret.

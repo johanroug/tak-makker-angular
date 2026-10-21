@@ -191,14 +191,19 @@ form {
     animation: none;
   }
 }
-@media (max-width: 480px) {
-  .start-dialog {
-    padding: 24px 20px;
-    h2 {
-      font-size: 23px;
-    }
-  }
-  .ai-working {
-    padding: 12px 0;
-  }
+
+
+
+
+
+.start-dialog { padding: 20px 16px; box-sizing: border-box; h2 { font-size: 23px; } }
+.ai-working { padding: 12px 0; }
+form textarea { font-size: 16px; }
+
+@media (min-width: 481px) {
+  .start-dialog h2 { font-size: 26px; }
+  .ai-working { padding: 30px 0 18px; }
+}
+@media (min-width: 601px) {
+  .start-dialog { padding: 32px; }
 }

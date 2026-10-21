@@ -1,7 +1,7 @@
 @if (isNavigating()) { <div class="route-progress" role="progressbar" aria-label="Skifter side"></div> }
 <div class="header-shell">
   <header class="app-header">
-    <a routerLink="/projects" class="app-logo">Tak Makker</a>
+    <a routerLink="/projects" class="app-logo"><span class="brand-mark"><img src="/favicon.png" alt="" width="42" height="42" /></span><span>Tak Makker<small>DIN DIGITALE MAKKER</small></span></a>
     <button
       #menuToggle
       type="button"
@@ -34,6 +34,7 @@
 <ng-template #navigationContent>
   <div class="header-actions">
     <span class="menu-section-label">DIT ARBEJDSRUM</span>
+    <label class="project-picker"><span class="project-picker-caption">DIT PROJEKT</span>
     <select
       class="project-selector"
       aria-label="Vælg projekt"
@@ -47,6 +48,7 @@
         </option>
       }
     </select>
+    </label>
     <button type="button" class="new-project-button" (click)="createProject()">
       <span aria-hidden="true">＋</span> Nyt projekt
     </button>

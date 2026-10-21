@@ -12,263 +12,330 @@
     } @else if (data(); as data) {
       <div class="page-toolbar">
         <button type="button" class="back-button" (click)="backToProject()">
-          ← Tilbage til projekt
-        </button>
-
-        <button
-          type="button"
-          class="download-pdf-button"
-          [disabled]="isDownloadingPdf()"
-          (click)="downloadPdf()"
-        >
-          {{ isDownloadingPdf() ? 'Genererer PDF...' : 'Download PDF' }}
-        </button>
-
-        <span class="offer-status">{{ statusLabel(data.offer.status) }}</span>
+          ← Tilbage til projekt</button
+        ><span>PROJEKTER / TILBUD</span>
       </div>
-
-      <div class="status-controls" [attr.aria-busy]="isSavingStatus()">
-        <label for="offer-status">Tilbudsstatus</label>
-        <select #statusSelect id="offer-status"
-          [disabled]="isSavingStatus()"
-          (change)="changeStatus(statusSelect)">
-          @for (option of statusOptions; track option.value) {
-            <option [value]="option.value" [selected]="option.value === data.offer.status">{{ option.label }}</option>
-          }
-        </select>
-        <p>Markér selv tilbuddet som sendt, når du har sendt det til kunden.</p>
-        @if (isSavingStatus()) { <p role="status">Gemmer status...</p> }
-        @if (statusMessage()) { <p role="status">{{ statusMessage() }}</p> }
-        @if (statusError()) { <p class="offer-error" role="alert">{{ statusError() }}</p> }
-      </div>
-
-      @if (pdfError()) {
-        <p class="offer-error">
-          {{ pdfError() }}
-        </p>
-      }
-
-      <main class="offer-document" animate.enter="page-reveal">
-        <header class="offer-header">
-          <div>
-            <span class="offer-label"> TILBUD </span>
-
-            <h1>
-              {{ data.offer.project_title }}
-            </h1>
-
-            <p>
-              Tilbudsnr.
-              {{ data.offer.offer_number }}
+      <header class="page-heading">
+        <div>
+          <span class="eyebrow">TILBUD NR. {{ data.offer.offer_number }}</span>
+          <h1>{{ data.offer.project_title }}</h1>
+          <p>
+            Til {{ data.offer.customer_name }} <span aria-hidden="true">·</span> Oprettet
+            {{ data.offer.finalized_at | date: 'dd.MM.yyyy' }}
+          </p>
+        </div>
+        <span class="offer-status" [attr.data-status]="data.offer.status">{{
+          statusLabel(data.offer.status)
+        }}</span>
+      </header>
+      <div class="offer-layout" animate.enter="page-reveal">
+        <aside class="offer-summary" aria-label="Tilbudsoverblik og handlinger">
+          <section class="summary-card">
+            <span class="summary-eyebrow">DIT TILBUD I TAL</span>
+            <p class="summary-total">
+              {{ data.offer.pricing_total | number: '1.2-2' }} <span>kr.</span>
             </p>
-
-            <p>
-              Projektnr.
-              {{ data.offer.project_number }}
-            </p>
-
-            <p>
-              Dato:
-              {{ data.offer.finalized_at | date: 'dd.MM.yyyy' }}
-            </p>
+            <span class="tax-label">Samlet pris inkl. moms</span>
+            <div class="summary-breakdown">
+              <div>
+                <span>Arbejde</span
+                ><strong>{{ data.offer.pricing_labor | number: '1.2-2' }} kr.</strong>
+              </div>
+              <div>
+                <span>Materialer</span
+                ><strong>{{ data.offer.pricing_materials | number: '1.2-2' }} kr.</strong>
+              </div>
+              <div>
+                <span>Moms</span
+                ><strong>{{ data.offer.pricing_vat_amount | number: '1.2-2' }} kr.</strong>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="download-pdf-button"
+              [disabled]="isDownloadingPdf()"
+              (click)="downloadPdf()"
+            >
+              <span aria-hidden="true">↓</span
+              >{{ isDownloadingPdf() ? 'Genererer PDF…' : 'Download PDF' }}
+            </button>
+            @if (pdfError()) {
+              <p class="offer-error" role="alert">{{ pdfError() }}</p>
+            }
+            <p class="download-note">Klar til at sende videre til kunden.</p>
+          </section>
+          <div class="status-controls" [attr.aria-busy]="isSavingStatus()">
+            <label for="offer-status">Følg tilbuddet hele vejen</label>
+            <select
+              #statusSelect
+              id="offer-status"
+              [disabled]="isSavingStatus()"
+              (change)="changeStatus(statusSelect)"
+            >
+              @for (option of statusOptions; track option.value) {
+                <option [value]="option.value" [selected]="option.value === data.offer.status">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+            <p>Markér selv tilbuddet som sendt, når du har sendt det til kunden.</p>
+            @if (isSavingStatus()) {
+              <p role="status">Gemmer status...</p>
+            }
+            @if (statusMessage()) {
+              <p role="status">{{ statusMessage() }}</p>
+            }
+            @if (statusError()) {
+              <p class="offer-error" role="alert">{{ statusError() }}</p>
+            }
           </div>
 
-          <div class="company-details">
-            @if (data.offer.company_logo_data_url) {
-              <img class="company-logo" [src]="data.offer.company_logo_data_url" alt="Virksomhedens logo" />
-            }
+          <div class="saved-note">
+            <span aria-hidden="true">✦</span>
+            <p>Et færdigt tilbud med de oplysninger og priser, der blev gemt ved færdiggørelsen.</p>
+          </div>
+        </aside>
+        <main class="offer-document">
+          <header class="offer-header">
+            <div>
+              <span class="offer-label"> TILBUDSDOKUMENT </span>
+
+              <h2 class="document-title">
+                {{ data.offer.project_title }}
+              </h2>
+
+              <p>
+                Tilbudsnr.
+                {{ data.offer.offer_number }}
+              </p>
+
+              <p>
+                Projektnr.
+                {{ data.offer.project_number }}
+              </p>
+
+              <p>
+                Dato:
+                {{ data.offer.finalized_at | date: 'dd.MM.yyyy' }}
+              </p>
+            </div>
+
+            <div class="company-details">
+              @if (data.offer.company_logo_data_url) {
+                <img
+                  class="company-logo"
+                  [src]="data.offer.company_logo_data_url"
+                  alt="Virksomhedens logo"
+                />
+              }
+              <strong>
+                {{ data.offer.company_name }}
+              </strong>
+
+              @if (data.offer.company_cvr) {
+                <span>
+                  CVR:
+                  {{ data.offer.company_cvr }}
+                </span>
+              }
+
+              @if (data.offer.company_address) {
+                <span style="white-space: pre-line; overflow-wrap: anywhere">{{
+                  data.offer.company_address
+                }}</span>
+              }
+
+              @if (data.offer.company_contact_name) {
+                <span>
+                  {{ data.offer.company_contact_name }}
+                </span>
+              }
+
+              @if (data.offer.company_phone) {
+                <span>
+                  {{ data.offer.company_phone }}
+                </span>
+              }
+
+              @if (data.offer.company_email) {
+                <span>
+                  {{ data.offer.company_email }}
+                </span>
+              }
+            </div>
+          </header>
+
+          <section class="customer-section">
+            <h2>Kunde</h2>
+
             <strong>
-              {{ data.offer.company_name }}
+              {{ data.offer.customer_name }}
             </strong>
 
-            @if (data.offer.company_cvr) {
-              <span>
-                CVR:
-                {{ data.offer.company_cvr }}
-              </span>
-            }
+            <p>
+              {{ data.offer.customer_address }}
+            </p>
+          </section>
 
-            @if (data.offer.company_address) {
-              <span style="white-space: pre-line; overflow-wrap: anywhere">{{ data.offer.company_address }}</span>
-            }
-
-            @if (data.offer.company_contact_name) {
-              <span>
-                {{ data.offer.company_contact_name }}
-              </span>
-            }
-
-            @if (data.offer.company_phone) {
-              <span>
-                {{ data.offer.company_phone }}
-              </span>
-            }
-
-            @if (data.offer.company_email) {
-              <span>
-                {{ data.offer.company_email }}
-              </span>
-            }
-          </div>
-        </header>
-
-        <section class="customer-section">
-          <h2>Kunde</h2>
-
-          <strong>
-            {{ data.offer.customer_name }}
-          </strong>
-
-          <p>
-            {{ data.offer.customer_address }}
-          </p>
-        </section>
-
-        <section class="description-section">
-          <h2>Projektbeskrivelse</h2>
-
-          <p>
-            {{ data.offer.project_description }}
-          </p>
-        </section>
-
-        @if (data.offer.offer_description) {
           <section class="description-section">
-            <h2>Tilbudsbeskrivelse</h2>
+            <h2>Projektbeskrivelse</h2>
 
             <p>
-              {{ data.offer.offer_description }}
+              {{ data.offer.project_description }}
             </p>
           </section>
-        }
 
-        @if (data.workItems.length > 0) {
-          <section class="offer-section">
-            <h2>Arbejde</h2>
+          @if (data.offer.offer_description) {
+            <section class="description-section">
+              <h2>Tilbudsbeskrivelse</h2>
 
-            @for (item of data.workItems; track item.id) {
-              <div class="offer-line">
-                <div class="offer-line-main">
-                  <div>
-                    <h3>
-                      {{ item.trade }}
-                    </h3>
+              <p>
+                {{ data.offer.offer_description }}
+              </p>
+            </section>
+          }
 
-                    <p>
-                      {{ item.description }}
-                    </p>
+          @if (data.workItems.length > 0) {
+            <section class="offer-section">
+              <h2>
+                Arbejde <span class="line-count">{{ data.workItems.length }}</span>
+              </h2>
 
-                    <small>
-                      {{ item.estimated_hours | number: '1.0-2' }}
-                      timer ×
-                      {{ item.hourly_rate | number: '1.0-2' }}
-                      kr.
-                    </small>
-                  </div>
+              @for (item of data.workItems; track item.id) {
+                <div class="offer-line">
+                  <div class="offer-line-main">
+                    <div>
+                      <h3>
+                        {{ item.trade }}
+                      </h3>
 
-                  <strong>
-                    {{ item.total_price | number: '1.2-2' }}
-                    kr.
-                  </strong>
-                </div>
-              </div>
-            }
-          </section>
-        }
-
-        @if (data.materials.length > 0) {
-          <section class="offer-section">
-            <h2>Materialer</h2>
-
-            @for (material of data.materials; track material.id) {
-              <div class="offer-line">
-                <div class="offer-line-main">
-                  <div>
-                    <h3>
-                      {{ material.name }}
-                    </h3>
-
-                    @if (material.description) {
                       <p>
-                        {{ material.description }}
+                        {{ item.description }}
                       </p>
-                    }
 
-                    <small>
-                      {{ material.quantity | number: '1.0-2' }}
-                      {{ material.unit }}
-                      ×
-                      {{ material.unit_price | number: '1.0-2' }}
+                      <small>
+                        {{ item.estimated_hours | number: '1.0-2' }}
+                        timer ×
+                        {{ item.hourly_rate | number: '1.0-2' }}
+                        kr.
+                      </small>
+                    </div>
+
+                    <strong>
+                      {{ item.total_price | number: '1.2-2' }}
                       kr.
-                    </small>
+                    </strong>
                   </div>
-
-                  <strong>
-                    {{ material.total_price | number: '1.2-2' }}
-                    kr.
-                  </strong>
                 </div>
-              </div>
-            }
+              }
+            </section>
+          }
+
+          @if (data.materials.length > 0) {
+            <section class="offer-section">
+              <h2>
+                Materialer <span class="line-count">{{ data.materials.length }}</span>
+              </h2>
+
+              @for (material of data.materials; track material.id) {
+                <div class="offer-line">
+                  <div class="offer-line-main">
+                    <div>
+                      <h3>
+                        {{ material.name }}
+                      </h3>
+
+                      @if (material.description) {
+                        <p>
+                          {{ material.description }}
+                        </p>
+                      }
+
+                      <small>
+                        {{ material.quantity | number: '1.0-2' }}
+                        {{ material.unit }}
+                        ×
+                        {{ material.unit_price | number: '1.0-2' }}
+                        kr.
+                      </small>
+                    </div>
+
+                    <strong>
+                      {{ material.total_price | number: '1.2-2' }}
+                      kr.
+                    </strong>
+                  </div>
+                </div>
+              }
+            </section>
+          }
+
+          <section class="offer-section offer-terms">
+            <h2>Tilbudsbetingelser</h2>
+            <p>
+              Gyldighed:
+              {{
+                data.offer.validity_days === null
+                  ? 'Ikke angivet'
+                  : data.offer.validity_days + ' dage fra tilbudsdato'
+              }}
+            </p>
+            <h3>Betalingsbetingelser</h3>
+            <p>{{ data.offer.payment_terms || 'Ikke angivet' }}</p>
+            <h3>Forbehold</h3>
+            <p>{{ data.offer.reservations || 'Ingen angivet' }}</p>
           </section>
-        }
 
-        <section class="offer-section offer-terms">
-          <h2>Tilbudsbetingelser</h2>
-          <p>Gyldighed: {{ data.offer.validity_days === null ? 'Ikke angivet' : data.offer.validity_days + ' dage fra tilbudsdato' }}</p>
-          <h3>Betalingsbetingelser</h3><p>{{ data.offer.payment_terms || 'Ikke angivet' }}</p>
-          <h3>Forbehold</h3><p>{{ data.offer.reservations || 'Ingen angivet' }}</p>
-        </section>
+          <section class="pricing">
+            <div class="pricing-row">
+              <span>Arbejde</span>
 
-        <section class="pricing">
-          <div class="pricing-row">
-            <span>Arbejde</span>
+              <strong>
+                {{ data.offer.pricing_labor | number: '1.2-2' }}
+                kr.
+              </strong>
+            </div>
 
-            <strong>
-              {{ data.offer.pricing_labor | number: '1.2-2' }}
-              kr.
-            </strong>
-          </div>
+            <div class="pricing-row">
+              <span>Materialer</span>
 
-          <div class="pricing-row">
-            <span>Materialer</span>
+              <strong>
+                {{ data.offer.pricing_materials | number: '1.2-2' }}
+                kr.
+              </strong>
+            </div>
 
-            <strong>
-              {{ data.offer.pricing_materials | number: '1.2-2' }}
-              kr.
-            </strong>
-          </div>
+            <div class="pricing-divider"></div>
 
-          <div class="pricing-divider"></div>
+            <div class="pricing-row">
+              <span>Subtotal</span>
 
-          <div class="pricing-row">
-            <span>Subtotal</span>
+              <strong>
+                {{ data.offer.pricing_subtotal | number: '1.2-2' }}
+                kr.
+              </strong>
+            </div>
 
-            <strong>
-              {{ data.offer.pricing_subtotal | number: '1.2-2' }}
-              kr.
-            </strong>
-          </div>
+            <div class="pricing-row">
+              <span> Moms ({{ data.offer.pricing_vat_rate * 100 | number: '1.2-2' }}%) </span>
 
-          <div class="pricing-row">
-            <span> Moms ({{ data.offer.pricing_vat_rate * 100 | number: '1.2-2' }}%) </span>
+              <strong>
+                {{ data.offer.pricing_vat_amount | number: '1.2-2' }}
+                kr.
+              </strong>
+            </div>
 
-            <strong>
-              {{ data.offer.pricing_vat_amount | number: '1.2-2' }}
-              kr.
-            </strong>
-          </div>
+            <div class="pricing-total">
+              <span>I alt</span>
 
-          <div class="pricing-total">
-            <span>I alt</span>
-
-            <strong>
-              {{ data.offer.pricing_total | number: '1.2-2' }}
-              kr.
-            </strong>
-          </div>
-        </section>
-      </main>
+              <strong>
+                {{ data.offer.pricing_total | number: '1.2-2' }}
+                kr.
+              </strong>
+            </div>
+          </section>
+        </main>
+      </div>
     }
   </div>
 </div>

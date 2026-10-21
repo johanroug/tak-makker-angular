@@ -12,8 +12,14 @@
       Materialer
     </button>
 
-    <button type="button" [class.active]="activeTab() === 'chat'" (click)="selectTab('chat')">
-      Samtale
+    <button class="conversation-tab" type="button" [class.active]="activeTab() === 'chat'" (click)="selectTab('chat')">
+      <span class="conversation-tab-label">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+          <path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4L12 3Z" fill="currentColor" />
+          <path d="m20 2 .8 2.2L23 5l-2.2.8L20 8l-.8-2.2L17 5l2.2-.8L20 2Z" fill="currentColor" />
+        </svg>
+        Samtale
+      </span>
     </button>
 
     <button type="button" [class.active]="activeTab() === 'offers'" (click)="selectTab('offers')">

@@ -16,11 +16,19 @@
   align-items: center;
 }
 .app-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: #111;
   font-size: 18px;
   font-weight: 700;
   text-decoration: none;
+  white-space: nowrap;
+  small { display: block; margin-top: 4px; font-size: 8px; letter-spacing: 1.5px; color: #8a7551; }
 }
+.brand-mark { display: grid; place-items: center; width: 50px; height: 50px; border: 1px solid #e8dcc4; border-radius: 15px; background: #f5ecd9; }
+.project-picker { display: block; position: relative; min-width: 0; width: 100%; }
+.project-picker-caption { position: absolute; top: 9px; left: 16px; pointer-events: none; font-size: 8px; font-weight: 700; letter-spacing: 1.5px; color: #927544; }
 .menu-toggle {
   display: flex;
   align-items: center;
@@ -45,7 +53,7 @@
   min-width: 0;
   width: 100%;
   max-width: 100%;
-  padding: 15px 44px 15px 12px;
+  padding: 25px 44px 10px 16px;
   border: 1px solid #e2ddd4;
   border-radius: 12px;
   background: white;
@@ -56,6 +64,10 @@
   font: inherit;
   font-size: 16px;
   font-weight: 600;
+  box-shadow: 0 3px 12px #49371805;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  &:hover { border-color: #baa06e; }
+  &:focus-visible { outline: 2px solid #ad8136; outline-offset: 3px; }
 }
 .new-project-button {
   display: flex;
@@ -266,12 +278,12 @@
     justify-self: end;
   }
   .project-selector {
-    flex: 1;
-    width: auto;
-    padding: 12px 44px 12px 16px;
-    border-color: #ddd;
-    border-radius: 8px;
+    width: 100%;
+    padding: 25px 44px 10px 16px;
+    border-color: #e2d7c3;
+    border-radius: 12px;
   }
+  .project-picker { flex: 1; width: auto; }
   .new-project-button {
     flex: 0 0 auto;
     width: auto;

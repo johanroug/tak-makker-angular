@@ -193,6 +193,12 @@
     </div>
   </div>
 
+  @if (!finalizedOfferId() && !hasPendingChanges() && !missingRequirements.length) {
+    <p class="ready-message">
+      Alle nødvendige oplysninger er udfyldt. Tilbuddet er klar til at blive færdiggjort.
+    </p>
+  }
+
   <div class="offer-footer">
     @if (finalizedOfferNumber(); as offerNumber) {
       <div class="finalized-message">
@@ -223,28 +229,27 @@
           }}
         </p>
       }
-      <p class="finalize-hint">
-        Status: Kladde. Når du færdiggør kladden, oprettes et fast tilbud, som kan markeres som
-        sendt, accepteret eller afvist.
-      </p>
-      <button
-        type="button"
-        [disabled]="!canFinalizeOffer"
-        [title]="canFinalizeOffer ? '' : finalizeDisabledReason"
-        (click)="finalizeOffer()"
-      >
-        @if (isFinalizing()) {
-          Færdiggør tilbud...
-        } @else {
-          Færdiggør tilbud
-        }
-      </button>
-    }
-
-    @if (!finalizedOfferId() && !hasPendingChanges() && !missingRequirements.length) {
-      <p class="ready-message">
-        Alle nødvendige oplysninger er udfyldt. Tilbuddet er klar til at blive færdiggjort.
-      </p>
+      <div class="finalize-actions">
+        <div class="finalize-copy">
+          <strong>Gør dit tilbud klar</strong>
+          <p class="finalize-hint">
+            Status: Kladde. Når du færdiggør kladden, oprettes et fast tilbud, som kan markeres som
+            sendt, accepteret eller afvist.
+          </p>
+        </div>
+        <button
+          type="button"
+          [disabled]="!canFinalizeOffer"
+          [title]="canFinalizeOffer ? '' : finalizeDisabledReason"
+          (click)="finalizeOffer()"
+        >
+          @if (isFinalizing()) {
+            Færdiggør tilbud...
+          } @else {
+            Færdiggør tilbud
+          }
+        </button>
+      </div>
     }
   </div>
 </section>
@@ -350,20 +355,32 @@
   </form>
 </dialog>
 
-<dialog #successDialog class="details-dialog success-dialog" aria-labelledby="offer-success-title"
-  (cancel)="isDownloadingPdf() ? $event.preventDefault() : null">
+<dialog
+  #successDialog
+  class="details-dialog success-dialog"
+  aria-labelledby="offer-success-title"
+  (cancel)="isDownloadingPdf() ? $event.preventDefault() : null"
+>
   <div class="success-check" aria-hidden="true">✓</div>
   <p class="success-eyebrow">GODT ARBEJDE, MAKKER</p>
   <h2 id="offer-success-title">Dit tilbud er klar</h2>
   <p>Tilbud nr. {{ finalizedOfferNumber() }} er gemt og klar til næste skridt.</p>
-  <p class="success-price">{{ finalizedTotal() | number:'1.2-2' }} kr.<small>inkl. moms</small></p>
-  @if (pdfError()) { <p role="alert" class="finalize-error">{{ pdfError() }}</p> }
+  <p class="success-price">{{ finalizedTotal() | number: '1.2-2' }} kr.<small>inkl. moms</small></p>
+  @if (pdfError()) {
+    <p role="alert" class="finalize-error">{{ pdfError() }}</p>
+  }
   <div class="success-actions">
-    <button type="button" (click)="viewFinalizedOffer()" [disabled]="isDownloadingPdf()" autofocus>Se tilbud</button>
+    <button type="button" (click)="viewFinalizedOffer()" [disabled]="isDownloadingPdf()" autofocus>
+      Se tilbud
+    </button>
     <button type="button" (click)="downloadFinalizedPdf()" [disabled]="isDownloadingPdf()">
       {{ isDownloadingPdf() ? 'Gør din PDF klar…' : 'Download PDF' }}
     </button>
-    <button type="button" (click)="closeSuccess()" [disabled]="isDownloadingPdf()">Tilbage til projektet</button>
+    <button type="button" (click)="closeSuccess()" [disabled]="isDownloadingPdf()">
+      Tilbage til projektet
+    </button>
   </div>
-  <span role="status" class="success-download-status">{{ isDownloadingPdf() ? 'PDF bliver genereret. Vent et øjeblik…' : '' }}</span>
+  <span role="status" class="success-download-status">{{
+    isDownloadingPdf() ? 'PDF bliver genereret. Vent et øjeblik…' : ''
+  }}</span>
 </dialog>

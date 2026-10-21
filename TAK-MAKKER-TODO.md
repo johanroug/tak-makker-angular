@@ -16,7 +16,7 @@
 - [ ] **Vercel: skift fra React til Angular** — Vercel bruger i dag det gamle React-projekt i et andet repo. Tilknyt dette Angular-projekts repo, konfigurér Angular-build, outputmappe, miljøvariabler og routing, og kontrollér deployment samt genindlæsning af undersider.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
-- [ ] **PDF-finpudsning** — Sideskift, lange beskrivelser, mange opgaver og materialer.
+- [x] **PDF-finpudsning** — Nyt lyst PDF-design implementeret 21. oktober. Sideskift, lange tekster, mange linjer og logo kontrolleret lokalt; Johan har godkendt resultatet.
 - [ ] **Deployment** — Miljøvariabler, produktionsdatabase, domæne og fejllogning.
 
 ## 3. Efter MVP
@@ -30,6 +30,11 @@
 
 ## Brugeroplevelse — nye forbedringer
 
+- [ ] **Sticky færdiggørelse** — Bjælken med Færdiggør tilbud følger nu med i bunden som på virksomhedsprofilen, på mobil og desktop. Produktionsbuild bestået; afventer Johans appkontrol.
+
+- [x] Johan har godkendt tilbudssidens nye design.
+- [ ] **Tilbudsside: nyt design** — Implementeret: dokumentvisning, tydelig overskrift/status og separat pris-/handlingspanel med PDF og statusskift. Afventer Johans appkontrol.
+- [x] Johan har godkendt virksomhedsprofilens nye visuelle udtryk.
 - [ ] **Virksomhedsprofil: nyt design** — Implementeret: fire sektionskort, varm visuel stil, levende afsenderforhåndsvisning og sticky gemmebjælke. Afventer Johans appkontrol.
 - [ ] **Sideovergange og indlæsning** — Implementeret: korte routeskift, topindikator, skeletvisninger og indtoning af færdigindlæst indhold. Afventer Johans appkontrol.
 - [x] **AI i samtalepanelet** — Animation og skiftende ventetekster som i startmodalen. Johan har bekræftet, at det virker.
@@ -91,6 +96,16 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
+- Afprøv det nye PDF-design med et rigtigt tilbud.
+
+### Nyt PDF-design — 21. oktober 2026
+
+- [x] Lys brevpapirstil med varm accent, større typografi, logo, kunde-/afsenderoplysninger, læsbare tabeller, tydelig total samt sidetal og fortsættelsesheader.
+- [x] PDF bruger fortsat tilbudskopiens oplysninger, priser, logo og betingelser. Gemte summer vises direkte; status tilføjes ikke til PDF.
+- [x] Normale tabelrækker og korte betingelser holdes samlet. Meget lange tekster kan fortsætte over sider; tabeloverskrifter gentages.
+- [x] Fem PDF-scenarier fra den faktiske service genereret, renderet og visuelt gennemgået: almindeligt tilbud, 67 linjer, meget lang beskrivelse/forbehold, logo og tomme/ældre værdier. Tekstkontrol af slutmarkører, danske tegn, margener og gemte totaler bestået. Ingen nye spec-filer.
+- [x] Produktionsbuild bestået med kendte størrelses-/CommonJS-advarsler. Eksempel med fiktive data i output/pdf/tak-makker-design-preview.pdf; genererede PDF-eksempler ignoreres af Git.
+- [ ] Johan: Download PDF fra et eksisterende tilbud. Kontrollér design, logo, kunde, linjer, pris, moms, betingelser og sideskift. Ingen SQL eller Edge-udrulning nødvendig.
 - Afprøv sideovergange og indlæsning efter Johans nye ønske.
 - Mobil og tablet: Afprøv de responsive tilpasninger. Fejlhåndtering er implementeret; den sidste loginrettelse afventer bekræftelse. PDF-feedback er fravalgt af Johan.
 
@@ -121,6 +136,8 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ### Sideovergange og indlæsning — 21. oktober 2026
 
+- [x] Tilbudssiden har fået samme varme design som profilen: dokumentkort med alle gemte oplysninger og separat overblik over pris, status og PDF. Mobil viser handlinger først; desktop har sticky sidepanel fra min-width 1024 px. Kun template og styles ændret; PDF og statuslogik er bevaret. Produktionsbuild bestået med kendte advarsler.
+- [ ] Johan: Kontrollér tilbudssidens nye layout på mobil/desktop, skift og genindlæs status samt download PDF. Priser og historiske tilbudsoplysninger skal være uændrede.
 - [x] Justeret efter Johans feedback: forskudte lag, bevægelse, zoom, blur og lysskær erstattet af en samlet opacity-fade på 350 ms ved både routeskift og færdigindlæst indhold. Loading-feedback og reduceret bevægelse bevares.
 - [x] Efter ønske om mere WOW: dybde/skalering ved routeskift, indhold der kommer frem i forskudte lag, kort gyldent lysskær og animeret loading-emblem. Indlæsning får ingen kunstig ventetid; indholdsanimationen varer 560 ms, og reduceret bevægelse slår effekterne fra. Build bestået; visuel appkontrol afventer Johan.
 - [x] Angular View Transitions på routeskift: kun sideindholdet har navngiven overgang; headeren forbliver stationær. Initial navigation og ændringer kun i query/fragment springer over. Browser uden understøttelse bruger normal navigation.

@@ -9,7 +9,12 @@
 .offer-details-form input, .offer-details-form textarea { font-size: 16px; }
 .form-actions button { min-height: 44px; flex: 1; }
 .finalized-message { flex-wrap: wrap; }
+.finalize-actions { display: grid; gap: 12px; align-items: center; }
+.finalize-copy strong { font-size: 13px; }
+.offer-footer .finalize-hint { margin: 5px 0 0; text-align: left; font-size: 11px; line-height: 1.6; }
+.offer-footer .finalized-message { margin-bottom: 0; }
 @media (min-width: 601px) {
+  .finalize-actions { grid-template-columns: minmax(0, 1fr) auto; gap: 20px; }
   .offer-preview { padding: 20px; }
   .offer-line-header { flex-direction: row; gap: 24px; }
   .pricing-row, .pricing-total { flex-wrap: nowrap; gap: 24px; }
@@ -19,8 +24,4 @@
   .offer-details-form input, .offer-details-form textarea { font-size: inherit; }
   .form-actions button { min-height: 0; flex: 0 1 auto; }
   .finalized-message { flex-wrap: nowrap; }
-}
-@media (min-width: 901px) {
-  :host { height: 100%; }
-  .offer-preview { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
 }

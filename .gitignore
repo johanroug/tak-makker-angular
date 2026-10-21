@@ -46,3 +46,6 @@ Thumbs.db
 # Supabase CLI temporary files
 supabase/.temp/
 supabase/audits/
+
+# Generated PDF previews
+/output/pdf/

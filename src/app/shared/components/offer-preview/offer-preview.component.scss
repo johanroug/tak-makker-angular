@@ -366,7 +366,15 @@
 }
 
 .offer-footer {
-  padding-top: 8px;
+  position: sticky;
+  bottom: 12px;
+  z-index: 3;
+  padding: 16px;
+  margin-top: 20px;
+  border: 1px solid #dcd4c6;
+  border-radius: 14px;
+  background: #faf7f0;
+  box-shadow: 0 -8px 28px #30291d1a, 0 8px 24px #30291d12;
 
   button {
     width: 100%;

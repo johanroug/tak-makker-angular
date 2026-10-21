@@ -13,7 +13,7 @@
 
 - [x] **Sikkerhed og adgang** — RLS, rettigheder, databasefunktioner, appadgang og direkte AI-adgang kontrolleret med to virksomheder i begge retninger.
 - [ ] **Mobil og tablet** — Responsive tilpasninger implementeret 21. oktober; afventer visuel kontrol på mobil/tablet.
-- [ ] **Vercel: skift fra React til Angular** — Vercel bruger i dag det gamle React-projekt i et andet repo. Tilknyt dette Angular-projekts repo, konfigurér Angular-build, outputmappe, miljøvariabler og routing, og kontrollér deployment samt genindlæsning af undersider.
+- [ ] **Vercel: skift fra React til Angular** — Repo klargjort med vercel.json (Angular, build, browser-output og SPA-routing), Node 24.x og VERCEL-DEPLOYMENT.md. Produktionsbuild og outputfiler kontrolleret. Vercel-projektet tak-makker er nu forbundet til johanroug/tak-makker-angular; Angular, npm ci, build, outputmappe og Node 24.x er kontrolleret/opsat i dashboardet. Afventer commit/push af konfigurationen og kontrol af faktisk deployment/undersider.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
 - [x] **PDF-finpudsning** — Nyt lyst PDF-design implementeret 21. oktober. Sideskift, lange tekster, mange linjer og logo kontrolleret lokalt; Johan har godkendt resultatet.
@@ -96,7 +96,7 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Afprøv det nye PDF-design med et rigtigt tilbud.
+- Vercel: Skift fra det gamle React-repo til Angular-projektet; kontrollér build, miljøvariabler og routing. Johan har valgt dette som næste disciplin.
 
 ### Nyt PDF-design — 21. oktober 2026
 
@@ -105,7 +105,7 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 - [x] Normale tabelrækker og korte betingelser holdes samlet. Meget lange tekster kan fortsætte over sider; tabeloverskrifter gentages.
 - [x] Fem PDF-scenarier fra den faktiske service genereret, renderet og visuelt gennemgået: almindeligt tilbud, 67 linjer, meget lang beskrivelse/forbehold, logo og tomme/ældre værdier. Tekstkontrol af slutmarkører, danske tegn, margener og gemte totaler bestået. Ingen nye spec-filer.
 - [x] Produktionsbuild bestået med kendte størrelses-/CommonJS-advarsler. Eksempel med fiktive data i output/pdf/tak-makker-design-preview.pdf; genererede PDF-eksempler ignoreres af Git.
-- [ ] Johan: Download PDF fra et eksisterende tilbud. Kontrollér design, logo, kunde, linjer, pris, moms, betingelser og sideskift. Ingen SQL eller Edge-udrulning nødvendig.
+- [x] Johan har godkendt det endelige PDF-design: lyse tabeller for arbejde/materialer med beskrivelse, mængde/timer, enhedspris og beløb samt tabelbaseret prisoversigt med diskret fremhævet total.
 - Afprøv sideovergange og indlæsning efter Johans nye ønske.
 - Mobil og tablet: Afprøv de responsive tilpasninger. Fejlhåndtering er implementeret; den sidste loginrettelse afventer bekræftelse. PDF-feedback er fravalgt af Johan.
 

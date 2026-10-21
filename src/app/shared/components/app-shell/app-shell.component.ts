@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { supabase } from '../../../core/supabase/supabase.client';
+import { AuthService } from '../../../core/auth/auth.service';
 import { NewProjectDialog } from '../new-project-dialog/new-project-dialog.component';
 import { WorkspaceState } from './workspace-state';
 
@@ -15,6 +15,7 @@ import { WorkspaceState } from './workspace-state';
 })
 export class AppShell implements OnInit {
   readonly workspace = inject(WorkspaceState);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly newProjectDialog = viewChild.required(NewProjectDialog);
   readonly isLoggingOut = signal(false);
@@ -52,7 +53,7 @@ export class AppShell implements OnInit {
     this.isLoggingOut.set(true);
     this.logoutError.set('');
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await this.authService.signOut();
       if (error) throw error;
       await this.router.navigate(['/login']);
     } catch (error) {

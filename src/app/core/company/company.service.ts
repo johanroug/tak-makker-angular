@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
+import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 
 export type CompanyProfile = {
@@ -19,11 +20,12 @@ export type CompanyProfile = {
   providedIn: 'root',
 })
 export class CompanyService {
+  private readonly authService = inject(AuthService);
   async getCurrentCompanyProfile(): Promise<CompanyProfile | null> {
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await this.authService.getUser();
 
     if (userError || !user) {
       return null;
@@ -84,7 +86,7 @@ export class CompanyService {
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await this.authService.getUser();
 
     if (userError || !user) {
       throw new Error('Brugeren er ikke logget ind.');

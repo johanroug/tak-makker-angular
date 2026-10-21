@@ -91,6 +91,9 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ### Mobil og tablet — 21. oktober 2026
 
+- [x] Gentagne user-kald samlet i AuthService: samtidige kald deler forespørgsel, og serverbekræftet bruger genbruges i højst 30 sekunder og aldrig efter kendt tokenudløb. Projekt-/profilservices og logud bruger samme service. Login, logud, tokenskift og brugeropdatering nulstiller kontrollen; fejl caches ikke.
+- [x] Produktionsbuild og simulerede kontroller af cacheudløb, samtidighed, login/logud, token-refresh, netværksfejl og gammelt svar efter kontoskift bestået. RLS, databasefunktioner og Edge-adgangskontrol er uændrede.
+- [ ] Johan: Ryd Network-listen og skift hurtigt mellem projekter, tilbud og profil. Inden for 30 sekunder bør de gentagne user-kald forsvinde. Kontrollér også logud, login og sideskift efter over 30 sekunder.
 - [x] Header og nyt-projekt-dialog flyttet til et fælles layout over router-outlet for indloggede sider. Projektvælgerens data bevares ved navigation mellem projekter, tilbud og profil; login er uden header. Projektændringer opdaterer den delte liste lokalt.
 - [x] Fælles header bruger mobile-first styles med min-width. Produktionsbuild og kontroller af route-struktur og delt projektstate bestået; ingen nye databaseændringer eller spec-filer.
 - [ ] Johan: Skift mellem /projects, et projekt, et tilbud og virksomhedsprofilen; headeren skal blive stående. Kontrollér projektvælger, ændret projekttitel, Nyt projekt → AI → oplysningsmodal og logud/login.

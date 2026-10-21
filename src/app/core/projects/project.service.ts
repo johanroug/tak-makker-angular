@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
+import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 import type { ProjectResponse } from '../ai/project-response';
 import { Database } from '../supabase/database.types';
@@ -7,6 +8,7 @@ import { Database } from '../supabase/database.types';
   providedIn: 'root',
 })
 export class ProjectService {
+  private readonly authService = inject(AuthService);
   async saveAiResponse(projectId: string, response: ProjectResponse): Promise<void> {
     const started = performance.now();
     try {
@@ -45,7 +47,7 @@ export class ProjectService {
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await this.authService.getUser();
 
     if (userError || !user) {
       throw new Error('Brugeren er ikke logget ind.');
@@ -105,7 +107,7 @@ export class ProjectService {
     const {
       data: { user },
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await this.authService.getUser();
 
     if (userError || !user) {
       throw new Error('Brugeren er ikke logget ind.');

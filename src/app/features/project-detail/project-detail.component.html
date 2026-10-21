@@ -34,14 +34,22 @@
       <div class="account-actions">
         <a routerLink="/company-profile" class="profile-button"> Virksomhedsprofil </a>
 
-        <button type="button" class="logout-button" (click)="logout()">Log ud</button>
+        <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()">{{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}</button>
       </div>
     </header>
 
+    @if (logoutError()) { <p role="alert">{{ logoutError() }}</p> }
+    @if (projectListError()) {
+      <p role="alert">{{ projectListError() }} <button type="button" (click)="loadProjects()" [disabled]="isLoadingProjects()">Prøv igen</button></p>
+    }
+    @if (refreshError()) {
+      <p role="alert">{{ refreshError() }} <button type="button" (click)="retryRefresh()" [disabled]="isRefreshing()">{{ isRefreshing() ? 'Henter…' : 'Prøv igen' }}</button></p>
+    }
     @if (isLoading()) {
       <p>Henter projekt...</p>
     } @else if (errorMessage()) {
-      <p>{{ errorMessage() }}</p>
+      <p role="alert">{{ errorMessage() }}</p>
+      <button type="button" (click)="retryProject()">Prøv igen</button>
     } @else if (project(); as data) {
       <!-- Hovedlayout -->
       <main class="project-layout">

@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../core/auth/auth.service";
@@ -15,12 +15,13 @@ export class Login {
 
   email = "";
   password = "";
-  errorMessage = "";
-  isLoggingIn = false;
+  readonly errorMessage = signal("");
+  readonly isLoggingIn = signal(false);
 
   async login() {
-    this.errorMessage = "";
-    this.isLoggingIn = true;
+    if (this.isLoggingIn()) return;
+    this.errorMessage.set("");
+    this.isLoggingIn.set(true);
 
     try {
       const { error } = await this.authService.signIn(
@@ -29,13 +30,20 @@ export class Login {
       );
 
       if (error) {
-        this.errorMessage = "Forkert e-mail eller adgangskode.";
+        this.errorMessage.set(error.status === 429
+          ? 'For mange loginforsøg. Vent lidt og prøv igen.'
+          : error.code === 'invalid_credentials'
+            ? 'Forkert e-mail eller adgangskode.'
+            : 'Login kunne ikke gennemføres. Kontrollér forbindelsen og prøv igen.');
         return;
       }
 
       await this.router.navigate(["/projects"]);
+    } catch (error) {
+      console.error('Could not sign in:', error);
+      this.errorMessage.set('Login kunne ikke gennemføres. Kontrollér forbindelsen og prøv igen.');
     } finally {
-      this.isLoggingIn = false;
+      this.isLoggingIn.set(false);
     }
   }
 }

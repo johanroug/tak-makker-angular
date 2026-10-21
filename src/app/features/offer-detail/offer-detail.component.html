@@ -3,8 +3,9 @@
     @if (isLoading()) {
       <p>Henter tilbud...</p>
     } @else if (errorMessage()) {
-      <div class="offer-error">
+      <div class="offer-error" role="alert">
         <p>{{ errorMessage() }}</p>
+        <button type="button" (click)="retryOffer()">Prøv igen</button>
 
         <button type="button" (click)="backToProject()">Tilbage</button>
       </div>

@@ -3,7 +3,8 @@
 @if (isLoading()) {
   <p>Henter projekter...</p>
 } @else if (errorMessage()) {
-  <p>{{ errorMessage() }}</p>
+  <p role="alert">{{ errorMessage() }}</p>
+  <button type="button" (click)="loadProjects()">Prøv igen</button>
 } @else if (projects().length === 0) {
   <p>Du har endnu ingen projekter.</p>
 } @else {

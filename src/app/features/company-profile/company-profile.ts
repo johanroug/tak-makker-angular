@@ -48,7 +48,14 @@ export class CompanyProfileComponent implements OnInit {
     reservations: new FormControl('', { nonNullable: true }),
   });
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void { void this.loadProfile(); }
+
+  private loadingProfile = false;
+  async loadProfile(): Promise<void> {
+    if (this.loadingProfile || this.hasProfile()) return;
+    this.loadingProfile = true;
+    this.isLoading.set(true);
+    this.message.set('');
     try {
       const profile =
         await this.companyService.getCurrentCompanyProfile();
@@ -64,6 +71,7 @@ export class CompanyProfileComponent implements OnInit {
       this.message.set("Kunne ikke hente virksomhedsprofilen.");
     } finally {
       this.isLoading.set(false);
+      this.loadingProfile = false;
     }
   }
 

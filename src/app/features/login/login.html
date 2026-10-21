@@ -32,12 +32,12 @@
         />
       </label>
 
-      @if (errorMessage) {
-        <p class="login-error">{{ errorMessage }}</p>
+      @if (errorMessage()) {
+        <p class="login-error" role="alert">{{ errorMessage() }}</p>
       }
 
-      <button type="submit" [disabled]="isLoggingIn">
-        {{ isLoggingIn ? 'Logger ind...' : 'Log ind' }}
+      <button type="submit" [disabled]="isLoggingIn()">
+        {{ isLoggingIn() ? 'Logger ind...' : 'Log ind' }}
       </button>
     </form>
   </main>

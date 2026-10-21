@@ -11,6 +11,7 @@
       <p>Henter virksomhedsprofil...</p>
     } @else if (!hasProfile()) {
       <p role="alert">{{ message() }}</p>
+      <button type="button" (click)="loadProfile()">Prøv igen</button>
     } @else {
       <form [formGroup]="form" (ngSubmit)="save()">
         <div class="form-grid">

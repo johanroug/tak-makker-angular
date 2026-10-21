@@ -42,34 +42,37 @@
               type="text"
               aria-label="Fag"
               [value]="getWorkItemTrade(item)"
-              (input)="setWorkItemTrade(item.id, $any($event.target).value)"
+              (input)="setWorkItemTrade(item.id, $any($event.target).value); fieldEdited(fieldKey('work', item.id, 'trade'))"
               (blur)="saveWorkItemTrade(item, $any($event.target).value)"
             />
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('work', item.id, 'trade')] === 'error'">{{ fieldSaveLabel(fieldKey('work', item.id, 'trade')) }}</span>
 
             <textarea
               class="inline-description"
               rows="2"
               aria-label="Beskrivelse"
               [value]="getWorkItemDescription(item)"
-              (input)="setWorkItemDescription(item.id, $any($event.target).value)"
+              (input)="setWorkItemDescription(item.id, $any($event.target).value); fieldEdited(fieldKey('work', item.id, 'description'))"
               (blur)="saveWorkItemDescription(item, $any($event.target).value)"
             ></textarea>
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('work', item.id, 'description')] === 'error'">{{ fieldSaveLabel(fieldKey('work', item.id, 'description')) }}</span>
 
             <div class="work-item-estimate">
               <div class="work-item-hours">
-                <label for="hours-{{ item.id }}"> Estimeret tid </label>
+                <label class="unit-suffix" for="hours-{{ item.id }}"> Estimeret tid </label>
 
-                <input
+                <div class="save-field-control"><input
                   id="hours-{{ item.id }}"
                   type="number"
                   min="0"
                   step="0.5"
                   [value]="getWorkItemHours(item)"
-                  (input)="setWorkItemHours(item.id, $any($event.target).value)"
+                  (input)="setWorkItemHours(item.id, $any($event.target).value); fieldEdited(fieldKey('work', item.id, 'hours'))"
                   (blur)="updateEstimatedHours(item, $any($event.target).value)"
                 />
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('work', item.id, 'hours')] === 'error'">{{ fieldSaveLabel(fieldKey('work', item.id, 'hours')) }}</span></div>
 
-                <span>timer</span>
+                <span class="unit-suffix">timer</span>
               </div>
 
               <p class="work-item-labor-cost">
@@ -159,62 +162,67 @@
               type="text"
               aria-label="Materialenavn"
               [value]="getMaterialName(material)"
-              (input)="setMaterialName(material.id, $any($event.target).value)"
+              (input)="setMaterialName(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'name'))"
               (blur)="saveMaterialName(material, $any($event.target).value)"
             />
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'name')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'name')) }}</span>
 
             <textarea
               class="inline-description"
               rows="2"
               aria-label="Materialebeskrivelse"
               [value]="getMaterialDescription(material)"
-              (input)="setMaterialDescription(material.id, $any($event.target).value)"
+              (input)="setMaterialDescription(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'description'))"
               (blur)="saveMaterialDescription(material, $any($event.target).value)"
             ></textarea>
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'description')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'description')) }}</span>
 
             <div class="material-pricing">
               <div class="material-field">
-                <label for="quantity-{{ material.id }}"> Antal </label>
+                <label class="unit-suffix" for="quantity-{{ material.id }}"> Antal </label>
 
                 <div class="material-field-value">
-                  <input
+                  <div class="save-field-control"><input
                     id="quantity-{{ material.id }}"
                     class="material-number-input"
                     type="number"
                     min="0"
                     step="1"
                     [value]="getMaterialQuantity(material)"
-                    (input)="setMaterialQuantity(material.id, $any($event.target).value)"
+                    (input)="setMaterialQuantity(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'quantity'))"
                     (blur)="updateMaterialQuantity(material, $any($event.target).value)"
                   />
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'quantity')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'quantity')) }}</span></div>
 
-                  <input
+                  <div class="save-field-control"><input
                     class="material-unit-input"
                     type="text"
                     placeholder="enhed"
                     [value]="getMaterialUnit(material)"
-                    (input)="setMaterialUnit(material.id, $any($event.target).value)"
+                    (input)="setMaterialUnit(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'unit'))"
                     (blur)="updateMaterialUnit(material, $any($event.target).value)"
                   />
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'unit')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'unit')) }}</span></div>
                 </div>
               </div>
 
               <div class="material-field">
-                <label for="unit-price-{{ material.id }}"> Enhedspris </label>
+                <label class="unit-suffix" for="unit-price-{{ material.id }}"> Enhedspris </label>
 
                 <div class="material-field-value">
-                  <input
+                  <div class="save-field-control"><input
                     id="unit-price-{{ material.id }}"
                     class="material-price-input"
                     type="number"
                     min="0"
                     step="1"
                     [value]="getMaterialUnitPrice(material)"
-                    (input)="setMaterialUnitPrice(material.id, $any($event.target).value)"
+                    (input)="setMaterialUnitPrice(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'unitPrice'))"
                     (blur)="updateMaterialUnitPrice(material, $any($event.target).value)"
                   />
+            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'unitPrice')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'unitPrice')) }}</span></div>
 
-                  <span>kr.</span>
+                  <span class="unit-suffix">kr.</span>
                 </div>
               </div>
 
@@ -348,7 +356,7 @@
           @if (isLoadingOffers()) {
             <p class="offers-message">Henter tilbud...</p>
           } @else if (offersError()) {
-            <p class="offers-error">
+            <p class="offers-error" role="alert">
               {{ offersError() }}
             </p>
           } @else {

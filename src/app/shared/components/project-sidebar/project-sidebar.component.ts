@@ -53,7 +53,11 @@ export class ProjectSidebar implements OnDestroy {
   readonly aiCompleted = output<ProjectData>();
   private destroyed = false;
 
-  ngOnDestroy(): void { this.destroyed = true; }
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    for (const timer of this.fieldTimers.values()) clearTimeout(timer);
+    this.fieldTimers.clear();
+  }
 
   dismissAiResult(): void {
     this.aiResult.set(null);
@@ -77,6 +81,67 @@ export class ProjectSidebar implements OnDestroy {
   }
   readonly editError = signal('');
   readonly pendingSaves = signal(0);
+  readonly fieldSaveStates = signal<Record<string, 'saving' | 'saved' | 'error'>>({});
+  private readonly fieldVersions = new Map<string, number>();
+  private readonly fieldTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+  private clearFieldTimer(key: string): void {
+    const timer = this.fieldTimers.get(key);
+    if (timer !== undefined) clearTimeout(timer);
+    this.fieldTimers.delete(key);
+  }
+
+  fieldKey(kind: 'work' | 'material', id: string, field: string): string {
+    return JSON.stringify([this.data().project.id, kind, id, field]);
+  }
+
+  fieldEdited(key: string): void {
+    this.clearFieldTimer(key);
+    this.fieldVersions.set(key, (this.fieldVersions.get(key) ?? 0) + 1);
+    this.fieldSaveStates.update((states) => {
+      const next = { ...states };
+      delete next[key];
+      return next;
+    });
+  }
+
+  fieldSaveLabel(key: string): string {
+    const state = this.fieldSaveStates()[key];
+    return state === 'saving' ? 'Gemmer…' : state === 'saved' ? 'Gemt ✓' : state === 'error' ? 'Ikke gemt – prøv igen' : '';
+  }
+
+  private async saveField(key: string, save: () => Promise<void>): Promise<void> {
+    this.clearFieldTimer(key);
+    const version = (this.fieldVersions.get(key) ?? 0) + 1;
+    this.fieldVersions.set(key, version);
+    const setState = (state: 'saving' | 'saved' | 'error') => {
+      if (!this.destroyed && this.fieldVersions.get(key) === version) {
+        this.fieldSaveStates.update((states) => ({ ...states, [key]: state }));
+        if (state === 'saved') {
+          this.fieldTimers.set(key, setTimeout(() => {
+            this.fieldTimers.delete(key);
+            if (!this.destroyed && this.fieldVersions.get(key) === version) {
+              this.fieldSaveStates.update((states) => {
+                const next = { ...states };
+                delete next[key];
+                return next;
+              });
+            }
+          }, 3000));
+        }
+      }
+    };
+    setState('saving');
+    try {
+      await this.saveEdit(save);
+      setState('saved');
+    } catch (error) {
+      setState('error');
+      throw error;
+    }
+  }
+
+
 
   readonly workItemTrades = signal<Record<string, string>>({});
 
@@ -273,7 +338,7 @@ export class ProjectSidebar implements OnDestroy {
     }
 
     try {
-      await this.saveEdit(() =>
+      await this.saveField(this.fieldKey('work', item.id, 'trade'), () =>
         this.projectService.updateWorkItem(this.data().project.id, item.id, { trade }),
       );
 
@@ -311,7 +376,7 @@ export class ProjectSidebar implements OnDestroy {
     }
 
     try {
-      await this.saveEdit(() =>
+      await this.saveField(this.fieldKey('work', item.id, 'description'), () =>
         this.projectService.updateWorkItem(this.data().project.id, item.id, { description }),
       );
 
@@ -412,7 +477,7 @@ export class ProjectSidebar implements OnDestroy {
     }
 
     try {
-      await this.saveEdit(() =>
+      await this.saveField(this.fieldKey('work', item.id, 'hours'), () =>
         this.projectService.updateWorkItemEstimatedHours(
           this.data().project.id,
           item.id,
@@ -646,7 +711,7 @@ export class ProjectSidebar implements OnDestroy {
     },
   ): Promise<void> {
     try {
-      await this.saveEdit(() =>
+      await this.saveField(this.fieldKey('material', material.id, Object.keys(changes)[0]), () =>
         this.projectService.updateMaterial(this.data().project.id, material.id, changes),
       );
 

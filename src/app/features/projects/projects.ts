@@ -19,7 +19,14 @@ export class Projects implements OnInit {
   isLoading = signal(true);
   errorMessage = signal('');
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void { void this.loadProjects(); }
+
+  private loading = false;
+  async loadProjects(): Promise<void> {
+    if (this.loading) return;
+    this.loading = true;
+    this.isLoading.set(true);
+    this.errorMessage.set('');
     try {
       const projects = await this.projectService.getProjects();
 
@@ -29,6 +36,7 @@ export class Projects implements OnInit {
       this.errorMessage.set('Kunne ikke hente projekterne.');
     } finally {
       this.isLoading.set(false);
+      this.loading = false;
     }
   }
 }

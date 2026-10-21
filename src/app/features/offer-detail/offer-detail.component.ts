@@ -70,6 +70,11 @@ export class OfferDetail implements OnInit {
     void this.loadOffer(offerId);
   }
 
+  retryOffer(): void {
+    const offerId = this.route.snapshot.paramMap.get('offerId');
+    if (offerId && !this.isLoading()) void this.loadOffer(offerId);
+  }
+
   async loadOffer(offerId: string): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set('');
@@ -109,6 +114,7 @@ export class OfferDetail implements OnInit {
     const offer = this.data()?.offer;
 
     if (!offer?.project_id) {
+      void this.router.navigate(['/projects']);
       return;
     }
 

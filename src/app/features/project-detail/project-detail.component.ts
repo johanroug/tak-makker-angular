@@ -27,6 +27,17 @@ export class ProjectDetail implements OnInit, OnDestroy {
   readonly project = signal<ProjectData | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
+  readonly refreshError = signal('');
+  readonly projectListError = signal('');
+  readonly logoutError = signal('');
+  readonly isRefreshing = signal(false);
+  readonly isLoadingProjects = signal(false);
+  readonly isLoggingOut = signal(false);
+
+  retryProject(): void {
+    const projectId = this.route.snapshot.paramMap.get('projectId');
+    if (projectId && !this.isLoading()) void this.loadProject(projectId);
+  }
   readonly projects = signal<Awaited<ReturnType<ProjectService['getProjects']>>>([]);
   readonly newProjectId = signal<string | null>(null);
   readonly isEditingTitle = signal(false);
@@ -71,6 +82,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
   async loadProject(projectId: string): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set('');
+    this.refreshError.set('');
     this.project.set(null);
 
     try {
@@ -96,11 +108,17 @@ export class ProjectDetail implements OnInit, OnDestroy {
   }
 
   async loadProjects(): Promise<void> {
+    if (this.isLoadingProjects()) return;
+    this.isLoadingProjects.set(true);
+    this.projectListError.set('');
     try {
       const projects = await this.projectService.getProjects();
       this.projects.set(projects);
     } catch (error) {
       console.error('Could not load project list:', error);
+      this.projectListError.set('Projektlisten kunne ikke hentes.');
+    } finally {
+      this.isLoadingProjects.set(false);
     }
   }
 
@@ -111,15 +129,19 @@ export class ProjectDetail implements OnInit, OnDestroy {
   }
 
   async logout(): Promise<void> {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
+    if (this.isLoggingOut()) return;
+    this.isLoggingOut.set(true);
+    this.logoutError.set('');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      await this.router.navigate(['/login']);
+    } catch (error) {
       console.error('Could not sign out:', error);
-      this.errorMessage.set('Kunne ikke logge ud.');
-      return;
+      this.logoutError.set('Kunne ikke logge ud. Kontrollér forbindelsen og prøv igen.');
+    } finally {
+      this.isLoggingOut.set(false);
     }
-
-    await this.router.navigate(['/login']);
   }
 
   createProject(): void {
@@ -138,6 +160,13 @@ export class ProjectDetail implements OnInit, OnDestroy {
     }
   }
 
+  async retryRefresh(): Promise<void> {
+    if (this.isRefreshing()) return;
+    this.isRefreshing.set(true);
+    try { await this.refreshProject(); }
+    finally { this.isRefreshing.set(false); }
+  }
+
   async refreshProject(): Promise<void> {
     const projectId = this.project()?.project.id;
 
@@ -145,6 +174,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
       return;
     }
 
+    this.refreshError.set('');
     try {
       const data = await this.projectService.getProject(projectId);
 
@@ -155,7 +185,8 @@ export class ProjectDetail implements OnInit, OnDestroy {
       this.onAiCompleted(data);
     } catch (error) {
       console.error('Could not refresh project:', error);
-      this.errorMessage.set('Kunne ikke opdatere projektet.');
+      if (this.route.snapshot.paramMap.get('projectId') === projectId)
+        this.refreshError.set('Ændringen kan være gemt, men projektet kunne ikke genindlæses. Dine lokale rettelser vises stadig.');
     }
   }
 
@@ -231,7 +262,8 @@ export class ProjectDetail implements OnInit, OnDestroy {
       this.onAiCompleted(data);
     } catch (error) {
       console.error('Could not refresh project details:', error);
-      this.errorMessage.set('Kunne ikke opdatere projektvisningen.');
+      if (this.route.snapshot.paramMap.get('projectId') === projectId)
+        this.refreshError.set('Oplysningerne er gemt, men visningen kunne ikke genindlæses. Prøv igen.');
     }
   }
 

@@ -108,7 +108,7 @@
 
 .work-item-hours {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
 
   label {
@@ -229,7 +229,7 @@
 
 .material-field {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   margin: 10px 0;
@@ -242,7 +242,7 @@
 
 .material-field-value {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-end;
   gap: 8px;
 
@@ -562,3 +562,12 @@
     min-height: 400px;
   }
 }
+
+.field-save-status { display: block; min-height: 16px; font-size: 11px; line-height: 1.4; color: #647468; font-weight: 400; overflow-wrap: anywhere; }
+
+.field-save-status.save-failed { color: #b91c1c; }
+.save-field-control { display: grid; gap: 4px; min-width: 0; }
+.save-field-control input { box-sizing: border-box; max-width: 100%; }
+.material-field-value { min-width: 0; }
+
+.unit-suffix { padding-top: 8px; }

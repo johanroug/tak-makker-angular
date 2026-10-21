@@ -32,9 +32,9 @@
 
 - [x] **AI i samtalepanelet** — Animation og skiftende ventetekster som i startmodalen. Johan har bekræftet, at det virker.
 - [x] **Tydelige nye forslag** — Overblik med antal nye opgaver/materialer, knapper til fanerne og markering af nye forslag. Johan har bekræftet, at det virker; efterfølgende ankerforbedring afventer appkontrol.
-- [ ] **God afslutning ved færdiggørelse** — Implementeret 21. oktober: succesanimation og modal med gemt tilbudsnummer, pris inkl. moms, Se tilbud og Download PDF. Afventer Johans appkontrol.
-- [ ] **Diskret gemmestatus ved felter** — Gemmer… → Gemt ✓ tæt på den redigerede værdi.
-- [ ] **PDF-generering med personlighed** — Animation og ventetekster under faktisk PDF-generering.
+- [x] **God afslutning ved færdiggørelse** — Succesanimation og modal med gemt tilbudsnummer, pris inkl. moms, Se tilbud og Download PDF. Johan har bekræftet, at det virker 21. oktober.
+- [x] **Diskret gemmestatus ved felter** — Gemmer… → Gemt ✓ i 3 sekunder og lokal fejlbesked. Fast plads og justeret layout; Johan har bekræftet, at det virker.
+- [–] **PDF-generering med personlighed** — Fravalgt af Johan: PDF-generering er næsten øjeblikkelig. Ændringen er reverted.
 
 ## Afsluttet disciplin: Tilbudsbetingelser
 Status: Funktionelt afsluttet — Johan har bekræftet alle beskrevne tests.
@@ -87,10 +87,35 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Brugeroplevelse: Afprøv succesmodalen ved færdiggørelse. Derefter diskret gemmestatus ved felter, PDF-generering med personlighed og Fejlhåndtering.
+- Fejlhåndtering er implementeret og afventer appkontrol. PDF-feedback er fravalgt af Johan.
+
+### Fejlhåndtering — 21. oktober 2026
+
+- [x] Efter Johans loginfejl: loading og fejlbesked bruger nu Angular-signals, så asynkrone loginresultater opdaterer visningen uden ekstra fokus/blur. Produktionsbuild og kontroller af ugyldigt login, netværksfejl, dobbeltklik og genforsøg bestået. Afventer appkontrol af visningen.
+- [x] Login håndterer forbindelsesfejl og gentagne klik; særskilt besked ved forkert login og for mange forsøg. Logud har fejlbesked og klikbeskyttelse.
+- [x] Prøv igen ved indlæsning af projektoversigt, projekt, tilbud, virksomhedsprofil, projektvælger og tilbudshistorik. Loading nulstilles ved fejl.
+- [x] Fejl under opdatering vises ved siden af det åbne projekt frem for at fjerne formularen og lokale rettelser. Projektlisten har separat fejlstatus. Tilbage ved tilbudsfejl fører til projektoversigten, når projekt-ID mangler.
+- [x] Produktionsbuild og målrettede kontroller af faktiske klasser med simulerede afhængigheder bestået: login/netværk/rate limit, dobbeltklik, genforsøg og bevaret projekt ved genindlæsningsfejl. Ingen spec-filer, databaseændringer eller udrulning.
+- [ ] Johan: Afprøv forkert login og Offline i browserens Network-fane. Genaktivér forbindelsen og vælg Prøv igen. Kontrollér især, at projektet bliver stående ved fejl under genindlæsning efter en rettelse.
+
+### PDF-generering med personlighed — fravalgt
+
+- Johan har reverted løsningen og bedt om at springe punktet over, fordi PDF-generering er næsten øjeblikkelig.
+
+### Diskret gemmestatus ved felter — 21. oktober 2026
+
+- [x] Johan har bekræftet gemmestatus og det rettede layout.
+- [x] Gemmestatus har nu reserveret højde også uden tekst, så Gemmer/Gemt ikke skubber de øvrige felter. Antal, Enhedspris og Estimeret tid har samme lodrette justering som enhedsteksten. Afventer Johans visuelle kontrol.
+- [x] Efter Johans feedback forsvinder Gemt ✓ efter 3 sekunder. Ny indtastning/gemning nulstiller timeren, fejl forbliver synlige, og timere ryddes ved komponentens fjernelse. Kontrolleret med simuleret tid. Kr./timer har fået lodret justering ved inputfeltet.
+- [x] Rettet layout efter Johans skærmbillede: numeriske felter/enhed har hver sin lodrette gruppe med gemmestatus nedenunder. Antal og enhed forbliver på samme række, og kr./timer står ved inputtet. Afventer visuel appkontrol.
+- [x] Gemmer…, Gemt ✓ og Ikke gemt – prøv igen ved fag, opgavebeskrivelse, timer, materialenavn, materialebeskrivelse, antal, enhed og enhedspris.
+- [x] Status gælder det enkelte felt og projekt. Ny indtastning fjerner tidligere succes; et ældre svar må ikke markere nyere indtastning som gemt. Eksisterende blur-gemning og kladdebeskyttelse bevares.
+- [x] Produktionsbuild og kontroller af faktisk klasselogik med simulerede afhængigheder bestået: succes, fejl, genforsøg, adskilte felter/projekter og ældre svar. Kendte størrelses- og CommonJS-advarsler består. Ingen spec-filer eller databaseændringer.
+- [ ] Johan: Ret fag/beskrivelse/timer og materialefelter, forlad feltet og kontrollér Gemt ✓ samt genindlæsning. Ved hurtig ny indtastning skal tidligere Gemt forsvinde.
 
 ### Succesmodal ved færdiggørelse — 21. oktober 2026
 
+- [x] Johan har bekræftet, at succesmodalen virker fint.
 - [x] Modal åbner efter bekræftet færdiggørelse og viser nummer samt pris inkl. moms fra den gemte tilbudskopi.
 - [x] Kort succesanimation med respekt for reduceret bevægelse; Se tilbud, Download PDF og Tilbage til projektet. Native dialog med fokus og Escape; lukning og knapper låses under PDF-download.
 - [x] PDF hentes fra det færdige tilbud. Ved PDF-fejl bevares succes og tilbuds-ID, og brugeren kan prøve download igen uden ny færdiggørelse.

@@ -20,6 +20,8 @@
 
         <app-offer-preview
           [data]="projectSidebar.getPreviewData(data)"
+          [textSaveStates]="projectSidebar.fieldSaveStates()"
+          (textEdited)="projectSidebar.editDraftText($event)"
           [hasPendingChanges]="
             projectSidebar.hasPendingChanges(data) || projectSidebar.pendingSaves() > 0
           "

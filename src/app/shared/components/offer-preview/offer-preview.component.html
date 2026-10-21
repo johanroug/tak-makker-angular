@@ -69,16 +69,14 @@
     @for (item of acceptedWorkItems; track item.id) {
       <div class="offer-work-item">
         <div class="offer-line-header">
-          <h3>{{ item.trade }}</h3>
+          <div class="draft-title-control"><input class="draft-text draft-title" type="text" aria-label="Fag" [value]="item.trade || ''" (input)="textEdited.emit({kind: 'work', id: item.id, field: 'trade', value: $any($event.target).value, save: false})" (blur)="textEdited.emit({kind: 'work', id: item.id, field: 'trade', value: $any($event.target).value, save: true})" />
+<span class="draft-save-status" role="status">{{ textSaveLabel('work', item.id, 'trade') }}</span></div>
 
+          <div class="line-price">
           <strong>
             {{ getWorkItemPrice(item) | number: '1.0-0' }}
             kr.
           </strong>
-        </div>
-
-        <p>{{ item.description }}</p>
-
         @if (item.estimated_hours !== null && data().project.hourly_rate !== null) {
           <small>
             {{ item.estimated_hours | number: '1.0-2' }}
@@ -87,6 +85,13 @@
             kr.
           </small>
         }
+          </div>
+        </div>
+
+        <textarea class="draft-text draft-description" rows="1" aria-label="Arbejdsbeskrivelse" [value]="item.description || ''" (input)="textEdited.emit({kind: 'work', id: item.id, field: 'description', value: $any($event.target).value, save: false})" (blur)="textEdited.emit({kind: 'work', id: item.id, field: 'description', value: $any($event.target).value, save: true})"></textarea>
+<span class="draft-save-status" role="status">{{ textSaveLabel('work', item.id, 'description') }}</span>
+
+
       </div>
     } @empty {
       <p class="offer-empty">Ingen accepterede arbejdsopgaver.</p>
@@ -99,20 +104,14 @@
     @for (material of acceptedMaterials; track material.id) {
       <div class="offer-material">
         <div class="offer-line-header">
-          <h3>{{ material.name }}</h3>
+          <div class="draft-title-control"><input class="draft-text draft-title" type="text" aria-label="Materialenavn" [value]="material.name || ''" (input)="textEdited.emit({kind: 'material', id: material.id, field: 'name', value: $any($event.target).value, save: false})" (blur)="textEdited.emit({kind: 'material', id: material.id, field: 'name', value: $any($event.target).value, save: true})" />
+<span class="draft-save-status" role="status">{{ textSaveLabel('material', material.id, 'name') }}</span></div>
 
+          <div class="line-price">
           <strong>
             {{ getMaterialPrice(material) | number: '1.0-0' }}
             kr.
           </strong>
-        </div>
-
-        @if (material.description) {
-          <p>
-            {{ material.description }}
-          </p>
-        }
-
         @if (material.quantity !== null && material.unit_price !== null) {
           <small>
             {{ material.quantity | number: '1.0-2' }}
@@ -122,6 +121,13 @@
             kr.
           </small>
         }
+          </div>
+        </div>
+
+<textarea class="draft-text draft-description" rows="1" aria-label="Materialebeskrivelse" [value]="material.description || ''" (input)="textEdited.emit({kind: 'material', id: material.id, field: 'description', value: $any($event.target).value, save: false})" (blur)="textEdited.emit({kind: 'material', id: material.id, field: 'description', value: $any($event.target).value, save: true})"></textarea>
+<span class="draft-save-status" role="status">{{ textSaveLabel('material', material.id, 'description') }}</span>
+
+
       </div>
     } @empty {
       <p class="offer-empty">Ingen accepterede materialer.</p>
@@ -220,14 +226,8 @@
     }
 
     @if (!finalizedOfferNumber()) {
-      @if (hasPendingChanges()) {
-        <p class="pending-changes" role="status">
-          {{
-            isSavingChanges()
-              ? 'Gemmer dine ændringer…'
-              : 'Kladden viser dine ændringer med det samme. Afslut feltet i højre kolonne for at gemme, før du færdiggør.'
-          }}
-        </p>
+      @if (isSavingChanges()) {
+        <p class="pending-changes" role="status">Gemmer dine ændringer…</p>
       }
       <div class="finalize-actions">
         <div class="finalize-copy">

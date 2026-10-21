@@ -1,3 +1,4 @@
+import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { afterNextRender, Component, effect, ElementRef, inject, Injector, input, output, signal } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
@@ -81,7 +82,7 @@ export class ProjectSidebar implements OnDestroy {
   }
   readonly editError = signal('');
   readonly pendingSaves = signal(0);
-  readonly fieldSaveStates = signal<Record<string, 'saving' | 'saved' | 'error'>>({});
+  readonly fieldSaveStates = signal<Record<string, 'editing' | 'saving' | 'saved' | 'error'>>({});
   private readonly fieldVersions = new Map<string, number>();
   private readonly fieldTimers = new Map<string, ReturnType<typeof setTimeout>>();
 
@@ -100,6 +101,16 @@ export class ProjectSidebar implements OnDestroy {
     this.fieldVersions.set(key, (this.fieldVersions.get(key) ?? 0) + 1);
     this.fieldSaveStates.update((states) => {
       const next = { ...states };
+      if (['trade', 'name', 'description'].includes(JSON.parse(key)[3])) next[key] = 'editing';
+      else delete next[key];
+      return next;
+    });
+  }
+
+  private finishTextEditing(key: string): void {
+    if (this.fieldSaveStates()[key] !== 'editing') return;
+    this.fieldSaveStates.update(states => {
+      const next = { ...states };
       delete next[key];
       return next;
     });
@@ -107,7 +118,7 @@ export class ProjectSidebar implements OnDestroy {
 
   fieldSaveLabel(key: string): string {
     const state = this.fieldSaveStates()[key];
-    return state === 'saving' ? 'Gemmer…' : state === 'saved' ? 'Gemt ✓' : state === 'error' ? 'Ikke gemt – prøv igen' : '';
+    return state === 'editing' ? 'Klik uden for feltet for at gemme.' : state === 'saving' ? 'Gemmer…' : state === 'saved' ? 'Gemt ✓' : state === 'error' ? 'Ikke gemt – prøv igen' : '';
   }
 
   private async saveField(key: string, save: () => Promise<void>): Promise<void> {
@@ -171,14 +182,14 @@ export class ProjectSidebar implements OnDestroy {
       ...data,
       workItems: data.workItems.map((item) => ({
         ...item,
-        trade: this.workItemTrades()[item.id]?.trim() ?? item.trade,
-        description: this.workItemDescriptions()[item.id]?.trim() ?? item.description,
+        trade: this.workItemTrades()[item.id] ?? item.trade,
+        description: this.workItemDescriptions()[item.id] ?? item.description,
         estimated_hours: number(this.workItemHours()[item.id], item.estimated_hours),
       })),
       materials: data.materials.map((item) => ({
         ...item,
-        name: this.materialNames()[item.id]?.trim() ?? item.name,
-        description: this.materialDescriptions()[item.id]?.trim() ?? item.description,
+        name: this.materialNames()[item.id] ?? item.name,
+        description: this.materialDescriptions()[item.id] ?? item.description,
         quantity: number(this.materialQuantities()[item.id], item.quantity),
         unit: this.materialUnits()[item.id]?.trim() ?? item.unit,
         unit_price: number(this.materialUnitPrices()[item.id], item.unit_price),
@@ -254,7 +265,7 @@ export class ProjectSidebar implements OnDestroy {
   ): void {
     const edits = values();
     const remaining = Object.entries(edits).filter(([id, raw]) => {
-      const value = numeric ? (raw.trim() === '' ? null : Number(raw)) : raw.trim();
+      const value = numeric ? (raw.trim() === '' ? null : Number(raw)) : raw;
       return value !== saved[id];
     });
     if (remaining.length !== Object.keys(edits).length) values.set(Object.fromEntries(remaining));
@@ -313,6 +324,31 @@ export class ProjectSidebar implements OnDestroy {
     void this.router.navigate(['/offers', offerId]);
   }
 
+  async editDraftText(edit: DraftTextEdit): Promise<void> {
+    if (!edit.save) {
+      if (edit.kind === 'work') {
+        if (edit.field === 'trade') this.setWorkItemTrade(edit.id, edit.value);
+        else this.setWorkItemDescription(edit.id, edit.value);
+      } else {
+        if (edit.field === 'name') this.setMaterialName(edit.id, edit.value);
+        else this.setMaterialDescription(edit.id, edit.value);
+      }
+      this.fieldEdited(this.fieldKey(edit.kind, edit.id, edit.field));
+      return;
+    }
+    if (edit.kind === 'work') {
+      const item = this.data().workItems.find(item => item.id === edit.id);
+      if (!item) return;
+      if (edit.field === 'trade') await this.saveWorkItemTrade(item, edit.value);
+      else await this.saveWorkItemDescription(item, edit.value);
+    } else {
+      const item = this.data().materials.find(item => item.id === edit.id);
+      if (!item) return;
+      if (edit.field === 'name') await this.saveMaterialName(item, edit.value);
+      else await this.saveMaterialDescription(item, edit.value);
+    }
+  }
+
   get newestMessages() {
     return [...this.data().messages].reverse();
   }
@@ -331,7 +367,9 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   async saveWorkItemTrade(item: ProjectData['workItems'][number], value: string): Promise<void> {
+    this.finishTextEditing(this.fieldKey('work', item.id, 'trade'));
     const trade = value.trim();
+    this.setWorkItemTrade(item.id, trade);
 
     if (trade === (item.trade ?? '')) {
       return;
@@ -369,7 +407,9 @@ export class ProjectSidebar implements OnDestroy {
     item: ProjectData['workItems'][number],
     value: string,
   ): Promise<void> {
+    this.finishTextEditing(this.fieldKey('work', item.id, 'description'));
     const description = value.trim();
+    this.setWorkItemDescription(item.id, description);
 
     if (description === (item.description ?? '')) {
       return;
@@ -509,7 +549,9 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   async saveMaterialName(material: ProjectData['materials'][number], value: string): Promise<void> {
+    this.finishTextEditing(this.fieldKey('material', material.id, 'name'));
     const name = value.trim();
+    this.setMaterialName(material.id, name);
 
     if (name === (material.name ?? '')) {
       return;
@@ -535,7 +577,9 @@ export class ProjectSidebar implements OnDestroy {
     material: ProjectData['materials'][number],
     value: string,
   ): Promise<void> {
+    this.finishTextEditing(this.fieldKey('material', material.id, 'description'));
     const description = value.trim();
+    this.setMaterialDescription(material.id, description);
 
     if (description === (material.description ?? '')) {
       return;

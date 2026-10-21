@@ -1,3 +1,4 @@
+import type { DraftTextEdit } from './draft-text-edit';
 import {
   afterNextRender,
   Component,
@@ -47,6 +48,15 @@ export class OfferPreview {
   readonly pdfError = signal('');
 
   readonly data = input.required<ProjectData>();
+  readonly textEdited = output<DraftTextEdit>();
+  readonly textSaveStates = input<Record<string, 'editing' | 'saving' | 'saved' | 'error'>>({});
+
+  textSaveLabel(kind: 'work' | 'material', id: string, field: string): string {
+    const key = JSON.stringify([this.data().project.id, kind, id, field]);
+    const state = this.textSaveStates()[key];
+    return state === 'editing' ? 'Klik uden for feltet for at gemme.' : state === 'saving' ? 'Gemmer…' : state === 'saved' ? 'Gemt ✓' : state === 'error' ? 'Ikke gemt – prøv igen' : '';
+  }
+
   readonly openDetailsInitially = input(false);
   readonly hasPendingChanges = input(false);
   readonly isSavingChanges = input(false);

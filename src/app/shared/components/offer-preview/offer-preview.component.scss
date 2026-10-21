@@ -454,3 +454,28 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.success-dialog {
+  width: min(480px, calc(100vw - 32px));
+  box-sizing: border-box;
+  text-align: center;
+  h2 { margin: 12px 0; }
+  .success-check {
+    display: grid; place-items: center; width: 64px; height: 64px;
+    margin: 0 auto 20px; border-radius: 50%; background: #dcfce7; color: #166534;
+    font-size: 36px; animation: offer-ready .35s ease-out;
+  }
+  .success-eyebrow { color: #6d28d9; font-size: 11px; letter-spacing: .12em; font-weight: 700; }
+  .success-price { font-size: 30px; font-weight: 700; margin: 24px 0;
+    small { display: block; font-size: 13px; font-weight: 400; color: #78716c; }
+  }
+  .success-actions { display: grid; gap: 10px;
+    button { padding: 12px; border: 1px solid #d6d3d1; border-radius: 8px; background: white; cursor: pointer;
+      &:first-child { background: #6d28d9; color: white; border-color: #6d28d9; }
+      &:disabled { opacity: .6; cursor: wait; }
+    }
+  }
+  .success-download-status { display: block; margin-top: 12px; font-size: 13px; }
+}
+@keyframes offer-ready { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .success-dialog .success-check { animation: none; } }

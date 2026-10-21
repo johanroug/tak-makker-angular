@@ -13,6 +13,8 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { ProjectService } from '../../../core/projects/project.service';
+import { OfferService } from '../../../core/offers/offer.service';
+import { OfferPdfService } from '../../../core/offers/offer-pdf.service';
 import { offerRequirements, OfferRequirement } from '../../../core/offers/offer-readiness';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
@@ -37,6 +39,12 @@ type EditableDetails = {
 export class OfferPreview {
   private readonly projectService = inject(ProjectService);
   private readonly router = inject(Router);
+  private readonly offerService = inject(OfferService);
+  private readonly pdfService = inject(OfferPdfService);
+  readonly successDialog = viewChild.required<ElementRef<HTMLDialogElement>>('successDialog');
+  readonly finalizedTotal = signal<number | null>(null);
+  readonly isDownloadingPdf = signal(false);
+  readonly pdfError = signal('');
 
   readonly data = input.required<ProjectData>();
   readonly openDetailsInitially = input(false);
@@ -205,6 +213,9 @@ export class OfferPreview {
 
       this.finalizedOfferId.set(offer.id);
       this.finalizedOfferNumber.set(offer.offer_number);
+      this.finalizedTotal.set(offer.pricing_total);
+      this.pdfError.set('');
+      this.successDialog().nativeElement.showModal();
 
       this.offerFinalized.emit();
     } catch (error) {
@@ -215,6 +226,26 @@ export class OfferPreview {
       );
     } finally {
       this.isFinalizing.set(false);
+    }
+  }
+
+  closeSuccess(): void {
+    if (!this.isDownloadingPdf()) this.successDialog().nativeElement.close();
+  }
+
+  async downloadFinalizedPdf(): Promise<void> {
+    const offerId = this.finalizedOfferId();
+    if (!offerId || this.isDownloadingPdf()) return;
+    this.isDownloadingPdf.set(true);
+    this.pdfError.set('');
+    try {
+      const saved = await this.offerService.getOffer(offerId);
+      await this.pdfService.download(saved);
+    } catch (error) {
+      console.error('Could not download finalized offer:', error);
+      this.pdfError.set('PDF kunne ikke hentes. Dit tilbud er gemt. Prøv igen eller vælg Se tilbud.');
+    } finally {
+      this.isDownloadingPdf.set(false);
     }
   }
 

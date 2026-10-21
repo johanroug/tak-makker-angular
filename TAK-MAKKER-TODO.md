@@ -12,12 +12,12 @@
 ## 2. Vigtigt til en solid MVP
 
 - [x] **Sikkerhed og adgang** — RLS, rettigheder, databasefunktioner, appadgang og direkte AI-adgang kontrolleret med to virksomheder i begge retninger.
-- [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
 - [ ] **Mobil og tablet** — Tilpasse layout, faner, formularer og tilbudsvisning.
+- [ ] **Vercel: skift fra React til Angular** — Vercel bruger i dag det gamle React-projekt i et andet repo. Tilknyt dette Angular-projekts repo, konfigurér Angular-build, outputmappe, miljøvariabler og routing, og kontrollér deployment samt genindlæsning af undersider.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
+- [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
 - [ ] **PDF-finpudsning** — Sideskift, lange beskrivelser, mange opgaver og materialer.
 - [ ] **Deployment** — Miljøvariabler, produktionsdatabase, domæne og fejllogning.
-- [ ] **Vercel: skift fra React til Angular** — Vercel bruger i dag det gamle React-projekt i et andet repo. Tilknyt dette Angular-projekts repo, konfigurér Angular-build, outputmappe, miljøvariabler og routing, og kontrollér deployment samt genindlæsning af undersider.
 
 ## 3. Efter MVP
 
@@ -32,7 +32,7 @@
 
 - [x] **AI i samtalepanelet** — Animation og skiftende ventetekster som i startmodalen. Johan har bekræftet, at det virker.
 - [x] **Tydelige nye forslag** — Overblik med antal nye opgaver/materialer, knapper til fanerne og markering af nye forslag. Johan har bekræftet, at det virker; efterfølgende ankerforbedring afventer appkontrol.
-- [ ] **God afslutning ved færdiggørelse** — Kort succesanimation og modal med tilbudsnummer, pris, Se tilbud og Download PDF.
+- [ ] **God afslutning ved færdiggørelse** — Implementeret 21. oktober: succesanimation og modal med gemt tilbudsnummer, pris inkl. moms, Se tilbud og Download PDF. Afventer Johans appkontrol.
 - [ ] **Diskret gemmestatus ved felter** — Gemmer… → Gemt ✓ tæt på den redigerede værdi.
 - [ ] **PDF-generering med personlighed** — Animation og ventetekster under faktisk PDF-generering.
 
@@ -87,7 +87,15 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
-- Brugeroplevelse: AI-feedback i samtalepanelet og tydeligt overblik over nye forslag. Derefter de øvrige UX-punkter og Fejlhåndtering.
+- Brugeroplevelse: Afprøv succesmodalen ved færdiggørelse. Derefter diskret gemmestatus ved felter, PDF-generering med personlighed og Fejlhåndtering.
+
+### Succesmodal ved færdiggørelse — 21. oktober 2026
+
+- [x] Modal åbner efter bekræftet færdiggørelse og viser nummer samt pris inkl. moms fra den gemte tilbudskopi.
+- [x] Kort succesanimation med respekt for reduceret bevægelse; Se tilbud, Download PDF og Tilbage til projektet. Native dialog med fokus og Escape; lukning og knapper låses under PDF-download.
+- [x] PDF hentes fra det færdige tilbud. Ved PDF-fejl bevares succes og tilbuds-ID, og brugeren kan prøve download igen uden ny færdiggørelse.
+- [x] Produktionsbuild og målrettede kontroller med faktisk komponentklasse/simulerede afhængigheder bestået: gemt pris, succes efter gemning, dobbeltklik, PDF-kopi, lås under download, PDF-fejl og genforsøg. Ingen spec-filer, SQL eller Edge-udrulning.
+- [ ] Johan: Færdiggør et tilbud og kontrollér modal, tilbudsnummer, pris, Se tilbud, Download PDF samt lukning med Escape/Tilbage til projektet. Kontrollér også på lille skærm.
 
 ### AI-feedback og nye forslag — funktionelt bekræftet
 

@@ -349,3 +349,21 @@
     </fieldset>
   </form>
 </dialog>
+
+<dialog #successDialog class="details-dialog success-dialog" aria-labelledby="offer-success-title"
+  (cancel)="isDownloadingPdf() ? $event.preventDefault() : null">
+  <div class="success-check" aria-hidden="true">✓</div>
+  <p class="success-eyebrow">GODT ARBEJDE, MAKKER</p>
+  <h2 id="offer-success-title">Dit tilbud er klar</h2>
+  <p>Tilbud nr. {{ finalizedOfferNumber() }} er gemt og klar til næste skridt.</p>
+  <p class="success-price">{{ finalizedTotal() | number:'1.2-2' }} kr.<small>inkl. moms</small></p>
+  @if (pdfError()) { <p role="alert" class="finalize-error">{{ pdfError() }}</p> }
+  <div class="success-actions">
+    <button type="button" (click)="viewFinalizedOffer()" [disabled]="isDownloadingPdf()" autofocus>Se tilbud</button>
+    <button type="button" (click)="downloadFinalizedPdf()" [disabled]="isDownloadingPdf()">
+      {{ isDownloadingPdf() ? 'Gør din PDF klar…' : 'Download PDF' }}
+    </button>
+    <button type="button" (click)="closeSuccess()" [disabled]="isDownloadingPdf()">Tilbage til projektet</button>
+  </div>
+  <span role="status" class="success-download-status">{{ isDownloadingPdf() ? 'PDF bliver genereret. Vent et øjeblik…' : '' }}</span>
+</dialog>

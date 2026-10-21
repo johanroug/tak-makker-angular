@@ -1,5 +1,5 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, ElementRef, effect, inject, OnInit, signal, viewChild } from "@angular/core";
 import {
   FormControl,
   FormGroup,
@@ -22,6 +22,30 @@ import { Location } from "@angular/common";
 export class CompanyProfileComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
   private readonly location = inject(Location);
+  private readonly summary = viewChild<ElementRef<HTMLElement>>('profileSummary');
+  private readonly footer = viewChild<ElementRef<HTMLElement>>('profileFooter');
+
+  constructor() {
+    effect((onCleanup) => {
+      const summary = this.summary()?.nativeElement;
+      const footer = this.footer()?.nativeElement;
+      if (!summary || !footer) return;
+      const updatePosition = () => {
+        const top = Math.min(24, window.innerHeight - summary.offsetHeight - footer.offsetHeight - 48);
+        summary.style.setProperty('--summary-top', top + 'px');
+      };
+      const observer = new ResizeObserver(updatePosition);
+      observer.observe(summary);
+      observer.observe(footer);
+      window.addEventListener('resize', updatePosition);
+      updatePosition();
+      onCleanup(() => {
+        observer.disconnect();
+        window.removeEventListener('resize', updatePosition);
+      });
+    });
+  }
+
 
   
   isLoading = signal(true);

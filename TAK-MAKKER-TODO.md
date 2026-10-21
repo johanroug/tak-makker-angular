@@ -91,6 +91,12 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ### Mobil og tablet — 21. oktober 2026
 
+- [x] Mobilmenu redesignet efter Johans feedback: native modal som sidepanel fra højre, sløret baggrund, varm farvepalette, større typografi og tydelig primærhandling. Burgerknap bevaret. Fælles navigationstemplate til mobil og desktop; lukning via kryds, Escape, baggrund og ved navigation. Lukker ved resize til desktop.
+- [x] Build og målrettet kontrol af drawer-livscyklus, fokus og overgang til Nyt projekt bestået; reduceret bevægelse respekteres. Visuel appkontrol af det nye design afventer Johan.
+- [x] Under 1168 px vises Menu-knap med projektvælger, Nyt projekt, Virksomhedsprofil og Log ud i en foldemenu. Fra min-width: 1168px vises desktopnavigationen. Samme kontroller/data bruges i begge layouts.
+- [x] Menuen lukker ved navigation/projektvalg og Nyt projekt; Escape lukker og returnerer fokus til menuknappen. aria-expanded/aria-controls og navigationslabel tilføjet. Build samt CSS-/klasselogikkontrol ved breakpoint bestået.
+- [ ] Johan: Kontrollér menu ved 375, 900 og 1167 px og desktop ved 1168 px. Afprøv alle fire menupunkter samt Escape.
+- [x] Johan har bekræftet reduktionen af gentagne user-kald.
 - [x] Gentagne user-kald samlet i AuthService: samtidige kald deler forespørgsel, og serverbekræftet bruger genbruges i højst 30 sekunder og aldrig efter kendt tokenudløb. Projekt-/profilservices og logud bruger samme service. Login, logud, tokenskift og brugeropdatering nulstiller kontrollen; fejl caches ikke.
 - [x] Produktionsbuild og simulerede kontroller af cacheudløb, samtidighed, login/logud, token-refresh, netværksfejl og gammelt svar efter kontoskift bestået. RLS, databasefunktioner og Edge-adgangskontrol er uændrede.
 - [ ] Johan: Ryd Network-listen og skift hurtigt mellem projekter, tilbud og profil. Inden for 30 sekunder bør de gentagne user-kald forsvinde. Kontrollér også logud, login og sideskift efter over 30 sekunder.

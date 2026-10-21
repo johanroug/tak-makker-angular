@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -8,7 +9,8 @@ import { WorkspaceState } from './workspace-state';
 
 @Component({
   selector: 'app-shell',
-  imports: [FormsModule, RouterLink, RouterOutlet, NewProjectDialog],
+  host: { '(window:resize)': 'onResize()' },
+  imports: [NgTemplateOutlet, FormsModule, RouterLink, RouterOutlet, NewProjectDialog],
   providers: [WorkspaceState],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
@@ -20,10 +22,32 @@ export class AppShell implements OnInit {
   private readonly newProjectDialog = viewChild.required(NewProjectDialog);
   readonly isLoggingOut = signal(false);
   readonly logoutError = signal('');
+  readonly isMenuOpen = signal(false);
+  private readonly menuDrawer = viewChild.required<ElementRef<HTMLDialogElement>>('menuDrawer');
+
+  openMenu(): void {
+    this.isMenuOpen.set(true);
+    this.menuDrawer().nativeElement.showModal();
+  }
+
+  onResize(): void {
+    if (this.isMenuOpen() && window.matchMedia('(min-width: 1168px)').matches) this.closeMenu();
+  }
+  private readonly menuToggle = viewChild<ElementRef<HTMLButtonElement>>('menuToggle');
+
+  closeMenu(restoreFocus = false): void {
+    if (!this.isMenuOpen()) return;
+    this.isMenuOpen.set(false);
+    this.menuDrawer().nativeElement.close();
+    if (restoreFocus) this.menuToggle()?.nativeElement.focus();
+  }
 
   constructor() {
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
-      if (event instanceof NavigationEnd) this.syncSelectedProject();
+      if (event instanceof NavigationEnd) {
+        this.closeMenu();
+        this.syncSelectedProject();
+      }
     });
   }
 
@@ -41,10 +65,12 @@ export class AppShell implements OnInit {
   }
 
   selectProject(projectId: string): void {
+    this.closeMenu();
     if (projectId) void this.router.navigate(['/projects', projectId]);
   }
 
   createProject(): void {
+    this.closeMenu();
     this.newProjectDialog().open();
   }
 

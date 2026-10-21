@@ -1,7 +1,7 @@
 <div class="offer-page">
   <div class="offer-page-inner">
     @if (isLoading()) {
-      <p>Henter tilbud...</p>
+      <app-page-loading label="Finder dit færdige tilbud…" />
     } @else if (errorMessage()) {
       <div class="offer-error" role="alert">
         <p>{{ errorMessage() }}</p>
@@ -48,7 +48,7 @@
         </p>
       }
 
-      <main class="offer-document">
+      <main class="offer-document" animate.enter="page-reveal">
         <header class="offer-header">
           <div>
             <span class="offer-label"> TILBUD </span>

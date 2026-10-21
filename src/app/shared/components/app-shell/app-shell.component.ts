@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NavigationStart, NavigationCancel, NavigationError, NavigationSkipped, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NewProjectDialog } from '../new-project-dialog/new-project-dialog.component';
@@ -23,6 +23,7 @@ export class AppShell implements OnInit {
   readonly isLoggingOut = signal(false);
   readonly logoutError = signal('');
   readonly isMenuOpen = signal(false);
+  readonly isNavigating = signal(false);
   private readonly menuDrawer = viewChild.required<ElementRef<HTMLDialogElement>>('menuDrawer');
 
   openMenu(): void {
@@ -44,6 +45,12 @@ export class AppShell implements OnInit {
 
   constructor() {
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.isNavigating.set(event.url.split(/[?#]/)[0] !== this.router.url.split(/[?#]/)[0]);
+      }
+      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError || event instanceof NavigationSkipped) {
+        this.isNavigating.set(false);
+      }
       if (event instanceof NavigationEnd) {
         this.closeMenu();
         this.syncSelectedProject();

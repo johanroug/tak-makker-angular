@@ -30,6 +30,8 @@
 
 ## Brugeroplevelse — nye forbedringer
 
+- [ ] **Virksomhedsprofil: nyt design** — Implementeret: fire sektionskort, varm visuel stil, levende afsenderforhåndsvisning og sticky gemmebjælke. Afventer Johans appkontrol.
+- [ ] **Sideovergange og indlæsning** — Implementeret: korte routeskift, topindikator, skeletvisninger og indtoning af færdigindlæst indhold. Afventer Johans appkontrol.
 - [x] **AI i samtalepanelet** — Animation og skiftende ventetekster som i startmodalen. Johan har bekræftet, at det virker.
 - [x] **Tydelige nye forslag** — Overblik med antal nye opgaver/materialer, knapper til fanerne og markering af nye forslag. Johan har bekræftet, at det virker; efterfølgende ankerforbedring afventer appkontrol.
 - [x] **God afslutning ved færdiggørelse** — Succesanimation og modal med gemt tilbudsnummer, pris inkl. moms, Se tilbud og Download PDF. Johan har bekræftet, at det virker 21. oktober.
@@ -62,6 +64,8 @@ Status: Funktionelt afsluttet — Johan har bekræftet alle beskrevne tests.
 
 Status: Afsluttet — Johan har bekræftet de beskrevne app- og PDF-kontroller.
 
+- [x] Visuel overhaling 21. oktober: firmaoplysninger, logo, timepris og betingelser i separate kort; levende afsenderforhåndsvisning på profilen og gemmebjælke. Eksisterende formularbindinger, logo- og gemmelogik samt validering bevaret. Mobile first med min-width; produktionsbuild bestået med størrelses-/CommonJS-advarsler.
+- [ ] Johan: Kontrollér det nye layout på mobil/desktop, afsenderforhåndsvisning under indtastning, logo upload/fjernelse og Gem → genindlæs. Ingen SQL nødvendig.
 - [x] Adressefelt i profil, service og lokale databasetyper.
 - [x] Migration med adresse på virksomheden og kopi på nye tilbud; historiske tilbud ændres ikke.
 - [x] Adresse fra tilbudskopien vises på færdigt tilbud og PDF.
@@ -87,10 +91,12 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 
 ## Næste disciplin
 
+- Afprøv sideovergange og indlæsning efter Johans nye ønske.
 - Mobil og tablet: Afprøv de responsive tilpasninger. Fejlhåndtering er implementeret; den sidste loginrettelse afventer bekræftelse. PDF-feedback er fravalgt af Johan.
 
 ### Mobil og tablet — 21. oktober 2026
 
+- [x] Johan har godkendt mobilmenuens sidepaneldesign. Projektvælgerens pil har fået 16 px afstand til højre kant og reserveret tekstplads på mobil og desktop.
 - [x] Mobilmenu redesignet efter Johans feedback: native modal som sidepanel fra højre, sløret baggrund, varm farvepalette, større typografi og tydelig primærhandling. Burgerknap bevaret. Fælles navigationstemplate til mobil og desktop; lukning via kryds, Escape, baggrund og ved navigation. Lukker ved resize til desktop.
 - [x] Build og målrettet kontrol af drawer-livscyklus, fokus og overgang til Nyt projekt bestået; reduceret bevægelse respekteres. Visuel appkontrol af det nye design afventer Johan.
 - [x] Under 1168 px vises Menu-knap med projektvælger, Nyt projekt, Virksomhedsprofil og Log ud i en foldemenu. Fra min-width: 1168px vises desktopnavigationen. Samme kontroller/data bruges i begge layouts.
@@ -112,6 +118,16 @@ Status: Afsluttet — Johan har bekræftet de beskrevne kontroller.
 - [x] Profil og modaler har mindre padding samt 16 px inputtekst på mobil. Ingen ændring af PDF-layout eller database.
 - [x] Produktionsbuild bestået med kendte størrelses-/CommonJS-advarsler. Ingen nye spec-filer. Visuel kontrol i en browser eller på en fysisk enhed er endnu ikke udført af Codex.
 - [ ] Johan: F12 → mobilikon, kontrollér bredder 375, 768 og 1024 px: projektvælger, alle faner, materialefelter, oplysningsmodal, nyt projekt, virksomhedsprofil og færdigt tilbud. Ingen vandret sidescroll; felter og knapper skal være tilgængelige.
+
+### Sideovergange og indlæsning — 21. oktober 2026
+
+- [x] Justeret efter Johans feedback: forskudte lag, bevægelse, zoom, blur og lysskær erstattet af en samlet opacity-fade på 350 ms ved både routeskift og færdigindlæst indhold. Loading-feedback og reduceret bevægelse bevares.
+- [x] Efter ønske om mere WOW: dybde/skalering ved routeskift, indhold der kommer frem i forskudte lag, kort gyldent lysskær og animeret loading-emblem. Indlæsning får ingen kunstig ventetid; indholdsanimationen varer 560 ms, og reduceret bevægelse slår effekterne fra. Build bestået; visuel appkontrol afventer Johan.
+- [x] Angular View Transitions på routeskift: kun sideindholdet har navngiven overgang; headeren forbliver stationær. Initial navigation og ændringer kun i query/fragment springer over. Browser uden understøttelse bruger normal navigation.
+- [x] Topindikator følger igangværende navigation og stopper ved succes, fejl, annullering eller skippet navigation. Ingen kunstig ventetid.
+- [x] Skeletvisninger for projekt, færdigt tilbud og profil samt animate.enter på færdigt indhold. Respekterer reduceret bevægelse og bruger min-width til større skærme.
+- [x] Produktionsbuild bestået med kendte størrelses-/CommonJS-advarsler. Målrettede kontroller med simulerede routerevents af navigation, terminaltilstande, query-only og reduceret bevægelse bestået. Ingen spec-filer eller databaseændringer.
+- [ ] Johan: Skift mellem projekter, tilbud og profil. Kontrollér skeletvisning og indtoning, evt. med Network → Fast/Slow 4G. Faneskift skal ikke animere hele siden. Kontrollér også reduceret bevægelse og indlæsningsfejl.
 
 ### Fejlhåndtering — 21. oktober 2026
 

@@ -1,3 +1,4 @@
+import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +11,7 @@ type OfferData = Awaited<ReturnType<OfferService['getOffer']>>;
 
 @Component({
   selector: 'app-offer-detail',
-  imports: [DecimalPipe, DatePipe],
+  imports: [PageLoading, DecimalPipe, DatePipe],
   templateUrl: './offer-detail.component.html',
   styleUrl: './offer-detail.component.scss',
 })

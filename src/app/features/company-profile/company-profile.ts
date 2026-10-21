@@ -1,3 +1,4 @@
+import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { Component, inject, OnInit, signal } from "@angular/core";
 import {
   FormControl,
@@ -14,7 +15,7 @@ import { Location } from "@angular/common";
 
 @Component({
   selector: "app-company-profile",
-  imports: [ReactiveFormsModule],
+  imports: [PageLoading, ReactiveFormsModule],
   templateUrl: "./company-profile.html",
   styleUrl: "./company-profile.scss",
 })

@@ -1,10 +1,18 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, inject, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideRouter, Router, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes)
+    provideRouter(routes, withViewTransitions({
+      skipInitialTransition: true,
+      onViewTransitionCreated: ({ transition }) => {
+        const router = inject(Router);
+        const target = router.currentNavigation()?.finalUrl;
+        const samePath = target && target.toString().split(/[?#]/)[0] === router.url.split(/[?#]/)[0];
+        if (samePath || window.matchMedia('(prefers-reduced-motion: reduce)').matches) transition.skipTransition();
+      },
+    }))
   ]
 };

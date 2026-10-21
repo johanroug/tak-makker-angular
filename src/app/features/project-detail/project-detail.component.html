@@ -9,13 +9,13 @@
       </p>
     }
     @if (isLoading()) {
-      <p>Henter projekt...</p>
+      <app-page-loading label="Gør dit projekt klar…" layout="project" />
     } @else if (errorMessage()) {
       <p role="alert">{{ errorMessage() }}</p>
       <button type="button" (click)="retryProject()">Prøv igen</button>
     } @else if (project(); as data) {
       <!-- Hovedlayout -->
-      <main class="project-layout">
+      <main class="project-layout" animate.enter="page-reveal">
         <!-- Venstre kolonne -->
 
         <app-offer-preview
@@ -40,7 +40,7 @@
         />
       </main>
     } @else {
-      <main class="empty-workspace">
+      <main class="empty-workspace" animate.enter="page-reveal">
         <h1>Velkommen til Tak Makker</h1>
 
         <p>Vælg et eksisterende projekt ovenfor, eller opret et nyt projekt.</p>

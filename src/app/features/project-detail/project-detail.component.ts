@@ -1,3 +1,4 @@
+import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { Component, inject, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-detail',
-  imports: [ReactiveFormsModule, OfferPreview, ProjectSidebar],
+  imports: [PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })

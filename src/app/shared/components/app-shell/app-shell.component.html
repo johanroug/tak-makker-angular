@@ -1,3 +1,4 @@
+@if (isNavigating()) { <div class="route-progress" role="progressbar" aria-label="Skifter side"></div> }
 <div class="header-shell">
   <header class="app-header">
     <a routerLink="/projects" class="app-logo">Tak Makker</a>
@@ -27,7 +28,7 @@
     </p>
   }
 </div>
-<router-outlet />
+<div class="route-content"><router-outlet /></div>
 <app-new-project-dialog (projectCreated)="workspace.loadProjects()" />
 
 <ng-template #navigationContent>

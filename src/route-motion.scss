@@ -1,0 +1,15 @@
+.route-content { view-transition-name: app-page; }
+.page-reveal { animation: page-fade-in 350ms ease-in-out both; }
+@keyframes page-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes page-fade-out { from { opacity: 1; } to { opacity: 0; } }
+::view-transition-old(root), ::view-transition-new(root), ::view-transition-group(app-page) { animation: none; }
+::view-transition-old(app-page) { animation: page-fade-out 350ms ease-in-out both; }
+::view-transition-new(app-page) { animation: page-fade-in 350ms ease-in-out both; }
+.route-progress { position: fixed; inset: 0 0 auto; height: 3px; z-index: 100; overflow: hidden; pointer-events: none; background: #e8dfce55; }
+.route-progress::after { content: ''; display: block; width: 35%; height: 100%; background: linear-gradient(90deg, transparent, #bf8b2e, #f1cf80); animation: route-progress 1s ease-in-out infinite; }
+@keyframes route-progress { from { transform: translateX(-110%); } to { transform: translateX(400%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-reveal, .route-progress::after { animation: none; }
+  ::view-transition-old(app-page), ::view-transition-new(app-page) { animation: none; }
+}

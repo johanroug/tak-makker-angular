@@ -1,100 +1,246 @@
 <div class="company-profile">
-  <button type="button" class="back-link" (click)="goBack()">← Tilbage</button>
+  <div class="profile-page-top">
+    <button type="button" class="back-link" (click)="goBack()">← Tilbage</button
+    ><span>INDSTILLINGER / VIRKSOMHED</span>
+  </div>
 
   <div class="profile-card">
     <header class="profile-header">
-      <h1>Virksomhedsprofil</h1>
-      <p>Dine virksomhedsoplysninger bruges, når Tak Makker opretter tilbud.</p>
+      <div>
+        <span class="eyebrow">DIT FIRMA. DIT AFTRYK.</span>
+        <h1>Virksomhedsprofil</h1>
+        <p>
+          Giv dine tilbud et personligt aftryk.<br />Vi tager os af detaljerne, når du har sat
+          rammerne.
+        </p>
+      </div>
+      <span class="profile-spark" aria-hidden="true">✦</span>
     </header>
 
     @if (isLoading()) {
-      <p>Henter virksomhedsprofil...</p>
+      <app-page-loading label="Henter din virksomhedsprofil…" />
     } @else if (!hasProfile()) {
       <p role="alert">{{ message() }}</p>
       <button type="button" (click)="loadProfile()">Prøv igen</button>
     } @else {
-      <form [formGroup]="form" (ngSubmit)="save()">
-        <div class="form-grid">
-          <div class="form-field full-width">
-            <label for="companyName">Virksomhedsnavn</label>
-            <input id="companyName" type="text" formControlName="companyName" />
-            @if (form.controls.companyName.touched && form.controls.companyName.invalid) { <small class="field-error">Udfyld virksomhedsnavn.</small> }
-          </div>
-
-          <div class="form-field full-width">
-            <label for="address">Virksomhedsadresse</label>
-            <textarea id="address" rows="2" autocomplete="street-address" formControlName="address"></textarea>
-            @if (form.controls.address.touched && form.controls.address.invalid) { <small class="field-error">Udfyld gade, husnummer, postnummer og by.</small> }
-          </div>
-
-          <div class="form-field">
-            <label for="cvr">CVR-nummer</label>
-            <input id="cvr" type="text" formControlName="cvr" />
-            @if (form.controls.cvr.touched && form.controls.cvr.invalid) { <small class="field-error">CVR skal bestå af 8 cifre.</small> }
-          </div>
-
-          <div class="form-field">
-            <label for="contactName">Kontaktperson</label>
-            <input id="contactName" type="text" formControlName="contactName" />
-          </div>
-
-          <div class="form-field">
-            <label for="phone">Telefon</label>
-            <input id="phone" type="tel" formControlName="phone" />
-            @if (form.controls.phone.touched && form.controls.phone.invalid) { <small class="field-error">Udfyld et gyldigt telefonnummer.</small> }
-          </div>
-
-          <div class="form-field">
-            <label for="email">E-mail</label>
-            <input id="email" type="email" formControlName="email" />
-            @if (form.controls.email.touched && form.controls.email.invalid) { <small class="field-error">Udfyld en gyldig e-mailadresse.</small> }
-          </div>
-        </div>
-
-        <div class="pricing-section">
-          <h2>Virksomhedslogo</h2>
-          <p>Logoet vises på nye færdige tilbud og PDF’er. Eksisterende tilbud beholder deres logo. PNG eller JPG, højst 2 MB.</p>
-          @if (form.controls.logoDataUrl.value; as logo) {
-            <div class="logo-preview"><img [src]="logo" alt="Virksomhedens logo" /></div>
-            <button type="button" (click)="removeLogo()" [disabled]="isSaving() || isProcessingLogo()">Fjern logo</button>
-          }
-          <div class="form-field full-width">
-            <label for="companyLogo">Vælg logo</label>
-            <input id="companyLogo" type="file" accept="image/png,image/jpeg" (change)="selectLogo($event)" [disabled]="isSaving() || isProcessingLogo()" />
-          </div>
-          @if (isProcessingLogo()) { <p role="status">Behandler logo...</p> }
-          @if (logoError()) { <p class="field-error" role="alert">{{ logoError() }}</p> }
-        </div>
-
-        <div class="pricing-section">
-          <h2>Standardtimepris</h2>
-          <p>Bruges som udgangspunkt for nye projekter.</p>
-
-          <div class="form-field">
-            <label for="defaultHourlyRate">Timepris (kr.)</label>
-            <input
-              id="defaultHourlyRate"
-              type="number"
-              min="0"
-              formControlName="defaultHourlyRate"
-            />
-            @if (form.controls.defaultHourlyRate.touched && form.controls.defaultHourlyRate.invalid) { <small class="field-error">Timepris skal være mindst 0.</small> }
-          </div>
-        </div>
-
-        <div class="pricing-section terms-section">
-          <h2>Tilbudsbetingelser</h2>
-          <p>Standarder kopieres til nye projekter. Eksisterende projekter og færdige tilbud ændres ikke.</p>
-          <div class="form-grid">
-            <div class="form-field"><label for="validityDays">Gyldighed (dage fra tilbudsdato)</label><input id="validityDays" type="number" min="1" step="1" formControlName="validityDays" />
-              @if (form.controls.validityDays.touched && form.controls.validityDays.invalid) { <small class="field-error">Angiv et helt antal dage på mindst 1, eller lad feltet være tomt.</small> }
+      <form class="profile-form" animate.enter="page-reveal" [formGroup]="form" (ngSubmit)="save()">
+        <div class="profile-fields">
+          <section class="profile-section" aria-labelledby="company-section-title">
+            <div class="section-heading">
+              <span class="section-number" aria-hidden="true">01</span>
+              <div>
+                <h2 id="company-section-title">Din virksomhed</h2>
+                <p>De oplysninger, kunden møder på dit tilbud.</p>
+              </div>
             </div>
-            <div class="form-field full-width"><label for="paymentTerms">Betalingsbetingelser</label><textarea id="paymentTerms" rows="3" formControlName="paymentTerms"></textarea></div>
-            <div class="form-field full-width"><label for="reservations">Forbehold</label><textarea id="reservations" rows="4" formControlName="reservations"></textarea></div>
-          </div>
-        </div>
+            <p class="required-note">Felter med * skal udfyldes.</p>
+            <div class="form-grid">
+              <div class="form-field full-width">
+                <label for="companyName"
+                  >Virksomhedsnavn <span class="required-mark" aria-hidden="true">*</span></label
+                >
+                <input id="companyName" type="text" formControlName="companyName" />
+                @if (form.controls.companyName.touched && form.controls.companyName.invalid) {
+                  <small class="field-error">Udfyld virksomhedsnavn.</small>
+                }
+              </div>
 
+              <div class="form-field full-width">
+                <label for="address"
+                  >Virksomhedsadresse <span class="required-mark" aria-hidden="true">*</span></label
+                >
+                <textarea
+                  id="address"
+                  rows="2"
+                  autocomplete="street-address"
+                  formControlName="address"
+                ></textarea>
+                @if (form.controls.address.touched && form.controls.address.invalid) {
+                  <small class="field-error">Udfyld gade, husnummer, postnummer og by.</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label for="cvr"
+                  >CVR-nummer <span class="required-mark" aria-hidden="true">*</span></label
+                >
+                <input id="cvr" inputmode="numeric" type="text" formControlName="cvr" />
+                @if (form.controls.cvr.touched && form.controls.cvr.invalid) {
+                  <small class="field-error">CVR skal bestå af 8 cifre.</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label for="contactName">Kontaktperson</label>
+                <input id="contactName" type="text" formControlName="contactName" />
+              </div>
+
+              <div class="form-field">
+                <label for="phone"
+                  >Telefon <span class="required-mark" aria-hidden="true">*</span></label
+                >
+                <input id="phone" type="tel" formControlName="phone" />
+                @if (form.controls.phone.touched && form.controls.phone.invalid) {
+                  <small class="field-error">Udfyld et gyldigt telefonnummer.</small>
+                }
+              </div>
+
+              <div class="form-field">
+                <label for="email"
+                  >E-mail <span class="required-mark" aria-hidden="true">*</span></label
+                >
+                <input id="email" type="email" formControlName="email" />
+                @if (form.controls.email.touched && form.controls.email.invalid) {
+                  <small class="field-error">Udfyld en gyldig e-mailadresse.</small>
+                }
+              </div>
+            </div>
+          </section>
+          <section class="profile-section logo-section" aria-labelledby="logo-section-title">
+            <div class="section-heading">
+              <span class="section-number" aria-hidden="true">02</span>
+              <div>
+                <h2 id="logo-section-title">Sæt dit logo på</h2>
+                <p>Et genkendeligt aftryk på dine tilbud.</p>
+              </div>
+            </div>
+            <p>
+              Logoet vises på nye færdige tilbud og PDF’er. Eksisterende tilbud beholder deres logo.
+              PNG eller JPG, højst 2 MB.
+            </p>
+            @if (form.controls.logoDataUrl.value; as logo) {
+              <div class="logo-preview"><img [src]="logo" alt="Virksomhedens logo" /></div>
+              <button
+                type="button"
+                (click)="removeLogo()"
+                [disabled]="isSaving() || isProcessingLogo()"
+                class="remove-logo"
+              >
+                Fjern logo
+              </button>
+            }
+            <div class="form-field full-width">
+              <label for="companyLogo">Upload virksomhedslogo</label>
+              <input
+                id="companyLogo"
+                type="file"
+                accept="image/png,image/jpeg"
+                (change)="selectLogo($event)"
+                [disabled]="isSaving() || isProcessingLogo()"
+              />
+            </div>
+            @if (isProcessingLogo()) {
+              <p role="status">Behandler logo...</p>
+            }
+            @if (logoError()) {
+              <p class="field-error" role="alert">{{ logoError() }}</p>
+            }
+          </section>
+
+          <section class="profile-section pricing-section" aria-labelledby="rate-section-title">
+            <div class="section-heading">
+              <span class="section-number" aria-hidden="true">03</span>
+              <div>
+                <h2 id="rate-section-title">Din tid er noget værd</h2>
+                <p>Sæt din standardtimepris.</p>
+              </div>
+            </div>
+            <p>Bruges som udgangspunkt for nye projekter.</p>
+
+            <div class="form-field">
+              <label for="defaultHourlyRate">Timepris (kr.)</label>
+              <input
+                id="defaultHourlyRate"
+                type="number"
+                min="0"
+                formControlName="defaultHourlyRate"
+              />
+              @if (
+                form.controls.defaultHourlyRate.touched && form.controls.defaultHourlyRate.invalid
+              ) {
+                <small class="field-error">Timepris skal være mindst 0.</small>
+              }
+            </div>
+          </section>
+
+          <section class="profile-section terms-section" aria-labelledby="terms-section-title">
+            <div class="section-heading">
+              <span class="section-number" aria-hidden="true">04</span>
+              <div>
+                <h2 id="terms-section-title">Klare aftaler fra start</h2>
+                <p>Dine standardbetingelser til nye projekter.</p>
+              </div>
+            </div>
+            <p>
+              Standarder kopieres til nye projekter. Eksisterende projekter og færdige tilbud ændres
+              ikke.
+            </p>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="validityDays">Gyldighed (dage fra tilbudsdato)</label
+                ><input
+                  id="validityDays"
+                  type="number"
+                  min="1"
+                  step="1"
+                  formControlName="validityDays"
+                />
+                @if (form.controls.validityDays.touched && form.controls.validityDays.invalid) {
+                  <small class="field-error"
+                    >Angiv et helt antal dage på mindst 1, eller lad feltet være tomt.</small
+                  >
+                }
+              </div>
+              <div class="form-field full-width">
+                <label for="paymentTerms">Betalingsbetingelser</label
+                ><textarea id="paymentTerms" rows="3" formControlName="paymentTerms"></textarea>
+              </div>
+              <div class="form-field full-width">
+                <label for="reservations">Forbehold</label
+                ><textarea id="reservations" rows="4" formControlName="reservations"></textarea>
+              </div>
+            </div>
+          </section>
+        </div>
+        <aside class="profile-summary" aria-label="Forhåndsvisning af afsenderoplysninger">
+          <div class="preview-caption"><span aria-hidden="true">↗</span> DIT ANSIGT UDADTIL</div>
+          <div class="sender-preview">
+            <span class="preview-label">AFSENDEROPLYSNINGER</span>
+            @if (form.controls.logoDataUrl.value; as logo) {
+              <img [src]="logo" alt="Forhåndsvisning af virksomhedslogo" class="sender-logo" />
+            } @else {
+              <span class="sender-monogram" aria-hidden="true">{{
+                (form.controls.companyName.value || 'M').slice(0, 1).toUpperCase()
+              }}</span>
+            }
+            <h3>{{ form.controls.companyName.value || 'Dit virksomhedsnavn' }}</h3>
+            <p class="sender-address">
+              {{ form.controls.address.value || 'Din virksomhedsadresse' }}
+            </p>
+            <div class="sender-divider"></div>
+            <p>{{ form.controls.email.value || 'E-mailadresse' }}</p>
+            <p>{{ form.controls.phone.value || 'Telefonnummer' }}</p>
+            @if (form.controls.cvr.value) {
+              <p class="sender-cvr">CVR {{ form.controls.cvr.value }}</p>
+            }
+          </div>
+          <p class="preview-note">Forhåndsvisningen følger dine rettelser. Husk at gemme.</p>
+          <div class="profile-tip">
+            <span aria-hidden="true">✦</span>
+            <div>
+              <strong>Gør det én gang.</strong>
+              <p>
+                Timepris og betingelser følger med til nye projekter. Du kan tilpasse dem på det
+                enkelte projekt.
+              </p>
+            </div>
+          </div>
+          <p class="history-note">Ændringer her påvirker ikke dine færdige tilbud.</p>
+        </aside>
         <div class="form-footer">
+          <div class="save-copy">
+            <strong>Klar til næste opgave</strong><span>Gem dine oplysninger og standarder.</span>
+          </div>
           @if (message()) {
             <span class="status-message" role="status">
               {{ message() }}

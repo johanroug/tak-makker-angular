@@ -339,3 +339,10 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Produktionsbuild og målrettede servicekontroller bestået.
 - [ ] Johan: Kør supabase/migrations/202610230001_new_user_company.sql i Supabase SQL Editor. SQL er ikke kørt af Codex.
 - [ ] Test ny bruger: egen virksomhedsprofil, nyt projekt og genindlæsning; kontrollér også eksisterende bruger og fortsat adskillelse mellem virksomheder.
+
+## SVG-logo og farve — 23. oktober 2026
+
+- [x] SVG-upload med original farve eller valgfri ensfarvet udgave; gendan originalfarver. Kilde og farve gemmes på virksomheden, mens PNG-kopien fortsat bruges i tilbud/PDF.
+- [x] SVG behandles uden aktivt eller eksternt indhold. Browserkontrol af PNG-konvertering, proportioner, farve og transparens bestået. Produktionsbuild og målrettede SVG-kontroller bestået.
+- [ ] Johan: Kør supabase/migrations/202610230002_svg_logo_source.sql i Supabase SQL Editor før deployment. Codex har ikke kørt SQL.
+- [ ] Kontrollér upload, farveskift, gem/genindlæs, nyt tilbud/PDF samt uændret logo på gamle tilbud.

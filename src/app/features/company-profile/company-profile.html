@@ -106,7 +106,7 @@
             </div>
             <p>
               Logoet vises på nye færdige tilbud og PDF’er. Eksisterende tilbud beholder deres logo.
-              PNG eller JPG, højst 2 MB.
+              PNG, JPG eller SVG, højst 2 MB.
             </p>
             @if (form.controls.logoDataUrl.value; as logo) {
               <div class="logo-preview"><img [src]="logo" alt="Virksomhedens logo" /></div>
@@ -124,11 +124,23 @@
               <input
                 id="companyLogo"
                 type="file"
-                accept="image/png,image/jpeg"
+                accept="image/png,image/jpeg,image/svg+xml,.svg"
                 (change)="selectLogo($event)"
                 [disabled]="isSaving() || isProcessingLogo()"
               />
             </div>
+            @if (form.controls.logoSvgSource.value) {
+              <div class="logo-color-picker">
+                <label for="logoColor">Farve på SVG-logo</label>
+                <div class="logo-color-actions">
+                  <input id="logoColor" type="color" [value]="form.controls.logoColor.value || '#302c26'"
+                    (change)="setLogoColor($any($event.target).value)" [disabled]="isSaving() || isProcessingLogo()" />
+                  <span>{{ form.controls.logoColor.value || 'Originale farver' }}</span>
+                  <button type="button" (click)="setLogoColor(null)" [disabled]="isSaving() || isProcessingLogo() || !form.controls.logoColor.value">Originale farver</button>
+                </div>
+                <small>Vælg en farve for at gøre logoet ensfarvet. Gennemsigtige områder bevares.</small>
+              </div>
+            }
             @if (isProcessingLogo()) {
               <p role="status">Behandler logo...</p>
             }

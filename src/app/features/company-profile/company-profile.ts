@@ -1,3 +1,4 @@
+import { prepareSvg, svgToPng } from './svg-logo';
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { Component, ElementRef, effect, inject, OnInit, signal, viewChild } from "@angular/core";
 import {
@@ -63,6 +64,8 @@ export class CompanyProfileComponent implements OnInit {
     companyName: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     address: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     logoDataUrl: new FormControl<string | null>(null),
+    logoSvgSource: new FormControl<string | null>(null),
+    logoColor: new FormControl<string | null>(null),
     cvr: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\d{8}$/)] }),
     contactName: new FormControl("", { nonNullable: true }),
     phone: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/^(?=(?:\D*\d){6,15}\D*$)\+?[\d\s().-]{6,25}$/)] }),
@@ -86,7 +89,7 @@ export class CompanyProfileComponent implements OnInit {
         await this.companyService.getCurrentCompanyProfile();
 
       if (profile) {
-        this.form.setValue({ ...profile, logoDataUrl: profile.logoDataUrl ?? null });
+        this.form.setValue({ ...profile, logoDataUrl: profile.logoDataUrl ?? null, logoSvgSource: profile.logoSvgSource ?? null, logoColor: profile.logoColor ?? null });
         this.hasProfile.set(true);
       } else {
         this.message.set("Virksomhedsprofilen blev ikke fundet.");
@@ -135,14 +138,25 @@ export class CompanyProfileComponent implements OnInit {
     if (!file || this.isSaving() || this.isProcessingLogo()) return;
 
     this.logoError.set('');
-    if (!['image/png', 'image/jpeg'].includes(file.type) || file.size > 2 * 1024 * 1024) {
-      this.logoError.set('Vælg en PNG- eller JPG-fil på højst 2 MB.');
+    const isSvg = file.type === 'image/svg+xml' || /\.svg$/i.test(file.name);
+    if ((!isSvg && !['image/png', 'image/jpeg'].includes(file.type)) || file.size > 2 * 1024 * 1024) {
+      this.logoError.set('Vælg en PNG-, JPG- eller SVG-fil på højst 2 MB.');
       return;
     }
 
     this.isProcessingLogo.set(true);
     const url = URL.createObjectURL(file);
     try {
+      if (isSvg) {
+        const source = prepareSvg(await file.text());
+        const png = await svgToPng(source, null);
+        this.form.controls.logoDataUrl.setValue(png);
+        this.form.controls.logoSvgSource.setValue(source);
+        this.form.controls.logoColor.setValue(null);
+        this.form.markAsDirty();
+        this.message.set('SVG-logoet er klar. Vælg eventuelt en farve, og tryk Gem ændringer.');
+        return;
+      }
       const image = new Image();
       image.src = url;
       await image.decode();
@@ -159,6 +173,8 @@ export class CompanyProfileComponent implements OnInit {
       const dataUrl = canvas.toDataURL('image/png');
       if (dataUrl.length > 300_000) throw new Error('Logoet fylder for meget efter komprimering. Vælg et enklere eller mindre billede.');
       this.form.controls.logoDataUrl.setValue(dataUrl);
+      this.form.controls.logoSvgSource.setValue(null);
+      this.form.controls.logoColor.setValue(null);
       this.form.controls.logoDataUrl.markAsDirty();
       this.message.set('Logoet er klar. Tryk Gem ændringer for at gemme det.');
     } catch (error) {
@@ -169,9 +185,27 @@ export class CompanyProfileComponent implements OnInit {
     }
   }
 
+  async setLogoColor(color: string | null): Promise<void> {
+    const source = this.form.controls.logoSvgSource.value;
+    if (!source || this.isSaving() || this.isProcessingLogo()) return;
+    this.isProcessingLogo.set(true);
+    this.logoError.set('');
+    try {
+      const png = await svgToPng(source, color);
+      this.form.controls.logoDataUrl.setValue(png);
+      this.form.controls.logoColor.setValue(color);
+      this.form.markAsDirty();
+      this.message.set('Logofarven er klar. Tryk Gem ændringer for at gemme den.');
+    } catch (error) {
+      this.logoError.set(error instanceof Error ? error.message : 'Kunne ikke ændre logofarven.');
+    } finally { this.isProcessingLogo.set(false); }
+  }
+
   removeLogo(): void {
     if (this.isSaving() || this.isProcessingLogo()) return;
     this.form.controls.logoDataUrl.setValue(null);
+    this.form.controls.logoSvgSource.setValue(null);
+    this.form.controls.logoColor.setValue(null);
     this.form.controls.logoDataUrl.markAsDirty();
     this.logoError.set('');
     this.message.set('Tryk Gem ændringer for at fjerne logoet.');

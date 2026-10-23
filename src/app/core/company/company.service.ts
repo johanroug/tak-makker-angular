@@ -7,6 +7,8 @@ export type CompanyProfile = {
   companyName: string;
   address: string;
   logoDataUrl?: string | null;
+  logoSvgSource?: string | null;
+  logoColor?: string | null;
   cvr: string;
   contactName: string;
   phone: string;
@@ -44,6 +46,8 @@ export class CompanyService {
           name,
           address,
           logo_data_url,
+          logo_svg_source,
+          logo_color,
           cvr,
           contact_name,
           phone,
@@ -75,6 +79,8 @@ export class CompanyService {
       companyName: company.name ?? '',
       address: company.address ?? '',
       logoDataUrl: company.logo_data_url,
+      logoSvgSource: company.logo_svg_source,
+      logoColor: company.logo_color,
       cvr: company.cvr ?? '',
       contactName: company.contact_name ?? '',
       phone: company.phone ?? '',
@@ -104,6 +110,8 @@ export class CompanyService {
         name: companyProfile.companyName.trim(),
         address: companyProfile.address.trim(),
         logo_data_url: companyProfile.logoDataUrl ?? null,
+        logo_svg_source: companyProfile.logoSvgSource ?? null,
+        logo_color: companyProfile.logoColor ?? null,
         cvr: companyProfile.cvr.trim(),
         contact_name: companyProfile.contactName.trim(),
         phone: companyProfile.phone.trim(),

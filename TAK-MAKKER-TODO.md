@@ -362,7 +362,20 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Login, projektbesøg/oprettelse, AI, manuelle linjeændringer/status, færdiggørelse, tilbudsbesøg/status, PDF og profilgemning registreres. Tekniske fejl registreres med handling/kode; ingen beskedtekst, kundedata, password, URL eller stacktrace i logpayload.
 - [x] Synlig information om registreringen i appen. Logging kører i baggrunden og blokerer ikke normale handlinger. Ikke en komplet sikkerhedsaudit: browserhændelser kan mangle ved afbrudt netværk/fanelukning.
 - [x] Produktionsbuild og målrettede kontroller af loggingfejl, sikker payload, oprindelige fejl, bruger-/fejlfiltre og gennemsnit bestået.
-- [ ] Johan: Kør supabase/migrations/202610230004_private_activity.sql, derefter supabase/tests/activity_access.sql. SQL er ikke kørt af Codex; databaseadgangstesten afventer.
-- [ ] Test ejer: Aktivitet-menu og registrering fra testbrugeren. Test anden bruger: ingen menu, /activity afvist og databasekontrollen bestået. Commit/push efter SQL; kontrollér faktisk deployment.
+- [x] Johan har kørt aktivitetsmigrationen samt rettelsen 202610230005_activity_offer_id_type.sql. Adgangstesten er bestået: ejer tilladt, fremmed/anonym læsning og egen adminoprettelse afvist.
+- [x] Johan har bekræftet, at aktivitetsoverblik og adgangskontrol virker på localhost.
+- [ ] Commit/push og kontrollér aktivitetsoverblikket på produktion.
 
-- Aktivitetslog: Johan har kørt opsætningen. Adgangstesten fandt text/uuid-forskel for offers.id. Separat rettelse 202610230005_activity_offer_id_type.sql er klar; afventer genkørsel af adgangstesten.
+- Aktivitetslog: Johan har kørt opsætningen. Adgangstesten fandt text/uuid-forskel for offers.id. Separat rettelse 202610230005_activity_offer_id_type.sql er klar; Johan har genkørt adgangstesten med passed = true og bekræftet localhost-flowet.
+
+## Registrering og blokering — 23. oktober 2026
+
+- [x] /register med e-mail, passwordgentagelse, bekræftelsesmail-besked og profilflow ved session. Login linker til registrering. Eksisterende egen-virksomhed-flow genbruges.
+- [x] Privat /users bag eksisterende admin-RPC: søgning, blokering/genåbning og beskyttelse af administratorens egen adgang. Ingen service-role-key i frontend.
+- [x] Serverbeskyttelse klar: blokliste, restriktiv RLS på alle 9 app-tabeller, adgangstjek på privilegerede RPC-indgange og før AI. Eksisterende RPC-definitioner/nummerering bevares ved indsættelse af adgangstjek.
+- [x] Appen kontrollerer adgang ved login, routeskift, fokus og hvert minut i synlig fane. Registrering, bekræftelsesflow, loginblokering og fejltilstande kontrolleret med mocks; produktionsbuild bestået.
+- [x] Johan har kørt 202610230006_registration_and_access.sql og adgangstesten. passed = true: ejer tilladt, blokering stopper tabel-/RPC-adgang, genåbning virker, almindelig bruger kan ikke administrere adgang.
+- [ ] Kontrollér Auth signup/Confirm Email, SMTP, Site URL og redirects efter REGISTRATION-SETUP.md. Deploy generate-offer efter SQL, og commit/push frontend.
+- [ ] Manuel kontrol af registrering/e-mail og egen virksomhed; blokér en allerede indlogget testbruger, kontrollér RLS/RPC/AI, genåbn og genkør virksomheders adgangskontrol.
+
+- Registrering/blokering: første SQL-forsøg blev afbrudt af preflight ved BEGIN-matchning uden ændringer. Matchningen er rettet til BEGIN-token og bevarer CRLF/kommentarer. Johan har genkørt migration og databasekontrol med passed = true.

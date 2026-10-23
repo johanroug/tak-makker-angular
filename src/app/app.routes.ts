@@ -9,6 +9,7 @@ import { AppShell } from './shared/components/app-shell/app-shell.component';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
+  { path: 'register', component: Login, data: { register: true } },
   {
     path: '',
     component: AppShell,
@@ -27,6 +28,12 @@ export const routes: Routes = [
         canActivate: [activityGuard],
         loadComponent: () =>
           import('./features/activity/activity.component').then((m) => m.ActivityComponent),
+      },
+      {
+        path: 'users',
+        canActivate: [activityGuard],
+        loadComponent: () =>
+          import('./features/users/users.component').then((m) => m.UsersComponent),
       },
       { path: 'company-profile', component: CompanyProfileComponent },
       { path: '', redirectTo: 'projects', pathMatch: 'full' },

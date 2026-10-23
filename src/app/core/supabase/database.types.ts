@@ -513,6 +513,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_app: { Args: Record<PropertyKey, never>; Returns: boolean }
+      get_app_users: { Args: Record<PropertyKey, never>; Returns: Json }
+      set_app_user_blocked: { Args: {p_user_id: string; p_blocked: boolean}; Returns: undefined }
       is_activity_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
       record_activity: { Args: { p_action: string; p_success: boolean; p_duration_ms?: number; p_error_code?: string; p_project_id?: string; p_offer_id?: string; p_state?: string }; Returns: undefined }
       get_activity_events: { Args: Record<PropertyKey, never>; Returns: Json }

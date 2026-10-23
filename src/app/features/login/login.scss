@@ -104,3 +104,29 @@
   margin: 0 auto 16px;
   object-fit: contain;
 }
+.auth-switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #857967;
+  a {
+    margin-left: 6px;
+    color: #8d6524;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+.login-notice {
+  padding: 14px;
+  background: #edf5ee;
+  color: #376647;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.login-form small {
+  color: #857967;
+  font-size: 12px;
+  line-height: 1.6;
+}

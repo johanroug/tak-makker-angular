@@ -1,8 +1,19 @@
+import { AppAccessService } from '../../../core/auth/app-access.service';
+import { interval } from 'rxjs';
 import { ActivityService } from '../../../core/activity/activity.service';
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavigationStart, NavigationCancel, NavigationError, NavigationSkipped, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import {
+  NavigationStart,
+  NavigationCancel,
+  NavigationError,
+  NavigationSkipped,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterOutlet,
+} from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NewProjectDialog } from '../new-project-dialog/new-project-dialog.component';
@@ -10,7 +21,7 @@ import { WorkspaceState } from './workspace-state';
 
 @Component({
   selector: 'app-shell',
-  host: { '(window:resize)': 'onResize()' },
+  host: { '(window:resize)': 'onResize()', '(window:focus)': 'checkCurrentAccess()' },
   imports: [NgTemplateOutlet, FormsModule, RouterLink, RouterOutlet, NewProjectDialog],
   providers: [WorkspaceState],
   templateUrl: './app-shell.component.html',
@@ -18,15 +29,33 @@ import { WorkspaceState } from './workspace-state';
 })
 export class AppShell implements OnInit {
   readonly activity = inject(ActivityService);
-  private lastActivityPath = "";
+  private readonly access = inject(AppAccessService);
+  private accessCheckPending = false;
+  async checkCurrentAccess(): Promise<void> {
+    if (this.accessCheckPending) return;
+    this.accessCheckPending = true;
+    try {
+      if (!(await this.access.allowed())) {
+        await this.authService.signOut();
+        await this.router.navigate(['/login'], { queryParams: { access: 'blocked' } });
+      }
+    } catch {
+      /* A temporary connection failure is not a confirmed block. */
+    } finally {
+      this.accessCheckPending = false;
+    }
+  }
+  private lastActivityPath = '';
   private recordPageVisit(): void {
     const path = this.router.url.split(/[?#]/)[0];
     if (path === this.lastActivityPath) return;
     this.lastActivityPath = path;
     const project = /^\/projects\/([0-9a-f-]{36})$/i.exec(path);
     const offer = /^\/offers\/([0-9a-f-]{36})$/i.exec(path);
-    if (project) this.activity.record("project_opened", true, undefined, undefined, {projectId: project[1]});
-    if (offer) this.activity.record("offer_opened", true, undefined, undefined, {offerId: offer[1]});
+    if (project)
+      this.activity.record('project_opened', true, undefined, undefined, { projectId: project[1] });
+    if (offer)
+      this.activity.record('offer_opened', true, undefined, undefined, { offerId: offer[1] });
   }
   readonly workspace = inject(WorkspaceState);
   private readonly authService = inject(AuthService);
@@ -56,11 +85,21 @@ export class AppShell implements OnInit {
   }
 
   constructor() {
+    interval(60000)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        if (document.visibilityState === 'visible') void this.checkCurrentAccess();
+      });
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.isNavigating.set(event.url.split(/[?#]/)[0] !== this.router.url.split(/[?#]/)[0]);
       }
-      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError || event instanceof NavigationSkipped) {
+      if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError ||
+        event instanceof NavigationSkipped
+      ) {
         this.isNavigating.set(false);
       }
       if (event instanceof NavigationEnd) {

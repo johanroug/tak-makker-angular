@@ -1,0 +1,154 @@
+.users-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 16px 48px;
+  color: #302c26;
+}
+header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.eyebrow {
+  color: #9b7a3c;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+h1 {
+  margin: 8px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+header p,
+.scope {
+  color: #857967;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.search {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+.search input {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 8px 0 12px;
+  padding: 14px;
+  font-size: 16px;
+  border: 1px solid #ded4c2;
+  border-radius: 10px;
+  background: white;
+}
+button {
+  padding: 11px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #292923;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.secondary {
+  background: white;
+  color: #655943;
+  border-color: #ded4c2;
+}
+.danger {
+  background: #a04432;
+}
+.user-list {
+  margin-top: 24px;
+  padding: 0 20px;
+  border: 1px solid #eee7db;
+  border-radius: 16px;
+  background: white;
+}
+article {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 24px 0;
+  border-bottom: 1px solid #f0ede7;
+}
+article:last-child {
+  border-bottom: 0;
+}
+.user-details {
+  flex: 1;
+  min-width: 200px;
+  overflow-wrap: anywhere;
+}
+h2 {
+  font-size: 15px;
+  font-weight: 600;
+}
+article p {
+  color: #857967;
+  font-size: 12px;
+  margin: 5px 0 8px;
+}
+small {
+  display: block;
+  color: #9b9183;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.status {
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  background: #edf5ee;
+  color: #376647;
+}
+.status.blocked {
+  background: #fff0eb;
+  color: #a04432;
+}
+.error,
+.notice,
+.confirm {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.error {
+  color: #a04432;
+  background: #fff0eb;
+}
+.notice {
+  color: #376647;
+  background: #edf5ee;
+}
+.confirm {
+  border: 1px solid #e4c9bb;
+  background: #fff8f2;
+}
+.confirm div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.empty {
+  padding: 30px 0;
+  color: #857967;
+  font-size: 13px;
+}
+@media (min-width: 701px) {
+  .users-page {
+    padding: 20px 24px 48px;
+  }
+}

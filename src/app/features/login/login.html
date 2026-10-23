@@ -4,10 +4,10 @@
       <img class="login-logo" src="/favicon.png" alt="Tak Makker" />
 
       <h1>Tak Makker</h1>
-      <p>Din digitale makker til tilbud</p>
+      <p>{{ registering ? 'Dit første tilbud starter her' : 'Din digitale makker til tilbud' }}</p>
     </div>
 
-    <form class="login-form" (ngSubmit)="login()">
+    <form #authForm="ngForm" class="login-form" (ngSubmit)="authForm.valid && login()">
       <label>
         E-mail
         <input
@@ -26,19 +26,49 @@
           type="password"
           name="password"
           [(ngModel)]="password"
-          autocomplete="current-password"
+          [attr.autocomplete]="registering ? 'new-password' : 'current-password'"
+          [minlength]="registering ? 8 : 1"
           placeholder="Din adgangskode"
           required
         />
       </label>
 
+      @if (registering) {
+        <label
+          >Gentag adgangskode<input
+            type="password"
+            name="repeatPassword"
+            [(ngModel)]="repeatPassword"
+            autocomplete="new-password"
+            minlength="8"
+            required
+        /></label>
+        <small>Brug mindst 8 tegn. Du får din egen virksomhedsprofil efter oprettelsen.</small>
+      }
+      @if (notice()) {
+        <p class="login-notice" role="status">{{ notice() }}</p>
+      }
       @if (errorMessage()) {
         <p class="login-error" role="alert">{{ errorMessage() }}</p>
       }
 
-      <button type="submit" [disabled]="isLoggingIn()">
-        {{ isLoggingIn() ? 'Logger ind...' : 'Log ind' }}
+      <button type="submit" [disabled]="isLoggingIn() || authForm.invalid">
+        {{
+          isLoggingIn()
+            ? registering
+              ? 'Opretter bruger…'
+              : 'Logger ind…'
+            : registering
+              ? 'Opret bruger'
+              : 'Log ind'
+        }}
       </button>
     </form>
+    <p class="auth-switch">
+      {{ registering ? 'Har du allerede en bruger?' : 'Ny hos Tak Makker?' }}
+      <a [routerLink]="registering ? '/login' : '/register'">{{
+        registering ? 'Log ind' : 'Opret bruger'
+      }}</a>
+    </p>
   </main>
 </div>

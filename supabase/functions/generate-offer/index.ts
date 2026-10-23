@@ -65,6 +65,11 @@ Deno.serve(async (request) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
     }
 
+    const { data: accessAllowed, error: accessError } = await supabase.rpc('can_access_app');
+    if (accessError || accessAllowed !== true) {
+      return Response.json({ error: 'Access denied' }, { status: 403, headers: corsHeaders });
+    }
+
     // 2. Hent projektet.
     const body = await request.json();
     const projectId = body.projectId;

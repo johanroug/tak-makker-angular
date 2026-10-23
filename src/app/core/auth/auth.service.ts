@@ -1,3 +1,4 @@
+import { AppAccessService } from './app-access.service';
 import { ActivityService } from '../activity/activity.service';
 import { Injectable, inject, OnDestroy } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
@@ -7,6 +8,7 @@ type UserResult = Awaited<ReturnType<typeof supabase.auth.getUser>>;
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
   private readonly activity = inject(ActivityService);
+  private readonly access = inject(AppAccessService);
   private cachedUser?: UserResult;
   private validUntil = 0;
   private pending?: Promise<UserResult>;
@@ -38,8 +40,26 @@ export class AuthService implements OnDestroy {
   async signIn(email: string, password: string) {
     this.invalidate();
     const result = await supabase.auth.signInWithPassword({ email, password });
-    if (!result.error) this.activity.record('login', true);
+    if (!result.error) {
+      try {
+        if (!(await this.access.allowed()))
+          throw new Error('Din adgang til Tak Makker er blokeret. Kontakt Tak Makker for hjælp.');
+      } catch (error) {
+        await this.signOut();
+        throw error;
+      }
+      this.activity.record('login', true);
+    }
     return result;
+  }
+
+  async signUp(email: string, password: string) {
+    this.invalidate();
+    return supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: window.location.origin + '/login' },
+    });
   }
 
   async signOut() {

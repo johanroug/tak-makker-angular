@@ -1,0 +1,90 @@
+<main class="users-page">
+  <header>
+    <div>
+      <span class="eyebrow">KUN FOR DIG</span>
+      <h1>Brugere og adgang</h1>
+      <p>Hold overblik over testbrugerne, og styr hvem der kan bruge Tak Makker.</p>
+    </div>
+    <button type="button" (click)="reload()" [disabled]="loading() || !!busy()">
+      {{ loading() ? 'Henter…' : 'Opdatér' }}
+    </button>
+  </header>
+  <label class="search"
+    >Find en bruger<input
+      type="search"
+      placeholder="Søg på e-mail eller virksomhed"
+      [value]="search()"
+      (input)="search.set($any($event.target).value)"
+  /></label>
+  <p class="scope">
+    Viser op til de 1.000 nyeste brugere. En blokering gælder brugerens appadgang og sletter ikke
+    brugerens data.
+  </p>
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+  @if (message()) {
+    <p class="notice" role="status">{{ message() }}</p>
+  }
+  @if (confirmation(); as user) {
+    <section class="confirm" aria-label="Bekræft blokering">
+      <h2>Bloker adgang for {{ user.email }}?</h2>
+      <p>Brugeren mister adgang til data og AI i Tak Makker. Du kan åbne adgangen igen her.</p>
+      <div>
+        <button
+          type="button"
+          class="danger"
+          (click)="changeAccess(user, true)"
+          [disabled]="!!busy()"
+        >
+          {{ busy() ? 'Gemmer…' : 'Bloker adgang' }}</button
+        ><button
+          type="button"
+          class="secondary"
+          (click)="confirmation.set(null)"
+          [disabled]="!!busy()"
+        >
+          Annuller
+        </button>
+      </div>
+    </section>
+  }
+  <section class="user-list">
+    @for (user of filtered(); track user.id) {
+      <article>
+        <div class="user-details">
+          <h2>{{ user.email }}</h2>
+          <p>{{ user.company_name || 'Virksomhed oprettes ved første brug' }}</p>
+          <small
+            >Oprettet {{ user.created_at | date: 'dd.MM.yyyy' }} ·
+            {{ user.email_confirmed_at ? 'E-mail bekræftet' : 'Afventer bekræftelse' }}</small
+          ><small
+            >Seneste login:
+            {{
+              user.last_sign_in_at
+                ? (user.last_sign_in_at | date: 'dd.MM.yyyy HH:mm')
+                : 'Ikke logget ind endnu'
+            }}</small
+          >
+        </div>
+        <span class="status" [class.blocked]="user.blocked">{{
+          user.is_admin ? 'Administrator' : user.blocked ? 'Blokeret' : 'Adgang åben'
+        }}</span>
+        @if (!user.is_admin) {
+          <button
+            type="button"
+            class="secondary"
+            (click)="user.blocked ? changeAccess(user, false) : confirmation.set(user)"
+            [disabled]="!!busy() || loading()"
+          >
+            {{ busy() === user.id ? 'Gemmer…' : user.blocked ? 'Åbn adgang' : 'Bloker' }}
+          </button>
+        }
+      </article>
+    } @empty {
+      <p class="empty">
+        {{ loading() ? 'Henter brugere…' : 'Ingen brugere matcher din søgning.' }}
+      </p>
+    }
+  </section>
+</main>

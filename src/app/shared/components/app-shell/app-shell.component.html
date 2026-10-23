@@ -55,7 +55,8 @@
     </button>
   </div>
   <div class="account-actions">
-    @if (activity.isAdmin()) { <a routerLink="/activity" class="profile-button" (click)="closeMenu()">Aktivitet</a> }
+    @if (activity.isAdmin()) {
+      <a routerLink="/users" class="profile-button" (click)="closeMenu()">Brugere</a> <a routerLink="/activity" class="profile-button" (click)="closeMenu()">Aktivitet</a> }
     <a routerLink="/company-profile" class="profile-button" (click)="closeMenu()"
       ><span class="nav-icon" aria-hidden="true"
         ><svg

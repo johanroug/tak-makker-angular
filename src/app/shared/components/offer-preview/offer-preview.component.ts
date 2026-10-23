@@ -2,6 +2,7 @@ import type { DraftTextEdit } from './draft-text-edit';
 import {
   afterNextRender,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -35,7 +36,7 @@ type EditableDetails = {
   selector: 'app-offer-preview',
   imports: [ReactiveFormsModule, DecimalPipe],
   templateUrl: './offer-preview.component.html',
-  styleUrls: ['./offer-preview.component.scss', './offer-preview.mobile.scss'],
+  styleUrl: './offer-preview.component.scss',
 })
 export class OfferPreview {
   private readonly projectService = inject(ProjectService);
@@ -67,6 +68,9 @@ export class OfferPreview {
 
   readonly detailsSaved = output<void>();
   readonly offerFinalized = output<void>();
+  readonly footerHeightChanged = output<number>();
+  private readonly footer = viewChild.required<ElementRef<HTMLElement>>('offerFooter');
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly isEditing = signal(false);
   readonly isSaving = signal(false);
@@ -81,6 +85,12 @@ export class OfferPreview {
 
   constructor() {
     afterNextRender(() => {
+      const footer = this.footer().nativeElement;
+      const measure = () => this.footerHeightChanged.emit(Math.ceil(footer.getBoundingClientRect().height));
+      const observer = new ResizeObserver(measure);
+      observer.observe(footer);
+      measure();
+      this.destroyRef.onDestroy(() => observer.disconnect());
       if (this.openDetailsInitially()) this.startEditing();
     });
   }

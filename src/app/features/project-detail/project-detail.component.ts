@@ -29,6 +29,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
   readonly errorMessage = signal('');
   readonly refreshError = signal('');
   readonly isRefreshing = signal(false);
+  readonly offerFooterHeight = signal(220);
 
   retryProject(): void {
     const projectId = this.route.snapshot.paramMap.get('projectId');

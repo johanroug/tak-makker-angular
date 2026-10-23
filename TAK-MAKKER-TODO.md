@@ -13,6 +13,14 @@
 
 - [x] **Sikkerhed og adgang** — RLS, rettigheder, databasefunktioner, appadgang og direkte AI-adgang kontrolleret med to virksomheder i begge retninger.
 - [ ] **Mobil og tablet** — Responsive tilpasninger implementeret 21. oktober; afventer visuel kontrol på mobil/tablet.
+
+  Opfølgning 24. oktober: Materialefelter tilpasses nu højrepanelets faktiske bredde via en min-width-container-query. Fanerne bevarer vandret scroll i smalle desktop-/tabletpaneler; redigerbare felter har 16 px tekst og talfelter mindst 44 px højde. Login/registrering har mere plads til felterne på mobil og bruger dynamisk skærmhøjde. Produktionsbuild bestået med kendte advarsler. Repræsentative materialekort med appens faktiske SCSS og fiktive data er visuelt kontrolleret i browser ved smal mobil, bredt enkeltkolonnelayout og 1024 px med smal højrekolonne. Dette erstatter ikke den samlede kontrol af den indloggede app.
+  - [ ] Johan: Kontrollér ved 375, 768 og 1024 px: mobilmenu, materialeredigering, samtale, nyt projekt/oplysningsmodal, profil og færdigt tilbud. Kontrollér almindelig sidescroll til og med 900 px og sticky højrepanel over 900 px. Virksomhedsprofilens højre side skal fortsat være uden egen scroll.
+  - [x] Rettet scrolllås over højrepanelet over 900 px: fjernet overscroll-containment på faneindhold og samtalebeskeder, så siden overtager rulning ved panelets kanter. Kompileret CSS kontrolleret og produktionsbuild bestået med kendte advarsler.
+  - [ ] Johan: Kontrollér på tablet, at siden kan rulles med fingeren over tilbudshistorikken og ved begyndelsen/slutningen af en lang samtale.
+  - [x] Færdiggørelsesbjælken er fast i skærmens bund i enkeltkolonnelayoutet (til og med 900 px), også efter scroll forbi kladden. ResizeObserver reserverer plads efter projektindholdet ud fra bjælkens højde; safe area og oprydning ved navigation håndteres. Desktop bevarer sticky bjælke i kladden. Produktionsbuild bestået; afventer Johans kontrol på enhed.
+  - [x] Højrepanelets styles samlet i project-sidebar.component.scss med mobil som grundlayout og min-width-regler til større paneler/skærme. Separat mobilfil og reference fjernet. Repræsentative CSS-layoutkontroller før/efter ved syv bredder og med/uden samtale bestået. Størrelsesgrænsen pr. stylesheet er justeret fra 8 til 10 kB, fordi eksisterende styles nu samles i én fil; advarselsgrænsen er uændret.
+  - [x] Tilbudsvisningens styles ligeledes samlet i offer-preview.component.scss. offer-preview.mobile.scss og komponentreferencen er fjernet. Mobil er grundlayoutet, større layouts tilføjes ved min-width 601/901 px. Repræsentative CSS-kontroller før/efter ved ni bredder bestået, inklusive fast/sticky bundbjælke, formular og priser. Produktionsbuild bestået med kendte advarsler.
 - [x] **Vercel: skift fra React til Angular** — Repo klargjort med vercel.json (Angular, build, browser-output og SPA-routing), Node 24.x og VERCEL-DEPLOYMENT.md. Produktionsbuild og outputfiler kontrolleret. Vercel-projektet tak-makker er nu forbundet til johanroug/tak-makker-angular; Angular, npm ci, build, outputmappe og Node 24.x er kontrolleret/opsat i dashboardet. Commit eda6836 er deployet som Production/Ready på www.takmakker.dk. Angular-login er åbnet i browseren, og Johan bekræfter, at det ser rigtigt ud. Direkte projekt-, profil- og tilbuds-URL’er samt JS/CSS/logo returnerer 200 med korrekt indholdstype. Login, AI og PDF i produktion mangler stadig funktionel brugerkontrol under Deployment.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
@@ -387,3 +395,9 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Produktionsbuild og målrettede kontroller af pending/blocked/denied/active, signup uden adgang og admin-godkendelse bestået.
 - [x] Johan har kørt 202610230007_user_approval.sql og adgangstesten med passed = true: nye brugere afventer, egen godkendelse afvist, ejer kan godkende, blokering har forrang.
 - [ ] Test registrering → e-mailbekræftelse → afventer → ejer godkender → egen virksomhed og projekter; kontrollér eksisterende konti og deployment efter commit/push.
+
+## Mail ved ny bruger — udskudt, 23. oktober 2026
+
+- [ ] Send en automatisk mail til johanroug@gmail.com, når en ny bruger afventer godkendelse, med link til den private brugeradministration. Godkendelse foretages fortsat af Johan i appen.
+- [ ] Vælg og opsæt mailudbyder (fx Resend eller eksisterende SMTP), sikker opbevaring af nøgler på serveren og genforsøg ved afsendelsesfejl. Test notifikationen uden at give brugeren adgang automatisk.
+- Arbejdet er sat på pause efter Johans ønske. Ingen mailtjeneste er tilsluttet, og ingen mailændringer skal udrulles nu.

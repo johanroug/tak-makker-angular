@@ -1,16 +1,31 @@
+:host {
+  display: block;
+  height: auto;
+  container-type: inline-size;
+}
+
 .project-sidebar {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
   min-height: 0;
+  overflow: visible;
+  flex: none;
+  overscroll-behavior: auto;
 }
 
 .sidebar-tabs {
   display: flex;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
   border-bottom: 1px solid #ddd;
 
   button {
-    padding: 12px 16px;
+    flex: 1 0 auto;
+    min-height: 44px;
+    padding: 12px 10px;
+    white-space: nowrap;
     font-size: 14px;
     border-bottom: 2px solid transparent;
     cursor: pointer;
@@ -28,10 +43,17 @@
 }
 
 .sidebar-content {
-  flex: 1;
+  flex: none;
+  height: auto;
   min-height: 0;
-  padding: 16px;
-  overflow-y: auto;
+  padding: 12px;
+  overflow: visible;
+  overscroll-behavior: auto;
+
+  &:has(.chat-panel) {
+    display: flex;
+    flex-direction: column;
+  }
   background: #f7f7f6;
 
   > h2 {
@@ -40,9 +62,8 @@
   }
 }
 
-.work-item-card,
-.material-card {
-  padding: 16px;
+:is(.work-item-card, .material-card) {
+  padding: 12px;
   margin-bottom: 12px;
   border-radius: 12px;
   background: white;
@@ -84,7 +105,7 @@
   background: transparent;
   color: #44403c;
   font: inherit;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.45;
   resize: vertical;
 
@@ -108,16 +129,20 @@
 
 .work-item-hours {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 8px;
 
   label {
+    flex-basis: 100%;
+    padding-top: 0;
     margin-right: auto;
     color: #57534e;
   }
 
   input {
     width: 78px;
+    min-height: 44px;
     padding: 8px 10px;
     border: 1px solid #d6d3d1;
     border-radius: 8px;
@@ -142,15 +167,13 @@
   }
 }
 
-.work-item-source,
-.material-source {
+:is(.work-item-source, .material-source) {
   margin: 7px 0 0;
   color: #78716c;
   font-size: 14px;
 }
 
-.work-item-status,
-.material-status {
+:is(.work-item-status, .material-status) {
   display: inline-flex;
   align-items: center;
   margin-top: 16px;
@@ -172,13 +195,15 @@
   }
 }
 
-.work-item-actions,
-.material-actions {
+:is(.work-item-actions, .material-actions) {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
 
   button {
+    min-height: 44px;
+    flex: 1;
     padding: 8px 14px;
     border: 1px solid #d8d8d8;
     border-radius: 7px;
@@ -228,25 +253,30 @@
 }
 
 .material-field {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: 6px;
   margin: 10px 0;
 
   > label {
     flex: 0 0 auto;
+    padding-top: 0;
     color: #57534e;
   }
 }
 
 .material-field-value {
   display: flex;
+  min-width: 0;
+  max-width: 100%;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
 
   input {
+    min-height: 44px;
     padding: 8px 10px;
     border: 1px solid #d6d3d1;
     border-radius: 8px;
@@ -301,7 +331,11 @@
 .chat-panel {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  height: auto;
+  min-height: 0;
+  flex: none;
+  overflow: visible;
+  overscroll-behavior: auto;
 
   > h2 {
     margin: 0 0 14px;
@@ -357,12 +391,18 @@
 
 .chat-messages {
   display: flex;
+  height: auto;
+  min-height: 0;
+  flex: none;
+  overflow: visible;
+  overscroll-behavior: auto;
   flex-direction: column;
   gap: 10px;
   margin-top: 14px;
 }
 
 .chat-message {
+  overflow-wrap: anywhere;
   align-self: flex-start;
   max-width: 90%;
   padding: 12px 14px;
@@ -410,6 +450,7 @@
 }
 
 .offer-history-card {
+  overflow-wrap: anywhere;
   padding: 16px;
   border: 1px solid #e7e5e4;
   border-radius: 10px;
@@ -510,57 +551,157 @@
   }
 }
 
-
-.project-sidebar {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.work-item-card, .material-card, .chat-message {
+:is(.work-item-card, .material-card),
+.chat-message {
   scroll-margin-block: 12px;
-  &:focus-visible { outline: 2px solid #c084fc; outline-offset: 3px; }
-}
-
-.sidebar-tabs {
-  flex-shrink: 0;
-}
-
-.sidebar-content {
-  min-height: 0;
-  overscroll-behavior: contain;
-
-  &:has(.chat-panel) {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  &:focus-visible {
+    outline: 2px solid #c084fc;
+    outline-offset: 3px;
   }
-}
-
-.chat-panel {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
 }
 
 .chat-panel > h2,
 .chat-form {
   flex-shrink: 0;
 }
-
 .chat-messages {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   padding-right: 4px;
 }
 
-.field-save-status { display: block; min-height: 16px; font-size: 11px; line-height: 1.4; color: #647468; font-weight: 400; overflow-wrap: anywhere; }
+.field-save-status {
+  display: block;
+  min-height: 16px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #647468;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
 
-.field-save-status.save-failed { color: #b91c1c; }
-.save-field-control { display: grid; gap: 4px; min-width: 0; }
-.save-field-control input { box-sizing: border-box; max-width: 100%; }
-.material-field-value { min-width: 0; }
+.field-save-status.save-failed {
+  color: #b91c1c;
+}
+.save-field-control {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.save-field-control input {
+  box-sizing: border-box;
+  max-width: 100%;
+}
 
-.unit-suffix { padding-top: 8px; }
+.unit-suffix {
+  padding-top: 8px;
+}
+
+input,
+textarea,
+.inline-title,
+.inline-description,
+.material-field-value input,
+.work-item-hours input {
+  font-size: 16px;
+}
+
+.sidebar-tabs button.conversation-tab {
+  color: #795719;
+  font-weight: 600;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+
+  .conversation-tab-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    margin: -5px -8px;
+    border-radius: 8px;
+    background: #f3ead7;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+
+  &:hover,
+  &.active {
+    color: #62420d;
+    border-bottom-color: #ad8136;
+
+    .conversation-tab-label {
+      background: #eadebf;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #ad8136;
+    outline-offset: -3px;
+  }
+}
+
+// Adapt field rows to the panel width, including a narrow desktop column.
+@container (min-width: 400px) {
+  .material-field {
+    display: flex;
+    gap: 16px;
+    > label {
+      padding-top: 8px;
+    }
+  }
+  .material-field-value {
+    justify-content: flex-end;
+  }
+  .work-item-hours {
+    flex-wrap: nowrap;
+    label {
+      flex-basis: auto;
+      padding-top: 8px;
+    }
+  }
+  .work-item-actions,
+  .material-actions {
+    flex-wrap: nowrap;
+    button {
+      min-height: 0;
+      flex: 0 1 auto;
+    }
+  }
+}
+@media (min-width: 901px) {
+  :host {
+    height: 100%;
+  }
+  .project-sidebar {
+    height: 100%;
+    overflow: hidden;
+  }
+  // Let scrolling continue on the page when the panel reaches either end.
+  .sidebar-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    overscroll-behavior: auto;
+  }
+  .sidebar-content:has(.chat-panel) {
+    flex: 1;
+    overflow: hidden;
+  }
+  .chat-panel {
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: auto;
+  }
+  .work-item-card,
+  .material-card {
+    padding: 16px;
+  }
+}

@@ -15,7 +15,8 @@
       <button type="button" (click)="retryProject()">Prøv igen</button>
     } @else if (project(); as data) {
       <!-- Hovedlayout -->
-      <main class="project-layout" animate.enter="page-reveal">
+      <main class="project-layout" animate.enter="page-reveal"
+        [style.--offer-footer-height]="offerFooterHeight() + 'px'">
         <!-- Venstre kolonne -->
 
         <app-offer-preview
@@ -30,6 +31,7 @@
           (detailsOpened)="onDetailsOpened()"
           (detailsSaved)="onDetailsSaved()"
           (offerFinalized)="onOfferFinalized()"
+          (footerHeightChanged)="offerFooterHeight.set($event)"
           (requestTab)="projectSidebar.selectTab($event)"
         />
 

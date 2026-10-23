@@ -507,6 +507,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ensure_current_company: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       create_project: {
         Args: { p_company_id: string }
         Returns: Database["public"]["Tables"]["projects"]["Row"]

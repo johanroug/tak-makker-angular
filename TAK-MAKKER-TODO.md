@@ -13,7 +13,7 @@
 
 - [x] **Sikkerhed og adgang** — RLS, rettigheder, databasefunktioner, appadgang og direkte AI-adgang kontrolleret med to virksomheder i begge retninger.
 - [ ] **Mobil og tablet** — Responsive tilpasninger implementeret 21. oktober; afventer visuel kontrol på mobil/tablet.
-- [ ] **Vercel: skift fra React til Angular** — Repo klargjort med vercel.json (Angular, build, browser-output og SPA-routing), Node 24.x og VERCEL-DEPLOYMENT.md. Produktionsbuild og outputfiler kontrolleret. Vercel-projektet tak-makker er nu forbundet til johanroug/tak-makker-angular; Angular, npm ci, build, outputmappe og Node 24.x er kontrolleret/opsat i dashboardet. Afventer commit/push af konfigurationen og kontrol af faktisk deployment/undersider.
+- [x] **Vercel: skift fra React til Angular** — Repo klargjort med vercel.json (Angular, build, browser-output og SPA-routing), Node 24.x og VERCEL-DEPLOYMENT.md. Produktionsbuild og outputfiler kontrolleret. Vercel-projektet tak-makker er nu forbundet til johanroug/tak-makker-angular; Angular, npm ci, build, outputmappe og Node 24.x er kontrolleret/opsat i dashboardet. Commit eda6836 er deployet som Production/Ready på www.takmakker.dk. Angular-login er åbnet i browseren, og Johan bekræfter, at det ser rigtigt ud. Direkte projekt-, profil- og tilbuds-URL’er samt JS/CSS/logo returnerer 200 med korrekt indholdstype. Login, AI og PDF i produktion mangler stadig funktionel brugerkontrol under Deployment.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
 - [x] **PDF-finpudsning** — Nyt lyst PDF-design implementeret 21. oktober. Sideskift, lange tekster, mange linjer og logo kontrolleret lokalt; Johan har godkendt resultatet.
@@ -331,3 +331,11 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - Build: `npm.cmd run build` bestået. Advarsler: initial bundle 629,52 kB mod 500 kB; offer-preview SCSS 4,12 kB og project-sidebar SCSS 7,34 kB mod 4 kB; CommonJS-afhængigheder fra pdfmake.
 - Tidligere målrettede kontroller ovenfor er registreret fra den eksisterende liste; de er ikke genkørt ved denne gennemgang.
 - Johan har bekræftet alle beskrevne funktionelle tests. Tilbudsbetingelser er funktionelt afsluttet; kontrol af migrationshistorikken er et separat udrulningspunkt.
+
+## Nye brugere — egen virksomhed, 23. oktober 2026
+
+- [x] Appen genbruger eksisterende virksomhedstilknytning eller kalder ensure_current_company for brugere uden medlemskab. Samtidige appkald deles.
+- [x] SQL-migration klar: oprettelse af virksomhed og medlemskab i én transaktion, lås pr. bruger, auth.uid og adgang kun for authenticated. Eksisterende tilknytninger bevares.
+- [x] Produktionsbuild og målrettede servicekontroller bestået.
+- [ ] Johan: Kør supabase/migrations/202610230001_new_user_company.sql i Supabase SQL Editor. SQL er ikke kørt af Codex.
+- [ ] Test ny bruger: egen virksomhedsprofil, nyt projekt og genindlæsning; kontrollér også eksisterende bruger og fortsat adskillelse mellem virksomheder.

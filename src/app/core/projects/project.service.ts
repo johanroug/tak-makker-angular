@@ -1,3 +1,4 @@
+import { CompanyMembershipService } from '../company/company-membership.service';
 import { AuthService } from '../auth/auth.service';
 import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
@@ -9,6 +10,7 @@ import { Database } from '../supabase/database.types';
 })
 export class ProjectService {
   private readonly authService = inject(AuthService);
+  private readonly membershipService = inject(CompanyMembershipService);
   async saveAiResponse(projectId: string, response: ProjectResponse): Promise<void> {
     const started = performance.now();
     try {
@@ -53,15 +55,7 @@ export class ProjectService {
       throw new Error('Brugeren er ikke logget ind.');
     }
 
-    const { data: membership, error: membershipError } = await supabase
-      .from('company_members')
-      .select('company_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (membershipError || !membership) {
-      throw new Error('Kunne ikke finde brugerens virksomhed.');
-    }
+    const companyId = await this.membershipService.getCompanyId(user.id);
 
     const { data, error } = await supabase
       .from('projects')
@@ -75,7 +69,7 @@ export class ProjectService {
         created_at
       `,
       )
-      .eq('company_id', membership.company_id)
+      .eq('company_id', companyId)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -113,18 +107,10 @@ export class ProjectService {
       throw new Error('Brugeren er ikke logget ind.');
     }
 
-    const { data: membership, error: membershipError } = await supabase
-      .from('company_members')
-      .select('company_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (membershipError || !membership) {
-      throw new Error('Kunne ikke finde brugerens virksomhed.');
-    }
+    const companyId = await this.membershipService.getCompanyId(user.id);
 
     const { data, error } = await supabase.rpc('create_project', {
-      p_company_id: membership.company_id,
+      p_company_id: companyId,
     });
 
     if (error) {

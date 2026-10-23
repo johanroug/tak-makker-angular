@@ -1,3 +1,4 @@
+import { CompanyMembershipService } from './company-membership.service';
 import { AuthService } from '../auth/auth.service';
 import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
@@ -21,6 +22,7 @@ export type CompanyProfile = {
 })
 export class CompanyService {
   private readonly authService = inject(AuthService);
+  private readonly membershipService = inject(CompanyMembershipService);
   async getCurrentCompanyProfile(): Promise<CompanyProfile | null> {
     const {
       data: { user },
@@ -30,6 +32,8 @@ export class CompanyService {
     if (userError || !user) {
       return null;
     }
+
+    await this.membershipService.getCompanyId(user.id);
 
     const { data, error } = await supabase
       .from('company_members')
@@ -52,7 +56,7 @@ export class CompanyService {
       `,
       )
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw new Error(`Kunne ikke hente virksomhedsprofil: ${error.message}`);
@@ -92,15 +96,7 @@ export class CompanyService {
       throw new Error('Brugeren er ikke logget ind.');
     }
 
-    const { data: membership, error: membershipError } = await supabase
-      .from('company_members')
-      .select('company_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (membershipError || !membership) {
-      throw new Error('Kunne ikke finde brugerens virksomhed.');
-    }
+    const companyId = await this.membershipService.getCompanyId(user.id);
 
     const { error } = await supabase
       .from('companies')
@@ -117,7 +113,7 @@ export class CompanyService {
         default_payment_terms: companyProfile.paymentTerms.trim(),
         default_reservations: companyProfile.reservations.trim(),
       })
-      .eq('id', membership.company_id)
+      .eq('id', companyId)
       .select('id')
       .single();
 

@@ -24,6 +24,10 @@ export class Login {
 
   constructor() {
     const reason = this.route.snapshot.queryParamMap.get('access');
+    if (reason === 'pending')
+      this.notice.set(
+        'Din bruger afventer godkendelse fra Tak Makker. Du får først adgang, når din bruger er godkendt.',
+      );
     if (reason === 'blocked')
       this.errorMessage.set('Din adgang til Tak Makker er blokeret. Kontakt Tak Makker for hjælp.');
     if (reason === 'unavailable')
@@ -53,10 +57,14 @@ export class Login {
         }
         this.password = '';
         this.repeatPassword = '';
-        if (data.session) await this.router.navigate(['/company-profile']);
-        else
+        if (data.session) {
+          await this.authService.signOut();
           this.notice.set(
-            'Tjek din indbakke. Hvis adressen kan registreres, får du en mail til at bekræfte din bruger. Derefter kan du logge ind.',
+            'Din bruger er oprettet og afventer godkendelse fra Tak Makker. Du kan logge ind, når din bruger er godkendt.',
+          );
+        } else
+          this.notice.set(
+            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Din bruger skal også godkendes af Tak Makker, før du får adgang.',
           );
         return;
       }
@@ -79,6 +87,7 @@ export class Login {
       this.errorMessage.set(
         error instanceof Error &&
           (error.message.startsWith('Din adgang') ||
+            error.message.startsWith('Din bruger') ||
             error.message.startsWith('Kunne ikke kontrollere'))
           ? error.message
           : 'Handlingen kunne ikke gennemføres. Kontrollér forbindelsen og prøv igen.',

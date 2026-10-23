@@ -10,17 +10,21 @@
 6. Deploy `generate-offer` i Supabase efter SQL. Funktionen kontrollerer nu appadgang før projektopslag og AI. Ingen ny secret er nødvendig.
 7. Commit/push frontendændringerne til Vercel efter SQL.
 
+## Godkendelse af nye brugere
+
+Kør `supabase/migrations/202610230007_user_approval.sql` og derefter `supabase/tests/user_approval.sql`. Eksisterende brugere får en godkendelsespost ved migrationen; eksisterende blokeringer bevares. Nye konti har ingen godkendelsespost og får først adgang efter Godkend bruger under /users. Kør SQL før frontend-deployment.
+
 ## Appflow
 
-- `/register`: e-mail, adgangskode og gentagelse. Ved krav om e-mailbekræftelse vises en besked; hvis Supabase returnerer en session, åbnes virksomhedsprofilen.
-- Registreringen sætter ikke virksomhed eller administratorstatus fra brugerens metadata. Den eksisterende `ensure_current_company` opretter kun brugerens egen virksomhed ved første brug.
-- `/users`: kun samme administrator som Aktivitet. Søg, bloker og åbn adgang. Administratoren kan ikke blokere sig selv.
+- `/register`: e-mail, adgangskode og gentagelse. Ved krav om e-mailbekræftelse vises en besked; hvis Supabase returnerer en session, logges den ud, og brugeren får besked om at afvente godkendelse.
+- Registreringen sætter ikke virksomhed eller administratorstatus fra brugerens metadata. Den eksisterende `ensure_current_company` opretter kun brugerens egen virksomhed ved første brug efter godkendelse.
+- `/users`: kun samme administrator som Aktivitet. Søg, godkend, bloker og åbn adgang. Administratoren kan ikke blokere sig selv.
 - Blokering er en appblokering, ikke sletning eller ændring af Supabase Auth-password. Serverkontrol, restriktive RLS-politikker og beskyttede RPC'er afviser efterfølgende databasekald med en eksisterende session. Allerede indlæst indhold eller igangværende requests kan ikke trækkes tilbage.
 - Appen kontrollerer adgang ved login/routeskift samt ved fokus og hvert minut, mens fanen er synlig. Bekræftet blokering sender brugeren til login. Genåbning gør det muligt at logge ind igen.
 
 ## Manuel kontrol
 
-- Registrér en ny testbruger via localhost og via produktion; kontrollér mail, login, egen virksomhedsprofil og nyt projekt.
+- Registrér en ny testbruger via localhost og via produktion; kontrollér mail og afventende-status. Log ind som administrator og godkend brugeren; kontrollér derefter login, egen virksomhedsprofil og nyt projekt.
 - Som ejer: kontrollér Brugere-menu og at administratoren ikke kan blokeres.
 - Med testbrugeren allerede logget ind: bloker fra ejerens konto i en anden browser. Kontrollér tabellæsning, projektskrivning, færdiggørelse og AI-afvisning, også før JWT-udløb.
 - Genåbn adgangen og kontrollér login og uændrede data.

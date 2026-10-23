@@ -35,9 +35,12 @@ export class AppShell implements OnInit {
     if (this.accessCheckPending) return;
     this.accessCheckPending = true;
     try {
-      if (!(await this.access.allowed())) {
+      const state = await this.access.state();
+      if (state !== 'active') {
         await this.authService.signOut();
-        await this.router.navigate(['/login'], { queryParams: { access: 'blocked' } });
+        await this.router.navigate(['/login'], {
+          queryParams: { access: state === 'pending' ? 'pending' : 'blocked' },
+        });
       }
     } catch {
       /* A temporary connection failure is not a confirmed block. */

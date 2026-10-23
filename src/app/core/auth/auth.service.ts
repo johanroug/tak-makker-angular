@@ -42,7 +42,12 @@ export class AuthService implements OnDestroy {
     const result = await supabase.auth.signInWithPassword({ email, password });
     if (!result.error) {
       try {
-        if (!(await this.access.allowed()))
+        const state = await this.access.state();
+        if (state === 'pending')
+          throw new Error(
+            'Din bruger afventer godkendelse fra Tak Makker. Du kan logge ind, når din adgang er godkendt.',
+          );
+        if (state !== 'active')
           throw new Error('Din adgang til Tak Makker er blokeret. Kontakt Tak Makker for hjælp.');
       } catch (error) {
         await this.signOut();

@@ -513,6 +513,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_app_access_state: { Args: Record<PropertyKey, never>; Returns: string }
+      approve_app_user: { Args: {p_user_id: string}; Returns: undefined }
       can_access_app: { Args: Record<PropertyKey, never>; Returns: boolean }
       get_app_users: { Args: Record<PropertyKey, never>; Returns: Json }
       set_app_user_blocked: { Args: {p_user_id: string; p_blocked: boolean}; Returns: undefined }

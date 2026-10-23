@@ -38,6 +38,23 @@ export class UsersComponent implements OnInit {
       this.loading.set(false);
     }
   }
+  async approve(user: AppUser): Promise<void> {
+    if (this.busy() || user.blocked || user.approved || user.is_admin) return;
+    this.busy.set(user.id);
+    this.error.set('');
+    this.message.set('');
+    try {
+      await this.access.approve(user.id);
+      this.users.update((users) =>
+        users.map((u) => (u.id === user.id ? { ...u, approved: true } : u)),
+      );
+      this.message.set('Brugeren er godkendt og kan nu logge ind efter e-mailbekræftelse.');
+    } catch (error) {
+      this.error.set(error instanceof Error ? error.message : 'Kunne ikke godkende brugeren.');
+    } finally {
+      this.busy.set(null);
+    }
+  }
   async changeAccess(user: AppUser, blocked: boolean): Promise<void> {
     if (this.busy() || user.is_admin) return;
     this.busy.set(user.id);
@@ -47,7 +64,13 @@ export class UsersComponent implements OnInit {
       await this.access.setBlocked(user.id, blocked);
       this.users.update((users) => users.map((u) => (u.id === user.id ? { ...u, blocked } : u)));
       this.confirmation.set(null);
-      this.message.set(blocked ? 'Brugerens adgang er blokeret.' : 'Brugeren har adgang igen.');
+      this.message.set(
+        blocked
+          ? 'Brugerens adgang er blokeret.'
+          : user.approved
+            ? 'Brugeren har adgang igen.'
+            : 'Blokeringen er fjernet. Brugeren afventer stadig godkendelse.',
+      );
     } catch (error) {
       this.error.set(error instanceof Error ? error.message : 'Kunne ikke ændre adgang.');
     } finally {

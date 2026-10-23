@@ -12,9 +12,12 @@ export const authGuard: CanActivateFn = async () => {
 
   if (data.user) {
     try {
-      if (await access.allowed()) return true;
+      const state = await access.state();
+      if (state === 'active') return true;
       await authService.signOut();
-      return router.createUrlTree(['/login'], { queryParams: { access: 'blocked' } });
+      return router.createUrlTree(['/login'], {
+        queryParams: { access: state === 'pending' ? 'pending' : 'blocked' },
+      });
     } catch {
       return router.createUrlTree(['/login'], { queryParams: { access: 'unavailable' } });
     }

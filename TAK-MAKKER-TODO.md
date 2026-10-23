@@ -379,3 +379,11 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [ ] Manuel kontrol af registrering/e-mail og egen virksomhed; blokér en allerede indlogget testbruger, kontrollér RLS/RPC/AI, genåbn og genkør virksomheders adgangskontrol.
 
 - Registrering/blokering: første SQL-forsøg blev afbrudt af preflight ved BEGIN-matchning uden ændringer. Matchningen er rettet til BEGIN-token og bevarer CRLF/kommentarer. Johan har genkørt migration og databasekontrol med passed = true.
+
+## Nye brugere afventer godkendelse — 23. oktober 2026
+
+- [x] Brugere uden godkendelsespost afvises af eksisterende can_access_app-gate (RLS, RPC og AI). Eksisterende konti godkendes ved migration, mens blokeringer bevares. Ingen tillid til bruger-metadata.
+- [x] Privat Godkend bruger-knap og Afventer godkendelse-status. Fjernelse af blokering godkender ikke en afventende bruger. Login/registrering forklarer godkendelseskravet og afslutter eventuel signup-session.
+- [x] Produktionsbuild og målrettede kontroller af pending/blocked/denied/active, signup uden adgang og admin-godkendelse bestået.
+- [x] Johan har kørt 202610230007_user_approval.sql og adgangstesten med passed = true: nye brugere afventer, egen godkendelse afvist, ejer kan godkende, blokering har forrang.
+- [ ] Test registrering → e-mailbekræftelse → afventer → ejer godkender → egen virksomhed og projekter; kontrollér eksisterende konti og deployment efter commit/push.

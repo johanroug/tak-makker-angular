@@ -18,7 +18,7 @@
   /></label>
   <p class="scope">
     Viser op til de 1.000 nyeste brugere. En blokering gælder brugerens appadgang og sletter ikke
-    brugerens data.
+    brugerens data. Nye brugere afventer din godkendelse.
   </p>
   @if (error()) {
     <p class="error" role="alert">{{ error() }}</p>
@@ -67,9 +67,25 @@
             }}</small
           >
         </div>
-        <span class="status" [class.blocked]="user.blocked">{{
-          user.is_admin ? 'Administrator' : user.blocked ? 'Blokeret' : 'Adgang åben'
-        }}</span>
+        <span
+          class="status"
+          [class.blocked]="user.blocked"
+          [class.pending]="!user.approved && !user.blocked"
+          >{{
+            user.is_admin
+              ? 'Administrator'
+              : user.blocked
+                ? 'Blokeret'
+                : !user.approved
+                  ? 'Afventer godkendelse'
+                  : 'Adgang åben'
+          }}</span
+        >
+        @if (!user.is_admin && !user.blocked && !user.approved) {
+          <button type="button" (click)="approve(user)" [disabled]="!!busy() || loading()">
+            {{ busy() === user.id ? 'Gemmer…' : 'Godkend bruger' }}
+          </button>
+        }
         @if (!user.is_admin) {
           <button
             type="button"
@@ -77,7 +93,15 @@
             (click)="user.blocked ? changeAccess(user, false) : confirmation.set(user)"
             [disabled]="!!busy() || loading()"
           >
-            {{ busy() === user.id ? 'Gemmer…' : user.blocked ? 'Åbn adgang' : 'Bloker' }}
+            {{
+              busy() === user.id
+                ? 'Gemmer…'
+                : user.blocked
+                  ? user.approved
+                    ? 'Åbn adgang'
+                    : 'Fjern blokering'
+                  : 'Bloker'
+            }}
           </button>
         }
       </article>

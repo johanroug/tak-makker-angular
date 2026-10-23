@@ -133,6 +133,15 @@
   line-height: 1.6;
 }
 
+.forgot-password {
+  align-self: flex-end;
+  color: #8d6524;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding: 6px 0;
+}
+
 @media (min-width: 601px) {
   .login-page { padding: 24px; }
   .login-card { padding: 40px; }

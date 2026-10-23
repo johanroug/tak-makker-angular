@@ -48,6 +48,9 @@
           får du din egen virksomhedsprofil.</small
         >
       }
+      @if (!registering) {
+        <a class="forgot-password" routerLink="/forgot-password">Glemt adgangskode?</a>
+      }
       @if (notice()) {
         <p class="login-notice" role="status">{{ notice() }}</p>
       }

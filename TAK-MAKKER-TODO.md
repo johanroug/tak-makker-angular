@@ -401,3 +401,9 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [ ] Send en automatisk mail til johanroug@gmail.com, når en ny bruger afventer godkendelse, med link til den private brugeradministration. Godkendelse foretages fortsat af Johan i appen.
 - [ ] Vælg og opsæt mailudbyder (fx Resend eller eksisterende SMTP), sikker opbevaring af nøgler på serveren og genforsøg ved afsendelsesfejl. Test notifikationen uden at give brugeren adgang automatisk.
 - Arbejdet er sat på pause efter Johans ønske. Ingen mailtjeneste er tilsluttet, og ingen mailændringer skal udrulles nu.
+
+## Glemt adgangskode — 24. oktober 2026
+
+- [x] Link på login, offentlig side til anmodning om nulstillingsmail og side til ny/gentaget adgangskode via Supabase Auth. Generisk mailsvar, loading, dobbeltklikbeskyttelse, ugyldigt link og adgangskodefejl håndteres. Efter gemning ryddes felter og session afsluttes, så normalt login igen kontrollerer godkendelse/blokering.
+- [x] Produktionsbuild og simulerede kontroller af afsendelse, rate limit, netværksfejl, ugyldigt link, gentagelse, gemning og logud bestået. Ingen rigtige mails sendt eller adgangskoder ændret af Codex.
+- [ ] Johan: Tilføj /reset-password for localhost og produktion i Supabases Redirect URLs, kontrollér mailopsætning og afprøv hele flowet efter deployment. Se REGISTRATION-SETUP.md. Mailnotifikation til administrator er fortsat udskudt.

@@ -77,6 +77,23 @@ export class AuthService implements OnDestroy {
     }
   }
 
+  requestPasswordReset(email: string) {
+    return supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin + '/reset-password',
+    });
+  }
+
+  async passwordResetUser() {
+    // Wait for Supabase to consume the recovery link before checking its session.
+    await supabase.auth.getSession();
+    return supabase.auth.getUser();
+  }
+
+  async updatePassword(password: string) {
+    this.invalidate();
+    return supabase.auth.updateUser({ password });
+  }
+
   getUser(): Promise<UserResult> {
     if (this.cachedUser && Date.now() < Math.min(this.validUntil, this.sessionExpiresAt)) {
       return Promise.resolve(this.cachedUser);

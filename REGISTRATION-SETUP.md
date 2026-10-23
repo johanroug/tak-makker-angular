@@ -24,6 +24,14 @@ Kør `supabase/migrations/202610230007_user_approval.sql` og derefter `supabase/
 
 ## Manuel kontrol
 
+### Glemt adgangskode
+
+- Tilføj `https://www.takmakker.dk/reset-password` og `http://localhost:4200/reset-password` under Supabase → Authentication → URL Configuration → Redirect URLs. Behold de eksisterende login-adresser.
+- Brug standardlinket `{{ .ConfirmationURL }}` i Auth → Email Templates → Reset Password, så Supabase verificerer linket før viderestilling. Kontrollér en eventuel tilpasset skabelon.
+- Flowet bruger Supabase Auths mailopsætning, ikke en ny mailtjeneste. Uden egen SMTP er Supabases afsendelse begrænset og som udgangspunkt kun til projektets godkendte teamadresser; konfigurér SMTP før eksterne kunders nulstillingsmails. Se https://supabase.com/docs/guides/auth/auth-smtp.
+- Test login → Glemt adgangskode → Send link → mail → vælg og gentag ny adgangskode → log ind. Kontrollér også udløbet/brugt link, forkert gentagelse, netværksfejl og at blokerede/afventende brugere fortsat ikke får appadgang.
+- Ingen SQL eller nye secrets i appen. Redirects og SMTP er ikke ændret automatisk.
+
 - Registrér en ny testbruger via localhost og via produktion; kontrollér mail og afventende-status. Log ind som administrator og godkend brugeren; kontrollér derefter login, egen virksomhedsprofil og nyt projekt.
 - Som ejer: kontrollér Brugere-menu og at administratoren ikke kan blokeres.
 - Med testbrugeren allerede logget ind: bloker fra ejerens konto i en anden browser. Kontrollér tabellæsning, projektskrivning, færdiggørelse og AI-afvisning, også før JWT-udløb.

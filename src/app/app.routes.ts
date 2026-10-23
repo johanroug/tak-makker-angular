@@ -2,6 +2,7 @@ import { activityGuard } from './core/activity/activity.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
 import { Login } from './features/login/login';
+import { PasswordRecovery } from './features/login/password-recovery';
 import { ProjectDetail } from './features/project-detail/project-detail.component';
 import { CompanyProfileComponent } from './features/company-profile/company-profile';
 import { OfferDetail } from './features/offer-detail/offer-detail.component';
@@ -10,6 +11,8 @@ import { AppShell } from './shared/components/app-shell/app-shell.component';
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Login, data: { register: true } },
+  { path: 'forgot-password', component: PasswordRecovery },
+  { path: 'reset-password', component: PasswordRecovery, data: { resetPassword: true } },
   {
     path: '',
     component: AppShell,

@@ -1,0 +1,97 @@
+<main class="activity-page">
+  <header>
+    <div>
+      <span class="eyebrow">KUN FOR DIG</span>
+      <h1>Indblik i Tak Makker</h1>
+      <p>Følg brugen, find problemer, og se vejen fra idé til tilbud.</p>
+    </div>
+    <button type="button" (click)="reload()" [disabled]="loading()">
+      {{ loading() ? 'Henter…' : 'Opdatér' }}
+    </button>
+  </header>
+  <p class="scope">
+    Viser højst de seneste 500 hændelser fra de sidste 30 dage. Tallene nedenfor gælder de hentede
+    hændelser for den valgte bruger. Registrering starter efter udrulningen.
+  </p>
+  <div class="filters">
+    <label
+      >Bruger<select [value]="user()" (change)="user.set($any($event.target).value)">
+        <option value="">Alle brugere</option>
+        @for (u of users(); track u.id) {
+          <option [value]="u.id">{{ u.email }}</option>
+        }
+      </select></label
+    >
+    <label class="checkbox"
+      ><input
+        type="checkbox"
+        [checked]="onlyErrors()"
+        (change)="onlyErrors.set($any($event.target).checked)"
+      />
+      Vis kun fejl</label
+    >
+  </div>
+  <section class="stats" aria-label="Overblik">
+    <div>
+      <span>Projekter oprettet</span><strong>{{ projects() }}</strong>
+    </div>
+    <div>
+      <span>PDF-downloads</span><strong>{{ pdfs() }}</strong>
+    </div>
+    <div>
+      <span>Gennemsnitligt AI-svar</span
+      ><strong>{{ aiAverage() === null ? '—' : (aiAverage() | number: '1.1-1') + ' sek.' }}</strong>
+    </div>
+    <div>
+      <span>Fejl registreret</span><strong>{{ failures() }}</strong>
+    </div>
+  </section>
+  @if (error()) {
+    <p role="alert" class="error">{{ error() }}</p>
+  }
+  <section class="timeline">
+    <h2>
+      Aktivitet <span>{{ visible().length }}</span>
+    </h2>
+    @for (event of visible(); track event.id) {
+      <article [class.failed]="!event.success">
+        <div class="event-mark" aria-hidden="true">{{ event.success ? '✓' : '!' }}</div>
+        <div class="event-content">
+          <h3>
+            {{ labels[event.action] }}
+            @if (!event.success) {
+              <span class="failure-label">Mislykkedes</span>
+            }
+          </h3>
+          <p>
+            {{ event.email }} <span>· {{ event.company_name || 'Ingen virksomhed endnu' }}</span>
+          </p>
+          @if (event.state) {
+            <small>Status: {{ states[event.state] || event.state }}</small>
+          }
+          @if (event.project_id) {
+            <small>Projekt-ID: {{ event.project_id }}</small>
+          }
+          @if (event.offer_id) {
+            <small>Tilbuds-ID: {{ event.offer_id }}</small>
+          }
+          @if (event.error_code) {
+            <small>Fejlkode: {{ event.error_code }}</small>
+          }
+        </div>
+        <div class="event-time">
+          <time>{{ event.created_at | date: 'dd.MM.yyyy HH:mm:ss' }}</time>
+          @if (event.duration_ms !== null) {
+            <small>{{ event.duration_ms / 1000 | number: '1.1-1' }} sek.</small>
+          }
+        </div>
+      </article>
+    } @empty {
+      <p class="empty">
+        {{
+          loading() ? 'Henter aktiviteter…' : 'Ingen registrerede hændelser med de valgte filtre.'
+        }}
+      </p>
+    }
+  </section>
+</main>

@@ -1,3 +1,4 @@
+import { ActivityService } from '../activity/activity.service';
 import { CompanyMembershipService } from './company-membership.service';
 import { AuthService } from '../auth/auth.service';
 import { Injectable, inject } from '@angular/core';
@@ -23,6 +24,7 @@ export type CompanyProfile = {
   providedIn: 'root',
 })
 export class CompanyService {
+  private readonly activity = inject(ActivityService);
   private readonly authService = inject(AuthService);
   private readonly membershipService = inject(CompanyMembershipService);
   async getCurrentCompanyProfile(): Promise<CompanyProfile | null> {
@@ -63,7 +65,7 @@ export class CompanyService {
       .maybeSingle();
 
     if (error) {
-      throw new Error(`Kunne ikke hente virksomhedsprofil: ${error.message}`);
+      throw new Error(`Kunne ikke hente virksomhedsprofil: ${error.message}`, { cause: error });
     }
     if (!data?.company) {
       return null;
@@ -93,40 +95,46 @@ export class CompanyService {
   }
 
   async updateCurrentCompanyProfile(companyProfile: CompanyProfile): Promise<void> {
-    const {
-      data: { user },
-      error: userError,
-    } = await this.authService.getUser();
+    return this.activity.measure(
+      'profile_saved',
+      async () => {
+        const {
+          data: { user },
+          error: userError,
+        } = await this.authService.getUser();
 
-    if (userError || !user) {
-      throw new Error('Brugeren er ikke logget ind.');
-    }
+        if (userError || !user) {
+          throw new Error('Brugeren er ikke logget ind.');
+        }
 
-    const companyId = await this.membershipService.getCompanyId(user.id);
+        const companyId = await this.membershipService.getCompanyId(user.id);
 
-    const { error } = await supabase
-      .from('companies')
-      .update({
-        name: companyProfile.companyName.trim(),
-        address: companyProfile.address.trim(),
-        logo_data_url: companyProfile.logoDataUrl ?? null,
-        logo_svg_source: companyProfile.logoSvgSource ?? null,
-        logo_color: companyProfile.logoColor ?? null,
-        cvr: companyProfile.cvr.trim(),
-        contact_name: companyProfile.contactName.trim(),
-        phone: companyProfile.phone.trim(),
-        email: companyProfile.email.trim(),
-        default_hourly_rate: companyProfile.defaultHourlyRate,
-        default_validity_days: companyProfile.validityDays,
-        default_payment_terms: companyProfile.paymentTerms.trim(),
-        default_reservations: companyProfile.reservations.trim(),
-      })
-      .eq('id', companyId)
-      .select('id')
-      .single();
+        const { error } = await supabase
+          .from('companies')
+          .update({
+            name: companyProfile.companyName.trim(),
+            address: companyProfile.address.trim(),
+            logo_data_url: companyProfile.logoDataUrl ?? null,
+            logo_svg_source: companyProfile.logoSvgSource ?? null,
+            logo_color: companyProfile.logoColor ?? null,
+            cvr: companyProfile.cvr.trim(),
+            contact_name: companyProfile.contactName.trim(),
+            phone: companyProfile.phone.trim(),
+            email: companyProfile.email.trim(),
+            default_hourly_rate: companyProfile.defaultHourlyRate,
+            default_validity_days: companyProfile.validityDays,
+            default_payment_terms: companyProfile.paymentTerms.trim(),
+            default_reservations: companyProfile.reservations.trim(),
+          })
+          .eq('id', companyId)
+          .select('id')
+          .single();
 
-    if (error) {
-      throw new Error(`Kunne ikke gemme virksomhedsprofil: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke gemme virksomhedsprofil: ${error.message}`, { cause: error });
+        }
+      },
+      {},
+    );
   }
 }

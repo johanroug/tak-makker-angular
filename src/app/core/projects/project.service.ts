@@ -1,3 +1,4 @@
+import { ActivityService } from '../activity/activity.service';
 import { CompanyMembershipService } from '../company/company-membership.service';
 import { AuthService } from '../auth/auth.service';
 import { Injectable, inject } from '@angular/core';
@@ -9,6 +10,7 @@ import { Database } from '../supabase/database.types';
   providedIn: 'root',
 })
 export class ProjectService {
+  private readonly activity = inject(ActivityService);
   private readonly authService = inject(AuthService);
   private readonly membershipService = inject(CompanyMembershipService);
   async saveAiResponse(projectId: string, response: ProjectResponse): Promise<void> {
@@ -73,55 +75,69 @@ export class ProjectService {
       .order('created_at', { ascending: false });
 
     if (error) {
-      throw new Error(`Kunne ikke hente projekter: ${error.message}`);
+      throw new Error(`Kunne ikke hente projekter: ${error.message}`, { cause: error });
     }
 
     return data;
   }
 
   async getProject(projectId: string) {
-    const { data, error } = await supabase
-      .from('projects')
-      .select(
-        '*, workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
-      )
-      .eq('id', projectId)
-      .order('created_at', { referencedTable: 'messages', ascending: true })
-      .single();
+    return this.activity.measure(
+      'project_opened',
+      async () => {
+        const { data, error } = await supabase
+          .from('projects')
+          .select(
+            '*, workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
+          )
+          .eq('id', projectId)
+          .order('created_at', { referencedTable: 'messages', ascending: true })
+          .single();
 
-    if (error) {
-      throw new Error('Kunne ikke hente projekt: ' + error.message);
-    }
+        if (error) {
+          throw new Error('Kunne ikke hente projekt: ' + error.message);
+        }
 
-    const { workItems, materials, messages, ...project } = data;
-    return { project, workItems, materials, messages };
+        const { workItems, materials, messages, ...project } = data;
+        return { project, workItems, materials, messages };
+      },
+      { projectId, onlyFailure: true },
+    );
   }
 
   async createProject() {
-    const {
-      data: { user },
-      error: userError,
-    } = await this.authService.getUser();
+    const context: { projectId?: string } = {};
+    return this.activity.measure(
+      'project_created',
+      async () => {
+        const {
+          data: { user },
+          error: userError,
+        } = await this.authService.getUser();
 
-    if (userError || !user) {
-      throw new Error('Brugeren er ikke logget ind.');
-    }
+        if (userError || !user) {
+          throw new Error('Brugeren er ikke logget ind.');
+        }
 
-    const companyId = await this.membershipService.getCompanyId(user.id);
+        const companyId = await this.membershipService.getCompanyId(user.id);
 
-    const { data, error } = await supabase.rpc('create_project', {
-      p_company_id: companyId,
-    });
+        const { data, error } = await supabase.rpc('create_project', {
+          p_company_id: companyId,
+        });
 
-    if (error) {
-      throw new Error(`Kunne ikke oprette projekt: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke oprette projekt: ${error.message}`, { cause: error });
+        }
 
-    if (!data) {
-      throw new Error('Supabase returnerede ikke et projekt-ID.');
-    }
+        if (!data) {
+          throw new Error('Supabase returnerede ikke et projekt-ID.');
+        }
 
-    return data;
+        context.projectId = data.id;
+        return data;
+      },
+      context,
+    );
   }
 
   async addMessage(projectId: string, content: string) {
@@ -136,7 +152,7 @@ export class ProjectService {
       .single();
 
     if (error) {
-      throw new Error(`Kunne ikke gemme beskeden: ${error.message}`);
+      throw new Error(`Kunne ikke gemme beskeden: ${error.message}`, { cause: error });
     }
 
     return data;
@@ -430,7 +446,7 @@ export class ProjectService {
       .eq('id', projectId);
 
     if (error) {
-      throw new Error(`Kunne ikke opdatere projekttitlen: ${error.message}`);
+      throw new Error(`Kunne ikke opdatere projekttitlen: ${error.message}`, { cause: error });
     }
   }
 
@@ -499,7 +515,7 @@ export class ProjectService {
     const { error } = await supabase.from('projects').update(updates).eq('id', projectId);
 
     if (error) {
-      throw new Error(`Kunne ikke opdatere projektoplysninger: ${error.message}`);
+      throw new Error(`Kunne ikke opdatere projektoplysninger: ${error.message}`, { cause: error });
     }
   }
 
@@ -508,17 +524,23 @@ export class ProjectService {
     materialId: string,
     status: 'accepted' | 'rejected',
   ): Promise<void> {
-    const { error } = await supabase
-      .from('project_materials')
-      .update({
-        status,
-      })
-      .eq('project_id', projectId)
-      .eq('id', materialId);
+    return this.activity.measure(
+      'material_status_changed',
+      async () => {
+        const { error } = await supabase
+          .from('project_materials')
+          .update({
+            status,
+          })
+          .eq('project_id', projectId)
+          .eq('id', materialId);
 
-    if (error) {
-      throw new Error(`Kunne ikke opdatere materialet: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke opdatere materialet: ${error.message}`, { cause: error });
+        }
+      },
+      { projectId, state: status },
+    );
   }
 
   async updateMaterial(
@@ -532,45 +554,51 @@ export class ProjectService {
       unitPrice?: number | null;
     },
   ): Promise<void> {
-    type MaterialUpdate = Database['public']['Tables']['project_materials']['Update'];
+    return this.activity.measure(
+      'material_edited',
+      async () => {
+        type MaterialUpdate = Database['public']['Tables']['project_materials']['Update'];
 
-    const updates: MaterialUpdate = {};
+        const updates: MaterialUpdate = {};
 
-    if (changes.name !== undefined) {
-      updates.name = changes.name.trim();
-    }
+        if (changes.name !== undefined) {
+          updates.name = changes.name.trim();
+        }
 
-    if (changes.description !== undefined) {
-      updates.description = changes.description.trim();
-    }
+        if (changes.description !== undefined) {
+          updates.description = changes.description.trim();
+        }
 
-    if (changes.quantity !== undefined) {
-      updates.quantity = changes.quantity;
-      updates.quantity_source = 'user';
-    }
+        if (changes.quantity !== undefined) {
+          updates.quantity = changes.quantity;
+          updates.quantity_source = 'user';
+        }
 
-    if (changes.unit !== undefined) {
-      updates.unit = changes.unit.trim();
-      updates.unit_source = 'user';
-    }
+        if (changes.unit !== undefined) {
+          updates.unit = changes.unit.trim();
+          updates.unit_source = 'user';
+        }
 
-    if (changes.unitPrice !== undefined) {
-      updates.unit_price = changes.unitPrice;
-    }
+        if (changes.unitPrice !== undefined) {
+          updates.unit_price = changes.unitPrice;
+        }
 
-    if (Object.keys(updates).length === 0) {
-      return;
-    }
+        if (Object.keys(updates).length === 0) {
+          return;
+        }
 
-    const { error } = await supabase
-      .from('project_materials')
-      .update(updates)
-      .eq('project_id', projectId)
-      .eq('id', materialId);
+        const { error } = await supabase
+          .from('project_materials')
+          .update(updates)
+          .eq('project_id', projectId)
+          .eq('id', materialId);
 
-    if (error) {
-      throw new Error(`Kunne ikke opdatere materialet: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke opdatere materialet: ${error.message}`, { cause: error });
+        }
+      },
+      { projectId },
+    );
   }
 
   async updateWorkItemStatus(
@@ -578,17 +606,23 @@ export class ProjectService {
     workItemId: string,
     status: 'accepted' | 'rejected',
   ): Promise<void> {
-    const { error } = await supabase
-      .from('project_work_items')
-      .update({
-        status,
-      })
-      .eq('project_id', projectId)
-      .eq('id', workItemId);
+    return this.activity.measure(
+      'work_status_changed',
+      async () => {
+        const { error } = await supabase
+          .from('project_work_items')
+          .update({
+            status,
+          })
+          .eq('project_id', projectId)
+          .eq('id', workItemId);
 
-    if (error) {
-      throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`, { cause: error });
+        }
+      },
+      { projectId, state: status },
+    );
   }
 
   async updateWorkItem(
@@ -599,31 +633,37 @@ export class ProjectService {
       description?: string;
     },
   ): Promise<void> {
-    type WorkItemUpdate = Database['public']['Tables']['project_work_items']['Update'];
+    return this.activity.measure(
+      'work_edited',
+      async () => {
+        type WorkItemUpdate = Database['public']['Tables']['project_work_items']['Update'];
 
-    const updates: WorkItemUpdate = {};
+        const updates: WorkItemUpdate = {};
 
-    if (changes.trade !== undefined) {
-      updates.trade = changes.trade.trim();
-    }
+        if (changes.trade !== undefined) {
+          updates.trade = changes.trade.trim();
+        }
 
-    if (changes.description !== undefined) {
-      updates.description = changes.description.trim();
-    }
+        if (changes.description !== undefined) {
+          updates.description = changes.description.trim();
+        }
 
-    if (Object.keys(updates).length === 0) {
-      return;
-    }
+        if (Object.keys(updates).length === 0) {
+          return;
+        }
 
-    const { error } = await supabase
-      .from('project_work_items')
-      .update(updates)
-      .eq('project_id', projectId)
-      .eq('id', workItemId);
+        const { error } = await supabase
+          .from('project_work_items')
+          .update(updates)
+          .eq('project_id', projectId)
+          .eq('id', workItemId);
 
-    if (error) {
-      throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke opdatere arbejdsopgaven: ${error.message}`, { cause: error });
+        }
+      },
+      { projectId },
+    );
   }
 
   async updateWorkItemEstimatedHours(
@@ -631,29 +671,43 @@ export class ProjectService {
     workItemId: string,
     estimatedHours: number | null,
   ): Promise<void> {
-    const { error } = await supabase
-      .from('project_work_items')
-      .update({
-        estimated_hours: estimatedHours,
-        estimated_hours_source: 'user',
-      })
-      .eq('project_id', projectId)
-      .eq('id', workItemId);
+    return this.activity.measure(
+      'work_edited',
+      async () => {
+        const { error } = await supabase
+          .from('project_work_items')
+          .update({
+            estimated_hours: estimatedHours,
+            estimated_hours_source: 'user',
+          })
+          .eq('project_id', projectId)
+          .eq('id', workItemId);
 
-    if (error) {
-      throw new Error(`Kunne ikke opdatere estimerede timer: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke opdatere estimerede timer: ${error.message}`, {
+            cause: error,
+          });
+        }
+      },
+      { projectId },
+    );
   }
 
   async finalizeOffer(projectId: string) {
-    const { data, error } = await supabase.rpc('finalize_offer', {
-      p_project_id: projectId,
-    });
+    return this.activity.measure(
+      'offer_finalized',
+      async () => {
+        const { data, error } = await supabase.rpc('finalize_offer', {
+          p_project_id: projectId,
+        });
 
-    if (error) {
-      throw new Error(`Kunne ikke færdiggøre tilbuddet: ${error.message}`);
-    }
+        if (error) {
+          throw new Error(`Kunne ikke færdiggøre tilbuddet: ${error.message}`, { cause: error });
+        }
 
-    return data;
+        return data;
+      },
+      { projectId },
+    );
   }
 }

@@ -513,6 +513,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_activity_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
+      record_activity: { Args: { p_action: string; p_success: boolean; p_duration_ms?: number; p_error_code?: string; p_project_id?: string; p_offer_id?: string; p_state?: string }; Returns: undefined }
+      get_activity_events: { Args: Record<PropertyKey, never>; Returns: Json }
       ensure_current_company: {
         Args: Record<PropertyKey, never>
         Returns: string

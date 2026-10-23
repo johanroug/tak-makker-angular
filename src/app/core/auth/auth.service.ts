@@ -1,10 +1,12 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { ActivityService } from '../activity/activity.service';
+import { Injectable, inject, OnDestroy } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 
 type UserResult = Awaited<ReturnType<typeof supabase.auth.getUser>>;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
+  private readonly activity = inject(ActivityService);
   private cachedUser?: UserResult;
   private validUntil = 0;
   private pending?: Promise<UserResult>;
@@ -35,10 +37,13 @@ export class AuthService implements OnDestroy {
 
   async signIn(email: string, password: string) {
     this.invalidate();
-    return supabase.auth.signInWithPassword({ email, password });
+    const result = await supabase.auth.signInWithPassword({ email, password });
+    if (!result.error) this.activity.record('login', true);
+    return result;
   }
 
   async signOut() {
+    this.activity.isAdmin.set(false);
     this.invalidate();
     try {
       return await supabase.auth.signOut();

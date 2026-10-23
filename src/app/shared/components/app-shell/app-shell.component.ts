@@ -1,3 +1,4 @@
+import { ActivityService } from '../../../core/activity/activity.service';
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +17,17 @@ import { WorkspaceState } from './workspace-state';
   styleUrl: './app-shell.component.scss',
 })
 export class AppShell implements OnInit {
+  readonly activity = inject(ActivityService);
+  private lastActivityPath = "";
+  private recordPageVisit(): void {
+    const path = this.router.url.split(/[?#]/)[0];
+    if (path === this.lastActivityPath) return;
+    this.lastActivityPath = path;
+    const project = /^\/projects\/([0-9a-f-]{36})$/i.exec(path);
+    const offer = /^\/offers\/([0-9a-f-]{36})$/i.exec(path);
+    if (project) this.activity.record("project_opened", true, undefined, undefined, {projectId: project[1]});
+    if (offer) this.activity.record("offer_opened", true, undefined, undefined, {offerId: offer[1]});
+  }
   readonly workspace = inject(WorkspaceState);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -52,6 +64,7 @@ export class AppShell implements OnInit {
         this.isNavigating.set(false);
       }
       if (event instanceof NavigationEnd) {
+        this.recordPageVisit();
         this.closeMenu();
         this.syncSelectedProject();
       }
@@ -59,6 +72,8 @@ export class AppShell implements OnInit {
   }
 
   ngOnInit(): void {
+    void this.activity.checkAdmin();
+    this.recordPageVisit();
     this.syncSelectedProject();
     void this.workspace.loadProjects();
   }

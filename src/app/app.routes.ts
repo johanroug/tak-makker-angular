@@ -1,3 +1,4 @@
+import { activityGuard } from './core/activity/activity.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
 import { Login } from './features/login/login';
@@ -21,6 +22,12 @@ export const routes: Routes = [
         ],
       },
       { path: 'offers/:offerId', component: OfferDetail },
+      {
+        path: 'activity',
+        canActivate: [activityGuard],
+        loadComponent: () =>
+          import('./features/activity/activity.component').then((m) => m.ActivityComponent),
+      },
       { path: 'company-profile', component: CompanyProfileComponent },
       { path: '', redirectTo: 'projects', pathMatch: 'full' },
     ],

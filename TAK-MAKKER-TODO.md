@@ -354,3 +354,15 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Johan har kørt supabase/migrations/202610230003_offer_number_per_project.sql og bekræftet, at færdiggørelse nu virker.
 
 - Rettelse efter databasekontrol: offers_offer_number_unique er et separat partielt UNIQUE INDEX, ikke en constraint. Migration 202610230003 er tilpasset det bekræftede indeks; første forsøg blev afbrudt uden ændringer. Johan har genkørt rettelsen og bekræftet, at den virker.
+
+## Privat aktivitet og fejloverblik — 23. oktober 2026
+
+- [x] Johan bekræfter e5a0d637-a285-447c-b548-98d2945ea579 som eneste administrator. SQL giver kun denne bruger læseadgang via beskyttet RPC; appbrugere har ingen direkte tabeladgang og kan ikke gøre sig selv til admin.
+- [x] Adminside /activity med brugerfilter, fejlfilter, tidslinje og oversigt over registrerede projekter, PDF og AI-svartider. Viser op til 500 hændelser fra 30 dage, uden automatisk sletning af ældre data.
+- [x] Login, projektbesøg/oprettelse, AI, manuelle linjeændringer/status, færdiggørelse, tilbudsbesøg/status, PDF og profilgemning registreres. Tekniske fejl registreres med handling/kode; ingen beskedtekst, kundedata, password, URL eller stacktrace i logpayload.
+- [x] Synlig information om registreringen i appen. Logging kører i baggrunden og blokerer ikke normale handlinger. Ikke en komplet sikkerhedsaudit: browserhændelser kan mangle ved afbrudt netværk/fanelukning.
+- [x] Produktionsbuild og målrettede kontroller af loggingfejl, sikker payload, oprindelige fejl, bruger-/fejlfiltre og gennemsnit bestået.
+- [ ] Johan: Kør supabase/migrations/202610230004_private_activity.sql, derefter supabase/tests/activity_access.sql. SQL er ikke kørt af Codex; databaseadgangstesten afventer.
+- [ ] Test ejer: Aktivitet-menu og registrering fra testbrugeren. Test anden bruger: ingen menu, /activity afvist og databasekontrollen bestået. Commit/push efter SQL; kontrollér faktisk deployment.
+
+- Aktivitetslog: Johan har kørt opsætningen. Adgangstesten fandt text/uuid-forskel for offers.id. Separat rettelse 202610230005_activity_offer_id_type.sql er klar; afventer genkørsel af adgangstesten.

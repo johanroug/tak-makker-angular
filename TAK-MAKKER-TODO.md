@@ -346,3 +346,11 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] SVG behandles uden aktivt eller eksternt indhold. Browserkontrol af PNG-konvertering, proportioner, farve og transparens bestået. Produktionsbuild og målrettede SVG-kontroller bestået.
 - [ ] Johan: Kør supabase/migrations/202610230002_svg_logo_source.sql i Supabase SQL Editor før deployment. Codex har ikke kørt SQL.
 - [ ] Kontrollér upload, farveskift, gem/genindlæs, nyt tilbud/PDF samt uændret logo på gamle tilbud.
+
+## Tilbudsnumre på tværs af virksomheder — 23. oktober 2026
+
+- [x] Årsag fundet: projektnumre er pr. virksomhed, tilbudsrevisioner pr. projekt, men offers_offer_number_unique er global.
+- [x] Migration klar: unik kombination af project_id og offer_number; præflight og transaktion, ingen ændring af eksisterende numre, RLS eller RPC.
+- [x] Johan har kørt supabase/migrations/202610230003_offer_number_per_project.sql og bekræftet, at færdiggørelse nu virker.
+
+- Rettelse efter databasekontrol: offers_offer_number_unique er et separat partielt UNIQUE INDEX, ikke en constraint. Migration 202610230003 er tilpasset det bekræftede indeks; første forsøg blev afbrudt uden ændringer. Johan har genkørt rettelsen og bekræftet, at den virker.

@@ -91,6 +91,10 @@ export class ProjectService {
             '*, workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
           )
           .eq('id', projectId)
+          .order('created_at', { referencedTable: 'workItems', ascending: true })
+          .order('id', { referencedTable: 'workItems', ascending: true })
+          .order('created_at', { referencedTable: 'materials', ascending: true })
+          .order('id', { referencedTable: 'materials', ascending: true })
           .order('created_at', { referencedTable: 'messages', ascending: true })
           .single();
 

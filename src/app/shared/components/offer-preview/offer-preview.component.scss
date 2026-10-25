@@ -626,6 +626,34 @@
   margin-bottom: 0;
 }
 
+.finalize-hint-mobile {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .offer-footer {
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .finalize-actions {
+    gap: 8px;
+  }
+  .offer-footer .finalize-hint {
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .finalize-hint-mobile {
+    display: inline;
+  }
+  .finalize-hint-full {
+    display: none;
+  }
+  .finalize-actions > button {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
 @media (min-width: 601px) {
   .line-price {
     text-align: right;

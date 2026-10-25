@@ -275,6 +275,10 @@
   justify-content: flex-start;
   gap: 8px;
 
+  > .save-field-control {
+    flex: 1;
+  }
+
   input {
     min-height: 44px;
     padding: 8px 10px;
@@ -291,15 +295,15 @@
 }
 
 .material-number-input {
-  width: 72px;
+  width: 100%;
 }
 
 .material-unit-input {
-  width: 90px;
+  width: 100%;
 }
 
 .material-price-input {
-  width: 90px;
+  width: 100%;
 }
 
 .material-line {
@@ -570,12 +574,16 @@
 
 .field-save-status {
   display: block;
-  min-height: 16px;
   font-size: 11px;
   line-height: 1.4;
   color: #647468;
   font-weight: 400;
   overflow-wrap: anywhere;
+
+  // Keep live regions mounted, but reserve space only for an actual message.
+  &:empty {
+    display: none;
+  }
 }
 
 .field-save-status.save-failed {
@@ -654,7 +662,10 @@ textarea,
   }
   .material-field-value {
     justify-content: flex-end;
+    > .save-field-control { flex: 0 1 auto; }
   }
+  .material-number-input { width: 72px; }
+  .material-unit-input, .material-price-input { width: 90px; }
   .work-item-hours {
     flex-wrap: nowrap;
     label {

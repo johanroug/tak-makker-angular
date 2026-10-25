@@ -5,15 +5,26 @@ import {
   inject,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter, Router, withViewTransitions } from '@angular/router';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideRouter,
+  Router,
+  TitleStrategy,
+  withInMemoryScrolling,
+  withViewTransitions,
+} from '@angular/router';
 import { routes } from './app.routes';
+import { SeoTitleStrategy } from './core/seo/seo-title.strategy';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideClientHydration(withEventReplay()),
+    { provide: TitleStrategy, useClass: SeoTitleStrategy },
     { provide: ErrorHandler, useClass: ActivityErrorHandler },
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
+      withInMemoryScrolling({ anchorScrolling: 'enabled' }),
       withViewTransitions({
         skipInitialTransition: true,
         onViewTransitionCreated: ({ transition }) => {

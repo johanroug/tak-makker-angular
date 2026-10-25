@@ -1,0 +1,238 @@
+<a class="skip-link" href="#indhold">Spring til indhold</a>
+<header class="site-header">
+  <app-public-brand />
+  <nav aria-label="Hovednavigation">
+    <a class="nav-demo" href="#saadan">Sådan virker det</a><a routerLink="/login">Log ind ↗</a>
+  </nav>
+</header>
+<main id="indhold">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="eyebrow">
+        <span class="hero-dot" aria-hidden="true"></span> DIN NYE MAKKER PÅ KONTORET
+      </p>
+      <h1 id="hero-title">Byg mere.<br /><em>Skriv mindre.</em></h1>
+      <p class="intro">
+        Du kan dit håndværk. Lad Tak Makker hjælpe med tilbudsarbejdet. Fra de første ord om opgaven
+        til et tilbud med dit navn på.
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" routerLink="/register"
+          >Bliv testfirma <span aria-hidden="true">↗</span></a
+        ><a class="text-link" href="#saadan">Se hvordan det virker ↓</a>
+      </div>
+      <p class="access-note">
+        Jeg søger testfirmaer. Opret en bruger, bekræft din e-mail, og afvent godkendelse.
+      </p>
+    </div>
+    <div class="hero-example" appParallax aria-label="Illustration af et tilbudsudkast">
+      <svg
+        class="blueprint"
+        [appParallax]="-0.1"
+        viewBox="0 0 500 560"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path d="M40 500V65H440V500H40ZM40 280H230V65M230 280H440M230 280V500M70 95H200V245H70Z" />
+        <path d="M15 40H465M15 32V48M465 32V48M465 65H485M475 65V500M465 500H485" />
+        <circle cx="335" cy="390" r="68" />
+        <path d="M335 310V470M255 390H415" />
+      </svg>
+      <div class="example-caption">
+        <span class="status-dot"></span> FRA BESKRIVELSE TIL OVERBLIK
+      </div>
+      <div class="customer-note">
+        <span>Opgaven med dine ord</span>
+        <p>“Kunden vil have lagt nye fliser i entréen. Cirka 12 m².”</p>
+      </div>
+      <div class="connector" aria-hidden="true">↓</div>
+      <div class="paper">
+        <div class="paper-heading"><strong>Dit næste tilbud</strong><span>KLADDE</span></div>
+        <h2>Nye fliser i entré</h2>
+        <p class="paper-subtitle">Et samlet overblik, du selv tilpasser.</p>
+        <div class="paper-row">
+          <span>01</span>
+          <div>
+            <strong>Arbejdsopgaver</strong><small>Forberedelse, fliselægning og fugning</small>
+          </div>
+          <span aria-hidden="true">✓</span>
+        </div>
+        <div class="paper-row">
+          <span>02</span>
+          <div><strong>Materialer</strong><small>Fliser, fliseklæber og fugemasse</small></div>
+          <span aria-hidden="true">✓</span>
+        </div>
+        <div class="paper-row">
+          <span>03</span>
+          <div>
+            <strong>Dine priser og betingelser</strong
+            ><small>Din timepris. Din faglige vurdering.</small>
+          </div>
+          <span aria-hidden="true">✓</span>
+        </div>
+        <div class="paper-footer"><span>Du har sidste ord.</span><strong>Tak Makker</strong></div>
+      </div>
+      <div class="craft-stamp" aria-hidden="true">
+        DIN FAGLIGHED<br /><strong>AI som makker.</strong><br />DIT TILBUD.
+      </div>
+      <p class="example-note">Illustrativt eksempel · Du gennemgår altid indholdet.</p>
+    </div>
+  </section>
+  <section class="value-strip" aria-label="Det får du hjælp til">
+    <p>
+      <span aria-hidden="true">↗</span> Fra første beskrivelse<br /><strong
+        >til færdigt tilbud</strong
+      >
+    </p>
+    <p>
+      <span aria-hidden="true">⊞</span> Opgaver og materialer<br /><strong>samlet ét sted</strong>
+    </p>
+    <p>
+      <span aria-hidden="true">✓</span> Dit firmanavn og logo<br /><strong
+        >på tilbuddets PDF</strong
+      >
+    </p>
+  </section>
+  <section id="saadan" class="walkthrough" aria-labelledby="walkthrough-title">
+    <div class="section-heading" appReveal>
+      <p class="eyebrow">EN MAKKER HELE VEJEN</p>
+      <h2 id="walkthrough-title">Tre trin.<br />Ét ordentligt tilbud.</h2>
+      <p>
+        Se et eksempel på arbejdsgangen. Klik på trinnene for at følge tilbuddet fra idé til PDF.
+      </p>
+    </div>
+    <div class="demo-layout">
+      <div class="steps" aria-label="Vælg trin i gennemgangen">
+        @for (item of steps; track item.title; let i = $index) {
+          <button
+            type="button"
+            [class.selected]="step() === i"
+            [attr.aria-pressed]="step() === i"
+            aria-controls="demo-panel"
+            (click)="step.set(i)"
+          >
+            <span class="step-number">0{{ i + 1 }}</span
+            ><span
+              ><strong>{{ item.title }}</strong
+              ><span>{{ item.text }}</span></span
+            ><span class="step-arrow" aria-hidden="true">↗</span>
+          </button>
+        }
+      </div>
+      <div id="demo-panel" class="demo-panel" aria-live="polite" aria-atomic="true" appReveal>
+        <p class="demo-label">EKSEMPEL · TRIN {{ step() + 1 }} AF 3</p>
+        @switch (step()) {
+          @case (0) {
+            <h3>Start med det, du ved.</h3>
+            <div class="sample-message">
+              Jeg skal lægge 12 m² fliser i en entré. Underlaget skal klargøres, og der skal fuges
+              til sidst.
+            </div>
+            <p class="sample-response">
+              Beskriv opgaven i projektets samtale. Tilføj flere detaljer, efterhånden som du får
+              dem fra kunden.
+            </p>
+          }
+          @case (1) {
+            <h3>Gør udkastet til dit eget.</h3>
+            <div class="sample-line">
+              <strong>Fliselægning</strong><span>Timer · tilpasses af dig</span>
+            </div>
+            <div class="sample-line">
+              <strong>Fliseklæber</strong><span>Antal og enhedspris · tilpasses af dig</span>
+            </div>
+            <div class="sample-line">
+              <strong>Fugning</strong><span>Beskrivelse · tilpasses af dig</span>
+            </div>
+            <p>AI-forslag er et udgangspunkt. Du kontrollerer mængder, priser og indhold.</p>
+          }
+          @case (2) {
+            <h3>Klar til din kunde.</h3>
+            <div class="sample-document">
+              <strong>TILBUD</strong>
+              <p>Nye fliser i entré</p>
+              <hr />
+              <p>
+                Din virksomhed og dit logo<br />Kunde og projekt<br />Opgaver, priser og betingelser
+              </p>
+              <span class="pdf-label">PDF</span>
+            </div>
+            <p>Færdiggør tilbuddet, hent PDF-filen, og send den selv til kunden.</p>
+          }
+        }
+      </div>
+    </div>
+  </section>
+  <section class="time-section testers" aria-labelledby="testers-title" appReveal>
+    <p class="eyebrow">VÆR MED FRA STARTEN</p>
+    <h2 id="testers-title">Dit håndværk.<br />Din hverdag.<br /><em>Din indflydelse.</em></h2>
+    <p>
+      Jeg søger håndværksfirmaer, der vil teste Tak Makker på rigtige opgaver. Fortæl mig, hvad der
+      virker, hvad der mangler, og hvad der ville gøre tilbudsarbejdet lettere. Dine erfaringer er
+      med til at forme, hvordan Tak Makker udvikler sig.
+    </p>
+    <a class="button primary" routerLink="/register"
+      >Bliv testfirma <span aria-hidden="true">↗</span></a
+    >
+    <p class="testers-note">
+      Opret en bruger og bekræft din e-mail. Jeg godkender din adgang, før du kan gå i gang.
+    </p>
+  </section>
+  <section class="time-section" aria-labelledby="time-title" appReveal>
+    <p class="eyebrow">MERE TID TIL DIT FAG</p>
+    <h2 id="time-title">Slip for at starte<br />på et blankt papir.</h2>
+    <p>
+      Få et udkast at arbejde videre med, behold opgaver og materialer i samme projekt, og genbrug
+      dine firmaoplysninger på tilbuddet. Hvor meget tid du sparer, afhænger af opgaven og din
+      nuværende arbejdsgang.
+    </p>
+    <a class="text-link" routerLink="/register">Prøv på din næste opgave ↗</a>
+  </section>
+  <app-trade-links />
+  <section class="faq" aria-labelledby="faq-title" appReveal>
+    <div>
+      <p class="eyebrow">GODT AT VIDE</p>
+      <h2 id="faq-title">Før du går i gang.</h2>
+    </div>
+    <div class="faq-items">
+      <details>
+        <summary>Bestemmer AI priserne for mig?</summary>
+        <p>
+          Du har ansvaret for det færdige tilbud. Gennemgå forslagene, og tilpas timer, materialer,
+          priser og betingelser, før du færdiggør det.
+        </p>
+      </details>
+      <details>
+        <summary>Kan jeg bruge mit eget logo?</summary>
+        <p>
+          Ja. Du kan tilføje logo, firmaoplysninger, timepris og tilbudsbetingelser på din
+          virksomhedsprofil.
+        </p>
+      </details>
+      <details>
+        <summary>Bliver tilbuddet sendt automatisk?</summary>
+        <p>Du henter det færdige tilbud som PDF og sender det selv til kunden.</p>
+      </details>
+      <details>
+        <summary>Hvordan får jeg adgang?</summary>
+        <p>
+          Jeg søger håndværksfirmaer, der vil teste Tak Makker og dele deres erfaringer. Opret en
+          bruger og bekræft din e-mail. Jeg godkender derefter din adgang, før du kan bruge appen.
+        </p>
+      </details>
+    </div>
+  </section>
+  <section class="closing" appReveal>
+    <p class="eyebrow">DIT NÆSTE TILBUD STARTER HER</p>
+    <h2>Tag en makker med<br />til skrivebordet.</h2>
+    <a class="button primary" routerLink="/register"
+      >Bliv testfirma <span aria-hidden="true">↗</span></a
+    >
+    <p>Har du allerede en bruger? <a routerLink="/login">Log ind</a></p>
+  </section>
+</main>
+<footer>
+  <app-public-brand [tagline]="false" />
+  <p>Din faglighed. Din virksomhed. Dit tilbud.</p>
+  <a routerLink="/login">Åbn appen ↗</a>
+</footer>

@@ -1,0 +1,62 @@
+<a class="skip-link" href="#indhold">Spring til indhold</a>
+<header>
+  <app-public-brand />
+  <nav aria-label="Hovednavigation">
+    <a routerLink="/">Forside</a><a routerLink="/login">Log ind ↗</a>
+  </nav>
+</header>
+<main id="indhold">
+  <section class="hero">
+    <nav class="breadcrumb" aria-label="Brødkrumme">
+      <a routerLink="/">Forside</a><span aria-hidden="true">/</span><span>{{ page.trade }}</span>
+    </nav>
+    <p class="eyebrow">TILBUDSPROGRAM TIL {{ page.trade }}</p>
+    <h1>{{ page.heading }}</h1>
+    <p class="intro">{{ page.intro }}</p>
+    <a class="button" routerLink="/register">Bliv testfirma <span aria-hidden="true">↗</span></a>
+    <p class="note">Bekræft din e-mail, og afvent godkendelse af din testadgang.</p>
+  </section>
+  <div class="content">
+    <article>
+      @for (section of page.sections; track section.heading) {
+        <section appReveal>
+          <h2>{{ section.heading }}</h2>
+          <p>{{ section.text }}</p>
+        </section>
+      }
+    </article>
+    <aside aria-labelledby="example-title" appReveal>
+      <p class="eyebrow">ILLUSTRATIVT TILBUDSEKSEMPEL</p>
+      <h2 id="example-title">{{ page.example.title }}</h2>
+      <p>{{ page.example.description }}</p>
+      <ol>
+        @for (item of page.example.items; track item) {
+          <li>{{ item }}</li>
+        }
+      </ol>
+      <p class="check">{{ page.example.check }}</p>
+      <a routerLink="/" fragment="saadan">Se arbejdsgangen i Tak Makker ↗</a>
+    </aside>
+  </div>
+  <section class="faq" aria-labelledby="faq-title">
+    <p class="eyebrow">SPØRGSMÅL FRA DIT FAG</p>
+    <h2 id="faq-title">Godt at vide, før du starter.</h2>
+    @for (item of page.questions; track item.question) {
+      <details>
+        <summary>{{ item.question }}</summary>
+        <p>{{ item.answer }}</p>
+      </details>
+    }
+  </section>
+  <section class="testing">
+    <p class="eyebrow">VÆR MED TIL AT FORME TAK MAKKER</p>
+    <h2>Din hverdag er med<br />til at vise vejen.</h2>
+    <p>
+      Jeg søger håndværksfirmaer, der vil teste Tak Makker på rigtige opgaver. Dine erfaringer med
+      tilbudsarbejdet er med til at forme udviklingen.
+    </p>
+    <a class="button" routerLink="/register">Anmod om testadgang ↗</a>
+  </section>
+  <app-trade-links />
+</main>
+<footer><app-public-brand [tagline]="false" /><a routerLink="/login">Åbn appen ↗</a></footer>

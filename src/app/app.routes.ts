@@ -1,31 +1,83 @@
 import { activityGuard } from './core/activity/activity.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
-import { Login } from './features/login/login';
-import { PasswordRecovery } from './features/login/password-recovery';
-import { ProjectDetail } from './features/project-detail/project-detail.component';
-import { CompanyProfileComponent } from './features/company-profile/company-profile';
-import { OfferDetail } from './features/offer-detail/offer-detail.component';
-import { AppShell } from './shared/components/app-shell/app-shell.component';
+import { TRADE_PAGES } from './features/trades/trade-pages';
 
 export const routes: Routes = [
-  { path: 'login', component: Login },
-  { path: 'register', component: Login, data: { register: true } },
-  { path: 'forgot-password', component: PasswordRecovery },
-  { path: 'reset-password', component: PasswordRecovery, data: { resetPassword: true } },
   {
     path: '',
-    component: AppShell,
+    pathMatch: 'full',
+    title: 'Tak Makker – tilbud til håndværkere',
+    data: {
+      seo: {
+        path: '/',
+        description:
+          'Lav tilbud med Tak Makker. Få hjælp til opgaver, materialer og priser, tilpas med din faglighed, og hent en PDF. Bliv testfirma og vær med til at forme udviklingen.',
+      },
+    },
+    loadComponent: () =>
+      import('./features/landing/landing.component').then((m) => m.LandingComponent),
+  },
+  ...TRADE_PAGES.map((page) => ({
+    path: page.slug,
+    title: page.title,
+    data: { page, seo: { path: '/' + page.slug, description: page.description } },
+    loadComponent: () => import('./features/trades/trade.component').then((m) => m.TradeComponent),
+  })),
+  {
+    path: 'login',
+    title: 'Log ind | Tak Makker',
+    loadComponent: () => import('./features/login/login').then((m) => m.Login),
+  },
+  {
+    path: 'register',
+    title: 'Bliv testfirma | Tak Makker',
+    loadComponent: () => import('./features/login/login').then((m) => m.Login),
+    data: { register: true },
+  },
+  {
+    path: 'forgot-password',
+    title: 'Glemt adgangskode | Tak Makker',
+    loadComponent: () =>
+      import('./features/login/password-recovery').then((m) => m.PasswordRecovery),
+  },
+  {
+    path: 'reset-password',
+    title: 'Ny adgangskode | Tak Makker',
+    loadComponent: () =>
+      import('./features/login/password-recovery').then((m) => m.PasswordRecovery),
+    data: { resetPassword: true },
+  },
+  {
+    path: '',
+    loadComponent: () =>
+      import('./shared/components/app-shell/app-shell.component').then((m) => m.AppShell),
     canActivateChild: [authGuard],
     children: [
       {
         path: 'projects',
         children: [
-          { path: '', component: ProjectDetail },
-          { path: ':projectId', component: ProjectDetail },
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/project-detail/project-detail.component').then(
+                (m) => m.ProjectDetail,
+              ),
+          },
+          {
+            path: ':projectId',
+            loadComponent: () =>
+              import('./features/project-detail/project-detail.component').then(
+                (m) => m.ProjectDetail,
+              ),
+          },
         ],
       },
-      { path: 'offers/:offerId', component: OfferDetail },
+      {
+        path: 'offers/:offerId',
+        loadComponent: () =>
+          import('./features/offer-detail/offer-detail.component').then((m) => m.OfferDetail),
+      },
       {
         path: 'activity',
         canActivate: [activityGuard],
@@ -38,9 +90,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/users/users.component').then((m) => m.UsersComponent),
       },
-      { path: 'company-profile', component: CompanyProfileComponent },
+      {
+        path: 'company-profile',
+        loadComponent: () =>
+          import('./features/company-profile/company-profile').then(
+            (m) => m.CompanyProfileComponent,
+          ),
+      },
       { path: '', redirectTo: 'projects', pathMatch: 'full' },
     ],
   },
-  { path: '**', redirectTo: 'projects' },
+  {
+    path: '**',
+    title: 'Siden blev ikke fundet | Tak Makker',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
+  },
 ];

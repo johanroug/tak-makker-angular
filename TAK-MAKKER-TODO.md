@@ -408,3 +408,30 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Link på login, offentlig side til anmodning om nulstillingsmail og side til ny/gentaget adgangskode via Supabase Auth. Generisk mailsvar, loading, dobbeltklikbeskyttelse, ugyldigt link og adgangskodefejl håndteres. Efter gemning ryddes felter og session afsluttes, så normalt login igen kontrollerer godkendelse/blokering.
 - [x] Produktionsbuild og simulerede kontroller af afsendelse, rate limit, netværksfejl, ugyldigt link, gentagelse, gemning og logud bestået. Ingen rigtige mails sendt eller adgangskoder ændret af Codex.
 - [x] Johan har bekræftet, at glemt-adgangskode-flowet virker. Mailnotifikation til administrator er fortsat udskudt. Opsætning til andre miljøer er beskrevet i REGISTRATION-SETUP.md.
+
+## Landingsside, demo og vækst — 25. oktober 2026
+
+### Landingsside og demovideo
+
+- [x] Offentlig Angular-forside på `/` med tilbudseksempel, klikbar gennemgang fra beskrivelse til PDF, FAQ og links til registrering/login. Godkendelseskravet fremgår. Beskyttede app-ruter bevares.
+- [x] Dansk sidesprog, sidetitel og metabeskrivelse som grundlag for SEO. Forsiden indlæses som separat kodepakke.
+- [ ] Gennemse forsiden og deploy til Vercel efter commit/push.
+- [ ] Optag en rigtig demovideo: beskriv en opgave → ret opgaver/materialer/timer/priser → vis firmaprofil → færdiggør → hent PDF. Brug fiktive kundedata og tilføj undertekster og tekstalternativ. Indsæt videoen på forsiden; den klikbare gennemgang er ikke en video.
+- [ ] Mål samme repræsentative tilbud med nuværende metode og Tak Makker, inklusive kontrol og rettelser. Dokumentér metode og resultater før konkrete besparelsestal bruges i markedsføring.
+
+### Google og SEO
+
+- [ ] Prioritér håndværksfag og tilbudsbehov med Johan, fx tømrer, murer/fliselægger og maler.
+- [x] Bygget tre lokale fagsider: tilbudsprogram til tømrere, murere og malere med forskellige eksempler, fagligt indhold, FAQ, titler/beskrivelser og interne links. Søgevolumener er endnu ikke undersøgt.
+- [x] Angular-prerendering genererer forsiden og de tre fagsider som færdig HTML med indhold og metadata. Private app-ruter forbliver browserrenderede. Appskærme indlæses i separate kodepakker.
+- [x] Canonical-adresser, Open Graph, sitemap og robots.txt; private ruter får noindex og separat appskal. Vercel-routing og statisk 404-side klargjort. Produktionsbuild og kontrol af bygget HTML bestået; ingen deployment eller live-routingkontrol udført.
+- [ ] Deploy og kontrollér Vercel-routing, HTTP 404, mobilvisning og indlæsningstid efter SEO-SETUP.md. Browserkontrol har været blokeret af browserens adgangspolitik.
+- [ ] Verificér domænet i Google Search Console, indsend sitemap, og kontrollér indeksering, mobiloplevelse og indlæsningstid efter deployment.
+
+### Anbefalingsprogram
+
+- [ ] Beslut belønning, deltagere og hvornår en ny kunde tæller som betalende. Fastlæg vilkår for refundering, selvhenvisning og misbrug.
+- [ ] Afklar betalingsløsning og sikker serverbekræftelse af betaling, før belønninger automatiseres.
+- [ ] Implementér personlige invitationslinks og serverregistrering af henvisninger. Bevar henvisningen gennem registrering uden at give adgang før administratorgodkendelse.
+- [ ] Implementér belønning efter bekræftet betaling, beskyttelse mod dobbeltbelønning og adminoverblik. Test tilbagebetaling, annullering og gentagne betalingshændelser.
+- [ ] Vis program og vilkår til kunderne, når belønning og betalingsflow er klar. Programmet er endnu ikke implementeret.

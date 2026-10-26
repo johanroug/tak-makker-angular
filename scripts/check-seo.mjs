@@ -2,16 +2,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { TRADE_PAGES } from '../src/app/features/trades/trade-pages.ts';
+import { BRAND_NAME, SITE_ORIGIN } from '../src/app/core/brand.ts';
 
-const origin = 'https://www.takmakker.dk';
-const output = new URL('../dist/tak-makker-angular/browser/', import.meta.url);
+const origin = SITE_ORIGIN;
+const output = new URL('../dist/hovedet-paa-soemmet-angular/browser/', import.meta.url);
 const read = (path) => readFileSync(new URL(path, output), 'utf8');
 // These checks inspect HTML, not CSS. Remove critical styles that JSDOM's
 // stylesheet parser does not understand (for example modern Tailwind rules).
 const parseHtml = (html) =>
   new JSDOM(html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')).window.document;
 const pages = [
-  { slug: '', heading: 'Byg mere.', title: 'Tak Makker – tilbud til håndværkere' },
+  { slug: '', heading: 'Byg mere.', title: `${BRAND_NAME} – tilbud til håndværkere` },
   ...TRADE_PAGES,
 ];
 const titles = new Set();
@@ -23,6 +24,7 @@ for (const page of pages) {
   const document = parseHtml(read(file));
   assert.equal(document.documentElement.lang, 'da', `${file}: Danish document language`);
   assert.equal(document.title, page.title, `${file}: correct title`);
+  assert(!/tak\s*makker/i.test(document.documentElement.textContent), `${file}: old brand removed`);
   assert(!titles.has(document.title), `${file}: unique title`);
   titles.add(document.title);
   const description = document.querySelector('meta[name="description"]')?.content;

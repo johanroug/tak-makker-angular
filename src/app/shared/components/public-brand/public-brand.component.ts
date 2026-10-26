@@ -5,10 +5,10 @@ import { RouterLink } from '@angular/router';
   selector: 'app-public-brand',
   imports: [RouterLink],
   template: `
-    <a routerLink="/" aria-label="Tak Makker – forside">
+    <a routerLink="/" aria-label="Hovedet på sømmet – forside">
       <span class="mark"><img src="/favicon.png" alt="" width="42" height="42" /></span>
       <span
-        ><strong>Tak Makker</strong>
+        ><strong>Hovedet på <span class="brand-line">sømmet</span></strong>
         @if (tagline()) {
           <small>DIN DIGITALE MAKKER</small>
         }
@@ -48,9 +48,9 @@ import { RouterLink } from '@angular/router';
     }
     strong {
       display: block;
-      font-size: 25px;
+      font-size: 21px;
       font-weight: 800;
-      letter-spacing: -1.4px;
+      letter-spacing: -0.8px;
       line-height: 1.1;
     }
     small {
@@ -59,12 +59,15 @@ import { RouterLink } from '@angular/router';
       letter-spacing: 1.3px;
       margin-top: 6px;
     }
+    .brand-line {
+      display: block;
+    }
     @media (max-width: 360px) {
       a {
         gap: 7px;
       }
       strong {
-        font-size: 21px;
+        font-size: 17px;
       }
       small {
         font-size: 7px;

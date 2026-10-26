@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.takmakker.dk/sitemap.xml
+Sitemap: https://xn--hovedetpsmmet-wfb00a.dk/sitemap.xml

@@ -25,7 +25,7 @@ export class LandingComponent {
   readonly steps = [
     {
       title: 'Beskriv opgaven',
-      text: 'Skriv, hvad kunden skal have lavet. Tak Makker hjælper med at gøre beskrivelsen til et tilbudsudkast.',
+      text: 'Skriv, hvad kunden skal have lavet. Hovedet på sømmet hjælper med at gøre beskrivelsen til et tilbudsudkast.',
     },
     {
       title: 'Tilpas dit tilbud',

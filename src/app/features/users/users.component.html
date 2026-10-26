@@ -3,7 +3,7 @@
     <div>
       <span class="eyebrow">KUN FOR DIG</span>
       <h1>Brugere og adgang</h1>
-      <p>Hold overblik over testbrugerne, og styr hvem der kan bruge Tak Makker.</p>
+      <p>Hold overblik over testbrugerne, og styr hvem der kan bruge Hovedet på sømmet.</p>
     </div>
     <button type="button" (click)="reload()" [disabled]="loading() || !!busy()">
       {{ loading() ? 'Henter…' : 'Opdatér' }}
@@ -29,7 +29,7 @@
   @if (confirmation(); as user) {
     <section class="confirm" aria-label="Bekræft blokering">
       <h2>Bloker adgang for {{ user.email }}?</h2>
-      <p>Brugeren mister adgang til data og AI i Tak Makker. Du kan åbne adgangen igen her.</p>
+      <p>Brugeren mister adgang til data og AI i Hovedet på sømmet. Du kan åbne adgangen igen her.</p>
       <div>
         <button
           type="button"

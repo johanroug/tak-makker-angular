@@ -1,11 +1,13 @@
 # Brugerregistrering og blokering
 
+Domæne- og navneskift til **Hovedet på sømmet**: Følg DOMAIN-SKIFTE.md. Hjemmesiden bruger hovedetpåsømmet.dk, og mailafsenderen skal bruge hovedetpaasommet.dk efter separat Resend-verifikation.
+
 ## Udrulning
 
 1. Kør `supabase/migrations/202610230006_registration_and_access.sql` i Supabase SQL Editor. Den forudsætter de eksisterende migrationsfiler, herunder aktivitet og den nye bruger/virksomhed-funktion.
 2. Kør `supabase/tests/user_blocking.sql` i SQL Editor. Der skal findes en aktiv testbruger ud over administratoren. Alle testændringer rulles tilbage ved succes. Hvis SQL Editor viser en afbrudt transaktion efter en fejl, kør `rollback;`.
 3. I Supabase Auth: tillad nye registreringer og kontrollér Email-providerens indstillinger. Behold e-mailbekræftelse slået til, når eksterne brugere registrerer sig.
-4. Auth → URL Configuration: Site URL `https://www.takmakker.dk`. Tilføj Redirect URLs `https://www.takmakker.dk/login` og `http://localhost:4200/login`. Tilføj andre konkrete udviklingsdomæner, hvis de bruges.
+4. Auth → URL Configuration: Site URL `https://xn--hovedetpsmmet-wfb00a.dk`. Tilføj Redirect URLs `https://xn--hovedetpsmmet-wfb00a.dk/login` og `http://localhost:4200/login`. Tilføj andre konkrete udviklingsdomæner, hvis de bruges.
 5. Kontrollér SMTP/mailafsendelse, så bekræftelsesmail kan sendes til eksterne testbrugere. Supabases indbyggede mailtjeneste har begrænsninger; se den officielle guide nedenfor.
 6. Deploy `generate-offer` i Supabase efter SQL. Funktionen kontrollerer nu appadgang før projektopslag og AI. Ingen ny secret er nødvendig.
 7. Commit/push frontendændringerne til Vercel efter SQL.
@@ -26,7 +28,7 @@ Kør `supabase/migrations/202610230007_user_approval.sql` og derefter `supabase/
 
 ### Glemt adgangskode
 
-- Tilføj `https://www.takmakker.dk/reset-password` og `http://localhost:4200/reset-password` under Supabase → Authentication → URL Configuration → Redirect URLs. Behold de eksisterende login-adresser.
+- Tilføj `https://xn--hovedetpsmmet-wfb00a.dk/reset-password` og `http://localhost:4200/reset-password` under Supabase → Authentication → URL Configuration → Redirect URLs. Behold de eksisterende login-adresser.
 - Brug standardlinket `{{ .ConfirmationURL }}` i Auth → Email Templates → Reset Password, så Supabase verificerer linket før viderestilling. Kontrollér en eventuel tilpasset skabelon.
 - Flowet bruger Supabase Auths mailopsætning, ikke en ny mailtjeneste. Uden egen SMTP er Supabases afsendelse begrænset og som udgangspunkt kun til projektets godkendte teamadresser; konfigurér SMTP før eksterne kunders nulstillingsmails. Se https://supabase.com/docs/guides/auth/auth-smtp.
 - Test login → Glemt adgangskode → Send link → mail → vælg og gentag ny adgangskode → log ind. Kontrollér også udløbet/brugt link, forkert gentagelse, netværksfejl og at blokerede/afventende brugere fortsat ikke får appadgang.

@@ -45,10 +45,10 @@ export class AuthService implements OnDestroy {
         const state = await this.access.state();
         if (state === 'pending')
           throw new Error(
-            'Din bruger afventer godkendelse fra Tak Makker. Du kan logge ind, når din adgang er godkendt.',
+            'Din bruger afventer godkendelse fra Hovedet på sømmet. Du kan logge ind, når din adgang er godkendt.',
           );
         if (state !== 'active')
-          throw new Error('Din adgang til Tak Makker er blokeret. Kontakt Tak Makker for hjælp.');
+          throw new Error('Din adgang til Hovedet på sømmet er blokeret. Kontakt Hovedet på sømmet for hjælp.');
       } catch (error) {
         await this.signOut();
         throw error;

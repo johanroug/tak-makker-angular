@@ -3,7 +3,27 @@
   "framework": "angular",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/tak-makker-angular/browser",
+  "outputDirectory": "dist/hovedet-paa-soemmet-angular/browser",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "takmakker.dk" }],
+      "destination": "https://xn--hovedetpsmmet-wfb00a.dk/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.takmakker.dk" }],
+      "destination": "https://xn--hovedetpsmmet-wfb00a.dk/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.xn--hovedetpsmmet-wfb00a.dk" }],
+      "destination": "https://xn--hovedetpsmmet-wfb00a.dk/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/:page(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)",

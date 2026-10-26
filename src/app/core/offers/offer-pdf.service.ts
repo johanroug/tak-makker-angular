@@ -75,7 +75,7 @@ export class OfferPdfService {
       pageMargins: [this.margin, 48, this.margin, 58],
       info: {
         title: 'Tilbud ' + (offer.offer_number ?? ''),
-        author: offer.company_name ?? 'Tak Makker',
+        author: offer.company_name ?? 'Hovedet på sømmet',
         subject: offer.project_title ?? 'Tilbud',
       },
       defaultStyle: { font: 'Roboto', fontSize: 9.5, color: this.ink, lineHeight: 1.2 },

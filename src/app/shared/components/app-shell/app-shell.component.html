@@ -1,7 +1,7 @@
 @if (isNavigating()) { <div class="route-progress" role="progressbar" aria-label="Skifter side"></div> }
 <div class="header-shell">
   <header class="app-header">
-    <a routerLink="/projects" class="app-logo"><span class="brand-mark"><img src="/favicon.png" alt="" width="42" height="42" /></span><span>Tak Makker<small>DIN DIGITALE MAKKER</small></span></a>
+    <a routerLink="/projects" class="app-logo"><span class="brand-mark"><img src="/favicon.png" alt="" width="42" height="42" /></span><span>Hovedet på<br />sømmet<small>DIN DIGITALE MAKKER</small></span></a>
     <button
       #menuToggle
       type="button"
@@ -29,7 +29,7 @@
   }
 </div>
 <div class="route-content"><router-outlet /></div>
-<p class="activity-notice">Vi registrerer handlinger, svartider og tekniske fejl for at forbedre Tak Makker. Beskedtekster og kundedata indgår ikke i aktivitetsloggen.</p>
+<p class="activity-notice">Vi registrerer handlinger, svartider og tekniske fejl for at forbedre Hovedet på sømmet. Beskedtekster og kundedata indgår ikke i aktivitetsloggen.</p>
 <app-new-project-dialog (projectCreated)="workspace.loadProjects()" />
 
 <ng-template #navigationContent>
@@ -90,7 +90,7 @@
   <div class="drawer-content">
     <div class="drawer-top">
       <span class="drawer-brand"
-        ><img src="/favicon.png" alt="" width="36" height="36" /> Tak Makker</span
+        ><img src="/favicon.png" alt="" width="36" height="36" /> Hovedet på sømmet</span
       >
       <button
         type="button"

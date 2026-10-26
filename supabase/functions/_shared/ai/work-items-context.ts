@@ -7,7 +7,7 @@ Her er arbejdsopgaverne fra den aktuelle session:
 ${JSON.stringify(workItems)}
 
 Status betyder:
-- suggested: foreslået af Tak Makker, endnu ikke godkendt
+- suggested: foreslået af Hovedet på sømmet, endnu ikke godkendt
 - accepted: godkendt af håndværkeren
 - rejected: fravalgt af håndværkeren
 

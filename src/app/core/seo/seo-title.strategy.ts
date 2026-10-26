@@ -2,13 +2,12 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { BRAND_NAME, SITE_ORIGIN } from '../brand';
 
 export interface PublicSeo {
   path: string;
   description: string;
 }
-
-export const SITE_ORIGIN = 'https://www.takmakker.dk';
 
 @Injectable()
 export class SeoTitleStrategy extends TitleStrategy {
@@ -20,7 +19,7 @@ export class SeoTitleStrategy extends TitleStrategy {
     let route = snapshot.root;
     while (route.firstChild) route = route.firstChild;
     const seo = route.data['seo'] as PublicSeo | undefined;
-    const title = this.buildTitle(snapshot) ?? 'Tak Makker';
+    const title = this.buildTitle(snapshot) ?? BRAND_NAME;
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'robots', content: seo ? 'index, follow' : 'noindex, follow' });
 
@@ -54,7 +53,7 @@ export class SeoTitleStrategy extends TitleStrategy {
       'og:description': seo.description,
       'og:url': url,
       'og:type': 'website',
-      'og:site_name': 'Tak Makker',
+      'og:site_name': BRAND_NAME,
       'og:locale': 'da_DK',
     }))
       this.meta.updateTag({ property, content });

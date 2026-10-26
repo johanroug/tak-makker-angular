@@ -1,11 +1,11 @@
-# Tjenester til Tak Makker
+# Tjenester til Hovedet på sømmet
 
 | Tjeneste | Bruges til |
 |---|---|
 | Resend | Sender bekræftelsesmails og mails til nulstilling af adgangskoder via Supabase. |
-| Simply.com | Administrerer DNS-poster, der forbinder takmakker.dk med Vercel og Resend. |
-| Punktum dk | Administrerer registreringen af .dk-domænet takmakker.dk. |
-| Vercel | Hoster hjemmesiden og gør Tak Makker tilgængelig på nettet. |
+| Simply.com | DNS til hovedetpåsømmet.dk (hjemmeside) og hovedetpaasommet.dk (e-mail). |
+| Punktum dk | Administrerer registreringen af de to .dk-domæner. |
+| Vercel | Hoster hjemmesiden og gør Hovedet på sømmet tilgængelig på nettet. |
 | Supabase | Leverer database, brugerlogin, adgangskontrol og serverfunktioner. |
 | OpenAI | Leverer AI til at hjælpe med projekter og udarbejdelse af tilbud. |
 | GitHub | Gemmer projektets kildekode og versionshistorik online. |
@@ -13,9 +13,11 @@
 
 ## Sådan hænger det sammen
 
-- **Hjemmeside:** takmakker.dk → DNS hos Simply → Vercel.
+- **Hjemmeside:** hovedetpåsømmet.dk → DNS hos Simply → Vercel.
 - **Brugere og data:** Hjemmesiden → Supabase.
-- **Loginmails:** Supabase → Resend → brugerens indbakke.
+- **Loginmails:** Supabase → Resend → brugerens indbakke. Afsenderdomænet er hovedetpaasommet.dk.
 - **AI:** Supabases serverfunktion → OpenAI.
 
 Oversigten dækker de tjenester og udviklingsværktøjer, vi har identificeret til projektet.
+
+Domæneskiftet er klargjort i koden. Tilslutning af de nye domæner hos Vercel, Resend og Supabase følger DOMAIN-SKIFTE.md.

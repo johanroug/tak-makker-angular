@@ -7,12 +7,12 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Tak Makker – tilbud til håndværkere',
+    title: 'Hovedet på sømmet – tilbud til håndværkere',
     data: {
       seo: {
         path: '/',
         description:
-          'Lav tilbud med Tak Makker. Få hjælp til opgaver, materialer og priser, tilpas med din faglighed, og hent en PDF. Bliv testfirma og vær med til at forme udviklingen.',
+          'Lav tilbud med Hovedet på sømmet. Få hjælp til opgaver, materialer og priser, tilpas med din faglighed, og hent en PDF. Bliv testfirma og vær med til at forme udviklingen.',
       },
     },
     loadComponent: () =>
@@ -26,24 +26,24 @@ export const routes: Routes = [
   })),
   {
     path: 'login',
-    title: 'Log ind | Tak Makker',
+    title: 'Log ind | Hovedet på sømmet',
     loadComponent: () => import('./features/login/login').then((m) => m.Login),
   },
   {
     path: 'register',
-    title: 'Bliv testfirma | Tak Makker',
+    title: 'Bliv testfirma | Hovedet på sømmet',
     loadComponent: () => import('./features/login/login').then((m) => m.Login),
     data: { register: true },
   },
   {
     path: 'forgot-password',
-    title: 'Glemt adgangskode | Tak Makker',
+    title: 'Glemt adgangskode | Hovedet på sømmet',
     loadComponent: () =>
       import('./features/login/password-recovery').then((m) => m.PasswordRecovery),
   },
   {
     path: 'reset-password',
-    title: 'Ny adgangskode | Tak Makker',
+    title: 'Ny adgangskode | Hovedet på sømmet',
     loadComponent: () =>
       import('./features/login/password-recovery').then((m) => m.PasswordRecovery),
     data: { resetPassword: true },
@@ -102,7 +102,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    title: 'Siden blev ikke fundet | Tak Makker',
+    title: 'Siden blev ikke fundet | Hovedet på sømmet',
     loadComponent: () =>
       import('./features/not-found/not-found.component').then((m) => m.NotFoundComponent),
   },

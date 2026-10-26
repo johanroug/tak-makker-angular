@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "tak-makker-angular": {
+    "hovedet-paa-soemmet-angular": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -71,10 +71,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "tak-makker-angular:build:production"
+              "buildTarget": "hovedet-paa-soemmet-angular:build:production"
             },
             "development": {
-              "buildTarget": "tak-makker-angular:build:development"
+              "buildTarget": "hovedet-paa-soemmet-angular:build:development"
             }
           },
           "defaultConfiguration": "development"

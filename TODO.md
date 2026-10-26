@@ -1,4 +1,4 @@
-# Tak Makker TODO — 20. oktober 2026
+# Hovedet på sømmet TODO — 20. oktober 2026
 
 ## 1. Nødvendigt før første kunde
 
@@ -22,7 +22,7 @@
   - [x] Færdiggørelsesbjælken er fast i skærmens bund i enkeltkolonnelayoutet (til og med 900 px), også efter scroll forbi kladden. ResizeObserver reserverer plads efter projektindholdet ud fra bjælkens højde; safe area og oprydning ved navigation håndteres. Desktop bevarer sticky bjælke i kladden. Produktionsbuild bestået; afventer Johans kontrol på enhed.
   - [x] Højrepanelets styles samlet i project-sidebar.component.scss med mobil som grundlayout og min-width-regler til større paneler/skærme. Separat mobilfil og reference fjernet. Repræsentative CSS-layoutkontroller før/efter ved syv bredder og med/uden samtale bestået. Størrelsesgrænsen pr. stylesheet er justeret fra 8 til 10 kB, fordi eksisterende styles nu samles i én fil; advarselsgrænsen er uændret.
   - [x] Tilbudsvisningens styles ligeledes samlet i offer-preview.component.scss. offer-preview.mobile.scss og komponentreferencen er fjernet. Mobil er grundlayoutet, større layouts tilføjes ved min-width 601/901 px. Repræsentative CSS-kontroller før/efter ved ni bredder bestået, inklusive fast/sticky bundbjælke, formular og priser. Produktionsbuild bestået med kendte advarsler.
-- [x] **Vercel: skift fra React til Angular** — Repo klargjort med vercel.json (Angular, build, browser-output og SPA-routing), Node 24.x og VERCEL-DEPLOYMENT.md. Produktionsbuild og outputfiler kontrolleret. Vercel-projektet tak-makker er nu forbundet til johanroug/tak-makker-angular; Angular, npm ci, build, outputmappe og Node 24.x er kontrolleret/opsat i dashboardet. Commit eda6836 er deployet som Production/Ready på www.takmakker.dk. Angular-login er åbnet i browseren, og Johan bekræfter, at det ser rigtigt ud. Direkte projekt-, profil- og tilbuds-URL’er samt JS/CSS/logo returnerer 200 med korrekt indholdstype. Login, AI og PDF i produktion mangler stadig funktionel brugerkontrol under Deployment.
+- [x] **Vercel: skift fra React til Angular (historisk)** — Repo klargjort med vercel.json (Angular, build, browser-output og SPA-routing), Node 24.x og VERCEL-DEPLOYMENT.md. Produktionsbuild og outputfiler kontrolleret. Det eksisterende Vercel-projekt er forbundet til johanroug/tak-makker-angular; Angular, npm ci, build, outputmappe og Node 24.x er kontrolleret/opsat i dashboardet. Commit eda6836 blev deployet som Production/Ready på det daværende domæne. Angular-login blev åbnet i browseren, og Johan bekræftede, at det så rigtigt ud. Direkte projekt-, profil- og tilbuds-URL’er samt JS/CSS/logo returnerede 200 med korrekt indholdstype. Domæneskiftet den 26. oktober er en separat opgave nedenfor.
 - [ ] **Validering** — Tjek af obligatoriske felter, tal, priser og ugyldige input.
 - [ ] **Fejlhåndtering** — Tydelige fejlbeskeder, loading og beskyttelse mod dobbeltklik.
 - [x] **PDF-finpudsning** — Nyt lyst PDF-design implementeret 21. oktober. Sideskift, lange tekster, mange linjer og logo kontrolleret lokalt; Johan har godkendt resultatet.
@@ -417,7 +417,7 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Dansk sidesprog, sidetitel og metabeskrivelse som grundlag for SEO. Forsiden indlæses som separat kodepakke.
 - [ ] Gennemse forsiden og deploy til Vercel efter commit/push.
 - [ ] Optag en rigtig demovideo: beskriv en opgave → ret opgaver/materialer/timer/priser → vis firmaprofil → færdiggør → hent PDF. Brug fiktive kundedata og tilføj undertekster og tekstalternativ. Indsæt videoen på forsiden; den klikbare gennemgang er ikke en video.
-- [ ] Mål samme repræsentative tilbud med nuværende metode og Tak Makker, inklusive kontrol og rettelser. Dokumentér metode og resultater før konkrete besparelsestal bruges i markedsføring.
+- [ ] Mål samme repræsentative tilbud med nuværende metode og Hovedet på sømmet, inklusive kontrol og rettelser. Dokumentér metode og resultater før konkrete besparelsestal bruges i markedsføring.
 
 ### Google og SEO
 
@@ -435,3 +435,13 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [ ] Implementér personlige invitationslinks og serverregistrering af henvisninger. Bevar henvisningen gennem registrering uden at give adgang før administratorgodkendelse.
 - [ ] Implementér belønning efter bekræftet betaling, beskyttelse mod dobbeltbelønning og adminoverblik. Test tilbagebetaling, annullering og gentagne betalingshændelser.
 - [ ] Vis program og vilkår til kunderne, når belønning og betalingsflow er klar. Programmet er endnu ikke implementeret.
+
+## Nyt navn og domæner — 26. oktober 2026
+
+- [x] Lokalt navneskift til Hovedet på sømmet: app, offentlige sider, login, AI-instruktioner, PDF-metadata og projektets buildnavn.
+- [x] Canonical/sitemap/robots opdateret til https://xn--hovedetpsmmet-wfb00a.dk (hovedetpåsømmet.dk uden www). Vercel-redirects og mobiltilpasset ordmærke klargjort.
+- [x] Tjenesteoversigt og vejledninger opdateret. E-maildomænet er hovedetpaasommet.dk. Opgavelisten hedder nu TODO.md.
+- [x] Produktionsbuild med fire prerenderede sider og SEO-/HTML-kontrol bestået med eksisterende størrelses-/CommonJS-advarsler. Projektnavn, lockfile og IDN-redirects kontrolleret. Ingen spec-filer tilføjet.
+- [ ] Følg DOMAIN-SKIFTE.md: tilføj og verificér webdomæne hos Vercel/Simply, maildomæne hos Resend/Simply, opdatér Supabase Site URL/redirects/SMTP-afsender og eventuelle mailtemplates.
+- [ ] Udrul frontend og generate-offer. Kør navnemigration 202610260001_brand_name.sql efter gennemgang. Ingen eksterne indstillinger eller SQL er ændret af Codex.
+- [ ] Kontrollér login/registrering/bekræftelsesmail/nulstilling/AI/PDF samt redirects på de nye domæner. Opret ny Search Console-ejendom og indsend sitemap.

@@ -98,7 +98,7 @@
                 {{
                   item.estimated_hours_source === 'user'
                     ? 'Rettet af dig'
-                    : 'Foreslået af Tak Makker'
+                    : 'Foreslået af Hovedet på sømmet'
                 }}
               </p>
             </div>
@@ -251,7 +251,7 @@
                   material.unit_source === 'user' ||
                   material.unit_price !== null
                     ? 'Rettet af dig'
-                    : 'Foreslået af Tak Makker'
+                    : 'Foreslået af Hovedet på sømmet'
                 }}
               </p>
             </div>
@@ -340,7 +340,7 @@
             @for (message of newestMessages; track message.id) {
               <article class="chat-message" tabindex="-1" [class.chat-message-user]="message.role === 'user'">
                 <strong>
-                  {{ message.role === 'user' ? 'Dig' : 'Tak Makker' }}
+                  {{ message.role === 'user' ? 'Dig' : 'Hovedet på sømmet' }}
                 </strong>
 
                 <p>

@@ -26,10 +26,10 @@ export class Login {
     const reason = this.route.snapshot.queryParamMap.get('access');
     if (reason === 'pending')
       this.notice.set(
-        'Din bruger afventer godkendelse fra Tak Makker. Du får først adgang, når din bruger er godkendt.',
+        'Din bruger afventer godkendelse fra Hovedet på sømmet. Du får først adgang, når din bruger er godkendt.',
       );
     if (reason === 'blocked')
-      this.errorMessage.set('Din adgang til Tak Makker er blokeret. Kontakt Tak Makker for hjælp.');
+      this.errorMessage.set('Din adgang til Hovedet på sømmet er blokeret. Kontakt Hovedet på sømmet for hjælp.');
     if (reason === 'unavailable')
       this.errorMessage.set('Kunne ikke kontrollere din adgang. Prøv at logge ind igen.');
   }
@@ -60,11 +60,11 @@ export class Login {
         if (data.session) {
           await this.authService.signOut();
           this.notice.set(
-            'Din bruger er oprettet og afventer godkendelse fra Tak Makker. Du kan logge ind, når din bruger er godkendt.',
+            'Din bruger er oprettet og afventer godkendelse fra Hovedet på sømmet. Du kan logge ind, når din bruger er godkendt.',
           );
         } else
           this.notice.set(
-            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Din bruger skal også godkendes af Tak Makker, før du får adgang.',
+            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Din bruger skal også godkendes af Hovedet på sømmet, før du får adgang.',
           );
         return;
       }

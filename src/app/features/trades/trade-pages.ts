@@ -14,12 +14,12 @@ export const TRADE_PAGES: TradePage[] = [
   {
     slug: 'tilbudsprogram-til-toemrer',
     trade: 'Tømrere',
-    title: 'Tilbudsprogram til tømrere | Tak Makker',
+    title: 'Tilbudsprogram til tømrere | Hovedet på sømmet',
     description:
-      'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Bliv testfirma hos Tak Makker.',
+      'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Bliv testfirma hos Hovedet på sømmet.',
     heading: 'Tilbud til tømrerarbejde. Med styr på detaljerne.',
     intro:
-      'En ny terrasse er mere end brædder og skruer. Der er underlag, konstruktion, tilpasninger og kundens valg. Tak Makker hjælper dig fra beskrivelsen af opgaven til et tilbudsudkast, som du selv gennemgår og prissætter.',
+      'En ny terrasse er mere end brædder og skruer. Der er underlag, konstruktion, tilpasninger og kundens valg. Hovedet på sømmet hjælper dig fra beskrivelsen af opgaven til et tilbudsudkast, som du selv gennemgår og prissætter.',
     sections: [
       {
         heading: 'Gør kundens ønsker til konkrete arbejdsopgaver',
@@ -49,12 +49,12 @@ export const TRADE_PAGES: TradePage[] = [
     },
     questions: [
       {
-        question: 'Kan jeg bruge Tak Makker til både små og store tømreropgaver?',
+        question: 'Kan jeg bruge Hovedet på sømmet til både små og store tømreropgaver?',
         answer:
           'Du kan beskrive forskellige typer tømreropgaver og tilpasse udkastet. Ved større eller komplekse projekter skal du selv sikre, at alle delarbejder, forudsætninger og nødvendige faglige vurderinger er med.',
       },
       {
-        question: 'Henter Tak Makker mine aktuelle træpriser?',
+        question: 'Henter Hovedet på sømmet mine aktuelle træpriser?',
         answer:
           'Du indtaster og kontrollerer selv enhedspriserne. Brug dine aktuelle priser fra trælasten eller leverandøren, når du tilpasser udkastet.',
       },
@@ -63,12 +63,12 @@ export const TRADE_PAGES: TradePage[] = [
   {
     slug: 'tilbudsprogram-til-murer',
     trade: 'Murere',
-    title: 'Tilbudsprogram til murere | Tak Makker',
+    title: 'Tilbudsprogram til murere | Hovedet på sømmet',
     description:
-      'Lav tilbud på murer- og flisearbejde med hjælp fra Tak Makker. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Søg adgang som testfirma.',
+      'Lav tilbud på murer- og flisearbejde med hjælp fra Hovedet på sømmet. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Søg adgang som testfirma.',
     heading: 'Tilbud på murerarbejde. Fra underlag til sidste fuge.',
     intro:
-      'Når du giver tilbud på fliser eller andet murerarbejde, skal forarbejdet med. Tak Makker hjælper med at samle beskrivelsen, opgaverne og materialerne, så du kan tilpasse tilbuddet med din faglige vurdering.',
+      'Når du giver tilbud på fliser eller andet murerarbejde, skal forarbejdet med. Hovedet på sømmet hjælper med at samle beskrivelsen, opgaverne og materialerne, så du kan tilpasse tilbuddet med din faglige vurdering.',
     sections: [
       {
         heading: 'Beskriv både overfladen og arbejdet nedenunder',
@@ -112,12 +112,12 @@ export const TRADE_PAGES: TradePage[] = [
   {
     slug: 'tilbudsprogram-til-maler',
     trade: 'Malere',
-    title: 'Tilbudsprogram til malere | Tak Makker',
+    title: 'Tilbudsprogram til malere | Hovedet på sømmet',
     description:
-      'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Tak Makker og hent en PDF. Bliv testfirma.',
+      'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Hovedet på sømmet og hent en PDF. Bliv testfirma.',
     heading: 'Tilbud på malerarbejde. Også alt det før første strøg.',
     intro:
-      'Afdækning, afrensning og spartling kan fylde lige så meget i tilbuddet som selve malingen. Tak Makker hjælper dig med at samle arbejdsopgaver og materialer i et udkast, som du tilpasser til rummene og overfladerne.',
+      'Afdækning, afrensning og spartling kan fylde lige så meget i tilbuddet som selve malingen. Hovedet på sømmet hjælper dig med at samle arbejdsopgaver og materialer i et udkast, som du tilpasser til rummene og overfladerne.',
     sections: [
       {
         heading: 'Start med rummene og overfladernes stand',
@@ -152,7 +152,7 @@ export const TRADE_PAGES: TradePage[] = [
           'Du kan rette arbejdsopgavernes beskrivelser og timer, så forarbejdet fremgår tydeligt af dit tilbud. Kontrollér udkastet, så det afspejler det, du har aftalt med kunden.',
       },
       {
-        question: 'Beregner Tak Makker præcist, hvor meget maling jeg skal købe?',
+        question: 'Beregner Hovedet på sømmet præcist, hvor meget maling jeg skal købe?',
         answer:
           'Materialeforslag skal kontrolleres af dig. Forbruget afhænger blandt andet af areal, underlag, antal behandlinger og malingens rækkeevne.',
       },

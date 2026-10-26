@@ -24,7 +24,7 @@ export class ProjectService {
       const failure = results.find((result) => result.status === 'rejected');
       if (failure?.status === 'rejected') throw failure.reason;
     } finally {
-      console.debug('[Tak Makker] Gemning af AI-data', {
+      console.debug('[Hovedet på sømmet] Gemning af AI-data', {
         durationMs: Math.round(performance.now() - started),
       });
     }

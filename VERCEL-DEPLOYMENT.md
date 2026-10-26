@@ -7,7 +7,7 @@ Repo: `johanroug/tak-makker-angular`.
 1. Åbn det eksisterende projekt i Vercel → Settings → Git. Forbind Angular-repoet i stedet for det gamle React-repo.
 2. Kontrollér Root Directory: repoets rod (ingen undermappe).
 3. Vælg Node.js 24.x under Build and Deployment. Angular CLI kræver mindst Node 24.15 inden for denne hovedversion.
-4. `vercel.json` angiver Angular, `npm ci`, `npm run build`, output `dist/tak-makker-angular/browser` og fallback til `index.html` for undersider.
+4. `vercel.json` angiver Angular, `npm ci`, `npm run build` og output `dist/hovedet-paa-soemmet-angular/browser`. Offentlige fagsider får egen prerenderet HTML, mens app-ruter bruger `index.csr.html`. Ukendte adresser får en 404-side.
 5. Commit og push de ønskede ændringer, før en deployment sættes i gang. Kontrollér deploymentens Git-repo og commit.
 
 ## Supabase
@@ -26,3 +26,7 @@ AI-nøgler og service-role-nøgler hører fortsat til i Supabase Edge Function s
 - Kontrollér domænet og eventuelle Supabase Auth redirect-URL'er, hvis der bruges mailbaserede login- eller nulstillingslinks.
 
 Lokal buildkontrol bekræfter kun buildet. Vercels repo-forbindelse, domæne og routing skal også kontrolleres på den faktiske deployment.
+
+## Nyt navn og domæne
+
+Produktnavnet er **Hovedet på sømmet**, og hovedadressen er `https://hovedetpåsømmet.dk` uden www. Se DOMAIN-SKIFTE.md for rækkefølge, DNS, redirects og mailopsætning. GitHub-repoets eksisterende navn ovenfor er ikke ændret automatisk.

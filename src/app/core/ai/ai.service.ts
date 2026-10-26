@@ -20,12 +20,12 @@ export class AiService {
 
           if (error) {
             console.error('AI ERROR:', error);
-            throw new Error('Kunne ikke hente svar fra Tak Makker', { cause: error });
+            throw new Error('Kunne ikke hente svar fra Hovedet på sømmet', { cause: error });
           }
 
           return data as ProjectResponse;
         } finally {
-          console.debug('[Tak Makker] AI-endpoint', {
+          console.debug('[Hovedet på sømmet] AI-endpoint', {
             durationMs: Math.round(performance.now() - started),
           });
         }

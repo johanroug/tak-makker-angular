@@ -51,6 +51,22 @@ export class OfferPreview {
   readonly data = input.required<ProjectData>();
   readonly textEdited = output<DraftTextEdit>();
   readonly textSaveStates = input<Record<string, 'editing' | 'saving' | 'saved' | 'error'>>({});
+  private readonly editingTrades = new Map<string, string>();
+
+  editField(kind: 'work' | 'material', id: string, field: string, event: Event, save: boolean): void {
+    const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    if (kind === 'work' && field === 'trade') {
+      if (save) this.editingTrades.delete(id);
+      else if (!this.editingTrades.has(id)) {
+        this.editingTrades.set(id, this.data().workItems.find(item => item.id === id)?.trade ?? '');
+      }
+    }
+    if (kind === 'work' && (field === 'trade' || field === 'description' || field === 'hours')) {
+      this.textEdited.emit({ kind, id, field, value, save });
+    } else if (kind === 'material' && (field === 'name' || field === 'description' || field === 'quantity' || field === 'unit' || field === 'unitPrice')) {
+      this.textEdited.emit({ kind, id, field, value, save });
+    }
+  }
 
   textSaveLabel(kind: 'work' | 'material', id: string, field: string): string {
     const key = JSON.stringify([this.data().project.id, kind, id, field]);
@@ -118,6 +134,23 @@ export class OfferPreview {
 
   get acceptedWorkItems() {
     return this.data().workItems.filter((item) => item.status === 'accepted');
+  }
+
+  get workGroups() {
+    const groups = new Map<string, ProjectData['workItems']>();
+    for (const item of this.acceptedWorkItems) {
+      const trade = this.editingTrades.get(item.id) ?? item.trade ?? '';
+      const key = trade.trim().replace(/\s+/g, ' ').toLocaleLowerCase('da-DK');
+      const group = groups.get(key);
+      if (group) group.push(item);
+      else groups.set(key, [item]);
+    }
+    // Keep both trades and tasks in their original order within each group.
+    return [...groups].map(([key, items]) => ({
+      key,
+      title: (this.editingTrades.get(items[0].id) ?? items[0].trade ?? '').trim().replace(/\s+/g, ' ') || 'Øvrige opgaver',
+      items,
+    }));
   }
 
   get acceptedMaterials() {

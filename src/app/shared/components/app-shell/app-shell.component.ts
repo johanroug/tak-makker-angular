@@ -12,17 +12,29 @@ import {
   NavigationEnd,
   Router,
   RouterLink,
+  RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/auth/auth.service';
 import { NewProjectDialog } from '../new-project-dialog/new-project-dialog.component';
 import { WorkspaceState } from './workspace-state';
+import { PublicBrandComponent } from '../public-brand/public-brand.component';
+import { WorkspaceIcon } from '../workspace-icon.component';
 
 @Component({
   selector: 'app-shell',
   host: { '(window:resize)': 'onResize()', '(window:focus)': 'checkCurrentAccess()' },
-  imports: [NgTemplateOutlet, FormsModule, RouterLink, RouterOutlet, NewProjectDialog],
+  imports: [
+    NgTemplateOutlet,
+    FormsModule,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+    NewProjectDialog,
+    PublicBrandComponent,
+    WorkspaceIcon,
+  ],
   providers: [WorkspaceState],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',

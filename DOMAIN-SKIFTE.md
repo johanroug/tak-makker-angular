@@ -77,7 +77,26 @@ Kontrollér eventuelle tilpassede emner og mailtekster for det gamle produktnavn
 
 ## Status
 
-Koden og vejledningen er klargjort. DNS, Vercel-domæner, SMTP-afsender, Supabase URL-konfiguration, mailtemplates, Google Search Console, database og deployment er **ikke ændret eksternt af Codex**.
+Johan har bekræftet følgende den 26. oktober 2026:
+
+- Det nye webdomæne viser Valid Configuration i Vercel efter DNS-opsætning hos Simply.
+- Det nye e-maildomæne er sat op i Resend. En ny API-nøgle og SMTP-afsender er indsat i Supabase.
+- Supabase Site URL og redirect-adresser er opdateret.
+- Registrering og bekræftelsesmail virker på det nye domæne med korrekt afsender.
+- Nulstillingslinket virkede efter en første, midlertidig forbindelsesfejl via Safe Links. Årsagen til den første fejl er ikke fastslået.
+
+Ændringerne ovenfor er udført af Johan. Deployment af AI-funktionen, navnemigration, Search Console og de gamle domæners redirects mangler fortsat særskilt bekræftelse.
+
+## Oprydning efter overgangen
+
+- **Behold de gamle webdomæner til redirects.** Kontrollér, at både apex og www viderestiller til det nye domæne med samme underside. Fjern ikke deres DNS eller domænetilknytning, mens gamle links stadig skal virke.
+- **Resend:** tilbagekald den gamle API-nøgle, når det er bekræftet, at den ikke bruges af andre integrationer. Den nye nøgle i Supabase skal bevares. Fjern det gamle sending domain, hvis ingen tjenester længere sender fra det.
+- **Supabase:** gennemgå mailtemplates og deres emnelinjer. Fjern gamle redirect-adresser, når gamle maillinks ikke længere skal understøttes. Bevar localhost til udvikling.
+- **AI og database:** deploy generate-offer og kør navnemigrationen, hvis det ikke allerede er gjort. Ellers kan AI eller en serverfejl stadig vise det gamle navn.
+- **GitHub og Vercel:** projekt- og reponavne kan omdøbes senere. De eksisterende tekniske navne er ikke synlige produkttekster og behøver ikke ændres for at siden virker.
+- **Google:** verificér det nye domæne og indsend sitemap som beskrevet ovenfor.
+
+Kodebasens gamle domænenavne i `vercel.json` er bevidste redirect-kilder. Referencer til det eksisterende GitHub-repo og allerede anvendte migrationer bevares. Den gamle, genererede lokale buildmappe er fjernet.
 
 ## Officielle vejledninger
 

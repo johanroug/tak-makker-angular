@@ -142,3 +142,67 @@
 .project-shell {
   padding-top: 0;
 }
+
+.workspace-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 0 24px;
+  p {
+    margin: 0 0 6px;
+    color: #718075;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(23px, 3vw, 30px);
+    font-weight: 750;
+    letter-spacing: -0.8px;
+    line-height: 1.2;
+  }
+  .project-number {
+    flex-shrink: 0;
+    border: 1px solid #dbe2d4;
+    border-radius: 20px;
+    padding: 7px 12px;
+    color: #647661;
+    font-size: 12px;
+  }
+}
+.mobile-offer-jump {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #cbd8c4;
+  border-radius: 10px;
+  background: #fff;
+  color: #12372a;
+  font-weight: 600;
+  cursor: pointer;
+}
+app-offer-preview {
+  scroll-margin-top: 16px;
+}
+@media (max-width: 600px) {
+  .workspace-heading {
+    padding: 20px 0;
+    align-items: start;
+  }
+  .workspace-heading .project-number {
+    display: none;
+  }
+}
+@media (min-width: 901px) {
+  .project-layout {
+    grid-template-columns: minmax(340px, 0.85fr) minmax(0, 1.15fr);
+    gap: 24px;
+  }
+  .mobile-offer-jump {
+    display: none;
+  }
+}

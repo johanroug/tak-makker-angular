@@ -1,30 +1,9 @@
 <aside class="project-sidebar">
-  <nav class="sidebar-tabs">
-    <button type="button" [class.active]="activeTab() === 'tasks'" (click)="selectTab('tasks')">
-      Opgaver
-    </button>
-
-    <button
-      type="button"
-      [class.active]="activeTab() === 'materials'"
-      (click)="selectTab('materials')"
-    >
-      Materialer
-    </button>
-
-    <button class="conversation-tab" type="button" [class.active]="activeTab() === 'chat'" (click)="selectTab('chat')">
-      <span class="conversation-tab-label">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-          <path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4L12 3Z" fill="currentColor" />
-          <path d="m20 2 .8 2.2L23 5l-2.2.8L20 8l-.8-2.2L17 5l2.2-.8L20 2Z" fill="currentColor" />
-        </svg>
-        Samtale
-      </span>
-    </button>
-
-    <button type="button" [class.active]="activeTab() === 'offers'" (click)="selectTab('offers')">
-      Tilbud
-    </button>
+  <nav class="sidebar-tabs" aria-label="Projektets indhold">
+    <button type="button" [class.active]="activeTab() === 'chat'" [attr.aria-pressed]="activeTab() === 'chat'" (click)="selectTab('chat')"><app-workspace-icon name="chat" /> Samtale</button>
+    <button type="button" [class.active]="activeTab() === 'tasks'" [attr.aria-pressed]="activeTab() === 'tasks'" (click)="selectTab('tasks')"><app-workspace-icon name="tasks" /> Opgaver</button>
+    <button type="button" [class.active]="activeTab() === 'materials'" [attr.aria-pressed]="activeTab() === 'materials'" (click)="selectTab('materials')"><app-workspace-icon name="materials" /> Materialer</button>
+    <button type="button" [class.active]="activeTab() === 'offers'" [attr.aria-pressed]="activeTab() === 'offers'" (click)="selectTab('offers')"><app-workspace-icon name="offers" /> Tilbud</button>
   </nav>
 
   <div class="sidebar-content">

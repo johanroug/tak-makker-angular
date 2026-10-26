@@ -1,4 +1,5 @@
 import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
+import { WorkspaceIcon } from '../workspace-icon.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { afterNextRender, Component, effect, ElementRef, inject, Injector, input, output, signal } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
@@ -18,7 +19,7 @@ type SidebarTab = 'tasks' | 'materials' | 'chat' | 'offers';
 
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, NewSuggestionBadge],
+  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, NewSuggestionBadge, WorkspaceIcon],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
@@ -328,9 +329,13 @@ export class ProjectSidebar implements OnDestroy {
     if (!edit.save) {
       if (edit.kind === 'work') {
         if (edit.field === 'trade') this.setWorkItemTrade(edit.id, edit.value);
+        else if (edit.field === 'hours') this.setWorkItemHours(edit.id, edit.value);
         else this.setWorkItemDescription(edit.id, edit.value);
       } else {
         if (edit.field === 'name') this.setMaterialName(edit.id, edit.value);
+        else if (edit.field === 'quantity') this.setMaterialQuantity(edit.id, edit.value);
+        else if (edit.field === 'unit') this.setMaterialUnit(edit.id, edit.value);
+        else if (edit.field === 'unitPrice') this.setMaterialUnitPrice(edit.id, edit.value);
         else this.setMaterialDescription(edit.id, edit.value);
       }
       this.fieldEdited(this.fieldKey(edit.kind, edit.id, edit.field));
@@ -340,11 +345,15 @@ export class ProjectSidebar implements OnDestroy {
       const item = this.data().workItems.find(item => item.id === edit.id);
       if (!item) return;
       if (edit.field === 'trade') await this.saveWorkItemTrade(item, edit.value);
+      else if (edit.field === 'hours') await this.updateEstimatedHours(item, edit.value);
       else await this.saveWorkItemDescription(item, edit.value);
     } else {
       const item = this.data().materials.find(item => item.id === edit.id);
       if (!item) return;
       if (edit.field === 'name') await this.saveMaterialName(item, edit.value);
+      else if (edit.field === 'quantity') await this.updateMaterialQuantity(item, edit.value);
+      else if (edit.field === 'unit') await this.updateMaterialUnit(item, edit.value);
+      else if (edit.field === 'unitPrice') await this.updateMaterialUnitPrice(item, edit.value);
       else await this.saveMaterialDescription(item, edit.value);
     }
   }

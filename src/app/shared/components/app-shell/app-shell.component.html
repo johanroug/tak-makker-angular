@@ -1,81 +1,117 @@
-@if (isNavigating()) { <div class="route-progress" role="progressbar" aria-label="Skifter side"></div> }
-<div class="header-shell">
-  <header class="app-header">
-    <a routerLink="/projects" class="app-logo"><span class="brand-mark"><img src="/favicon.png" alt="" width="42" height="42" /></span><span>Hovedet på<br />sømmet<small>DIN DIGITALE MAKKER</small></span></a>
-    <button
-      #menuToggle
-      type="button"
-      class="menu-toggle"
-      aria-controls="mobile-navigation"
-      [attr.aria-expanded]="isMenuOpen()"
-      (click)="openMenu()"
-    >
-      <span aria-hidden="true">☰</span> Menu
-    </button>
-    <nav class="header-navigation" aria-label="Hovednavigation">
+@if (isNavigating()) {
+  <div class="route-progress" role="progressbar" aria-label="Skifter side"></div>
+}
+<div class="workspace-shell">
+  <div class="header-shell">
+    <header class="app-header">
+      <div class="header-identity">
+        <app-public-brand destination="/projects" [tagline]="false" [header]="true" />
+        <p class="header-payoff">Hjernen bag dit næste tilbud.</p>
+      </div>
+      <div class="header-project-actions">
+        <label class="project-picker">
+          <span class="sr-only">Vælg projekt</span>
+          <app-workspace-icon name="projects" />
+          <select
+            class="project-selector"
+            aria-label="Vælg projekt"
+            [ngModel]="workspace.activeProjectId()"
+            (ngModelChange)="selectProject($event)"
+          >
+            <option value="" disabled>Vælg projekt</option>
+            @for (item of workspace.projects(); track item.id) {
+              <option [value]="item.id">
+                {{ item.project_number }} · {{ item.title || 'Projekt uden titel' }}
+              </option>
+            }
+          </select>
+        </label>
+        <button type="button" class="new-project-button" (click)="createProject()">
+          <span aria-hidden="true">＋</span> Nyt projekt
+        </button>
+      </div>
+      <a
+        class="header-account"
+        routerLink="/company-profile"
+        aria-label="Åbn virksomhedsprofil"
+        title="Virksomhedsprofil"
+        ><app-workspace-icon name="account"
+      /></a>
+      <button
+        #menuToggle
+        type="button"
+        class="menu-toggle"
+        aria-label="Åbn navigation"
+        aria-controls="mobile-navigation"
+        [attr.aria-expanded]="isMenuOpen()"
+        (click)="openMenu()"
+      >
+        ☰
+      </button>
+    </header>
+    @if (workspace.error()) {
+      <p role="alert">
+        {{ workspace.error() }}
+        <button type="button" (click)="workspace.loadProjects()" [disabled]="workspace.isLoading()">
+          Prøv igen
+        </button>
+      </p>
+    }
+  </div>
+  <aside class="desktop-sidebar" aria-label="Sidemenu">
+    <nav class="side-navigation" aria-label="Hovednavigation">
       <ng-container [ngTemplateOutlet]="navigationContent" />
     </nav>
-  </header>
-  @if (logoutError()) {
-    <p role="alert">{{ logoutError() }}</p>
-  }
-  @if (workspace.error()) {
-    <p role="alert">
-      {{ workspace.error() }}
-      <button type="button" (click)="workspace.loadProjects()" [disabled]="workspace.isLoading()">
-        Prøv igen
-      </button>
+    <p class="sidebar-payoff">Hjernen bag<br />dit næste tilbud.</p>
+  </aside>
+  <div class="shell-main">
+    @if (logoutError()) {
+      <p role="alert">{{ logoutError() }}</p>
+    }
+    <div class="route-content"><router-outlet /></div>
+    <p class="activity-notice">
+      Vi registrerer handlinger, svartider og tekniske fejl for at forbedre Hovedet på sømmet.
+      Beskedtekster og kundedata indgår ikke i aktivitetsloggen.
     </p>
-  }
+  </div>
 </div>
-<div class="route-content"><router-outlet /></div>
-<p class="activity-notice">Vi registrerer handlinger, svartider og tekniske fejl for at forbedre Hovedet på sømmet. Beskedtekster og kundedata indgår ikke i aktivitetsloggen.</p>
 <app-new-project-dialog (projectCreated)="workspace.loadProjects()" />
 
 <ng-template #navigationContent>
-  <div class="header-actions">
-    <span class="menu-section-label">DIT ARBEJDSRUM</span>
-    <label class="project-picker"><span class="project-picker-caption">DIT PROJEKT</span>
-    <select
-      class="project-selector"
-      aria-label="Vælg projekt"
-      [ngModel]="workspace.activeProjectId()"
-      (ngModelChange)="selectProject($event)"
+  <a
+    routerLink="/projects"
+    routerLinkActive="nav-active"
+    ariaCurrentWhenActive="page"
+    (click)="closeMenu()"
+    ><app-workspace-icon name="projects" /> Projekter</a
+  >
+  <a
+    routerLink="/company-profile"
+    routerLinkActive="nav-active"
+    ariaCurrentWhenActive="page"
+    (click)="closeMenu()"
+    ><app-workspace-icon name="company" /> Virksomhedsprofil</a
+  >
+  @if (activity.isAdmin()) {
+    <span class="navigation-label">Administration</span>
+    <a
+      routerLink="/users"
+      routerLinkActive="nav-active"
+      ariaCurrentWhenActive="page"
+      (click)="closeMenu()"
+      ><app-workspace-icon name="users" /> Brugere</a
     >
-      <option value="" disabled>Vælg projekt</option>
-      @for (item of workspace.projects(); track item.id) {
-        <option [value]="item.id">
-          {{ item.project_number }} · {{ item.title || 'Projekt uden titel' }}
-        </option>
-      }
-    </select>
-    </label>
-    <button type="button" class="new-project-button" (click)="createProject()">
-      <span aria-hidden="true">＋</span> Nyt projekt
-    </button>
-  </div>
-  <div class="account-actions">
-    @if (activity.isAdmin()) {
-      <a routerLink="/users" class="profile-button" (click)="closeMenu()">Brugere</a> <a routerLink="/activity" class="profile-button" (click)="closeMenu()">Aktivitet</a> }
-    <a routerLink="/company-profile" class="profile-button" (click)="closeMenu()"
-      ><span class="nav-icon" aria-hidden="true"
-        ><svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.6"
-        >
-          <rect x="3" y="7" width="18" height="14" rx="2" />
-          <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12a22 22 0 0 0 18 0M12 11v4" /></svg
-      ></span>
-      Virksomhedsprofil <span class="nav-arrow" aria-hidden="true">↗</span></a
+    <a
+      routerLink="/activity"
+      routerLinkActive="nav-active"
+      ariaCurrentWhenActive="page"
+      (click)="closeMenu()"
+      ><app-workspace-icon name="activity" /> Aktivitet</a
     >
-    <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()">
-      {{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}
-    </button>
-  </div>
+  }
+  <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()">
+    <app-workspace-icon name="logout" /> {{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}
+  </button>
 </ng-template>
 
 <dialog
@@ -87,32 +123,23 @@
   (cancel)="closeMenu()"
   (click)="$event.target === menuDrawer ? closeMenu() : null"
 >
-  <div class="drawer-content">
-    <div class="drawer-top">
-      <span class="drawer-brand"
-        ><img src="/favicon.png" alt="" width="36" height="36" /> Hovedet på sømmet</span
-      >
-      <button
-        type="button"
-        class="drawer-close"
-        aria-label="Luk menu"
-        (click)="closeMenu()"
-        autofocus
-      >
-        ✕
-      </button>
-    </div>
-    <div class="drawer-intro">
-      <p>DIN DIGITALE MAKKER</p>
-      <h2 id="drawer-title">Godt arbejde<br />starter her.</h2>
-      <span>Dit næste projekt er kun et klik væk.</span>
-    </div>
-    <nav class="drawer-navigation" aria-label="Mobilnavigation">
-      <ng-container [ngTemplateOutlet]="navigationContent" />
-    </nav>
-    @if (logoutError()) {
-      <p role="alert">{{ logoutError() }}</p>
-    }
-    <p class="drawer-footer">Fra første idé til færdigt tilbud.</p>
+  <div class="drawer-top">
+    <h2 id="drawer-title">Dit arbejdsrum</h2>
+    <button
+      type="button"
+      class="drawer-close"
+      aria-label="Luk menu"
+      (click)="closeMenu(true)"
+      autofocus
+    >
+      ✕
+    </button>
   </div>
+  <button type="button" class="new-project-button" (click)="createProject()">＋ Nyt projekt</button>
+  <nav class="side-navigation" aria-label="Mobilnavigation">
+    <ng-container [ngTemplateOutlet]="navigationContent" />
+  </nav>
+  @if (logoutError()) {
+    <p role="alert">{{ logoutError() }}</p>
+  }
 </dialog>

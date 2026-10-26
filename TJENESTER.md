@@ -20,4 +20,4 @@
 
 Oversigten dækker de tjenester og udviklingsværktøjer, vi har identificeret til projektet.
 
-Domæneskiftet er klargjort i koden. Tilslutning af de nye domæner hos Vercel, Resend og Supabase følger DOMAIN-SKIFTE.md.
+Johan har bekræftet opsætningen af de nye domæner hos Vercel, Resend og Supabase samt fungerende registrering, korrekt mailafsender og nulstillingslink. Status og resterende oprydning står i DOMAIN-SKIFTE.md.

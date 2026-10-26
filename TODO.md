@@ -442,6 +442,8 @@ Den samlede liste ovenfor er baseret på Johans originale TODO-liste. Åbne punk
 - [x] Canonical/sitemap/robots opdateret til https://xn--hovedetpsmmet-wfb00a.dk (hovedetpåsømmet.dk uden www). Vercel-redirects og mobiltilpasset ordmærke klargjort.
 - [x] Tjenesteoversigt og vejledninger opdateret. E-maildomænet er hovedetpaasommet.dk. Opgavelisten hedder nu TODO.md.
 - [x] Produktionsbuild med fire prerenderede sider og SEO-/HTML-kontrol bestået med eksisterende størrelses-/CommonJS-advarsler. Projektnavn, lockfile og IDN-redirects kontrolleret. Ingen spec-filer tilføjet.
-- [ ] Følg DOMAIN-SKIFTE.md: tilføj og verificér webdomæne hos Vercel/Simply, maildomæne hos Resend/Simply, opdatér Supabase Site URL/redirects/SMTP-afsender og eventuelle mailtemplates.
+- [x] Johan har opsat webdomæne hos Vercel/Simply, maildomæne hos Resend/Simply, ny Resend API-nøgle i Supabase samt Site URL/redirects/SMTP-afsender. Registrering, korrekt afsender og nulstillingslink er bekræftet fungerende den 26. oktober.
+- [ ] Gennemgå eventuelle tilpassede mailtemplates og emnelinjer. Tilbagekald gamle Resend-nøgler og fjern gammelt sending domain, når de ikke bruges af andre integrationer.
 - [ ] Udrul frontend og generate-offer. Kør navnemigration 202610260001_brand_name.sql efter gennemgang. Ingen eksterne indstillinger eller SQL er ændret af Codex.
 - [ ] Kontrollér login/registrering/bekræftelsesmail/nulstilling/AI/PDF samt redirects på de nye domæner. Opret ny Search Console-ejendom og indsend sitemap.
+- [x] Lokal navneoprydning: ingen gammel branding i aktive apptekster. Gammel buildmappe fjernet. Historiske migrationer, eksisterende repo-reference og redirect-kilder bevares.

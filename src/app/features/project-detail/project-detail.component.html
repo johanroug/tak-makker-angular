@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-stone-50">
+<div class="project-workspace">
   <div class="project-shell mx-auto max-w-[1440px] px-6 py-5">
     @if (refreshError()) {
       <p role="alert">
@@ -14,12 +14,34 @@
       <p role="alert">{{ errorMessage() }}</p>
       <button type="button" (click)="retryProject()">Prøv igen</button>
     } @else if (project(); as data) {
+      <div class="workspace-heading">
+        <div>
+          <p>Dit arbejdsrum</p>
+          <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
+        </div>
+        <span class="project-number">Projekt {{ data.project.project_number }}</span>
+      </div>
       <!-- Hovedlayout -->
-      <main class="project-layout" animate.enter="page-reveal"
-        [style.--offer-footer-height]="offerFooterHeight() + 'px'">
-        <!-- Venstre kolonne -->
+      <main
+        class="project-layout"
+        animate.enter="page-reveal"
+        [style.--offer-footer-height]="offerFooterHeight() + 'px'"
+      >
+        <button type="button" class="mobile-offer-jump" (click)="scrollToOffer()">
+          Se tilbud <span aria-hidden="true">↗</span>
+        </button>
+        <!-- Samtale og projektets faner -->
 
+        <app-project-sidebar
+          #projectSidebar
+          [data]="data"
+          (messageAdded)="refreshProject()"
+          (aiCompleted)="onAiCompleted($event)"
+        />
+
+        <!-- Tilbudsudkast -->
         <app-offer-preview
+          #offerTarget
           [data]="projectSidebar.getPreviewData(data)"
           [textSaveStates]="projectSidebar.fieldSaveStates()"
           (textEdited)="projectSidebar.editDraftText($event)"
@@ -32,15 +54,7 @@
           (detailsSaved)="onDetailsSaved()"
           (offerFinalized)="onOfferFinalized()"
           (footerHeightChanged)="offerFooterHeight.set($event)"
-          (requestTab)="projectSidebar.selectTab($event)"
-        />
-
-        <!-- Højre kolonne -->
-        <app-project-sidebar
-          #projectSidebar
-          [data]="data"
-          (messageAdded)="refreshProject()"
-          (aiCompleted)="onAiCompleted($event)"
+          (requestTab)="reviewItems($event)"
         />
       </main>
     } @else {

@@ -1,0 +1,604 @@
+// Workspace treatment based on the approved image proposal.
+body {
+  background: #f6f1e7;
+  color: #19382e;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.project-workspace {
+  background: #faf9f5;
+  min-height: 80vh;
+  color: #19382e;
+  app-project-sidebar .project-sidebar {
+    background: #fff;
+    border: 1px solid #dfe5dc;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px #12372a06;
+    overflow: hidden;
+  }
+  app-project-sidebar .sidebar-tabs {
+    background: #fff;
+    padding: 8px;
+    gap: 3px;
+    border-bottom: 1px solid #e5e9e2;
+    button {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #64756b;
+      font-weight: 600;
+      padding: 12px 6px;
+    }
+    button.active {
+      color: #12372a;
+      background: #edf3ec;
+      box-shadow: none;
+    }
+    button.conversation-tab {
+      background: transparent;
+      color: #64756b;
+      box-shadow: none;
+    }
+    button.conversation-tab.active {
+      background: #edf3ec;
+      color: #12372a;
+    }
+  }
+  app-project-sidebar .sidebar-content {
+    background: #fafbf8;
+    padding: 16px;
+  }
+  app-project-sidebar .work-item-card,
+  app-project-sidebar .material-card {
+    background: #fff;
+    border: 1px solid #e1e6df;
+    border-radius: 12px;
+    box-shadow: none;
+  }
+  app-project-sidebar .chat-message {
+    background: #fff;
+    border: 1px solid #e0e6dc;
+    color: #293e33;
+    border-radius: 12px;
+  }
+  app-project-sidebar .chat-message.chat-message-user {
+    background: #e8f0e4;
+    border-color: #dbe7d5;
+  }
+  app-project-sidebar .chat-form {
+    background: #fff;
+    border-color: #dbe2d7;
+    border-radius: 12px;
+  }
+  app-project-sidebar .chat-form button {
+    background: #12372a;
+    color: #fff;
+  }
+  app-project-sidebar .save-field-control {
+    position: relative;
+  }
+  app-project-sidebar .save-field-control .field-save-status {
+    position: absolute;
+    top: -9px;
+    right: 8px;
+    padding: 0 4px;
+    background: #fff;
+    font-size: 10px;
+  }
+  app-project-sidebar input,
+  app-project-sidebar textarea {
+    accent-color: #12372a;
+  }
+  app-offer-preview .offer-preview {
+    background: #fff;
+    border: 1px solid #dfe5dc;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px #12372a06;
+  }
+  app-offer-preview .offer-label {
+    color: #6c7b70;
+    letter-spacing: 0.12em;
+  }
+  app-offer-preview .readiness-panel {
+    background: #eef3e9;
+    border-color: #dde6d7;
+    border-radius: 10px;
+    color: #36543c;
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+  app-offer-preview .finalize-actions > button {
+    background: #12372a;
+    color: #fff;
+    border-radius: 9px;
+  }
+  app-offer-preview .offer-footer {
+    background: #f4f7ef;
+    border-color: #dbe4d5;
+    box-shadow: 0 -3px 14px #12372a08;
+  }
+  app-offer-preview .edit-details-button {
+    color: #365b47;
+    border-color: #dbe3d6;
+  }
+  :is(input, textarea, select, button, a):focus-visible {
+    outline: 2px solid #2574b8;
+    outline-offset: 3px;
+  }
+}
+
+@media (max-width: 600px) {
+  app-shell .header-shell {
+    padding: 12px 16px;
+  }
+  .project-workspace app-project-sidebar .sidebar-content {
+    padding: 12px;
+  }
+}
+
+// The draft is an editing workspace; document layout belongs to the finalized offer.
+.project-workspace app-offer-preview {
+  container-type: inline-size;
+}
+.project-workspace app-offer-preview .offer-preview.compact-draft {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 22px;
+  border-radius: 12px;
+  min-height: 650px;
+  .draft-heading h2 {
+    margin: 14px 0 7px;
+    color: #142d24;
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+    font-weight: 750;
+  }
+  .offer-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+  .offer-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .draft-badge {
+    margin-left: auto;
+    padding: 5px 10px;
+    border: 1px solid #dce2d8;
+    background: #f2f5ef;
+    border-radius: 16px;
+    font-size: 10px;
+  }
+  .edit-details-button {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .draft-customer {
+    margin: 0 0 14px;
+    font-size: 12px;
+    color: #728074;
+    line-height: 1.6;
+  }
+  .draft-details {
+    font-size: 12px;
+    color: #526252;
+    summary {
+      cursor: pointer;
+      padding: 5px 0;
+    }
+    h3 {
+      margin-top: 12px;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    p {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      margin: 6px 0 10px;
+    }
+  }
+  .draft-readiness {
+    border: 1px solid #ead7bc;
+    border-radius: 8px;
+    background: #fff9ef;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: #785325;
+    summary {
+      cursor: pointer;
+    }
+    ul {
+      list-style: disc;
+      padding-left: 18px;
+      margin: 10px 0 0;
+    }
+    li {
+      margin-top: 7px;
+    }
+    button {
+      text-align: left;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+  .draft-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    h3 {
+      font-size: 15px;
+      color: #19382e;
+      margin: 0;
+      font-weight: 700;
+    }
+    > span {
+      font-size: 10px;
+      color: #81907e;
+    }
+  }
+  .work-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(54px, 0.65fr) minmax(55px, 0.75fr) minmax(
+        65px,
+        0.85fr
+      );
+    gap: 10px;
+    align-items: center;
+  }
+  .material-columns {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1.5fr) minmax(42px, 0.55fr) minmax(42px, 0.65fr) minmax(52px, 0.75fr)
+      minmax(60px, 0.85fr);
+    gap: 8px;
+    align-items: center;
+  }
+  .draft-column-headings {
+    padding: 0 0 8px;
+    border-bottom: 1px solid #e1e6dd;
+    color: #72806e;
+    font-size: 10px;
+    > span:last-child {
+      text-align: right;
+    }
+  }
+  .draft-row {
+    padding: 10px 0;
+    border-bottom: 1px solid #edf0e9;
+  }
+  .draft-fields label {
+    display: block;
+    min-width: 0;
+    position: relative;
+  }
+  .draft-fields input {
+    box-sizing: border-box;
+    min-width: 0;
+    width: 100%;
+    height: 36px;
+    padding: 6px;
+    border: 1px solid #e0e5dc;
+    border-radius: 6px;
+    color: #2c4134;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+  }
+  .draft-fields .draft-name input {
+    border-color: transparent;
+    font-size: 12px;
+    padding-left: 0;
+    font-weight: 600;
+  }
+  .draft-fields input:hover {
+    border-color: #a5baa0;
+    background: #fafcf8;
+  }
+  .draft-fields input:focus {
+    outline: 2px solid #2574b8;
+    outline-offset: 1px;
+  }
+  .draft-rate {
+    color: #74816f;
+    font-size: 11px;
+    text-align: center;
+  }
+  .draft-line-total {
+    color: #344c3a;
+    font-size: 11px;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+  .field-caption {
+    display: none;
+  }
+  .draft-save-status {
+    min-height: 0;
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .draft-save-status:empty {
+    display: none;
+  }
+  .draft-fields .draft-save-status {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 100%;
+    background: white;
+    padding: 2px 4px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px #12372a10;
+    max-width: 170px;
+  }
+  .draft-line-details {
+    margin-top: 4px;
+    font-size: 10px;
+    color: #889181;
+    summary {
+      cursor: pointer;
+    }
+    textarea {
+      margin-top: 8px;
+      min-height: 60px;
+      padding: 8px;
+      border: 1px solid #dce4d7;
+      border-radius: 6px;
+      font-size: 12px;
+      resize: vertical;
+    }
+  }
+  .draft-review-button {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 38px;
+    margin-top: 10px;
+    padding: 9px 12px;
+    border: 1px solid #dfe5da;
+    border-radius: 7px;
+    color: #5a6d55;
+    background: #fff;
+    font-size: 11px;
+    text-align: left;
+    cursor: pointer;
+    &:hover {
+      background: #f4f7f0;
+    }
+  }
+  .offer-empty {
+    padding: 14px 0;
+    font-size: 12px;
+    color: #7a8673;
+  }
+  .draft-terms {
+    border-top: 1px solid #e9ede5;
+    padding-top: 12px;
+  }
+  .draft-price-details {
+    font-size: 11px;
+    summary strong {
+      float: right;
+      font-weight: 600;
+    }
+    .pricing-row {
+      margin-top: 12px;
+      font-size: 12px;
+    }
+  }
+  .offer-footer {
+    margin: auto 0 0;
+    padding: 14px;
+    border-radius: 9px;
+    box-shadow: none;
+    background: #f2f6ed;
+    border: 1px solid #e0e8d9;
+  }
+  .finalize-actions {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+  }
+  .finalize-copy > span {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #52654b;
+  }
+  .finalize-copy .draft-subtotal {
+    display: block;
+    margin-top: 4px;
+    color: #183c29;
+    font-size: 21px;
+    letter-spacing: -0.6px;
+  }
+  .finalize-hint {
+    font-size: 10px;
+    margin-top: 4px;
+    line-height: 1.5;
+    color: #78856e;
+  }
+  .finalize-actions > button {
+    width: auto;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 12px;
+    background: #12372a;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-radius: 8px;
+  }
+}
+.project-workspace app-project-sidebar .project-sidebar .sidebar-tabs {
+  padding: 0 8px;
+  gap: 0;
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 16px 8px;
+    font-size: 12px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid transparent;
+  }
+  button.active {
+    color: #12372a;
+    border-bottom-color: #12372a;
+    background: #edf3e9;
+    box-shadow: none;
+  }
+}
+.project-workspace app-project-sidebar .project-sidebar {
+  border-radius: 12px;
+}
+.project-workspace app-project-sidebar .sidebar-content .material-card {
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.project-workspace app-project-sidebar .sidebar-content .inline-description {
+  min-height: 52px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.project-workspace app-project-sidebar .sidebar-content .inline-title {
+  font-size: 15px;
+}
+@media (min-width: 901px) {
+  .project-workspace app-offer-preview .offer-preview.compact-draft .offer-footer {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+@container (max-width: 480px) {
+  .project-workspace app-offer-preview .offer-preview.compact-draft {
+    padding: 16px;
+    gap: 18px;
+    .draft-column-headings {
+      display: none;
+    }
+    .draft-fields .draft-name {
+      grid-column: 1 / -1;
+    }
+    .draft-fields input,
+    .draft-fields .draft-name input,
+    .draft-line-details textarea {
+      font-size: 16px;
+    }
+    .work-columns {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .material-columns {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .field-caption {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 10px;
+      color: #7c8874;
+      font-weight: 400;
+    }
+    .draft-rate,
+    .draft-line-total {
+      text-align: left;
+    }
+    .draft-line-total {
+      align-self: end;
+      padding-bottom: 10px;
+    }
+    .draft-price-details summary strong {
+      display: block;
+      float: none;
+      margin: 6px 0 0 14px;
+    }
+    .finalize-actions {
+      gap: 8px;
+    }
+    .finalize-copy .draft-subtotal {
+      font-size: 18px;
+    }
+    .finalize-actions > button {
+      gap: 6px;
+      padding: 10px;
+    }
+  }
+}
+
+@container (max-width: 400px) {
+  .project-workspace app-project-sidebar .project-sidebar .sidebar-tabs button {
+    flex-direction: column;
+    gap: 5px;
+    padding: 12px 6px;
+    font-size: 10px;
+  }
+}
+
+.project-workspace app-offer-preview .offer-preview.compact-draft {
+  .draft-trade-group {
+    margin-top: 18px;
+  }
+  .draft-trade-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    background: #f0f5ec;
+    border-radius: 7px;
+    h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #254c33;
+    }
+    > span {
+      color: #7a8971;
+      font-size: 10px;
+    }
+  }
+  .draft-task-description textarea {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 5px 6px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #344b3a;
+    background: transparent;
+    field-sizing: content;
+    resize: vertical;
+    &:hover {
+      border-color: #dce5d5;
+    }
+    &:focus {
+      outline: 2px solid #2574b8;
+      outline-offset: 1px;
+      background: white;
+    }
+  }
+}
+@container (max-width: 480px) {
+  .project-workspace
+    app-offer-preview
+    .offer-preview.compact-draft
+    .draft-task-description
+    textarea {
+    font-size: 16px;
+  }
+}

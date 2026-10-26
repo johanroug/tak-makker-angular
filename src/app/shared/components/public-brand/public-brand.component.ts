@@ -1,16 +1,19 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
 @Component({
   selector: 'app-public-brand',
   imports: [RouterLink],
   template: `
-    <a routerLink="/" aria-label="Hovedet på sømmet – forside">
-      <span class="mark"><img src="/favicon.png" alt="" width="42" height="42" /></span>
-      <span
-        ><strong>Hovedet på <span class="brand-line">sømmet</span></strong>
+    <a [routerLink]="destination()" [class.header-brand]="header()" aria-label="Hovedet på Sømmet">
+      <span class="mark"
+        ><img src="/brand-preview/reference-symbol.svg" alt="" width="48" height="48"
+      /></span>
+      <span class="wordmark"
+        ><strong
+          >Hovedet<span>på <em>Sømmet</em></span></strong
+        >
         @if (tagline()) {
-          <small>DIN DIGITALE MAKKER</small>
+          <small>Hjernen bag dit næste tilbud.</small>
         }
       </span>
     </a>
@@ -28,54 +31,65 @@ import { RouterLink } from '@angular/router';
       text-decoration: none;
     }
     a:focus-visible {
-      outline: 3px solid #e77845;
+      outline: 2px solid #2563eb;
       outline-offset: 5px;
+      border-radius: 6px;
     }
     .mark {
-      display: grid;
-      place-items: center;
       flex: none;
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: #fffdf6;
+      width: 48px;
+      height: 48px;
+      overflow: hidden;
     }
     img {
       display: block;
-      width: 38px;
-      height: 38px;
+      width: 48px;
+      height: 48px;
       object-fit: contain;
     }
     strong {
       display: block;
       font-size: 21px;
       font-weight: 800;
-      letter-spacing: -0.8px;
-      line-height: 1.1;
+      letter-spacing: -0.7px;
+      line-height: 1.03;
+    }
+    strong span {
+      display: block;
+    }
+    em {
+      color: #e76f31;
+      font-style: normal;
     }
     small {
       display: block;
-      font-size: 8px;
-      letter-spacing: 1.3px;
-      margin-top: 6px;
+      margin-top: 7px;
+      font-size: 10px;
+      letter-spacing: 0.15px;
     }
-    .brand-line {
-      display: block;
+    .header-brand .mark,
+    .header-brand img {
+      width: 56px;
+      height: 56px;
     }
-    @media (max-width: 360px) {
-      a {
-        gap: 7px;
-      }
+    .header-brand {
+      gap: 8px;
+    }
+    .header-brand strong {
+      font-size: 20px;
+    }
+    @media (max-width: 600px) {
       strong {
-        font-size: 17px;
+        font-size: 18px;
       }
       small {
-        font-size: 7px;
-        letter-spacing: 1px;
+        display: none;
       }
     }
   `,
 })
 export class PublicBrandComponent {
+  readonly header = input(false);
   readonly tagline = input(true);
+  readonly destination = input('/');
 }

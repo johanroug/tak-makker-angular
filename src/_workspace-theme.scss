@@ -602,3 +602,264 @@ body {
     font-size: 16px;
   }
 }
+
+// Conversation rail plus two live review columns.
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  min-height: 0;
+  gap: 18px;
+  .draft-heading {
+    padding: 18px;
+    border: 1px solid #e0e6da;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .draft-customer {
+    margin: 12px 0 8px;
+  }
+  .draft-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+  }
+  .draft-section {
+    container-type: inline-size;
+    min-width: 0;
+    background: #fff;
+    border: 1px solid #e0e6da;
+    border-radius: 12px;
+    padding: 18px;
+    scroll-margin-top: 20px;
+  }
+  .draft-section-heading {
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 7px;
+    h3 {
+      font-size: 18px;
+    }
+  }
+  .draft-row {
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid #e4e9de;
+    border-radius: 9px;
+    background: #fff;
+    scroll-margin-top: 20px;
+  }
+  .draft-row.line-suggested {
+    background: #fffdf8;
+    border-color: #eadeca;
+  }
+  .draft-row.line-rejected {
+    background: #f8f7f5;
+    border-style: dashed;
+    .draft-fields {
+      opacity: 0.6;
+    }
+  }
+  .draft-line-details {
+    margin-top: 8px;
+  }
+  .draft-line-details label {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .draft-line-details input {
+    background: #fff;
+    border: 1px solid #dce4d5;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .column-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #e4e9de;
+    font-size: 12px;
+    color: #526b46;
+    strong {
+      color: #254c33;
+    }
+  }
+  .draft-terms,
+  .draft-price-details {
+    padding: 12px 18px;
+    background: #fff;
+    border: 1px solid #e0e6da;
+    border-radius: 9px;
+  }
+  .draft-pending-note {
+    margin: 0;
+    padding: 10px 14px;
+    background: #fff6e7;
+    border: 1px solid #ecdfc7;
+    border-radius: 8px;
+    color: #8e6a37;
+    font-size: 11px;
+  }
+  .offer-footer {
+    position: static;
+    margin: 0;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 16px 18px;
+  }
+}
+@container (max-width: 760px) {
+  .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .draft-columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 901px) {
+  .project-workspace app-project-sidebar .chat-messages {
+    min-height: 0;
+  }
+}
+
+// Use the same compact row layout for tasks and materials.
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+  .draft-column-headings {
+    display: grid;
+  }
+  .work-columns {
+    grid-template-columns: minmax(0, 1.8fr) minmax(52px, 0.7fr) minmax(46px, 0.6fr) minmax(
+        62px,
+        0.8fr
+      );
+    gap: 10px;
+  }
+  .material-columns {
+    grid-template-columns:
+      minmax(0, 1.6fr) minmax(38px, 0.55fr) minmax(38px, 0.6fr) minmax(48px, 0.75fr)
+      minmax(58px, 0.85fr);
+    gap: 8px;
+  }
+  .draft-fields .draft-name {
+    grid-column: auto;
+  }
+  .field-caption {
+    display: none;
+  }
+  .draft-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+    padding: 12px 4px;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid #e9ede5;
+    border-radius: 0;
+    background: transparent;
+  }
+  .draft-row.line-suggested {
+    background: transparent;
+    border-color: #e9ede5;
+  }
+  .draft-row.line-rejected {
+    background: #faf9f7;
+    border-style: solid;
+  }
+  .draft-fields {
+    grid-column: 1 / -1;
+  }
+  .draft-fields input,
+  .draft-fields .draft-name input,
+  .draft-task-description textarea {
+    font-size: 12px;
+  }
+  .draft-task-description textarea {
+    min-height: 44px;
+    padding: 4px 2px;
+    line-height: 1.7;
+  }
+  .draft-line-total {
+    align-self: center;
+    padding: 0;
+    text-align: right;
+  }
+  .draft-rate {
+    text-align: center;
+  }
+  .draft-line-details {
+    margin-top: 6px;
+  }
+  app-line-review {
+    margin-top: 6px;
+  }
+  .tasks-column app-line-review,
+  .materials-column app-line-review,
+  .materials-column .draft-line-details {
+    grid-column: 1 / -1;
+  }
+}
+@container (max-width: 340px) {
+  .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+    .draft-column-headings {
+      display: none;
+    }
+    .draft-fields .draft-name {
+      grid-column: 1 / -1;
+    }
+    .work-columns {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .material-columns {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .field-caption {
+      display: block;
+    }
+    .draft-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .draft-fields {
+      grid-column: auto;
+    }
+    .draft-rate,
+    .draft-line-total {
+      text-align: left;
+    }
+  }
+}
+@media (pointer: coarse) {
+  .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+    .draft-fields input,
+    .draft-fields .draft-name input,
+    .draft-task-description textarea,
+    .draft-line-details textarea {
+      font-size: 16px;
+    }
+  }
+}
+
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+  .draft-material-group {
+    margin-top: 18px;
+  }
+  .offer-footer {
+    position: sticky;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 4;
+    box-shadow:
+      0 -6px 24px #12372a10,
+      0 4px 12px #12372a0a;
+  }
+  .draft-row,
+  .draft-section {
+    scroll-margin-bottom: calc(var(--draft-footer-height, 120px) + 24px);
+  }
+}

@@ -1,11 +1,10 @@
-<section class="offer-preview compact-draft">
+<section class="offer-preview compact-draft board-draft">
   <header class="draft-heading">
     <div class="offer-toolbar">
-      <span class="offer-label">TILBUDSUDKAST</span
+      <span class="offer-label">DIT TILBUD</span
       ><span class="draft-badge">{{ finalizedOfferId() ? 'Færdiggjort' : 'Kladde' }}</span
       ><button type="button" class="edit-details-button" (click)="startEditing()">✎ Rediger</button>
     </div>
-    <h2>{{ data().project.title || 'Projekt uden titel' }}</h2>
     <p class="draft-customer">
       {{ data().project.customer_name || 'Kunde ikke angivet' }}<span> · </span
       >{{ data().project.customer_address || 'Adresse ikke angivet' }}
@@ -43,171 +42,230 @@
     </details>
   }
 
-  <section class="draft-section" aria-labelledby="draft-work-title">
-    <div class="draft-section-heading">
-      <h3 id="draft-work-title">Arbejdsopgaver</h3>
-      <span>{{ acceptedWorkItems.length }} i tilbuddet</span>
-    </div>
-    <div class="draft-column-headings work-columns" aria-hidden="true">
-      <span>Opgave</span><span>Timer</span><span>Kr./time</span><span>Beløb</span>
-    </div>
-    @for (group of workGroups; track group.key) {
-      <section class="draft-trade-group" [attr.aria-label]="group.title">
-        <div class="draft-trade-heading">
-          <h4>{{ group.title }}</h4>
-          <span
-            >{{ group.items.length }} {{ group.items.length === 1 ? 'opgave' : 'opgaver' }}</span
-          >
-        </div>
-        @for (item of group.items; track item.id) {
-          <article class="draft-row">
-            <div class="draft-fields work-columns">
-              <label class="draft-name draft-task-description">
-                <span class="field-caption">Opgave</span>
+  <div class="draft-columns">
+    <section
+      class="draft-section tasks-column"
+      data-draft-section="tasks"
+      tabindex="-1"
+      aria-labelledby="draft-work-title"
+    >
+      <div class="draft-section-heading">
+        <h3 id="draft-work-title">Arbejdsopgaver</h3>
+        <span>{{ acceptedWorkItems.length }} godkendt · {{ data().workItems.length }} i alt</span>
+      </div>
+      <div class="draft-column-headings work-columns" aria-hidden="true">
+        <span>Opgave</span><span>Timer</span><span>Kr./time</span><span>Beløb</span>
+      </div>
+      @for (group of workGroups; track group.key) {
+        <section class="draft-trade-group" [attr.aria-label]="group.title">
+          <div class="draft-trade-heading">
+            <h4>{{ group.title }}</h4>
+            <span
+              >{{ group.items.length }} {{ group.items.length === 1 ? 'opgave' : 'opgaver' }}</span
+            >
+          </div>
+          @for (item of group.items; track item.id) {
+            <article
+              class="draft-row"
+              tabindex="-1"
+              [class.line-suggested]="item.status === 'suggested'"
+              [class.line-rejected]="item.status === 'rejected'"
+              [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null"
+            >
+              <div class="draft-fields work-columns">
+                <label class="draft-name draft-task-description">
+                  <span class="field-caption">Opgave</span>
+                  <textarea
+                    class="draft-text"
+                    rows="2"
+                    aria-label="Arbejdsbeskrivelse"
+                    placeholder="Beskriv opgaven"
+                    [value]="item.description || ''"
+                    (input)="editField('work', item.id, 'description', $event, false)"
+                    (blur)="editField('work', item.id, 'description', $event, true)"
+                  ></textarea>
+                  <span class="draft-save-status" role="status">{{
+                    textSaveLabel('work', item.id, 'description')
+                  }}</span>
+                </label>
+                <label
+                  ><span class="field-caption">Timer</span
+                  ><input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    aria-label="Estimeret tid i timer"
+                    [value]="item.estimated_hours ?? ''"
+                    (input)="editField('work', item.id, 'hours', $event, false)"
+                    (blur)="editField('work', item.id, 'hours', $event, true)"
+                  /><span class="draft-save-status" role="status">{{
+                    textSaveLabel('work', item.id, 'hours')
+                  }}</span></label
+                >
+                <span class="draft-rate"
+                  ><span class="field-caption">Kr./time</span
+                  >{{
+                    data().project.hourly_rate === null
+                      ? '—'
+                      : (data().project.hourly_rate | number: '1.0-2')
+                  }}</span
+                >
+                <strong class="draft-line-total"
+                  ><span class="field-caption">Beløb</span
+                  >{{ getWorkItemPrice(item) | number: '1.0-0' }} kr.</strong
+                >
+              </div>
+              <app-line-review
+                [status]="item.status ?? 'suggested'"
+                [label]="'opgave: ' + (item.description || group.title)"
+                [canAccept]="canApproveWork(item)"
+                [disabled]="hasPendingChanges() || isSavingChanges() || isFinalizing()"
+                [isNew]="newWorkItemIds().has(item.id)"
+                (changed)="changeStatus('work', item.id, $event)"
+              />
+            </article>
+          }
+        </section>
+      } @empty {
+        <p class="offer-empty">
+          Beskriv projektet i samtalen. Opgaveforslag vises her med det samme.
+        </p>
+      }
+      <div class="column-total">
+        <span>Godkendt arbejde</span><strong>{{ laborTotal | number: '1.0-2' }} kr.</strong>
+      </div>
+    </section>
+
+    <section
+      class="draft-section materials-column"
+      data-draft-section="materials"
+      tabindex="-1"
+      aria-labelledby="draft-material-title"
+    >
+      <div class="draft-section-heading">
+        <h3 id="draft-material-title">Materialer</h3>
+        <span>{{ acceptedMaterials.length }} godkendt · {{ data().materials.length }} i alt</span>
+      </div>
+      <div class="draft-column-headings material-columns" aria-hidden="true">
+        <span>Materiale</span><span>Antal</span><span>Enhed</span><span>Kr./enhed</span
+        ><span>Beløb</span>
+      </div>
+      @for (group of materialGroups; track group.title) {
+        <section class="draft-material-group" [attr.aria-label]="group.title">
+          <div class="draft-trade-heading">
+            <h4>{{ group.title }}</h4>
+            <span
+              >{{ group.items.length }}
+              {{ group.items.length === 1 ? 'materiale' : 'materialer' }}</span
+            >
+          </div>
+          @for (material of group.items; track material.id) {
+            <article
+              class="draft-row"
+              tabindex="-1"
+              [class.line-suggested]="material.status === 'suggested'"
+              [class.line-rejected]="material.status === 'rejected'"
+              [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null"
+            >
+              <div class="draft-fields material-columns">
+                <label class="draft-name"
+                  ><span class="field-caption">Materiale</span
+                  ><input
+                    class="draft-text"
+                    type="text"
+                    aria-label="Materialenavn"
+                    [value]="material.name || ''"
+                    (input)="editField('material', material.id, 'name', $event, false)"
+                    (blur)="editField('material', material.id, 'name', $event, true)"
+                  /><span class="draft-save-status" role="status">{{
+                    textSaveLabel('material', material.id, 'name')
+                  }}</span></label
+                >
+                <label
+                  ><span class="field-caption">Antal</span
+                  ><input
+                    type="number"
+                    min="0"
+                    step="any"
+                    aria-label="Antal"
+                    [value]="material.quantity ?? ''"
+                    (input)="editField('material', material.id, 'quantity', $event, false)"
+                    (blur)="editField('material', material.id, 'quantity', $event, true)"
+                  /><span class="draft-save-status" role="status">{{
+                    textSaveLabel('material', material.id, 'quantity')
+                  }}</span></label
+                >
+                <label
+                  ><span class="field-caption">Enhed</span
+                  ><input
+                    type="text"
+                    aria-label="Enhed"
+                    [value]="material.unit || ''"
+                    (input)="editField('material', material.id, 'unit', $event, false)"
+                    (blur)="editField('material', material.id, 'unit', $event, true)"
+                  /><span class="draft-save-status" role="status">{{
+                    textSaveLabel('material', material.id, 'unit')
+                  }}</span></label
+                >
+                <label
+                  ><span class="field-caption">Kr./enhed</span
+                  ><input
+                    type="number"
+                    min="0"
+                    step="any"
+                    aria-label="Enhedspris i kroner"
+                    [value]="material.unit_price ?? ''"
+                    (input)="editField('material', material.id, 'unitPrice', $event, false)"
+                    (blur)="editField('material', material.id, 'unitPrice', $event, true)"
+                  /><span class="draft-save-status" role="status">{{
+                    textSaveLabel('material', material.id, 'unitPrice')
+                  }}</span></label
+                >
+                <strong class="draft-line-total"
+                  ><span class="field-caption">Beløb</span
+                  >{{ getMaterialPrice(material) | number: '1.0-0' }} kr.</strong
+                >
+              </div>
+              <details class="draft-line-details">
+                <summary>Beskrivelse</summary>
                 <textarea
                   class="draft-text"
                   rows="2"
-                  aria-label="Arbejdsbeskrivelse"
-                  placeholder="Beskriv opgaven"
-                  [value]="item.description || ''"
-                  (input)="editField('work', item.id, 'description', $event, false)"
-                  (blur)="editField('work', item.id, 'description', $event, true)"
-                ></textarea>
-                <span class="draft-save-status" role="status">{{
-                  textSaveLabel('work', item.id, 'description')
+                  aria-label="Materialebeskrivelse"
+                  [value]="material.description || ''"
+                  (input)="editField('material', material.id, 'description', $event, false)"
+                  (blur)="editField('material', material.id, 'description', $event, true)"
+                ></textarea
+                ><span class="draft-save-status" role="status">{{
+                  textSaveLabel('material', material.id, 'description')
                 }}</span>
-              </label>
-              <label
-                ><span class="field-caption">Timer</span
-                ><input
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  aria-label="Estimeret tid i timer"
-                  [value]="item.estimated_hours ?? ''"
-                  (input)="editField('work', item.id, 'hours', $event, false)"
-                  (blur)="editField('work', item.id, 'hours', $event, true)"
-                /><span class="draft-save-status" role="status">{{
-                  textSaveLabel('work', item.id, 'hours')
-                }}</span></label
-              >
-              <span class="draft-rate"
-                ><span class="field-caption">Kr./time</span
-                >{{
-                  data().project.hourly_rate === null
-                    ? '—'
-                    : (data().project.hourly_rate | number: '1.0-2')
-                }}</span
-              >
-              <strong class="draft-line-total"
-                ><span class="field-caption">Beløb</span
-                >{{ getWorkItemPrice(item) | number: '1.0-0' }} kr.</strong
-              >
-            </div>
-          </article>
-        }
-      </section>
-    } @empty {
-      <p class="offer-empty">Accepter arbejdsopgaver fra samtalen for at få dem med her.</p>
-    }
-    <button class="draft-review-button" type="button" (click)="requestTab.emit('tasks')">
-      Gennemgå arbejdsopgaver <span aria-hidden="true">↗</span>
-    </button>
-  </section>
-
-  <section class="draft-section" aria-labelledby="draft-material-title">
-    <div class="draft-section-heading">
-      <h3 id="draft-material-title">Materialer</h3>
-      <span>{{ acceptedMaterials.length }} i tilbuddet</span>
-    </div>
-    <div class="draft-column-headings material-columns" aria-hidden="true">
-      <span>Materiale</span><span>Antal</span><span>Enhed</span><span>Kr./enhed</span
-      ><span>Beløb</span>
-    </div>
-    @for (material of acceptedMaterials; track material.id) {
-      <article class="draft-row">
-        <div class="draft-fields material-columns">
-          <label class="draft-name"
-            ><span class="field-caption">Materiale</span
-            ><input
-              class="draft-text"
-              type="text"
-              aria-label="Materialenavn"
-              [value]="material.name || ''"
-              (input)="editField('material', material.id, 'name', $event, false)"
-              (blur)="editField('material', material.id, 'name', $event, true)"
-            /><span class="draft-save-status" role="status">{{
-              textSaveLabel('material', material.id, 'name')
-            }}</span></label
-          >
-          <label
-            ><span class="field-caption">Antal</span
-            ><input
-              type="number"
-              min="0"
-              step="any"
-              aria-label="Antal"
-              [value]="material.quantity ?? ''"
-              (input)="editField('material', material.id, 'quantity', $event, false)"
-              (blur)="editField('material', material.id, 'quantity', $event, true)"
-            /><span class="draft-save-status" role="status">{{
-              textSaveLabel('material', material.id, 'quantity')
-            }}</span></label
-          >
-          <label
-            ><span class="field-caption">Enhed</span
-            ><input
-              type="text"
-              aria-label="Enhed"
-              [value]="material.unit || ''"
-              (input)="editField('material', material.id, 'unit', $event, false)"
-              (blur)="editField('material', material.id, 'unit', $event, true)"
-            /><span class="draft-save-status" role="status">{{
-              textSaveLabel('material', material.id, 'unit')
-            }}</span></label
-          >
-          <label
-            ><span class="field-caption">Kr./enhed</span
-            ><input
-              type="number"
-              min="0"
-              step="any"
-              aria-label="Enhedspris i kroner"
-              [value]="material.unit_price ?? ''"
-              (input)="editField('material', material.id, 'unitPrice', $event, false)"
-              (blur)="editField('material', material.id, 'unitPrice', $event, true)"
-            /><span class="draft-save-status" role="status">{{
-              textSaveLabel('material', material.id, 'unitPrice')
-            }}</span></label
-          >
-          <strong class="draft-line-total"
-            ><span class="field-caption">Beløb</span
-            >{{ getMaterialPrice(material) | number: '1.0-0' }} kr.</strong
-          >
-        </div>
-        <details class="draft-line-details">
-          <summary>Beskrivelse</summary>
-          <textarea
-            class="draft-text"
-            rows="2"
-            aria-label="Materialebeskrivelse"
-            [value]="material.description || ''"
-            (input)="editField('material', material.id, 'description', $event, false)"
-            (blur)="editField('material', material.id, 'description', $event, true)"
-          ></textarea
-          ><span class="draft-save-status" role="status">{{
-            textSaveLabel('material', material.id, 'description')
-          }}</span>
-        </details>
-      </article>
-    } @empty {
-      <p class="offer-empty">Accepter materialer fra samtalen for at få dem med her.</p>
-    }
-    <button class="draft-review-button" type="button" (click)="requestTab.emit('materials')">
-      Gennemgå materialer <span aria-hidden="true">↗</span>
-    </button>
-  </section>
-
+              </details>
+              <app-line-review
+                [status]="material.status ?? 'suggested'"
+                [label]="'materiale: ' + (material.name || 'uden navn')"
+                [canAccept]="canApproveMaterial(material)"
+                [disabled]="hasPendingChanges() || isSavingChanges() || isFinalizing()"
+                [isNew]="newMaterialIds().has(material.id)"
+                (changed)="changeStatus('material', material.id, $event)"
+              />
+            </article>
+          }
+        </section>
+      } @empty {
+        <p class="offer-empty">
+          Materialeforslag vises her med det samme, klar til din godkendelse.
+        </p>
+      }
+      <div class="column-total">
+        <span>Godkendte materialer</span><strong>{{ materialsTotal | number: '1.0-2' }} kr.</strong>
+      </div>
+    </section>
+  </div>
+  @if (unreviewedCount) {
+    <p class="draft-pending-note" role="status">
+      {{ unreviewedCount }} forslag afventer godkendelse og er ikke med i prisen.
+    </p>
+  }
   <details class="draft-details draft-terms">
     <summary>Tilbudsbetingelser</summary>
     <h3>Gyldighed</h3>
@@ -258,7 +316,7 @@
     @if (!finalizedOfferNumber()) {
       <div class="finalize-actions">
         <div class="finalize-copy">
-          <span>Pris ekskl. moms</span
+          <span>Godkendt i alt ekskl. moms</span
           ><strong class="draft-subtotal">{{ subtotal | number: '1.0-2' }} kr.</strong>
           <p class="finalize-hint" role="status">
             {{

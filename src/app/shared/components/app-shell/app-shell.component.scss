@@ -255,28 +255,3 @@ button:disabled {
     display: none;
   }
 }
-@media (min-width: 1168px) {
-  .workspace-shell {
-    display: grid;
-    grid-template-columns: 190px minmax(0, 1fr);
-    grid-template-rows: auto 1fr;
-  }
-  .header-shell {
-    grid-column: 1 / -1;
-  }
-  .menu-toggle {
-    display: none;
-  }
-  .desktop-sidebar {
-    display: flex;
-    flex-direction: column;
-    align-self: start;
-    position: sticky;
-    top: 0;
-    height: calc(100dvh - 40px);
-    box-sizing: border-box;
-    padding: 24px 12px;
-    border-right: 1px solid #e4e8e1;
-    background: #fdfcf9;
-  }
-}

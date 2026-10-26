@@ -1,25 +1,23 @@
 import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
 import { WorkspaceIcon } from '../workspace-icon.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { afterNextRender, Component, effect, ElementRef, inject, Injector, input, output, signal } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, input, output, signal, viewChild } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
 import type { OnDestroy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
 import { OfferService } from '../../../core/offers/offer.service';
 import { offerStatusLabel } from '../../../core/offers/offer-status';
-import { AiFeedback, AiSuggestionSummary, NewSuggestionBadge } from '../ai-feedback/ai-feedback.component';
+import { AiFeedback, AiSuggestionSummary } from '../ai-feedback/ai-feedback.component';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
-type SidebarTab = 'tasks' | 'materials' | 'chat' | 'offers';
-
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, NewSuggestionBadge, WorkspaceIcon],
+  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
@@ -34,13 +32,21 @@ export class ProjectSidebar implements OnDestroy {
   private readonly offerService = inject(OfferService);
 
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 
   readonly messageAdded = output<void>();
+  readonly sectionRequested = output<'tasks' | 'materials'>();
+  readonly chatOpen = signal(false);
+  private readonly historyDialog = viewChild.required<ElementRef<HTMLDialogElement>>('historyDialog');
+  private readonly chatMessages = viewChild<ElementRef<HTMLElement>>('chatMessages');
+  private readonly latestMessageId = computed(() => this.data().messages.at(-1)?.id);
 
-  readonly activeTab = signal<SidebarTab>(this.getTabFromQueryString());
+  openHistory(): void {
+    void this.loadOffers();
+    if (!this.historyDialog().nativeElement.open) this.historyDialog().nativeElement.showModal();
+  }
+
 
   readonly offers = signal<Awaited<ReturnType<OfferService['getProjectOffers']>>>([]);
 
@@ -68,13 +74,15 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   openAiTarget(tab: 'tasks' | 'materials' | 'chat'): void {
-    this.selectTab(tab);
+    if (tab !== 'chat') {
+      this.sectionRequested.emit(tab);
+      return;
+    }
+    this.chatOpen.set(true);
     afterNextRender(() => {
-      if (this.destroyed || this.activeTab() !== tab) return;
+      if (this.destroyed) return;
       const root = this.host.nativeElement;
-      const selector = tab === 'chat' ? '.chat-messages .chat-message' : '[data-new-suggestion="true"]';
-      const target = root.querySelector<HTMLElement>(selector)
-        ?? root.querySelector<HTMLElement>('.sidebar-content h2');
+      const target = root.querySelector<HTMLElement>('.chat-messages .chat-message:last-child');
       if (!target) return;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start', inline: 'nearest' });
@@ -251,11 +259,12 @@ export class ProjectSidebar implements OnDestroy {
       );
     });
     effect(() => {
-      const activeTab = this.activeTab();
-
-      if (activeTab === 'offers') {
-        void this.loadOffers();
-      }
+      this.latestMessageId();
+      this.chatOpen();
+      afterNextRender(() => {
+        const messages = this.chatMessages()?.nativeElement;
+        if (messages) messages.scrollTop = messages.scrollHeight;
+      }, { injector: this.injector });
     });
   }
 
@@ -281,29 +290,6 @@ export class ProjectSidebar implements OnDestroy {
     }
   }
 
-  selectTab(tab: SidebarTab): void {
-    this.activeTab.set(tab);
-
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        tab: tab === 'chat' ? null : tab,
-      },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-
-  private getTabFromQueryString(): SidebarTab {
-    const tab = this.route.snapshot.queryParamMap.get('tab');
-
-    if (tab === 'tasks' || tab === 'materials' || tab === 'offers' || tab === 'chat') {
-      return tab;
-    }
-
-    return 'chat';
-  }
-
   async loadOffers(): Promise<void> {
     this.isLoadingOffers.set(true);
     this.offersError.set('');
@@ -322,6 +308,7 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   viewOffer(offerId: string): void {
+    this.historyDialog().nativeElement.close();
     void this.router.navigate(['/offers', offerId]);
   }
 

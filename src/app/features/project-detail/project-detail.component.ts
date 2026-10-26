@@ -1,5 +1,5 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
-import { Component, ElementRef, inject, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -22,26 +22,10 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly projectService = inject(ProjectService);
 
   private readonly sidebar = viewChild(ProjectSidebar);
-  private readonly sidebarElement = viewChild('projectSidebar', { read: ElementRef });
+  private readonly preview = viewChild(OfferPreview);
 
   reviewItems(tab: 'tasks' | 'materials'): void {
-    this.sidebar()?.selectTab(tab);
-    if (window.matchMedia('(max-width: 900px)').matches) {
-      this.sidebarElement()?.nativeElement.scrollIntoView({
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start',
-      });
-    }
-  }
-  private readonly offerElement = viewChild('offerTarget', {
-    read: ElementRef,
-  });
-
-  scrollToOffer(): void {
-    this.offerElement()?.nativeElement.scrollIntoView({
-      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-      block: 'start',
-    });
+    this.preview()?.revealSection(tab);
   }
   private readonly workspace = inject(WorkspaceState);
 
@@ -50,7 +34,6 @@ export class ProjectDetail implements OnInit, OnDestroy {
   readonly errorMessage = signal('');
   readonly refreshError = signal('');
   readonly isRefreshing = signal(false);
-  readonly offerFooterHeight = signal(220);
 
   retryProject(): void {
     const projectId = this.route.snapshot.paramMap.get('projectId');
@@ -232,10 +215,6 @@ export class ProjectDetail implements OnInit, OnDestroy {
   }
 
   async onOfferFinalized(): Promise<void> {
-    const sidebar = this.sidebar();
-
-    if (sidebar?.activeTab() === 'offers') {
-      await sidebar.loadOffers();
-    }
+    await this.sidebar()?.loadOffers();
   }
 }

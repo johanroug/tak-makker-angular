@@ -24,7 +24,7 @@ import { WorkspaceIcon } from '../workspace-icon.component';
 
 @Component({
   selector: 'app-shell',
-  host: { '(window:resize)': 'onResize()', '(window:focus)': 'checkCurrentAccess()' },
+  host: { '(window:focus)': 'checkCurrentAccess()' },
   imports: [
     NgTemplateOutlet,
     FormsModule,
@@ -87,9 +87,6 @@ export class AppShell implements OnInit {
     this.menuDrawer().nativeElement.showModal();
   }
 
-  onResize(): void {
-    if (this.isMenuOpen() && window.matchMedia('(min-width: 1168px)').matches) this.closeMenu();
-  }
   private readonly menuToggle = viewChild<ElementRef<HTMLButtonElement>>('menuToggle');
 
   closeMenu(restoreFocus = false): void {

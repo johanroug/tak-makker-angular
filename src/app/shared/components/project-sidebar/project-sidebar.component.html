@@ -1,395 +1,130 @@
-<aside class="project-sidebar">
-  <nav class="sidebar-tabs" aria-label="Projektets indhold">
-    <button type="button" [class.active]="activeTab() === 'chat'" [attr.aria-pressed]="activeTab() === 'chat'" (click)="selectTab('chat')"><app-workspace-icon name="chat" /> Samtale</button>
-    <button type="button" [class.active]="activeTab() === 'tasks'" [attr.aria-pressed]="activeTab() === 'tasks'" (click)="selectTab('tasks')"><app-workspace-icon name="tasks" /> Opgaver</button>
-    <button type="button" [class.active]="activeTab() === 'materials'" [attr.aria-pressed]="activeTab() === 'materials'" (click)="selectTab('materials')"><app-workspace-icon name="materials" /> Materialer</button>
-    <button type="button" [class.active]="activeTab() === 'offers'" [attr.aria-pressed]="activeTab() === 'offers'" (click)="selectTab('offers')"><app-workspace-icon name="offers" /> Tilbud</button>
-  </nav>
-
-  <div class="sidebar-content">
-    <app-ai-feedback [isWorking]="isSending()" [result]="aiResult()"
-      (openTab)="openAiTarget($event)" (dismiss)="dismissAiResult()" />
-    @if (editError()) {
-      <p class="offers-error" role="alert">{{ editError() }}</p>
-    }
-    @switch (activeTab()) {
-      @case ('tasks') {
-        <h2>Arbejdsopgaver</h2>
-
-        @for (item of data().workItems; track item.id) {
-          <article class="work-item-card" tabindex="-1"
-            [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null">
-            @if (newWorkItemIds().has(item.id) && item.status === 'suggested') {
-              <app-new-suggestion-badge />
-            }
-            <input
-              class="inline-title"
-              type="text"
-              aria-label="Fag"
-              [value]="getWorkItemTrade(item)"
-              (input)="setWorkItemTrade(item.id, $any($event.target).value); fieldEdited(fieldKey('work', item.id, 'trade'))"
-              (blur)="saveWorkItemTrade(item, $any($event.target).value)"
-            />
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('work', item.id, 'trade')] === 'error'">{{ fieldSaveLabel(fieldKey('work', item.id, 'trade')) }}</span>
-
-            <textarea
-              class="inline-description"
-              rows="2"
-              aria-label="Beskrivelse"
-              [value]="getWorkItemDescription(item)"
-              (input)="setWorkItemDescription(item.id, $any($event.target).value); fieldEdited(fieldKey('work', item.id, 'description'))"
-              (blur)="saveWorkItemDescription(item, $any($event.target).value)"
-            ></textarea>
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('work', item.id, 'description')] === 'error'">{{ fieldSaveLabel(fieldKey('work', item.id, 'description')) }}</span>
-
-            <div class="work-item-estimate">
-              <div class="work-item-hours">
-                <label class="unit-suffix" for="hours-{{ item.id }}"> Estimeret tid </label>
-
-                <div class="save-field-control"><input
-                  id="hours-{{ item.id }}"
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  [value]="getWorkItemHours(item)"
-                  (input)="setWorkItemHours(item.id, $any($event.target).value); fieldEdited(fieldKey('work', item.id, 'hours'))"
-                  (blur)="updateEstimatedHours(item, $any($event.target).value)"
-                />
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('work', item.id, 'hours')] === 'error'">{{ fieldSaveLabel(fieldKey('work', item.id, 'hours')) }}</span></div>
-
-                <span class="unit-suffix">timer</span>
-              </div>
-
-              <p class="work-item-labor-cost">
-                <span>Arbejdsløn</span>
-
-                <strong>
-                  @if (getWorkItemLaborCost(item) !== null) {
-                    {{ getWorkItemLaborCost(item)! | number: '1.0-0' }}
-                    kr.
-                  } @else {
-                    Ikke angivet
-                  }
-                </strong>
-              </p>
-
-              <p class="work-item-source">
-                {{
-                  item.estimated_hours_source === 'user'
-                    ? 'Rettet af dig'
-                    : 'Foreslået af Hovedet på sømmet'
-                }}
-              </p>
-            </div>
-
-            <small
-              class="work-item-status"
-              [class.accepted]="item.status === 'accepted'"
-              [class.rejected]="item.status === 'rejected'"
-            >
-              @switch (item.status) {
-                @case ('suggested') {
-                  Foreslået
-                }
-
-                @case ('accepted') {
-                  Accepteret
-                }
-
-                @case ('rejected') {
-                  Afvist
-                }
-              }
-            </small>
-
-            <div class="work-item-actions">
-              @if (item.status !== 'accepted') {
-                <button
-                  class="action-accept"
-                  type="button"
-                  [disabled]="!canAcceptWorkItem(item)"
-                  [title]="
-                    canAcceptWorkItem(item) ? '' : 'Udfyld fag, beskrivelse og estimeret tid først'
-                  "
-                  (click)="updateWorkItemStatus(item.id, 'accepted')"
-                >
-                  Acceptér
-                </button>
-              }
-
-              @if (item.status !== 'rejected') {
-                <button
-                  class="action-reject"
-                  type="button"
-                  (click)="updateWorkItemStatus(item.id, 'rejected')"
-                >
-                  Afvis
-                </button>
-              }
-            </div>
-          </article>
-        } @empty {
-          <p>Ingen arbejdsopgaver.</p>
-        }
-      }
-
-      @case ('materials') {
-        <h2>Materialer</h2>
-
-        @for (material of data().materials; track material.id) {
-          <article class="material-card" tabindex="-1"
-            [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null">
-            @if (newMaterialIds().has(material.id) && material.status === 'suggested') {
-              <app-new-suggestion-badge />
-            }
-            <input
-              class="inline-title"
-              type="text"
-              aria-label="Materialenavn"
-              [value]="getMaterialName(material)"
-              (input)="setMaterialName(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'name'))"
-              (blur)="saveMaterialName(material, $any($event.target).value)"
-            />
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'name')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'name')) }}</span>
-
-            <textarea
-              class="inline-description"
-              rows="2"
-              aria-label="Materialebeskrivelse"
-              [value]="getMaterialDescription(material)"
-              (input)="setMaterialDescription(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'description'))"
-              (blur)="saveMaterialDescription(material, $any($event.target).value)"
-            ></textarea>
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'description')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'description')) }}</span>
-
-            <div class="material-pricing">
-              <div class="material-field">
-                <label class="unit-suffix" for="quantity-{{ material.id }}"> Antal </label>
-
-                <div class="material-field-value">
-                  <div class="save-field-control"><input
-                    id="quantity-{{ material.id }}"
-                    class="material-number-input"
-                    type="number"
-                    min="0"
-                    step="1"
-                    [value]="getMaterialQuantity(material)"
-                    (input)="setMaterialQuantity(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'quantity'))"
-                    (blur)="updateMaterialQuantity(material, $any($event.target).value)"
-                  />
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'quantity')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'quantity')) }}</span></div>
-
-                  <div class="save-field-control"><input
-                    class="material-unit-input"
-                    type="text"
-                    placeholder="enhed"
-                    [value]="getMaterialUnit(material)"
-                    (input)="setMaterialUnit(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'unit'))"
-                    (blur)="updateMaterialUnit(material, $any($event.target).value)"
-                  />
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'unit')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'unit')) }}</span></div>
-                </div>
-              </div>
-
-              <div class="material-field">
-                <label class="unit-suffix" for="unit-price-{{ material.id }}"> Enhedspris </label>
-
-                <div class="material-field-value">
-                  <div class="save-field-control"><input
-                    id="unit-price-{{ material.id }}"
-                    class="material-price-input"
-                    type="number"
-                    min="0"
-                    step="1"
-                    [value]="getMaterialUnitPrice(material)"
-                    (input)="setMaterialUnitPrice(material.id, $any($event.target).value); fieldEdited(fieldKey('material', material.id, 'unitPrice'))"
-                    (blur)="updateMaterialUnitPrice(material, $any($event.target).value)"
-                  />
-            <span class="field-save-status" role="status" [class.save-failed]="fieldSaveStates()[fieldKey('material', material.id, 'unitPrice')] === 'error'">{{ fieldSaveLabel(fieldKey('material', material.id, 'unitPrice')) }}</span></div>
-
-                  <span class="unit-suffix">kr.</span>
-                </div>
-              </div>
-
-              <p class="material-line material-total">
-                <span>Materialepris</span>
-
-                <strong>
-                  @if (getMaterialTotal(material) !== null) {
-                    {{ getMaterialTotal(material)! | number: '1.0-0' }}
-                    kr.
-                  } @else {
-                    Ikke angivet
-                  }
-                </strong>
-              </p>
-
-              <p class="material-source">
-                {{
-                  material.quantity_source === 'user' ||
-                  material.unit_source === 'user' ||
-                  material.unit_price !== null
-                    ? 'Rettet af dig'
-                    : 'Foreslået af Hovedet på sømmet'
-                }}
-              </p>
-            </div>
-
-            <small
-              class="material-status"
-              [class.accepted]="material.status === 'accepted'"
-              [class.rejected]="material.status === 'rejected'"
-            >
-              @switch (material.status) {
-                @case ('suggested') {
-                  Foreslået
-                }
-
-                @case ('accepted') {
-                  Accepteret
-                }
-
-                @case ('rejected') {
-                  Afvist
-                }
-              }
-            </small>
-
-            <div class="material-actions">
-              @if (material.status !== 'accepted') {
-                <button
-                  class="action-accept"
-                  type="button"
-                  [disabled]="!canAcceptMaterial(material)"
-                  [title]="
-                    canAcceptMaterial(material)
-                      ? ''
-                      : 'Udfyld navn, beskrivelse, antal, enhed og enhedspris først'
-                  "
-                  (click)="updateMaterialStatus(material.id, 'accepted')"
-                >
-                  Acceptér
-                </button>
-              }
-
-              @if (material.status !== 'rejected') {
-                <button
-                  class="action-reject"
-                  type="button"
-                  (click)="updateMaterialStatus(material.id, 'rejected')"
-                >
-                  Afvis
-                </button>
-              }
-            </div>
-          </article>
-        } @empty {
-          <p>Ingen materialer.</p>
-        }
-      }
-
-      @case ('chat') {
-        <div class="chat-panel">
-          <h2>Samtale</h2>
-
-          <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
-            <textarea
-              [formControl]="messageControl"
-              [readOnly]="isSending()"
-              [placeholder]="data().messages.length ? 'Kom med flere input…' : 'Beskriv dit projekt…'"
-              rows="4"
-            ></textarea>
-
-            @if (sendError()) {
-              <p class="send-error">
-                {{ sendError() }}
-              </p>
-            }
-
-            <button
-              class="action-save"
-              type="submit"
-              [disabled]="isSending() || !messageControl.value.trim()"
-            >
-              {{ isSending() ? 'Din makker arbejder...' : 'Send besked' }}
-            </button>
-          </form>
-
-          <div class="chat-messages">
-            @for (message of newestMessages; track message.id) {
-              <article class="chat-message" tabindex="-1" [class.chat-message-user]="message.role === 'user'">
-                <strong>
-                  {{ message.role === 'user' ? 'Dig' : 'Hovedet på sømmet' }}
-                </strong>
-
-                <p>
-                  {{ message.content }}
-                </p>
-              </article>
-            } @empty {
-              <p>Beskriv dit projekt for at komme i gang.</p>
-            }
-          </div>
+<aside class="conversation-rail" aria-label="Samtale med din makker">
+  <header class="conversation-heading">
+    <div>
+      <span class="conversation-eyebrow">DIN MAKKER</span>
+      <h2>Samtale</h2>
+    </div>
+    <button
+      type="button"
+      class="conversation-toggle"
+      aria-controls="conversation-body"
+      [attr.aria-expanded]="chatOpen()"
+      (click)="chatOpen.set(!chatOpen())"
+    >
+      {{ chatOpen() ? 'Skjul' : 'Åbn samtale' }}
+    </button>
+  </header>
+  <div id="conversation-body" class="conversation-body" [class.is-open]="chatOpen()">
+    <div #chatMessages class="chat-messages" aria-label="Beskeder">
+      @for (message of data().messages; track message.id) {
+        <article
+          class="chat-message"
+          tabindex="-1"
+          [class.chat-message-user]="message.role === 'user'"
+        >
+          <strong>{{ message.role === 'user' ? 'Dig' : 'Din makker' }}</strong>
+          <p>{{ message.content }}</p>
+        </article>
+      } @empty {
+        <div class="conversation-welcome">
+          <app-workspace-icon name="chat" />
+          <h3>Hvad skal vi bygge?</h3>
+          <p>
+            Beskriv projektet. Din makker hjælper med opgaver og materialer, som vises ved siden af.
+          </p>
         </div>
       }
-
-      @case ('offers') {
-        <div class="offers-panel">
-          <h2>Tilbudshistorik</h2>
-          <p class="offers-message">Den aktuelle kladde vises i projektets tilbudsvisning. Herunder finder du de færdiggjorte tilbud.</p>
-
-          @if (isLoadingOffers()) {
-            <p class="offers-message">Henter tilbud...</p>
-          } @else if (offersError()) {
-            <p class="offers-error" role="alert">
-              {{ offersError() }}
-            </p>
-          } @else {
-            <div class="offer-history">
-              @for (offer of offers(); track offer.id) {
-                <article class="offer-history-card">
-                  <div class="offer-history-header">
-                    <div>
-                      <strong>
-                        {{ offer.offer_number }}
-                      </strong>
-
-                      <span>
-                        {{ offer.finalized_at | date: 'dd.MM.yyyy HH:mm' }}
-                      </span>
-                    </div>
-
-                    <span class="offer-history-status">{{ statusLabel(offer.status) }}</span>
-                  </div>
-
-                  <div class="offer-history-project">
-                    {{ offer.project_title }}
-                  </div>
-
-                  <div class="offer-history-total">
-                    <span> Total inkl. moms </span>
-
-                    <strong>
-                      {{ offer.pricing_total | number: '1.0-0' }}
-                      kr.
-                    </strong>
-                  </div>
-
-                  <button type="button" class="view-history-offer" (click)="viewOffer(offer.id)">
-                    Se tilbud
-                  </button>
-                </article>
-              } @empty {
-                <div class="empty-offers">
-                  <strong> Ingen færdiggjorte tilbud endnu </strong>
-
-                  <p>Når du færdiggør et tilbud, bliver det gemt her.</p>
-                </div>
-              }
-            </div>
-          }
-        </div>
+    </div>
+    <app-ai-feedback
+      [isWorking]="isSending()"
+      [result]="aiResult()"
+      (openTab)="openAiTarget($event)"
+      (dismiss)="dismissAiResult()"
+    />
+    <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
+      <label class="sr-only" for="project-message">Din besked</label>
+      <textarea
+        id="project-message"
+        [formControl]="messageControl"
+        [readOnly]="isSending()"
+        [placeholder]="data().messages.length ? 'Kom med flere input…' : 'Beskriv dit projekt…'"
+        rows="3"
+      ></textarea>
+      @if (sendError()) {
+        <p class="send-error" role="alert">{{ sendError() }}</p>
       }
-    }
+      <button type="submit" [disabled]="isSending() || !messageControl.value.trim()">
+        {{ isSending() ? 'Din makker arbejder…' : 'Send besked' }} <span aria-hidden="true">↗</span>
+      </button>
+    </form>
   </div>
 </aside>
+<dialog #historyDialog class="history-dialog" aria-label="Tilbudshistorik">
+  <button
+    type="button"
+    class="history-close"
+    aria-label="Luk tilbudshistorik"
+    (click)="historyDialog.close()"
+    autofocus
+  >
+    ✕
+  </button>
+  <div class="offers-panel">
+    <h2>Tilbudshistorik</h2>
+    <p class="offers-message">
+      Den aktuelle kladde vises i projektets tilbudsvisning. Herunder finder du de færdiggjorte
+      tilbud.
+    </p>
+
+    @if (isLoadingOffers()) {
+      <p class="offers-message">Henter tilbud...</p>
+    } @else if (offersError()) {
+      <p class="offers-error" role="alert">
+        {{ offersError() }}
+      </p>
+    } @else {
+      <div class="offer-history">
+        @for (offer of offers(); track offer.id) {
+          <article class="offer-history-card">
+            <div class="offer-history-header">
+              <div>
+                <strong>
+                  {{ offer.offer_number }}
+                </strong>
+
+                <span>
+                  {{ offer.finalized_at | date: 'dd.MM.yyyy HH:mm' }}
+                </span>
+              </div>
+
+              <span class="offer-history-status">{{ statusLabel(offer.status) }}</span>
+            </div>
+
+            <div class="offer-history-project">
+              {{ offer.project_title }}
+            </div>
+
+            <div class="offer-history-total">
+              <span> Total inkl. moms </span>
+
+              <strong>
+                {{ offer.pricing_total | number: '1.0-0' }}
+                kr.
+              </strong>
+            </div>
+
+            <button type="button" class="view-history-offer" (click)="viewOffer(offer.id)">
+              Se tilbud
+            </button>
+          </article>
+        } @empty {
+          <div class="empty-offers">
+            <strong> Ingen færdiggjorte tilbud endnu </strong>
+
+            <p>Når du færdiggør et tilbud, bliver det gemt her.</p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</dialog>

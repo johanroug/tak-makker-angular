@@ -119,10 +119,6 @@ export class OfferDetail implements OnInit {
       return;
     }
 
-    void this.router.navigate(['/projects', offer.project_id], {
-      queryParams: {
-        tab: 'offers',
-      },
-    });
+    void this.router.navigate(['/projects', offer.project_id]);
   }
 }

@@ -17,7 +17,9 @@ import { Router } from '@angular/router';
 import { ProjectService } from '../../../core/projects/project.service';
 import { OfferService } from '../../../core/offers/offer.service';
 import { OfferPdfService } from '../../../core/offers/offer-pdf.service';
-import { offerRequirements, OfferRequirement } from '../../../core/offers/offer-readiness';
+import { offerRequirements, OfferRequirement, validAmount } from '../../../core/offers/offer-readiness';
+import { LineReview } from './line-review.component';
+import { materialCategory } from './material-category';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -34,7 +36,7 @@ type EditableDetails = {
 
 @Component({
   selector: 'app-offer-preview',
-  imports: [ReactiveFormsModule, DecimalPipe],
+  imports: [ReactiveFormsModule, DecimalPipe, LineReview],
   templateUrl: './offer-preview.component.html',
   styleUrl: './offer-preview.component.scss',
 })
@@ -49,12 +51,53 @@ export class OfferPreview {
   readonly pdfError = signal('');
 
   readonly data = input.required<ProjectData>();
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  readonly newWorkItemIds = input<ReadonlySet<string>>(new Set());
+  readonly newMaterialIds = input<ReadonlySet<string>>(new Set());
+  readonly statusChanged = output<{kind: 'work' | 'material'; id: string; status: 'accepted' | 'rejected'}>();
+
+  canApproveWork(item: ProjectData['workItems'][number]): boolean {
+    return !!item.trade?.trim() && !!item.description?.trim() && validAmount(item.estimated_hours) && validAmount(this.data().project.hourly_rate);
+  }
+
+  canApproveMaterial(item: ProjectData['materials'][number]): boolean {
+    return !!item.name?.trim() && !!item.description?.trim() && !!item.unit?.trim() && validAmount(item.quantity) && validAmount(item.unit_price);
+  }
+
+  changeStatus(kind: 'work' | 'material', id: string, status: 'accepted' | 'rejected'): void {
+    if (this.hasPendingChanges() || this.isSavingChanges() || this.isFinalizing()) return;
+    if (kind === 'work' ? !this.data().workItems.some(item => item.id === id) : !this.data().materials.some(item => item.id === id)) return;
+    if (status === 'accepted') {
+      if (kind === 'work') {
+        const item = this.data().workItems.find(item => item.id === id);
+        if (!item || !this.canApproveWork(item)) return;
+      } else {
+        const item = this.data().materials.find(item => item.id === id);
+        if (!item || !this.canApproveMaterial(item)) return;
+      }
+    }
+    this.statusChanged.emit({ kind, id, status });
+  }
+
+  revealSection(section: 'tasks' | 'materials'): void {
+    const root = this.host.nativeElement.querySelector<HTMLElement>(`[data-draft-section="${section}"]`);
+    const target = root?.querySelector<HTMLElement>('[data-new-suggestion="true"]') ?? root;
+    target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    target?.focus({ preventScroll: true });
+  }
   readonly textEdited = output<DraftTextEdit>();
   readonly textSaveStates = input<Record<string, 'editing' | 'saving' | 'saved' | 'error'>>({});
   private readonly editingTrades = new Map<string, string>();
+  private readonly editingMaterialNames = new Map<string, string>();
 
   editField(kind: 'work' | 'material', id: string, field: string, event: Event, save: boolean): void {
     const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
+    if (kind === 'material' && field === 'name') {
+      if (save) this.editingMaterialNames.delete(id);
+      else if (!this.editingMaterialNames.has(id)) {
+        this.editingMaterialNames.set(id, this.data().materials.find(item => item.id === id)?.name ?? '');
+      }
+    }
     if (kind === 'work' && field === 'trade') {
       if (save) this.editingTrades.delete(id);
       else if (!this.editingTrades.has(id)) {
@@ -102,7 +145,11 @@ export class OfferPreview {
   constructor() {
     afterNextRender(() => {
       const footer = this.footer().nativeElement;
-      const measure = () => this.footerHeightChanged.emit(Math.ceil(footer.getBoundingClientRect().height));
+      const measure = () => {
+        const height = Math.ceil(footer.getBoundingClientRect().height);
+        this.host.nativeElement.style.setProperty('--draft-footer-height', `${height}px`);
+        this.footerHeightChanged.emit(height);
+      };
       const observer = new ResizeObserver(measure);
       observer.observe(footer);
       measure();
@@ -138,7 +185,7 @@ export class OfferPreview {
 
   get workGroups() {
     const groups = new Map<string, ProjectData['workItems']>();
-    for (const item of this.acceptedWorkItems) {
+    for (const item of this.data().workItems) {
       const trade = this.editingTrades.get(item.id) ?? item.trade ?? '';
       const key = trade.trim().replace(/\s+/g, ' ').toLocaleLowerCase('da-DK');
       const group = groups.get(key);
@@ -155,6 +202,21 @@ export class OfferPreview {
 
   get acceptedMaterials() {
     return this.data().materials.filter((material) => material.status === 'accepted');
+  }
+
+  get materialGroups() {
+    const groups = new Map<string, ProjectData['materials']>();
+    for (const item of this.data().materials) {
+      const title = materialCategory(this.editingMaterialNames.get(item.id) ?? item.name);
+      const group = groups.get(title);
+      if (group) group.push(item);
+      else groups.set(title, [item]);
+    }
+    return [...groups].map(([title, items]) => ({ title, items }));
+  }
+
+  get unreviewedCount(): number {
+    return [...this.data().workItems, ...this.data().materials].filter(item => !item.status || item.status === 'suggested').length;
   }
 
   get laborTotal(): number {
@@ -216,7 +278,7 @@ export class OfferPreview {
 
   get finalizeDisabledReason(): string {
     return this.hasPendingChanges()
-      ? 'Afslut feltet i højre kolonne for at gemme dine ændringer først'
+      ? 'Afslut feltet for at gemme dine ændringer først'
       : this.missingRequirements.map((issue) => issue.label).join('. ');
   }
 

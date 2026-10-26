@@ -1,5 +1,5 @@
 <div class="project-workspace">
-  <div class="project-shell mx-auto max-w-[1440px] px-6 py-5">
+  <div class="project-shell">
     @if (refreshError()) {
       <p role="alert">
         {{ refreshError() }}
@@ -14,53 +14,53 @@
       <p role="alert">{{ errorMessage() }}</p>
       <button type="button" (click)="retryProject()">Prøv igen</button>
     } @else if (project(); as data) {
-      <div class="workspace-heading">
-        <div>
-          <p>Dit arbejdsrum</p>
-          <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
-        </div>
-        <span class="project-number">Projekt {{ data.project.project_number }}</span>
-      </div>
-      <!-- Hovedlayout -->
-      <main
-        class="project-layout"
-        animate.enter="page-reveal"
-        [style.--offer-footer-height]="offerFooterHeight() + 'px'"
-      >
-        <button type="button" class="mobile-offer-jump" (click)="scrollToOffer()">
-          Se tilbud <span aria-hidden="true">↗</span>
-        </button>
-        <!-- Samtale og projektets faner -->
-
+      <main class="project-layout" animate.enter="page-reveal">
         <app-project-sidebar
           #projectSidebar
           [data]="data"
           (messageAdded)="refreshProject()"
           (aiCompleted)="onAiCompleted($event)"
+          (sectionRequested)="reviewItems($event)"
         />
-
-        <!-- Tilbudsudkast -->
-        <app-offer-preview
-          #offerTarget
-          [data]="projectSidebar.getPreviewData(data)"
-          [textSaveStates]="projectSidebar.fieldSaveStates()"
-          (textEdited)="projectSidebar.editDraftText($event)"
-          [hasPendingChanges]="
-            projectSidebar.hasPendingChanges(data) || projectSidebar.pendingSaves() > 0
-          "
-          [isSavingChanges]="projectSidebar.pendingSaves() > 0"
-          [openDetailsInitially]="newProjectId() === data.project.id"
-          (detailsOpened)="onDetailsOpened()"
-          (detailsSaved)="onDetailsSaved()"
-          (offerFinalized)="onOfferFinalized()"
-          (footerHeightChanged)="offerFooterHeight.set($event)"
-          (requestTab)="reviewItems($event)"
-        />
+        <div class="project-main">
+          <header class="workspace-heading">
+            <div>
+              <p>Dit arbejdsrum · {{ data.project.project_number }}</p>
+              <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
+            </div>
+            <button type="button" class="history-button" (click)="projectSidebar.openHistory()">
+              Tilbudshistorik
+            </button>
+          </header>
+          @if (projectSidebar.editError()) {
+            <p class="workspace-error" role="alert">{{ projectSidebar.editError() }}</p>
+          }
+          <app-offer-preview
+            [data]="projectSidebar.getPreviewData(data)"
+            [textSaveStates]="projectSidebar.fieldSaveStates()"
+            (textEdited)="projectSidebar.editDraftText($event)"
+            [newWorkItemIds]="projectSidebar.newWorkItemIds()"
+            [newMaterialIds]="projectSidebar.newMaterialIds()"
+            (statusChanged)="
+              $event.kind === 'work'
+                ? projectSidebar.updateWorkItemStatus($event.id, $event.status)
+                : projectSidebar.updateMaterialStatus($event.id, $event.status)
+            "
+            [hasPendingChanges]="
+              projectSidebar.hasPendingChanges(data) || projectSidebar.pendingSaves() > 0
+            "
+            [isSavingChanges]="projectSidebar.pendingSaves() > 0"
+            [openDetailsInitially]="newProjectId() === data.project.id"
+            (detailsOpened)="onDetailsOpened()"
+            (detailsSaved)="onDetailsSaved()"
+            (offerFinalized)="onOfferFinalized()"
+            (requestTab)="reviewItems($event)"
+          />
+        </div>
       </main>
     } @else {
       <main class="empty-workspace" animate.enter="page-reveal">
         <h1>Velkommen til Hovedet på sømmet</h1>
-
         <p>Vælg et eksisterende projekt ovenfor, eller opret et nyt projekt.</p>
       </main>
     }

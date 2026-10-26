@@ -58,12 +58,7 @@
       </p>
     }
   </div>
-  <aside class="desktop-sidebar" aria-label="Sidemenu">
-    <nav class="side-navigation" aria-label="Hovednavigation">
-      <ng-container [ngTemplateOutlet]="navigationContent" />
-    </nav>
-    <p class="sidebar-payoff">Hjernen bag<br />dit næste tilbud.</p>
-  </aside>
+
   <div class="shell-main">
     @if (logoutError()) {
       <p role="alert">{{ logoutError() }}</p>

@@ -14,7 +14,6 @@ export type WorkItem = z.infer<typeof WorkItemSchema>;
 export const MaterialSchema = z.object({
   id: z.string(),
   name: z.string(),
-  description: z.string(),
   status: z.enum(["suggested", "accepted", "rejected"]),
   quantity: z.number().nullable(),
   quantitySource: z.enum(["ai", "user"]).nullable(),

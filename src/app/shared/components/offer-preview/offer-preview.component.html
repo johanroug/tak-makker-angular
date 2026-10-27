@@ -227,20 +227,6 @@
                   >{{ getMaterialPrice(material) | number: '1.0-0' }} kr.</strong
                 >
               </div>
-              <details class="draft-line-details">
-                <summary>Beskrivelse</summary>
-                <textarea
-                  class="draft-text"
-                  rows="2"
-                  aria-label="Materialebeskrivelse"
-                  [value]="material.description || ''"
-                  (input)="editField('material', material.id, 'description', $event, false)"
-                  (blur)="editField('material', material.id, 'description', $event, true)"
-                ></textarea
-                ><span class="draft-save-status" role="status">{{
-                  textSaveLabel('material', material.id, 'description')
-                }}</span>
-              </details>
               <app-line-review
                 [status]="material.status ?? 'suggested'"
                 [label]="'materiale: ' + (material.name || 'uden navn')"

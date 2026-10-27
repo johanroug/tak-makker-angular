@@ -171,7 +171,6 @@ export class ProjectSidebar implements OnDestroy {
 
   readonly materialNames = signal<Record<string, string>>({});
 
-  readonly materialDescriptions = signal<Record<string, string>>({});
 
   readonly materialQuantities = signal<Record<string, string>>({});
 
@@ -198,7 +197,6 @@ export class ProjectSidebar implements OnDestroy {
       materials: data.materials.map((item) => ({
         ...item,
         name: this.materialNames()[item.id] ?? item.name,
-        description: this.materialDescriptions()[item.id] ?? item.description,
         quantity: number(this.materialQuantities()[item.id], item.quantity),
         unit: this.materialUnits()[item.id]?.trim() ?? item.unit,
         unit_price: number(this.materialUnitPrices()[item.id], item.unit_price),
@@ -267,10 +265,6 @@ export class ProjectSidebar implements OnDestroy {
       this.acknowledge(
         this.materialNames,
         Object.fromEntries(data.materials.map((item) => [item.id, item.name])),
-      );
-      this.acknowledge(
-        this.materialDescriptions,
-        Object.fromEntries(data.materials.map((item) => [item.id, item.description])),
       );
       this.acknowledge(
         this.materialQuantities,
@@ -352,7 +346,6 @@ export class ProjectSidebar implements OnDestroy {
         else if (edit.field === 'quantity') this.setMaterialQuantity(edit.id, edit.value);
         else if (edit.field === 'unit') this.setMaterialUnit(edit.id, edit.value);
         else if (edit.field === 'unitPrice') this.setMaterialUnitPrice(edit.id, edit.value);
-        else this.setMaterialDescription(edit.id, edit.value);
       }
       this.fieldEdited(this.fieldKey(edit.kind, edit.id, edit.field));
       return;
@@ -370,7 +363,6 @@ export class ProjectSidebar implements OnDestroy {
       else if (edit.field === 'quantity') await this.updateMaterialQuantity(item, edit.value);
       else if (edit.field === 'unit') await this.updateMaterialUnit(item, edit.value);
       else if (edit.field === 'unitPrice') await this.updateMaterialUnitPrice(item, edit.value);
-      else await this.saveMaterialDescription(item, edit.value);
     }
   }
 
@@ -585,34 +577,6 @@ export class ProjectSidebar implements OnDestroy {
     await this.saveMaterialValues(material, { name });
   }
 
-  setMaterialDescription(materialId: string, value: string): void {
-    this.materialDescriptions.update((values) => ({
-      ...values,
-      [materialId]: value,
-    }));
-  }
-
-  getMaterialDescription(material: ProjectData['materials'][number]): string {
-    const localValue = this.materialDescriptions()[material.id];
-
-    return localValue !== undefined ? localValue : (material.description ?? '');
-  }
-
-  async saveMaterialDescription(
-    material: ProjectData['materials'][number],
-    value: string,
-  ): Promise<void> {
-    this.finishTextEditing(this.fieldKey('material', material.id, 'description'));
-    const description = value.trim();
-    this.setMaterialDescription(material.id, description);
-
-    if (description === (material.description ?? '')) {
-      return;
-    }
-
-    await this.saveMaterialValues(material, { description });
-  }
-
   setMaterialQuantity(materialId: string, value: string): void {
     this.materialQuantities.update((values) => ({
       ...values,
@@ -682,7 +646,6 @@ export class ProjectSidebar implements OnDestroy {
   canAcceptMaterial(material: ProjectData['materials'][number]): boolean {
     const name = this.getMaterialName(material).trim();
 
-    const description = this.getMaterialDescription(material).trim();
 
     const quantityValue = this.getMaterialQuantity(material);
 
@@ -690,7 +653,7 @@ export class ProjectSidebar implements OnDestroy {
 
     const unitPriceValue = this.getMaterialUnitPrice(material);
 
-    if (!name || !description || quantityValue === '' || !unit || unitPriceValue === '') {
+    if (!name || quantityValue === '' || !unit || unitPriceValue === '') {
       return false;
     }
 
@@ -773,7 +736,6 @@ export class ProjectSidebar implements OnDestroy {
     material: ProjectData['materials'][number],
     changes: {
       name?: string;
-      description?: string;
       quantity?: number | null;
       unit?: string;
       unitPrice?: number | null;

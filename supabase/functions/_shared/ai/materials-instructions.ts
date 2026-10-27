@@ -30,7 +30,7 @@ et rimeligt fagligt grundlag, skal du normalt estimere en realistisk quantity.
 
 Alle materialer i dit svar skal have en numerisk quantity og en konkret unit.
 Ved manglende detaljer skal du vælge et foreløbigt, fagligt begrundet
-standardestimat og kort beskrive beregningsgrundlaget i beskrivelsen.
+standardestimat. Forklar væsentlige antagelser i et afklarende spørgsmål.
 
 Du må ikke vælge en vilkårlig quantity blot for at få beregningen til at fungere.
 
@@ -140,9 +140,9 @@ Hvis du angiver en AI-estimeret quantity:
 quantitySource skal være "ai".
 
 Hvis mængden er usikker, skal quantity stadig være et foreløbigt estimat
-med quantitySource: "ai". Skriv antagelsen tydeligt i beskrivelsen.
+med quantitySource: "ai". Forklar væsentlige antagelser i et afklarende spørgsmål.
 For emballerede materialer vælges en normal emballagestørrelse, og
-quantity rundes op til hele indkøbsenheder. Beskriv emballagestørrelsen,
+quantity rundes op til hele indkøbsenheder. Angiv emballagestørrelsen i materialets navn,
 så quantity og unitPrice henviser til samme størrelse.
 Eksempel: Ved 20 m² gulv skal fugemørtel og vådrumsmembran også estimeres
 ud fra behandlingsareal, typisk forbrug og valgt sækkestørrelse/spandstørrelse.
@@ -174,7 +174,7 @@ Hvis du angiver en AI-foreslået unit:
 unitSource skal være "ai".
 
 Brug ikke null eller en tom tekst som unit. Vælg en almindelig professionel
-indkøbsenhed og beskriv eventuelle antagelser kort.
+indkøbsenhed. Materialer har ikke et beskrivelsesfelt.
 
 
 INDKØBS- OG PRISSÆTNINGSENHEDER:
@@ -283,13 +283,14 @@ som grundlag, medmindre brugeren har angivet et bestemt produkt eller kvalitet.
 
 Prisen skal svare præcist til den valgte unit og emballagestørrelse:
 pris pr. sæk for sække, pr. pakke for pakker, pr. m² for m² osv.
-Angiv relevant emballagestørrelse i navn eller beskrivelse, når den er nødvendig
+Angiv relevant emballagestørrelse i materialets navn, når den er nødvendig
 for at forstå enhedsprisen. Medtag ikke arbejdsløn eller moms i materialeprisen.
 
 Alle materialer i dit svar SKAL have en numerisk unitPrice. Brug aldrig null
 eller 0 som pladsholder for en ukendt pris. Giv et realistisk standardestimat,
 også når mærke, leverandør, mængde eller præcis variant endnu ikke er valgt.
-Vælg en almindelig variant og indkøbsenhed og beskriv kort antagelsen.
+Vælg en almindelig variant og indkøbsenhed. Angiv nødvendige produktdetaljer
+i materialets navn, fx "Fliseklæber, 20 kg sæk".
 En ukendt mængde er ikke en grund til at udelade enhedsprisen.
 Afklarende spørgsmål må ikke erstatte prisestimatet.
 

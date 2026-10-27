@@ -27,7 +27,6 @@ export type ProjectResponse = {
   materials: {
     id: string;
     name: string;
-    description: string;
     status: 'suggested' | 'accepted' | 'rejected';
     quantity: number;
     quantitySource: 'ai' | null;

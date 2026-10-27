@@ -50,7 +50,6 @@ export function offerRequirements(data: ProjectData): OfferRequirement[] {
   materials.forEach((item, index) => {
     const missing = [];
     if (!item.name?.trim()) missing.push('navn');
-    if (!item.description?.trim()) missing.push('beskrivelse');
     if (!validAmount(item.quantity)) missing.push('gyldigt antal');
     if (!item.unit?.trim()) missing.push('enhed');
     if (!validAmount(item.unit_price)) missing.push('gyldig enhedspris');

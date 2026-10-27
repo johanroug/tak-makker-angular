@@ -61,7 +61,7 @@ export class OfferPreview {
   }
 
   canApproveMaterial(item: ProjectData['materials'][number]): boolean {
-    return !!item.name?.trim() && !!item.description?.trim() && !!item.unit?.trim() && validAmount(item.quantity) && validAmount(item.unit_price);
+    return !!item.name?.trim() && !!item.unit?.trim() && validAmount(item.quantity) && validAmount(item.unit_price);
   }
 
   changeStatus(kind: 'work' | 'material', id: string, status: 'accepted' | 'rejected'): void {
@@ -106,7 +106,7 @@ export class OfferPreview {
     }
     if (kind === 'work' && (field === 'trade' || field === 'description' || field === 'hours')) {
       this.textEdited.emit({ kind, id, field, value, save });
-    } else if (kind === 'material' && (field === 'name' || field === 'description' || field === 'quantity' || field === 'unit' || field === 'unitPrice')) {
+    } else if (kind === 'material' && (field === 'name' || field === 'quantity' || field === 'unit' || field === 'unitPrice')) {
       this.textEdited.emit({ kind, id, field, value, save });
     }
   }

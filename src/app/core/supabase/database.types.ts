@@ -124,7 +124,6 @@ export type Database = {
       }
       offer_materials: {
         Row: {
-          description: string
           id: string
           name: string
           offer_id: string
@@ -134,7 +133,6 @@ export type Database = {
           unit_price: number
         }
         Insert: {
-          description: string
           id: string
           name: string
           offer_id: string
@@ -144,7 +142,6 @@ export type Database = {
           unit_price: number
         }
         Update: {
-          description?: string
           id?: string
           name?: string
           offer_id?: string
@@ -308,7 +305,6 @@ export type Database = {
       project_materials: {
         Row: {
           created_at: string
-          description: string | null
           id: string
           name: string | null
           project_id: string
@@ -322,7 +318,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          description?: string | null
           id: string
           name?: string | null
           project_id: string
@@ -336,7 +331,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          description?: string | null
           id?: string
           name?: string | null
           project_id?: string

@@ -229,7 +229,6 @@ export class OfferPdfService {
       'ENHEDSPRIS',
       data.materials.map((item) => ({
         title: item.name ?? '',
-        description: item.description,
         quantity: this.formatQuantity(item.quantity) + (item.unit ? ' ' + item.unit : ''),
         unitPrice: this.formatMoney(item.unit_price),
         price: item.total_price,
@@ -243,7 +242,7 @@ export class OfferPdfService {
     priceLabel: string,
     items: {
       title: string;
-      description: string | null;
+      description?: string | null;
       quantity: string;
       unitPrice: string;
       price: number | null;

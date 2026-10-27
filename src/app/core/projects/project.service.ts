@@ -316,7 +316,6 @@ export class ProjectService {
         project_id: projectId,
         id: material.id,
         name: material.name,
-        description: material.description,
         status: 'suggested',
         quantity: material.quantity,
         quantity_source: 'ai',
@@ -568,7 +567,6 @@ export class ProjectService {
     materialId: string,
     changes: {
       name?: string;
-      description?: string;
       quantity?: number | null;
       unit?: string;
       unitPrice?: number | null;
@@ -583,10 +581,6 @@ export class ProjectService {
 
         if (changes.name !== undefined) {
           updates.name = changes.name.trim();
-        }
-
-        if (changes.description !== undefined) {
-          updates.description = changes.description.trim();
         }
 
         if (changes.quantity !== undefined) {

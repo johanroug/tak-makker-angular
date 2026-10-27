@@ -139,7 +139,6 @@ Deno.serve(async (request) => {
     const materials = (materialsResult.data ?? []).map((item) => ({
       id: item.id,
       name: item.name,
-      description: item.description,
       status: item.status,
       quantity: item.quantity,
       quantitySource: item.quantity_source,

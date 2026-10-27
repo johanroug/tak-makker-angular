@@ -36,9 +36,13 @@ export const ProjectDetailsSchema = z.object({
 });
 
 const AiMaterialSchema = MaterialSchema.extend({
+  quantity: z.number().nonnegative(),
+  unit: z.string().min(1),
   quantitySource: z.literal("ai").nullable(),
   unitSource: z.literal("ai").nullable(),
-  unitPrice: z.null(),
+  unitPrice: z.number().nonnegative(),
+  priceUpdateRequested: z.boolean(),
+  quantityUpdateRequested: z.boolean(),
 });
 
 export const ProjectResponseSchema = z.object({

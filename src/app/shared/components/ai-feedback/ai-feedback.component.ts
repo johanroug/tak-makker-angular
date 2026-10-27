@@ -1,6 +1,15 @@
 import { Component, effect, input, output, signal } from '@angular/core';
 
-export type AiSuggestionSummary = { workItems: number; materials: number };
+export type AiSuggestionSummary = {
+  workItems: number;
+  materials: number;
+  updatedWorkItems: number;
+  updatedMaterials: number;
+  materialPrices: number;
+  materialQuantities: number;
+  materialUnits: number;
+  workHours: number;
+};
 
 @Component({
   selector: 'app-ai-feedback',

@@ -266,13 +266,26 @@ export class ProjectService {
       const existing = existingById.get(material.id);
       if (existing) {
         const updates: Database['public']['Tables']['project_materials']['Update'] = {};
+        // Replace an existing price only on an explicit price update request.
         if (
-          existing.quantity_source !== 'user' &&
+          (existing.unit_price === null || material.priceUpdateRequested === true) &&
+          material.unitPrice !== null &&
+          Number.isFinite(material.unitPrice) &&
+          material.unitPrice > 0 &&
+          material.unitPrice !== existing.unit_price
+        ) {
+          updates.unit_price = material.unitPrice;
+        }
+        if (
+          (existing.quantity_source !== 'user' || material.quantityUpdateRequested === true) &&
           material.quantity !== null &&
+          Number.isFinite(material.quantity) &&
+          material.quantity >= 0 &&
           material.quantity !== existing.quantity
         ) {
           updates.quantity = material.quantity;
-          updates.quantity_source = 'ai';
+          // Keep manually controlled quantities protected after this one-off request.
+          updates.quantity_source = existing.quantity_source === 'user' ? 'user' : 'ai';
         }
         if (
           existing.unit_source !== 'user' &&
@@ -309,7 +322,10 @@ export class ProjectService {
         quantity_source: 'ai',
         unit: material.unit,
         unit_source: 'ai',
-        unit_price: null,
+        unit_price:
+          material.unitPrice !== null && Number.isFinite(material.unitPrice) && material.unitPrice > 0
+            ? material.unitPrice
+            : null,
       });
     }
     if (newItems.length)

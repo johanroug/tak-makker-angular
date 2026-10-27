@@ -776,6 +776,8 @@ export class ProjectSidebar implements OnDestroy {
 
     const priorWorkIds = new Set(this.data().workItems.map((item) => item.id));
     const priorMaterialIds = new Set(this.data().materials.map((item) => item.id));
+    const priorWork = new Map(this.data().workItems.map((item) => [item.id, { ...item }]));
+    const priorMaterials = new Map(this.data().materials.map((item) => [item.id, { ...item }]));
     let messageSaved = false;
 
     this.isSending.set(true);
@@ -821,7 +823,26 @@ export class ProjectSidebar implements OnDestroy {
       this.newWorkItemIds.set(workIds);
       this.newMaterialIds.set(materialIds);
       this.aiCompleted.emit(saved);
-      this.aiResult.set({ workItems: workIds.size, materials: materialIds.size });
+      const updatedWork = saved.workItems.filter((item) => {
+        const before = priorWork.get(item.id);
+        return before && responseWorkIds.has(item.id) && before.estimated_hours !== item.estimated_hours;
+      });
+      const changedMaterials = saved.materials.filter((item) => {
+        const before = priorMaterials.get(item.id);
+        return before && responseMaterialIds.has(item.id) && (
+          before.unit_price !== item.unit_price || before.quantity !== item.quantity || before.unit !== item.unit
+        );
+      });
+      this.aiResult.set({
+        workItems: workIds.size,
+        materials: materialIds.size,
+        updatedWorkItems: updatedWork.length,
+        updatedMaterials: changedMaterials.length,
+        workHours: updatedWork.length,
+        materialPrices: changedMaterials.filter((item) => priorMaterials.get(item.id)!.unit_price !== item.unit_price).length,
+        materialQuantities: changedMaterials.filter((item) => priorMaterials.get(item.id)!.quantity !== item.quantity).length,
+        materialUnits: changedMaterials.filter((item) => priorMaterials.get(item.id)!.unit !== item.unit).length,
+      });
     } catch (error) {
       console.error(error);
 

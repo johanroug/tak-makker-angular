@@ -34,7 +34,12 @@ ikke en komplet erstatning af projektet.
 - For eksisterende arbejdsopgaver medtages kun linjer, hvor estimatedHours
   skal ændres og estimatedHoursSource ikke er "user".
 - For eksisterende materialer medtages kun linjer, hvor quantity eller unit
-  skal ændres og det tilsvarende source-felt ikke er "user".
+  skal ændres og det tilsvarende source-felt ikke er "user", eller hvor
+  unitPrice mangler og skal udfyldes med et prisestimat, eller brugerens
+  seneste besked udtrykkeligt beder om opdatering af materialets pris eller antal,
+  også når quantitySource er "user" (sæt da quantityUpdateRequested til true).
+  Ved opdatering af alle materialepriser eller antal medtages alle ikke-fravalgte
+  materialer, også hvis prisestimatet er uændret.
 - Bevar eksisterende id'er, tekster og statusser på medtagne linjer.
 - Returnér alle skemafelter for hver medtaget linje, også ved en enkelt ændring.
 - Brug null i uændrede kunde- og projektfelter. null betyder ingen ændring,

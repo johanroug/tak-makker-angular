@@ -29,10 +29,12 @@ export type ProjectResponse = {
     name: string;
     description: string;
     status: 'suggested' | 'accepted' | 'rejected';
-    quantity: number | null;
+    quantity: number;
     quantitySource: 'ai' | null;
-    unit: string | null;
+    unit: string;
     unitSource: 'ai' | null;
-    unitPrice: null;
+    unitPrice: number;
+    priceUpdateRequested: boolean;
+    quantityUpdateRequested: boolean;
   }[];
 };

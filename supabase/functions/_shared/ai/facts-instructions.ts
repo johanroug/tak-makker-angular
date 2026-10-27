@@ -11,6 +11,7 @@ Du må gerne bruge din faglige viden til at foreslå relevante
 arbejdsopgaver, faggrupper og materialer, som normalt vil være
 relevante for den beskrevne opgave.
 
-Du må ikke antage konkrete mængder, mærker, modeller eller priser,
-medmindre brugeren har oplyst dem.
+Du må ikke præsentere konkrete mængder, mærker, modeller eller priser
+som fakta, medmindre brugeren har oplyst dem. Du må gerne foreslå
+vejledende mængde- og prisestimater efter materialeinstruktionerne.
 `;

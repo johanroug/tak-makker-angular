@@ -22,11 +22,25 @@
     <p class="result-title" role="status">
       @if (summary.workItems || summary.materials) {
         Nye forslag er klar til dig
+      } @else if (summary.updatedWorkItems || summary.updatedMaterials) {
+        Dit tilbud er opdateret
       } @else {
         Der er svar på din besked
       }
     </p>
     <div class="result-actions">
+      @if (summary.updatedWorkItems) {
+        <button type="button" (click)="openTab.emit('tasks')">
+          {{ summary.updatedWorkItems }} {{ summary.updatedWorkItems === 1 ? 'opgave opdateret' : 'opgaver opdateret' }}
+          <span aria-hidden="true">→</span>
+        </button>
+      }
+      @if (summary.updatedMaterials) {
+        <button type="button" (click)="openTab.emit('materials')">
+          {{ summary.updatedMaterials }} {{ summary.updatedMaterials === 1 ? 'materiale opdateret' : 'materialer opdateret' }}
+          <span aria-hidden="true">→</span>
+        </button>
+      }
       @if (summary.workItems) {
         <button type="button" (click)="openTab.emit('tasks')">
           {{ summary.workItems }} {{ summary.workItems === 1 ? 'ny opgave' : 'nye opgaver' }}
@@ -43,11 +57,27 @@
         Se samtalen <span aria-hidden="true">→</span>
       </button>
     </div>
-    @if (!summary.workItems && !summary.materials) {
+    @if (summary.materialPrices || summary.materialQuantities || summary.materialUnits || summary.workHours) {
+      <small>
+        @if (summary.materialPrices) {
+          Opdateret {{ summary.materialPrices }} {{ summary.materialPrices === 1 ? 'materialepris' : 'materialepriser' }}.
+        }
+        @if (summary.materialQuantities) {
+          Opdateret antal på {{ summary.materialQuantities }} {{ summary.materialQuantities === 1 ? 'materiale' : 'materialer' }}.
+        }
+        @if (summary.materialUnits) {
+          Opdateret enhed på {{ summary.materialUnits }} {{ summary.materialUnits === 1 ? 'materiale' : 'materialer' }}.
+        }
+        @if (summary.workHours) {
+          Opdateret tidsestimat på {{ summary.workHours }} {{ summary.workHours === 1 ? 'opgave' : 'opgaver' }}.
+        }
+      </small>
+    }
+    @if (!summary.workItems && !summary.materials && !summary.updatedWorkItems && !summary.updatedMaterials) {
       <small
-        >Ingen nye opgaver eller materialer denne gang. Se samtalen for eventuelle spørgsmål.</small
+        >Ingen ændringer i opgaver eller materialer. Se samtalen for eventuelle spørgsmål.</small
       >
-    } @else {
+    } @else if (summary.workItems || summary.materials) {
       <small>Nye forslag er markeret, så du nemt kan finde dem.</small>
     }
   </section>

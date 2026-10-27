@@ -61,7 +61,10 @@
     } @else {
       <main class="empty-workspace" animate.enter="page-reveal">
         <h1>Velkommen til Hovedet på sømmet</h1>
-        <p>Vælg et eksisterende projekt ovenfor, eller opret et nyt projekt.</p>
+        <p>
+          Vælg et eksisterende projekt ovenfor, eller
+          <button type="button" class="create-project-link" (click)="createProject()">opret et nyt projekt</button>.
+        </p>
       </main>
     }
   </div>

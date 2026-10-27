@@ -97,6 +97,7 @@ export class AppShell implements OnInit {
   }
 
   constructor() {
+    this.workspace.newProjectRequested.pipe(takeUntilDestroyed()).subscribe(() => this.createProject());
     interval(60000)
       .pipe(takeUntilDestroyed())
       .subscribe(() => {

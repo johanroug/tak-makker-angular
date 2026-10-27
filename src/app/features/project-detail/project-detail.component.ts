@@ -29,6 +29,10 @@ export class ProjectDetail implements OnInit, OnDestroy {
   }
   private readonly workspace = inject(WorkspaceState);
 
+  createProject(): void {
+    this.workspace.requestNewProject();
+  }
+
   readonly project = signal<ProjectData | null>(null);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');

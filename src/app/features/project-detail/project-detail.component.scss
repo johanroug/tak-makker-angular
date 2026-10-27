@@ -68,6 +68,18 @@
     color: #74866b;
   }
 }
+.create-project-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #12372a;
+  font: inherit;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  &:hover { color: #9b4518; }
+}
 :is(button, a):focus-visible {
   outline: 2px solid #2574b8;
   outline-offset: 3px;

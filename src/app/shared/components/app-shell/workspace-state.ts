@@ -1,8 +1,15 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ProjectService } from '../../../core/projects/project.service';
 
 @Injectable()
 export class WorkspaceState {
+  private readonly newProjectRequests = new Subject<void>();
+  readonly newProjectRequested = this.newProjectRequests.asObservable();
+
+  requestNewProject(): void {
+    this.newProjectRequests.next();
+  }
   private readonly projectService = inject(ProjectService);
   readonly projects = signal<Awaited<ReturnType<ProjectService['getProjects']>>>([]);
   readonly isLoading = signal(false);

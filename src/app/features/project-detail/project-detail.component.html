@@ -28,8 +28,9 @@
               <p>Dit arbejdsrum · {{ data.project.project_number }}</p>
               <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
             </div>
-            <button type="button" class="history-button" (click)="projectSidebar.openHistory()">
-              Tilbudshistorik
+            <button type="button" class="history-button" aria-haspopup="dialog" (click)="projectSidebar.openHistory()">
+              <app-workspace-icon name="offers" />
+              <span>Tilbudshistorik</span>  
             </button>
           </header>
           @if (projectSidebar.editError()) {

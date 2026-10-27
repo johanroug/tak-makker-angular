@@ -7,12 +7,13 @@ import { ProjectService } from '../../core/projects/project.service';
 import { OfferPreview } from '../../shared/components/offer-preview/offer-preview.component';
 import { ProjectSidebar } from '../../shared/components/project-sidebar/project-sidebar.component';
 import { WorkspaceState } from '../../shared/components/app-shell/workspace-state';
+import { WorkspaceIcon } from '../../shared/components/workspace-icon.component';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-detail',
-  imports: [PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar],
+  imports: [PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar, WorkspaceIcon],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })

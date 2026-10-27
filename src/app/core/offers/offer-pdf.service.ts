@@ -8,12 +8,13 @@ type OfferData = Awaited<ReturnType<OfferService['getOffer']>>;
 @Injectable({ providedIn: 'root' })
 export class OfferPdfService {
   private readonly activity = inject(ActivityService);
-  private readonly ink = '#302C26';
-  private readonly muted = '#766F64';
-  private readonly gold = '#9B7A3C';
-  private readonly border = '#E7E2D9';
-  private readonly cream = '#F7F3EA';
-  private readonly margin = 44;
+  private readonly ink = '#12372A';
+  private readonly muted = '#526459';
+  private readonly accent = '#E76F31';
+  private readonly border = '#CCD6CD';
+  private readonly cream = '#F6F1E7';
+  private readonly sage = '#EDF2EA';
+  private readonly margin = 48;
 
   async download(data: OfferData): Promise<void> {
     return this.activity.measure(
@@ -33,57 +34,78 @@ export class OfferPdfService {
 
   private createDocument(data: OfferData): TDocumentDefinitions {
     const offer = data.offer;
-    const content: Content[] = [this.letterhead(data), this.parties(data)];
-    for (const [title, description] of [
-      ['Projektbeskrivelse', offer.project_description],
-      ['Tilbudsbeskrivelse', offer.offer_description],
-    ] as const) {
-      if (description?.trim())
-        content.push(
-          { text: title, fontSize: 12, bold: true, headlineLevel: 1, margin: [0, 10, 0, 10] },
-          { text: description, color: this.muted, lineHeight: 1.5, margin: [0, 0, 0, 20] },
-        );
+    const content: Content[] = [
+      this.letterhead(data),
+      { text: offer.project_title || 'Tilbud', fontSize: 23, bold: true, margin: [0, 0, 0, 8] },
+    ];
+    if (offer.offer_description?.trim()) {
+      content.push({
+        text: offer.offer_description,
+        color: this.muted,
+        lineHeight: 1.25,
+        margin: [0, 0, 0, 16],
+      });
+    }
+    content.push(this.parties(data));
+    if (offer.project_description?.trim()) {
+      content.push(
+        { text: 'OM OPGAVEN', style: 'eyebrow', headlineLevel: 1, margin: [0, 0, 0, 7] },
+        { text: offer.project_description, lineHeight: 1.25, margin: [0, 0, 0, 18] },
+      );
     }
     if (data.workItems.length) content.push(this.workItemsTable(data));
     if (data.materials.length) content.push(this.materialsTable(data));
-    const closingStart = content.length;
-    content.push(
-      {
+    const terms: Content = {
+      stack: [
+        { text: 'BETINGELSER', style: 'eyebrow', margin: [0, 0, 0, 9] },
+        this.termsBlock('BETALING', offer.payment_terms || 'Ikke angivet'),
+        this.termsBlock('FORBEHOLD', offer.reservations || 'Ingen angivet'),
+        this.termsBlock(
+          'GYLDIGHED',
+          offer.validity_days == null
+            ? 'Ikke angivet'
+            : offer.validity_days + ' dage fra tilbudsdato',
+        ),
+      ],
+    };
+    // Short terms sit beside the total; lengthy terms flow across pages at full width.
+    const shortTerms = (offer.payment_terms?.length ?? 0) + (offer.reservations?.length ?? 0) < 450;
+    if (shortTerms) {
+      content.push({
         unbreakable: true,
-        stack: [
-          { text: 'Tilbudsbetingelser', fontSize: 13, bold: true, margin: [0, 0, 0, 12] },
-          { text: 'GYLDIGHED', style: 'eyebrow', margin: [0, 0, 0, 5] },
-          {
-            text:
-              offer.validity_days == null
-                ? 'Ikke angivet'
-                : offer.validity_days + ' dage fra tilbudsdato',
-          },
+        columns: [
+          { width: '*', stack: [terms] },
+          { width: 240, stack: [this.pricing(data)] },
         ],
-        margin: [0, 24, 0, 12],
-      },
-      this.termsBlock('BETALINGSBETINGELSER', offer.payment_terms || 'Ikke angivet'),
-      this.termsBlock('FORBEHOLD', offer.reservations || 'Ingen angivet'),
-    );
-    content.push(this.pricing(data));
-    if ((offer.payment_terms?.length ?? 0) + (offer.reservations?.length ?? 0) < 1000) {
-      const closing = content.splice(closingStart);
-      content.push({ stack: closing, unbreakable: true });
+        columnGap: 26,
+        margin: [0, 8, 0, 0],
+      });
+    } else {
+      content.push(
+        { stack: [terms], margin: [0, 8, 0, 0] },
+        {
+          columns: [
+            { width: '*', text: '' },
+            { width: 260, stack: [this.pricing(data)] },
+          ],
+          margin: [0, 10, 0, 0],
+        },
+      );
     }
     return {
       pageSize: 'A4',
-      pageMargins: [this.margin, 48, this.margin, 58],
+      pageMargins: [this.margin, 40, this.margin, 55],
       info: {
         title: 'Tilbud ' + (offer.offer_number ?? ''),
         author: offer.company_name ?? 'Hovedet på sømmet',
         subject: offer.project_title ?? 'Tilbud',
       },
-      defaultStyle: { font: 'Roboto', fontSize: 9.5, color: this.ink, lineHeight: 1.2 },
+      defaultStyle: { font: 'Roboto', fontSize: 9, color: this.ink, lineHeight: 1.15 },
       styles: {
-        eyebrow: { fontSize: 7.5, bold: true, color: this.gold, characterSpacing: 1.1 },
+        eyebrow: { fontSize: 7, bold: true, color: this.ink, characterSpacing: 0.35 },
         tableHeader: { fontSize: 7, bold: true, color: this.muted },
-        itemTitle: { fontSize: 9.5, bold: true },
-        itemDescription: { fontSize: 8.5, color: this.muted, lineHeight: 1.25 },
+        itemTitle: { fontSize: 9, bold: true },
+        itemDescription: { fontSize: 8.5, color: this.muted, lineHeight: 1.2 },
         money: { fontSize: 9, bold: true },
       },
       content,
@@ -93,16 +115,16 @@ export class OfferPdfService {
         page === 1
           ? { text: '' }
           : {
-              margin: [this.margin, 20, this.margin, 0],
+              margin: [this.margin, 17, this.margin, 0],
               fontSize: 7,
               color: this.muted,
               columns: [
                 { text: offer.company_name ?? '', width: '*' },
-                { text: 'Tilbud ' + (offer.offer_number ?? ''), alignment: 'right', width: 150 },
+                { text: 'Tilbud ' + (offer.offer_number ?? ''), alignment: 'right', width: 160 },
               ],
             },
       footer: (page, pages) => ({
-        margin: [this.margin, 16, this.margin, 0],
+        margin: [this.margin, 10, this.margin, 0],
         stack: [
           {
             canvas: [
@@ -110,7 +132,7 @@ export class OfferPdfService {
                 type: 'line',
                 x1: 0,
                 y1: 0,
-                x2: 507.28,
+                x2: 499.28,
                 y2: 0,
                 lineWidth: 0.5,
                 lineColor: this.border,
@@ -120,9 +142,18 @@ export class OfferPdfService {
           },
           {
             columns: [
-              { text: offer.company_name ?? '', width: '*' },
-              { text: 'Tilbud ' + (offer.offer_number ?? ''), width: 130, alignment: 'center' },
-              { text: 'Side ' + page + ' af ' + pages, width: 85, alignment: 'right' },
+              {
+                text:
+                  [offer.company_phone, offer.company_email].filter(Boolean).join('  ·  ') ||
+                  offer.company_name ||
+                  '',
+                width: '*',
+              },
+              {
+                text: 'Tilbud ' + (offer.offer_number ?? '') + '  ·  Side ' + page + ' af ' + pages,
+                width: 190,
+                alignment: 'right',
+              },
             ],
             fontSize: 7,
             color: this.muted,
@@ -134,84 +165,125 @@ export class OfferPdfService {
 
   private letterhead(data: OfferData): Content {
     const offer = data.offer;
-    const companyLines = [
-      offer.company_name,
-      offer.company_cvr ? 'CVR: ' + offer.company_cvr : null,
-      offer.company_address,
-      offer.company_contact_name,
-      offer.company_phone,
-      offer.company_email,
-    ].filter((line): line is string => Boolean(line));
+    const company: Content[] = [
+      { text: offer.company_name || 'Afsender', fontSize: 13, bold: true, margin: [0, 0, 0, 5] },
+      {
+        text: [offer.company_contact_name, offer.company_cvr ? 'CVR ' + offer.company_cvr : null]
+          .filter(Boolean)
+          .join('  ·  '),
+        fontSize: 8,
+        color: this.muted,
+        margin: [0, 0, 0, 4],
+      },
+    ];
+    if (offer.company_address)
+      company.push({ text: offer.company_address, fontSize: 8, color: this.muted });
     return {
-      columns: [
+      stack: [
         {
-          width: '*',
-          stack: [
-            { text: 'TILBUDSDOKUMENT', style: 'eyebrow', margin: [0, 0, 0, 10] },
+          columns: [
+            ...(offer.company_logo_data_url
+              ? [{ image: offer.company_logo_data_url, fit: [58, 44], width: 58 } as Content]
+              : []),
+            { width: '*', stack: company },
             {
-              text: offer.project_title || 'Tilbud',
-              fontSize: 22,
-              bold: true,
-              margin: [0, 0, 0, 12],
+              width: 143,
+              alignment: 'right',
+              stack: [
+                { text: 'TILBUD', style: 'eyebrow', margin: [0, 0, 0, 6] },
+                { text: offer.offer_number ?? '', fontSize: 12, bold: true, margin: [0, 0, 0, 5] },
+                { text: this.formatDate(offer.finalized_at), fontSize: 8, color: this.muted },
+              ],
             },
-            {
-              text: 'Tilbudsnr. ' + (offer.offer_number ?? ''),
-              color: this.muted,
-              margin: [0, 0, 0, 4],
-            },
-            {
-              text: 'Projektnr. ' + (offer.project_number ?? 'Ikke angivet'),
-              color: this.muted,
-              margin: [0, 0, 0, 4],
-            },
-            { text: 'Dato: ' + this.formatDate(offer.finalized_at), color: this.muted },
           ],
+          columnGap: 12,
+          margin: [0, 0, 0, 15],
         },
         {
-          width: 165,
-          alignment: 'right',
-          stack: [
-            ...(offer.company_logo_data_url
-              ? [
-                  {
-                    image: offer.company_logo_data_url,
-                    fit: [130, 54],
-                    alignment: 'right',
-                    margin: [0, 0, 0, 10],
-                  } as Content,
-                ]
-              : []),
-            ...companyLines.map((text, index): Content => ({
-              text,
-              bold: index === 0,
-              color: index === 0 ? this.ink : this.muted,
-              fontSize: index === 0 ? 10 : 8,
-              margin: [0, 0, 0, 4],
-            })),
+          canvas: [
+            {
+              type: 'line',
+              x1: 0,
+              y1: 0,
+              x2: 499.28,
+              y2: 0,
+              lineWidth: 0.5,
+              lineColor: this.border,
+            },
+            { type: 'line', x1: 0, y1: 0, x2: 64, y2: 0, lineWidth: 3, lineColor: this.accent },
           ],
         },
       ],
-      columnGap: 26,
-      margin: [0, 0, 0, 22],
+      margin: [0, 0, 0, 18],
     };
   }
 
   private parties(data: OfferData): Content {
+    const offer = data.offer;
     return {
-      stack: [
-        { text: 'Kunde', fontSize: 12, bold: true, margin: [0, 0, 0, 10] },
-        { text: data.offer.customer_name ?? '', bold: true, fontSize: 11, margin: [0, 0, 0, 6] },
-        { text: data.offer.customer_address ?? '', color: this.muted, lineHeight: 1.4 },
-      ],
-      margin: [0, 0, 0, 22],
+      table: {
+        widths: ['*', '*'],
+        body: [
+          [
+            {
+              stack: [
+                { text: 'TIL', style: 'eyebrow', color: this.muted, margin: [0, 0, 0, 6] },
+                {
+                  text: offer.customer_name || 'Kunde ikke angivet',
+                  fontSize: 10,
+                  bold: true,
+                  margin: [0, 0, 0, 4],
+                },
+                {
+                  text: offer.customer_address || 'Adresse ikke angivet',
+                  color: this.muted,
+                  fontSize: 8.5,
+                },
+              ],
+            },
+            {
+              stack: [
+                { text: 'PROJEKT', style: 'eyebrow', color: this.muted, margin: [0, 0, 0, 6] },
+                {
+                  text: offer.project_number || 'Ikke angivet',
+                  fontSize: 10,
+                  bold: true,
+                  margin: [0, 0, 0, 4],
+                },
+                {
+                  text:
+                    offer.validity_days == null
+                      ? 'Gyldighed ikke angivet'
+                      : 'Gyldigt i ' + offer.validity_days + ' dage fra tilbudsdato',
+                  fontSize: 8.5,
+                  color: this.muted,
+                },
+              ],
+            },
+          ],
+        ],
+      },
+      layout: {
+        fillColor: () => this.cream,
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingLeft: () => 13,
+        paddingRight: () => 13,
+        paddingTop: () => 12,
+        paddingBottom: () => 12,
+      },
+      unbreakable: true,
+      margin: [0, 0, 0, 18],
     };
   }
 
   private workItemsTable(data: OfferData): Content {
     return this.itemTable(
       'Arbejde',
+      'OPGAVE',
       'TIMER',
-      'TIMEPRIS',
+      'KR./TIME',
+      data.offer.pricing_labor,
       data.workItems.map((item) => ({
         title: item.trade ?? '',
         description: item.description,
@@ -225,8 +297,10 @@ export class OfferPdfService {
   private materialsTable(data: OfferData): Content {
     return this.itemTable(
       'Materialer',
-      'MÆNGDE',
-      'ENHEDSPRIS',
+      'MATERIALE',
+      'ANTAL',
+      'KR./ENHED',
+      data.offer.pricing_materials,
       data.materials.map((item) => ({
         title: item.name ?? '',
         quantity: this.formatQuantity(item.quantity) + (item.unit ? ' ' + item.unit : ''),
@@ -238,8 +312,10 @@ export class OfferPdfService {
 
   private itemTable(
     title: string,
+    firstLabel: string,
     quantityLabel: string,
     priceLabel: string,
+    subtotal: number,
     items: {
       title: string;
       description?: string | null;
@@ -248,138 +324,155 @@ export class OfferPdfService {
       price: number | null;
     }[],
   ): Content {
-    const rows: TableCell[][] = items.map((item, index) => {
-      const fillColor = index % 2 ? '#FCFBF8' : '#FFFFFF';
-      return [
-        {
-          fillColor,
-          stack: [
-            { text: item.title, style: 'itemTitle' },
-            ...(item.description
-              ? [
-                  {
-                    text: item.description,
-                    style: 'itemDescription',
-                    margin: [0, 6, 0, 0],
-                  } as Content,
-                ]
-              : []),
-          ],
-        },
-        { text: item.quantity, alignment: 'right', fontSize: 8.5, color: this.muted, fillColor },
-        { text: item.unitPrice, alignment: 'right', fontSize: 8.5, color: this.muted, fillColor },
-        { text: this.formatMoney(item.price), alignment: 'right', style: 'money', fillColor },
-      ];
-    });
+    const rows: TableCell[][] = items.map((item) => [
+      {
+        stack: [
+          { text: item.title, style: 'itemTitle' },
+          ...(item.description
+            ? [
+                {
+                  text: item.description,
+                  style: 'itemDescription',
+                  margin: [0, 5, 0, 0],
+                } as Content,
+              ]
+            : []),
+        ],
+      },
+      { text: item.quantity, alignment: 'right', fontSize: 8.5 },
+      { text: item.unitPrice, alignment: 'right', fontSize: 8.5 },
+      { text: this.formatMoney(item.price), alignment: 'right', style: 'money' },
+    ]);
     return {
       table: {
         headerRows: 2,
         keepWithHeaderRows: 1,
-        dontBreakRows: rows.every((row) => JSON.stringify(row).length < 1500),
-        widths: ['*', 48, 76, 86],
+        // Very long descriptions must be allowed to flow instead of overflowing a page.
+        dontBreakRows: items.every(
+          (item) => item.title.length + (item.description?.length ?? 0) < 900,
+        ),
+        widths: ['*', 56, 80, 85],
         body: [
           [
             {
-              text: [
-                { text: title, bold: true, fontSize: 13 },
-                { text: '   ' + items.length + ' poster', fontSize: 8, color: this.gold },
-              ],
               colSpan: 4,
-              margin: [0, 2, 0, 10],
+              columns: [
+                {
+                  width: 3,
+                  canvas: [{ type: 'rect', x: 0, y: 0, w: 3, h: 13, color: this.accent }],
+                },
+                { width: '*', text: title, fontSize: 12, bold: true },
+                {
+                  width: 120,
+                  text: this.formatMoney(subtotal),
+                  fontSize: 9,
+                  bold: true,
+                  alignment: 'right',
+                },
+              ],
+              columnGap: 8,
+              margin: [0, 0, 0, 10],
             },
             {},
             {},
             {},
           ],
-          ['BESKRIVELSE', quantityLabel, priceLabel, 'BELØB'].map((text, index): TableCell => ({
+          [firstLabel, quantityLabel, priceLabel, 'BELØB'].map((text, index): TableCell => ({
             text,
-            style: 'eyebrow',
-            fontSize: 6.5,
-            characterSpacing: 0.6,
+            style: 'tableHeader',
             alignment: index ? 'right' : 'left',
-            fillColor: this.cream,
+            fillColor: this.sage,
           })),
           ...rows,
         ],
       },
       layout: {
-        hLineWidth: (i) => (i > 1 ? 0.4 : 0),
+        hLineWidth: (i) => (i > 2 ? 0.45 : 0),
         hLineColor: () => this.border,
         vLineWidth: () => 0,
-        paddingLeft: () => 9,
-        paddingRight: () => 9,
-        paddingTop: (i) => (i === 0 ? 0 : i === 1 ? 9 : 12),
-        paddingBottom: (i) => (i === 0 ? 0 : i === 1 ? 9 : 12),
+        paddingLeft: () => 8,
+        paddingRight: () => 8,
+        paddingTop: (i) => (i === 0 ? 0 : i === 1 ? 7 : 8),
+        paddingBottom: (i) => (i === 0 ? 0 : i === 1 ? 7 : 8),
       },
-      margin: [0, 6, 0, 20],
+      margin: [0, 0, 0, 18],
     };
   }
 
   private termsBlock(title: string, text: string): Content {
     return {
-      unbreakable: text.length < 1000,
       stack: [
-        { text: title, style: 'eyebrow', headlineLevel: 1, margin: [0, 0, 0, 5] },
-        { text, lineHeight: 1.3 },
+        {
+          text: title,
+          style: 'eyebrow',
+          color: this.muted,
+          headlineLevel: 1,
+          margin: [0, 0, 0, 4],
+        },
+        { text, fontSize: 8, color: this.muted, lineHeight: 1.2 },
       ],
-      margin: [0, 0, 0, 12],
+      margin: [0, 0, 0, 9],
     };
   }
 
   private pricing(data: OfferData): Content {
     const offer = data.offer;
-    const row = (label: string, amount: number, total = false): TableCell[] => [
-      {
-        text: label,
-        bold: total,
-        color: total ? this.ink : this.muted,
-        fillColor: total ? this.cream : undefined,
-        fontSize: total ? 11 : 9.5,
-      },
-      {
-        text: this.formatMoney(amount),
-        alignment: 'right',
-        bold: total,
-        color: this.ink,
-        fillColor: total ? this.cream : undefined,
-        fontSize: total ? 16 : 10,
-      },
-    ];
     return {
       unbreakable: true,
-      stack: [
-        { text: 'Prisoversigt', fontSize: 12, bold: true, margin: [0, 0, 0, 12] },
-        {
-          table: {
-            headerRows: 1,
-            widths: ['*', 150],
-            body: [
-              [
-                { text: 'POST', style: 'eyebrow', fillColor: this.cream },
-                { text: 'BELØB', style: 'eyebrow', alignment: 'right', fillColor: this.cream },
+      table: {
+        widths: ['*', 104],
+        body: [
+          [
+            { text: 'Subtotal ekskl. moms', fontSize: 8.5, color: this.muted },
+            {
+              text: this.formatMoney(offer.pricing_subtotal),
+              fontSize: 9,
+              bold: true,
+              alignment: 'right',
+            },
+          ],
+          [
+            {
+              text: 'Moms (' + this.formatQuantity(offer.pricing_vat_rate * 100) + ' %)',
+              fontSize: 8.5,
+              color: this.muted,
+            },
+            { text: this.formatMoney(offer.pricing_vat_amount), fontSize: 9, alignment: 'right' },
+          ],
+          [
+            {
+              colSpan: 2,
+              fillColor: this.ink,
+              stack: [
+                {
+                  text: 'I ALT INKL. MOMS',
+                  fontSize: 7,
+                  bold: true,
+                  color: '#DBE6DA',
+                  margin: [0, 0, 0, 7],
+                },
+                {
+                  text: this.formatMoney(offer.pricing_total),
+                  fontSize: 19,
+                  bold: true,
+                  color: '#FFFFFF',
+                  alignment: 'right',
+                },
               ],
-              row('Arbejde', offer.pricing_labor),
-              row('Materialer', offer.pricing_materials),
-              row('Subtotal ekskl. moms', offer.pricing_subtotal),
-              row(
-                'Moms (' + this.formatQuantity(offer.pricing_vat_rate * 100) + '%)',
-                offer.pricing_vat_amount,
-              ),
-              row('I alt inkl. moms', offer.pricing_total, true),
-            ],
-          },
-          layout: {
-            hLineWidth: (i) => (i === 3 || i === 5 ? 0.8 : i === 0 ? 0 : 0.4),
-            hLineColor: (i) => (i === 5 ? '#CCB98F' : this.border),
-            vLineWidth: () => 0,
-            paddingLeft: () => 12,
-            paddingRight: () => 12,
-            paddingTop: (i) => (i === 5 ? 14 : 10),
-            paddingBottom: (i) => (i === 5 ? 14 : 10),
-          },
-        },
-      ],
-      margin: [0, 18, 0, 0],
+            },
+            {},
+          ],
+        ],
+      },
+      layout: {
+        fillColor: () => this.cream,
+        hLineWidth: () => 0,
+        vLineWidth: () => 0,
+        paddingLeft: () => 12,
+        paddingRight: () => 12,
+        paddingTop: (i) => (i === 0 || i === 2 ? 12 : 5),
+        paddingBottom: (i) => (i === 1 || i === 2 ? 12 : 5),
+      },
     };
   }
 

@@ -14,6 +14,7 @@
 }
 .conversation-heading {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -100,6 +101,7 @@
   }
 }
 .chat-form {
+  flex: none;
   margin: 12px;
   padding: 10px;
   border: 1px solid #dce4d5;
@@ -146,7 +148,7 @@ button:disabled {
 app-ai-feedback {
   display: block;
   flex: none;
-  max-height: 240px;
+  max-height: min(240px, 25dvh);
   overflow-y: auto;
 }
 .history-dialog {
@@ -241,7 +243,11 @@ app-ai-feedback {
     display: flex;
   }
   .chat-messages {
+    min-height: 0;
     max-height: none;
+  }
+  .chat-form textarea {
+    max-height: 18dvh;
   }
 }
 @media (max-width: 600px) {

@@ -5,6 +5,7 @@ body {
   font-family: Inter, Arial, sans-serif;
 }
 
+
 .project-workspace {
   background: #faf9f5;
   min-height: 80vh;
@@ -861,5 +862,147 @@ body {
   .draft-row,
   .draft-section {
     scroll-margin-bottom: calc(var(--draft-footer-height, 120px) + 24px);
+  }
+}
+
+// Contrast treatment for the live, two-column quotation board.
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+  .draft-heading,
+  .draft-section,
+  .draft-terms,
+  .draft-price-details {
+    border-color: #bdc9be;
+    box-shadow: 0 3px 12px #12372a08;
+  }
+  .offer-label,
+  .draft-customer,
+  .draft-details,
+  .draft-section-heading > span,
+  .draft-column-headings,
+  .draft-empty-note,
+  .draft-rate,
+  .column-total {
+    color: #4d6255;
+  }
+  .draft-section-heading h3 {
+    color: #12372a;
+    font-weight: 750;
+  }
+  .draft-trade-heading {
+    background: #e3ecdf;
+    border-left: 3px solid #e76f31;
+    h4 { color: #12372a; }
+    > span { color: #4b614f; }
+  }
+  .draft-column-headings,
+  .draft-row,
+  .draft-row.line-suggested,
+  .column-total {
+    border-color: #d0d9cf;
+  }
+  .draft-fields input:not([type='checkbox']),
+  .draft-line-details input,
+  .draft-line-details textarea {
+    border-color: #aabaae;
+    background: #fff;
+    color: #19382e;
+    &:hover { border-color: #6d8977; }
+  }
+  .draft-fields .draft-name input,
+  .draft-task-description textarea {
+    border-color: transparent;
+    &:hover { border-color: #aabaae; }
+  }
+  .draft-fields input:focus-visible,
+  .draft-task-description textarea:focus-visible,
+  .draft-line-details textarea:focus-visible {
+    outline: 2px solid #2574b8;
+    outline-offset: 2px;
+  }
+  .draft-readiness,
+  .draft-pending-note {
+    background: #fff4e8;
+    border-color: #e4b589;
+    border-left: 3px solid #e76f31;
+    color: #79400f;
+  }
+  .offer-footer {
+    background: #12372a;
+    border-color: #12372a;
+    color: #fff;
+    box-shadow: 0 -4px 18px #12372a14, 0 4px 12px #12372a1a;
+    .finalize-copy,
+    .finalize-copy > span,
+    .draft-subtotal { color: #fff; }
+    .finalize-hint { color: #d6e2d7; }
+    .finalize-error {
+      color: #fff;
+      background: #772f25;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .finalize-actions > button {
+      background: #f6f1e7;
+      color: #12372a;
+      opacity: 1;
+      &:hover:not(:disabled) { background: #fff; }
+      &:disabled {
+        background: #526e61;
+        color: #e2e9e4;
+        opacity: 1;
+      }
+    }
+  }
+  app-line-review {
+    .review-state { color: #94430d; }
+    .review-state.accepted { color: #32623e; }
+    .review-state.rejected { color: #625c55; }
+    .review-help { color: #805121; }
+    .approve { background: #12372a; border-color: #12372a; }
+    .reject { color: #a13d2c; border-color: #ce8b7c; }
+  }
+}
+
+// Stronger surface and control contrast in the quotation workspace.
+.project-workspace {
+  background: #eae8df;
+
+  app-project-sidebar {
+    .conversation-rail {
+      border-color: #bdc9be;
+      box-shadow: 0 3px 12px #12372a0a;
+    }
+    .conversation-heading {
+      background: #12372a;
+      border-bottom-color: #12372a;
+      color: #fff;
+    }
+    .conversation-eyebrow {
+      color: #d4e3d8;
+    }
+    .conversation-body {
+      background: #f2f5ef;
+    }
+    .chat-message {
+      border-color: #c8d2c8;
+    }
+    .chat-message.chat-message-user {
+      background: #dce8d5;
+      border-color: #bccfb5;
+    }
+    .chat-message strong {
+      color: #425c48;
+    }
+    .chat-form {
+      border-color: #aebfb2;
+      box-shadow: 0 1px 4px #12372a08;
+    }
+    textarea::placeholder {
+      color: #617068;
+      opacity: 1;
+    }
+    .chat-form button:not(:disabled):hover {
+      background: #1d4d3b;
+    }
   }
 }

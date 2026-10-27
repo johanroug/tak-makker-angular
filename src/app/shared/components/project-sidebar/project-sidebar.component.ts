@@ -1,7 +1,7 @@
 import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
 import { WorkspaceIcon } from '../workspace-icon.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, input, output, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, ElementRef, inject, Injector, input, output, signal, viewChild } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
 import type { OnDestroy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -220,6 +220,35 @@ export class ProjectSidebar implements OnDestroy {
   });
 
   constructor() {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const host = this.host.nativeElement;
+      let frame = 0;
+      const measure = () => {
+        frame = 0;
+        const viewport = window.visualViewport;
+        const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+        const top = Math.max(20, host.getBoundingClientRect().top);
+        host.style.setProperty('--conversation-height', `${Math.max(0, bottom - top - 20)}px`);
+      };
+      const schedule = () => {
+        if (!frame) frame = requestAnimationFrame(measure);
+      };
+      const observer = new ResizeObserver(schedule);
+      const header = document.querySelector('.header-shell');
+      if (header) observer.observe(header);
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule);
+      window.visualViewport?.addEventListener('resize', schedule);
+      measure();
+      destroyRef.onDestroy(() => {
+        observer.disconnect();
+        cancelAnimationFrame(frame);
+        window.removeEventListener('scroll', schedule);
+        window.removeEventListener('resize', schedule);
+        window.visualViewport?.removeEventListener('resize', schedule);
+      });
+    });
     effect(() => {
       const data = this.data();
       this.acknowledge(

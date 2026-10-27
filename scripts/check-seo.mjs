@@ -24,7 +24,12 @@ for (const page of pages) {
   const document = parseHtml(read(file));
   assert.equal(document.documentElement.lang, 'da', `${file}: Danish document language`);
   assert.equal(document.title, page.title, `${file}: correct title`);
-  assert(!/tak\s*makker/i.test(document.documentElement.textContent), `${file}: old brand removed`);
+  assert.equal(
+    document.querySelector('app-marketing-header app-public-brand a')
+      ?.getAttribute('aria-label')?.toLocaleLowerCase('da-DK'),
+    BRAND_NAME.toLocaleLowerCase('da-DK'),
+    `${file}: navigation uses the current brand`,
+  );
   assert(!titles.has(document.title), `${file}: unique title`);
   titles.add(document.title);
   const description = document.querySelector('meta[name="description"]')?.content;

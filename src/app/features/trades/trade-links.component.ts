@@ -9,7 +9,7 @@ import { RevealDirective } from '../../shared/marketing-motion.directive';
   template: `
     <section aria-labelledby="trade-links-title" appReveal>
       <p class="eyebrow">TILBUDSARBEJDE I DIT FAG</p>
-      <h2 id="trade-links-title">En makker, der starter<br />med din opgave.</h2>
+      <h2 id="trade-links-title">Dit næste tilbud starter<br />med din opgave.</h2>
       <div class="links">
         @for (page of pages; track page.slug) {
           <a [routerLink]="'/' + page.slug"

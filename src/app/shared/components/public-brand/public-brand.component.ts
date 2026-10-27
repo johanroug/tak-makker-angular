@@ -4,7 +4,12 @@ import { RouterLink } from '@angular/router';
   selector: 'app-public-brand',
   imports: [RouterLink],
   template: `
-    <a [routerLink]="destination()" [class.header-brand]="header()" aria-label="Hovedet på Sømmet">
+    <a
+      [routerLink]="destination()"
+      [class.header-brand]="header()"
+      [class.inverse]="inverse()"
+      aria-label="Hovedet på Sømmet"
+    >
       <span class="mark"
         ><img src="/brand-preview/reference-symbol.svg" alt="" width="48" height="48"
       /></span>
@@ -78,6 +83,12 @@ import { RouterLink } from '@angular/router';
     .header-brand strong {
       font-size: 20px;
     }
+    .inverse {
+      color: #fffaf0;
+    }
+    .inverse img {
+      filter: brightness(0) invert(1);
+    }
     @media (max-width: 600px) {
       strong {
         font-size: 18px;
@@ -90,6 +101,7 @@ import { RouterLink } from '@angular/router';
 })
 export class PublicBrandComponent {
   readonly header = input(false);
+  readonly inverse = input(false);
   readonly tagline = input(true);
   readonly destination = input('/');
 }

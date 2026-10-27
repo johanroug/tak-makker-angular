@@ -4,6 +4,10 @@ export interface TradePage {
   title: string;
   description: string;
   heading: string;
+  accent: string;
+  image: string;
+  shortIntro: string;
+  singular: string;
   intro: string;
   sections: { heading: string; text: string }[];
   example: { title: string; description: string; items: string[]; check: string };
@@ -17,7 +21,12 @@ export const TRADE_PAGES: TradePage[] = [
     title: 'Tilbudsprogram til tømrere | Hovedet på sømmet',
     description:
       'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Bliv testfirma hos Hovedet på sømmet.',
-    heading: 'Tilbud til tømrerarbejde. Med styr på detaljerne.',
+    heading: 'Godt håndværk.',
+    accent: 'Også på papiret.',
+    image: '/marketing/carpentry.jpg',
+    shortIntro:
+      'Fra terrasse til tagarbejde. Få hjælp til opgaver, materialer og priser — tilpasset din måde at arbejde på.',
+    singular: 'Tømrer',
     intro:
       'En ny terrasse er mere end brædder og skruer. Der er underlag, konstruktion, tilpasninger og kundens valg. Hovedet på sømmet hjælper dig fra beskrivelsen af opgaven til et tilbudsudkast, som du selv gennemgår og prissætter.',
     sections: [
@@ -66,7 +75,12 @@ export const TRADE_PAGES: TradePage[] = [
     title: 'Tilbudsprogram til murere | Hovedet på sømmet',
     description:
       'Lav tilbud på murer- og flisearbejde med hjælp fra Hovedet på sømmet. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Søg adgang som testfirma.',
-    heading: 'Tilbud på murerarbejde. Fra underlag til sidste fuge.',
+    heading: 'Styr på tilbuddet.',
+    accent: 'Helt ned i fugen.',
+    image: '/marketing/craft-still-life.jpg',
+    shortIntro:
+      'Få hjælp til at strukturere opgaver, materialer og priser — tilpasset dit murerarbejde. Du har fagligheden. Vi hjælper med overblikket.',
+    singular: 'Murer',
     intro:
       'Når du giver tilbud på fliser eller andet murerarbejde, skal forarbejdet med. Hovedet på sømmet hjælper med at samle beskrivelsen, opgaverne og materialerne, så du kan tilpasse tilbuddet med din faglige vurdering.',
     sections: [
@@ -115,7 +129,12 @@ export const TRADE_PAGES: TradePage[] = [
     title: 'Tilbudsprogram til malere | Hovedet på sømmet',
     description:
       'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Hovedet på sømmet og hent en PDF. Bliv testfirma.',
-    heading: 'Tilbud på malerarbejde. Også alt det før første strøg.',
+    heading: 'Et godt tilbud.',
+    accent: 'Med den rette finish.',
+    image: '/marketing/painting.jpg',
+    shortIntro:
+      'Fra forarbejde til sidste strøg. Saml opgaver, materialer og dine priser i et tilbud, du selv har styr på.',
+    singular: 'Maler',
     intro:
       'Afdækning, afrensning og spartling kan fylde lige så meget i tilbuddet som selve malingen. Hovedet på sømmet hjælper dig med at samle arbejdsopgaver og materialer i et udkast, som du tilpasser til rummene og overfladerne.',
     sections: [

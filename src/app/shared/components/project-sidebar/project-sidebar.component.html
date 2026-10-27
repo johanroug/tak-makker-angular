@@ -1,7 +1,7 @@
-<aside class="conversation-rail" aria-label="Samtale med din makker">
+<aside class="conversation-rail" aria-label="Samtale om dit tilbud">
   <header class="conversation-heading">
     <div>
-      <span class="conversation-eyebrow">DIN MAKKER</span>
+      <span class="conversation-eyebrow">TILBUDSASSISTENT</span>
       <h2>Samtale</h2>
     </div>
     <button
@@ -22,7 +22,7 @@
           tabindex="-1"
           [class.chat-message-user]="message.role === 'user'"
         >
-          <strong>{{ message.role === 'user' ? 'Dig' : 'Din makker' }}</strong>
+          <strong>{{ message.role === 'user' ? 'Dig' : 'Hovedet på sømmet' }}</strong>
           <p>{{ message.content }}</p>
         </article>
       } @empty {
@@ -30,7 +30,7 @@
           <app-workspace-icon name="chat" />
           <h3>Hvad skal vi bygge?</h3>
           <p>
-            Beskriv projektet. Din makker hjælper med opgaver og materialer, som vises ved siden af.
+            Beskriv projektet. Du får forslag til opgaver og materialer, som vises ved siden af.
           </p>
         </div>
       }
@@ -54,7 +54,7 @@
         <p class="send-error" role="alert">{{ sendError() }}</p>
       }
       <button type="submit" [disabled]="isSending() || !messageControl.value.trim()">
-        {{ isSending() ? 'Din makker arbejder…' : 'Send besked' }} <span aria-hidden="true">↗</span>
+        {{ isSending() ? 'Arbejder på dit tilbud…' : 'Send besked' }} <span aria-hidden="true">↗</span>
       </button>
     </form>
   </div>

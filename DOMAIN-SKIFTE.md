@@ -20,7 +20,7 @@ Unicode-adressen og IDN-adressen er to skrivemåder for samme domæne. Canonical
 - Længere navn tilpasset i mobilens ordmærke og appheader. Det eksisterende håndværkerikon indeholder ikke gammelt navn og er bevaret.
 - Angular-projektnavn, pakkenavn, outputmappe og buildkontrol ændret til `hovedet-paa-soemmet-angular`.
 - Opgavelisten hedder nu `TODO.md`.
-- Separat migration `supabase/migrations/202610260001_brand_name.sql` ændrer den servergenererede blokeringstekst. Den er ikke kørt. Allerede anvendte migrationsfiler er bevaret som historik.
+- Separat migration `supabase/migrations/202610260001_brand_name.sql` ændrer den servergenererede blokeringstekst. Den er ikke kørt. Den oprindelige migrations fejltekst er også opdateret ved navneoprydningen; den separate migration retter allerede oprettede databaser uden at ændre adgangsreglerne.
 
 GitHub-repoet og den lokale projektmappe har stadig deres eksisterende tekniske navne. Der er ikke oprettet nye Supabase-/Vercel-projekter, flyttet data eller ændret eksisterende kunders firmaoplysninger, gemte beskeder eller tilbud. Navneskiftet erstatter ikke historiske kundedata.
 

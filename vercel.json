@@ -7,18 +7,6 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "takmakker.dk" }],
-      "destination": "https://xn--hovedetpsmmet-wfb00a.dk/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.takmakker.dk" }],
-      "destination": "https://xn--hovedetpsmmet-wfb00a.dk/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
       "has": [{ "type": "host", "value": "www.xn--hovedetpsmmet-wfb00a.dk" }],
       "destination": "https://xn--hovedetpsmmet-wfb00a.dk/:path*",
       "permanent": true

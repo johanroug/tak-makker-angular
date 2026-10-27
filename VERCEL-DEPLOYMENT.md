@@ -1,6 +1,6 @@
 # Vercel: Angular
 
-Repo: `johanroug/tak-makker-angular`.
+Repo: projektets tilknyttede Angular-repo. Den aktuelle adresse kan ses med `git remote get-url origin`.
 
 ## Opsætning
 

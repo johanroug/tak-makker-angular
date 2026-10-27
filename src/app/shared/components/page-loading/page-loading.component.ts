@@ -4,7 +4,7 @@ import { Component, input } from '@angular/core';
   selector: 'app-page-loading',
   template: `
     <section class="loading-page" role="status" aria-live="polite" aria-busy="true">
-      <div class="loading-label"><span class="loading-emblem" aria-hidden="true">✦</span><div><small>ET ØJEBLIK, MAKKER</small><p>{{ label() }}</p></div></div>
+      <div class="loading-label"><span class="loading-emblem" aria-hidden="true">✦</span><div><small>ET ØJEBLIK</small><p>{{ label() }}</p></div></div>
       <div class="skeleton-layout" [class.project]="layout() === 'project'" aria-hidden="true">
         <div class="skeleton-card">
           <div class="skeleton short"></div>

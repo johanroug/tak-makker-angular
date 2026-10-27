@@ -1,62 +1,100 @@
-<a class="skip-link" href="#indhold">Spring til indhold</a>
-<header>
-  <app-public-brand />
-  <nav aria-label="Hovednavigation">
-    <a routerLink="/">Forside</a><a routerLink="/login">Log ind ↗</a>
-  </nav>
-</header>
-<main id="indhold">
-  <section class="hero">
-    <nav class="breadcrumb" aria-label="Brødkrumme">
-      <a routerLink="/">Forside</a><span aria-hidden="true">/</span><span>{{ page.trade }}</span>
-    </nav>
-    <p class="eyebrow">TILBUDSPROGRAM TIL {{ page.trade }}</p>
-    <h1>{{ page.heading }}</h1>
-    <p class="intro">{{ page.intro }}</p>
-    <a class="button" routerLink="/register">Bliv testfirma <span aria-hidden="true">↗</span></a>
-    <p class="note">Bekræft din e-mail, og afvent godkendelse af din testadgang.</p>
-  </section>
-  <div class="content">
-    <article>
-      @for (section of page.sections; track section.heading) {
-        <section appReveal>
-          <h2>{{ section.heading }}</h2>
-          <p>{{ section.text }}</p>
-        </section>
-      }
-    </article>
-    <aside aria-labelledby="example-title" appReveal>
-      <p class="eyebrow">ILLUSTRATIVT TILBUDSEKSEMPEL</p>
-      <h2 id="example-title">{{ page.example.title }}</h2>
-      <p>{{ page.example.description }}</p>
-      <ol>
-        @for (item of page.example.items; track item) {
-          <li>{{ item }}</li>
-        }
-      </ol>
-      <p class="check">{{ page.example.check }}</p>
-      <a routerLink="/" fragment="saadan">Se arbejdsgangen i Hovedet på sømmet ↗</a>
-    </aside>
-  </div>
-  <section class="faq" aria-labelledby="faq-title">
-    <p class="eyebrow">SPØRGSMÅL FRA DIT FAG</p>
-    <h2 id="faq-title">Godt at vide, før du starter.</h2>
-    @for (item of page.questions; track item.question) {
+<div class="marketing-page">
+  <a class="skip-link" href="#indhold">Spring til indhold</a><app-marketing-header />
+  <main id="indhold">
+    <section class="trade-hero">
+      <img
+        class="trade-photo"
+        [src]="page.image"
+        alt=""
+        width="1536"
+        height="1024"
+        fetchpriority="high"
+      /><span class="trade-blueprint" aria-hidden="true"></span>
+      <div class="trade-copy">
+        <nav class="breadcrumb" aria-label="Brødkrumme">
+          <a routerLink="/">Forside</a><span aria-hidden="true">/</span
+          ><span>{{ page.trade }}</span>
+        </nav>
+        <p class="eyebrow">Tilbudsprogram til {{ page.trade }}</p>
+        <h1>
+          {{ page.heading }}<br /><em>{{ page.accent }}</em>
+        </h1>
+        <p class="intro">{{ page.shortIntro }}</p>
+        <a class="marketing-button" routerLink="/register"
+          >Bliv testfirma <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </section>
+    <section class="trade-example" aria-label="Illustrativt tilbudseksempel">
+      <app-product-preview
+        [chat]="false"
+        [trade]="page.singular"
+        [title]="page.example.title.replace('Eksempel: ', '')"
+      />
+      <p class="example-note">Illustrativt eksempel · Du kontrollerer og godkender indholdet.</p>
+    </section>
+    <section class="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Ofte stillede spørgsmål</h2>
       <details>
-        <summary>{{ item.question }}</summary>
-        <p>{{ item.answer }}</p>
+        <summary>Kan jeg tilpasse opgaver og materialer?</summary>
+        <p>
+          Ja. Du retter beskrivelser, timer, mængder og priser og godkender hver post, før den
+          tæller med i tilbuddet.
+        </p>
       </details>
-    }
-  </section>
-  <section class="testing">
-    <p class="eyebrow">VÆR MED TIL AT FORME HOVEDET PÅ SØMMET</p>
-    <h2>Din hverdag er med<br />til at vise vejen.</h2>
-    <p>
-      Jeg søger håndværksfirmaer, der vil teste Hovedet på sømmet på rigtige opgaver. Dine erfaringer med
-      tilbudsarbejdet er med til at forme udviklingen.
-    </p>
-    <a class="button" routerLink="/register">Anmod om testadgang ↗</a>
-  </section>
-  <app-trade-links />
-</main>
-<footer><app-public-brand [tagline]="false" /><a routerLink="/login">Åbn appen ↗</a></footer>
+      @for (item of page.questions; track item.question) {
+        <details>
+          <summary>{{ item.question }}</summary>
+          <p>{{ item.answer }}</p>
+        </details>
+      }
+      <details>
+        <summary>Hvad sker der, når jeg bliver testfirma?</summary>
+        <p>
+          Du opretter en bruger, bekræfter din e-mail og afventer godkendelse. Dine erfaringer fra
+          tilbudsarbejdet er med til at forme udviklingen.
+        </p>
+      </details>
+    </section>
+    <section class="trade-advice" aria-labelledby="trade-advice-title">
+      <p class="eyebrow">Tilbud til dit fag</p>
+      <h2 id="trade-advice-title">Fra din erfaring<br />til et ordentligt tilbud.</h2>
+      <p class="advice-intro">{{ page.intro }}</p>
+      @for (section of page.sections; track section.heading) {
+        <details>
+          <summary>{{ section.heading }}</summary>
+          <p>{{ section.text }}</p>
+        </details>
+      }
+      <details>
+        <summary>{{ page.example.title }}</summary>
+        <p>{{ page.example.description }}</p>
+        <ol>
+          @for (item of page.example.items; track item) {
+            <li>{{ item }}</li>
+          }
+        </ol>
+        <p>{{ page.example.check }}</p>
+      </details>
+    </section>
+    <section class="testing-banner">
+      <img
+        class="testing-photo"
+        [src]="page.image"
+        alt=""
+        width="1536"
+        height="1024"
+        loading="lazy"
+      />
+      <h2>Vær med fra <em>begyndelsen.</em></h2>
+      <p>Vi søger testfirmaer. Din hverdag er med til at forme Hovedet på sømmet.</p>
+      <a class="marketing-button orange" routerLink="/register">Bliv testfirma ↗</a>
+    </section>
+    <app-trade-links />
+  </main>
+  <footer class="marketing-footer">
+    <app-public-brand [tagline]="false" />
+    <p>Din faglighed. Din virksomhed. Dit tilbud.</p>
+    <a routerLink="/login">Log ind ↗</a>
+  </footer>
+</div>

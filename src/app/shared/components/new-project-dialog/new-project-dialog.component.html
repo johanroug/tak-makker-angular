@@ -8,7 +8,7 @@
   @if (isWorking()) {
     <div class="ai-working">
       <div class="ai-orbit" aria-hidden="true"><span>✦</span></div>
-      <span class="eyebrow">DIN AI-MAKKER ER PÅ SAGEN</span>
+      <span class="eyebrow">DIT TILBUD TAGER FORM</span>
       <h2 id="new-project-title">En god start på dit næste projekt</h2>
       <p class="changing-message" aria-hidden="true">{{ loadingMessage() }}</p>
       <p class="working-note" role="status">
@@ -26,7 +26,7 @@
     </div>
     <h2 id="new-project-title">Hvad skal vi hjælpe dig med?</h2>
     <p class="intro">
-      Beskriv opgaven med dine egne ord. Din AI-makker tager første runde med overblikket, så du kan
+      Beskriv opgaven med dine egne ord. Få et første overblik, så du kan
       koncentrere dig om detaljerne.
     </p>
     <form (submit)="$event.preventDefault(); continue()">

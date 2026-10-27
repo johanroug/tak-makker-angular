@@ -1,17 +1,15 @@
-<div class="login-page">
+<app-auth-shell [mode]="registering ? 'register' : 'login'">
   <main class="login-card">
-    <div class="login-header">
-      <img class="login-logo" src="/brand-preview/reference-symbol.svg" alt="Hovedet på sømmet" />
-
-      <h1>Hovedet på sømmet</h1>
+    <header class="login-header">
+      <h1>{{ registering ? 'Bliv testfirma' : 'Velkommen tilbage' }}</h1>
       <p>
         {{
           registering
-            ? 'Bliv testfirma og vær med til at forme Hovedet på sømmet'
-            : 'Hjernen bag dit næste tilbud.'
+            ? 'Få indflydelse på udviklingen.'
+            : 'Log ind, og fortsæt dit gode arbejde.'
         }}
       </p>
-    </div>
+    </header>
 
     <form #authForm="ngForm" class="login-form" (ngSubmit)="authForm.valid && login()">
       <label>
@@ -49,11 +47,7 @@
             minlength="8"
             required
         /></label>
-        <small
-          >Brug mindst 8 tegn. Du opretter en bruger og anmoder om adgang som testfirma. Bekræft din
-          e-mail, og afvent godkendelse fra Hovedet på sømmet. Derefter får du din egen
-          virksomhedsprofil.</small
-        >
+        <small>Brug mindst 8 tegn.</small>
       }
       @if (!registering) {
         <a class="forgot-password" routerLink="/forgot-password">Glemt adgangskode?</a>
@@ -77,6 +71,12 @@
         }}
       </button>
     </form>
+    @if (registering) {
+      <p class="access-process">
+        Opret bruger <span aria-hidden="true">→</span> Bekræft e-mail
+        <span aria-hidden="true">→</span> Afvent godkendelse
+      </p>
+    }
     <p class="auth-switch">
       {{ registering ? 'Har du allerede en bruger?' : 'Ny hos Hovedet på sømmet?' }}
       <a [routerLink]="registering ? '/login' : '/register'">{{
@@ -84,4 +84,4 @@
       }}</a>
     </p>
   </main>
-</div>
+</app-auth-shell>

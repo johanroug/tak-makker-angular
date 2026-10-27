@@ -4,11 +4,12 @@ import { TradePage } from './trade-pages';
 import { TradeLinksComponent } from './trade-links.component';
 import { PublicBrandComponent } from '../../shared/components/public-brand/public-brand.component';
 import { resetPublicPageScroll } from '../../shared/public-page-scroll';
-import { RevealDirective } from '../../shared/marketing-motion.directive';
+import { MarketingHeader } from '../../shared/marketing/marketing-header.component';
+import { ProductPreview } from '../../shared/marketing/product-preview.component';
 
 @Component({
   selector: 'app-trade',
-  imports: [RouterLink, TradeLinksComponent, PublicBrandComponent, RevealDirective],
+  imports: [RouterLink, TradeLinksComponent, PublicBrandComponent, MarketingHeader, ProductPreview],
   templateUrl: './trade.component.html',
   styleUrl: './trade.component.scss',
 })

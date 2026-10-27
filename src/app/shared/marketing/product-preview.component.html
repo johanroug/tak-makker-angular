@@ -1,0 +1,53 @@
+<div class="product-window" [class.pdf-phase]="phase() === 2" [class.without-chat]="!chat()">
+  <div class="window-chrome" aria-hidden="true">
+    <i></i><i></i><i></i><span>Hovedet på sømmet</span>
+  </div>
+  <div class="product-top">
+    <img src="/brand-preview/reference-symbol.svg" width="28" height="28" alt="" /><strong>{{
+      title()
+    }}</strong
+    ><span class="project-badge">Kladde</span>
+  </div>
+  <div class="product-body">
+    @if (chat()) {
+      <aside class="product-chat">
+        <span class="panel-label">DIT PROJEKT</span>
+        <h4>Samtale</h4>
+        <p class="bubble user">Jeg skal lave et tilbud på {{ title().toLowerCase() }}.</p>
+        <p class="bubble">Lad os få styr på opgaverne og materialerne.</p>
+        <p class="bubble user">Ja, lad os tage det trin for trin.</p>
+        <div class="compose">Skriv din besked… <span>↗</span></div>
+      </aside>
+    }
+    <section class="product-work">
+      <h4>Arbejdsopgaver</h4>
+      <div class="trade-label">{{ trade() }}</div>
+      @for (item of work; track item; let i = $index) {
+        <div class="work-line">
+          <strong>{{ item }}</strong
+          ><span class="work-meta"
+            ><span class="check">✓</span> Godkendt <span>{{ i + 2 }},5 t.</span></span
+          >
+        </div>
+      }
+    </section>
+    <section class="product-materials">
+      <h4>Materialer</h4>
+      @for (item of materials; track item; let i = $index) {
+        <div class="material-line">
+          <span class="material-thumb" [class.bucket]="i === 2" aria-hidden="true"></span>
+          <div>
+            <strong>{{ item }}</strong
+            ><small>{{ materialAmount(i) }}</small
+            ><span class="check">✓ Godkendt</span>
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+  <div class="product-bottom">
+    <span>Samlet pris <small>(ekskl. moms)</small></span
+    ><strong>12.480 kr.</strong
+    ><span class="finish">{{ phase() === 2 ? 'Hent som PDF ↓' : 'Færdiggør tilbud →' }}</span>
+  </div>
+</div>

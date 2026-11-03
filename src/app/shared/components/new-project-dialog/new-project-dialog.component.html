@@ -30,6 +30,7 @@
       koncentrere dig om detaljerne.
     </p>
     <form (submit)="$event.preventDefault(); continue()">
+      <app-billing-panel [compact]="true" (subscriptionRequested)="close()" />
       <label for="new-project-description">Fortæl om projektet</label>
       <textarea
         id="new-project-description"

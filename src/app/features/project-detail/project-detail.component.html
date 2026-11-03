@@ -1,4 +1,16 @@
 <div class="project-workspace">
+  @if (sidebar()?.aiResult(); as result) {
+    @if (result.workItems > 0 || result.materials > 0) {
+    <div class="suggestion-notice">
+      <app-ai-feedback
+        [notice]="true"
+        [result]="result"
+        (openTab)="sidebar()?.openAiTarget($event)"
+        (dismiss)="sidebar()?.dismissAiResult()"
+      />
+    </div>
+    }
+  }
   <div class="project-shell">
     @if (refreshError()) {
       <p role="alert">

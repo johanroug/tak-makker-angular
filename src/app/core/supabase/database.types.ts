@@ -392,6 +392,7 @@ export type Database = {
       }
       project_work_items: {
         Row: {
+          estimate_basis: string | null
           created_at: string
           description: string | null
           estimated_hours: number | null
@@ -403,6 +404,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          estimate_basis?: string | null
           created_at?: string
           description?: string | null
           estimated_hours?: number | null
@@ -414,6 +416,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          estimate_basis?: string | null
           created_at?: string
           description?: string | null
           estimated_hours?: number | null
@@ -514,6 +517,7 @@ export type Database = {
     }
     Functions: {
       get_app_access_state: { Args: Record<PropertyKey, never>; Returns: string }
+      get_company_billing: { Args: {p_company_id?: string}; Returns: Json }
       approve_app_user: { Args: {p_user_id: string}; Returns: undefined }
       can_access_app: { Args: Record<PropertyKey, never>; Returns: boolean }
       get_app_users: { Args: Record<PropertyKey, never>; Returns: Json }

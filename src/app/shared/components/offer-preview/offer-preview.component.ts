@@ -52,6 +52,12 @@ export class OfferPreview {
 
   readonly data = input.required<ProjectData>();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly readinessSlot = viewChild<ElementRef<HTMLElement>>('readinessSlot');
+  private preservedReadinessHeight = 0;
+  resetReadinessHeight(): void {
+    this.preservedReadinessHeight = 0;
+    this.readinessSlot()?.nativeElement.style.removeProperty('min-height');
+  }
   readonly newWorkItemIds = input<ReadonlySet<string>>(new Set());
   readonly newMaterialIds = input<ReadonlySet<string>>(new Set());
   readonly statusChanged = output<{kind: 'work' | 'material'; id: string; status: 'accepted' | 'rejected'}>();
@@ -144,6 +150,20 @@ export class OfferPreview {
 
   constructor() {
     afterNextRender(() => {
+      const slot = this.readinessSlot()?.nativeElement;
+      if (slot) {
+        const preserveHeight = () => {
+          const height = Math.ceil(slot.getBoundingClientRect().height);
+          if (height > this.preservedReadinessHeight) {
+            this.preservedReadinessHeight = height;
+            slot.style.minHeight = `${height}px`;
+          }
+        };
+        const readinessObserver = new ResizeObserver(preserveHeight);
+        readinessObserver.observe(slot);
+        preserveHeight();
+        this.destroyRef.onDestroy(() => readinessObserver.disconnect());
+      }
       const footer = this.footer().nativeElement;
       const measure = () => {
         const height = Math.ceil(footer.getBoundingClientRect().height);

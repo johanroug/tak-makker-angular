@@ -21,6 +21,7 @@ import { NewProjectDialog } from '../new-project-dialog/new-project-dialog.compo
 import { WorkspaceState } from './workspace-state';
 import { PublicBrandComponent } from '../public-brand/public-brand.component';
 import { WorkspaceIcon } from '../workspace-icon.component';
+import { BillingService } from '../../../core/billing/billing.service';
 
 @Component({
   selector: 'app-shell',
@@ -40,6 +41,7 @@ import { WorkspaceIcon } from '../workspace-icon.component';
   styleUrl: './app-shell.component.scss',
 })
 export class AppShell implements OnInit {
+  readonly billing = inject(BillingService);
   readonly activity = inject(ActivityService);
   private readonly access = inject(AppAccessService);
   private accessCheckPending = false;

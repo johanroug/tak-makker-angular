@@ -13,10 +13,12 @@ export type AiSuggestionSummary = {
 
 @Component({
   selector: 'app-ai-feedback',
+  host: { '[class.notice]': 'notice()' },
   templateUrl: './ai-feedback.component.html',
   styleUrl: './ai-feedback.component.scss',
 })
 export class AiFeedback {
+  readonly notice = input(false);
   readonly isWorking = input(false);
   readonly result = input<AiSuggestionSummary | null>(null);
   readonly openTab = output<'tasks' | 'materials' | 'chat'>();

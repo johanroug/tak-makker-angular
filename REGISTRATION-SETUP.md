@@ -1,5 +1,14 @@
 # Brugerregistrering og blokering
 
+## Aktuel adgang — 3. november 2026
+
+`202611030003_company_trial.sql` er kørt. Nye brugere har nu selvbetjent appadgang
+uden manuel godkendelse, med 10 gratis gennemførte AI-kald pr. virksomhed.
+E-mailbekræftelse styres fortsat af Supabase Auth. Blokerede brugere afvises stadig.
+Se `docs/company-trial.md` for serveroptælling, udrulning og tests.
+Den tidligere godkendelsesprocedure nedenfor beskriver den historiske opsætning.
+Genkør ikke den gamle godkendelsesmigration, da den genindfører godkendelseskravet.
+
 Domæne- og navneskift til **Hovedet på sømmet**: Følg DOMAIN-SKIFTE.md. Hjemmesiden bruger hovedetpåsømmet.dk, og mailafsenderen skal bruge hovedetpaasommet.dk efter separat Resend-verifikation.
 
 ## Udrulning

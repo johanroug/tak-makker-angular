@@ -1,11 +1,11 @@
 <app-auth-shell [mode]="registering ? 'register' : 'login'">
   <main class="login-card">
     <header class="login-header">
-      <h1>{{ registering ? 'Bliv testfirma' : 'Velkommen tilbage' }}</h1>
+      <h1>{{ registering ? 'Opret konto' : 'Velkommen tilbage' }}</h1>
       <p>
         {{
           registering
-            ? 'Få indflydelse på udviklingen.'
+            ? 'Prøv 10 gratis forespørgsler. Intet betalingskort kræves.'
             : 'Log ind, og fortsæt dit gode arbejde.'
         }}
       </p>
@@ -88,7 +88,7 @@
               ? 'Opretter bruger…'
               : 'Logger ind…'
             : registering
-              ? 'Anmod om testadgang'
+              ? 'Opret gratis konto'
               : 'Log ind'
         }}
       </button>
@@ -96,7 +96,7 @@
     @if (registering) {
       <p class="access-process">
         Opret bruger <span aria-hidden="true">→</span> Bekræft e-mail
-        <span aria-hidden="true">→</span> Afvent godkendelse
+        <span aria-hidden="true">→</span> Kom i gang
       </p>
     }
     <p class="auth-switch">

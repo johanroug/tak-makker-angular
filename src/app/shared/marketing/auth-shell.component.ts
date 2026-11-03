@@ -20,7 +20,7 @@ import { resetPublicPageScroll } from '../public-page-scroll';
           <p>
             {{
               mode() === 'register'
-                ? 'Bliv testfirma og sæt dit præg på udviklingen.'
+                ? 'Prøv 10 gratis forespørgsler til virksomhedens næste tilbud.'
                 : mode() === 'recover'
                   ? 'Vi hjælper dig sikkert tilbage til dine opgaver og tilbud.'
                   : 'Fra den første beskrivelse til et tilbud med dit navn på.'

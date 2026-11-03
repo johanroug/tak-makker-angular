@@ -8,12 +8,13 @@ import { OfferPreview } from '../../shared/components/offer-preview/offer-previe
 import { ProjectSidebar } from '../../shared/components/project-sidebar/project-sidebar.component';
 import { WorkspaceState } from '../../shared/components/app-shell/workspace-state';
 import { WorkspaceIcon } from '../../shared/components/workspace-icon.component';
+import { AiFeedback } from '../../shared/components/ai-feedback/ai-feedback.component';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-detail',
-  imports: [PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar, WorkspaceIcon],
+  imports: [PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar, WorkspaceIcon, AiFeedback],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })
@@ -22,7 +23,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
 
-  private readonly sidebar = viewChild(ProjectSidebar);
+  protected readonly sidebar = viewChild(ProjectSidebar);
   private readonly preview = viewChild(OfferPreview);
 
   reviewItems(tab: 'tasks' | 'materials'): void {

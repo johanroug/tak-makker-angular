@@ -198,21 +198,23 @@ export class ProjectService {
     for (const item of new Map(workItems.map((item) => [item.id, item])).values()) {
       const existing = existingById.get(item.id);
       if (existing) {
-        if (
-          existing.estimated_hours_source === 'user' ||
-          item.estimatedHours === null ||
-          existing.estimated_hours === item.estimatedHours
-        )
-          continue;
+        const updates: Database['public']['Tables']['project_work_items']['Update'] = {};
+        if (existing.estimated_hours_source !== 'user' && item.estimatedHours !== null &&
+            existing.estimated_hours !== item.estimatedHours) {
+          updates.estimated_hours = item.estimatedHours;
+          updates.estimated_hours_source = 'ai';
+        }
+        // Undefined is an older response without this field; null explicitly
+        // clears a note after the user has supplied the missing information.
+        if (item.estimateBasis !== undefined && existing.estimate_basis !== item.estimateBasis)
+          updates.estimate_basis = item.estimateBasis;
+        if (!Object.keys(updates).length) continue;
 
         // Compare the snapshot in the UPDATE itself. A manual save after the
         // SELECT must win, including a deliberately cleared value or new status.
         let query = supabase
           .from('project_work_items')
-          .update({
-            estimated_hours: item.estimatedHours,
-            estimated_hours_source: 'ai',
-          })
+          .update(updates)
           .eq('project_id', projectId)
           .eq('id', item.id);
         for (const [column, value] of Object.entries(existing)) {
@@ -231,6 +233,7 @@ export class ProjectService {
         id: item.id,
         trade: item.trade,
         description: item.description,
+        estimate_basis: item.estimateBasis ?? null,
         status: 'suggested',
         estimated_hours: item.estimatedHours,
         estimated_hours_source: 'ai',

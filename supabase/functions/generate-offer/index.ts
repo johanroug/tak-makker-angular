@@ -17,6 +17,8 @@ const corsHeaders = {
 
 const openai = new OpenAI({
   apiKey: Deno.env.get('OPENAI_API_KEY'),
+  timeout: 90_000,
+  maxRetries: 0,
 });
 
 Deno.serve(async (request) => {
@@ -30,6 +32,8 @@ Deno.serve(async (request) => {
 
   const started = performance.now();
   const timings: Record<string, number> = {};
+  let requestId: string | undefined;
+  const billing = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   const measure = async <T>(name: string, action: () => PromiseLike<T>): Promise<T> => {
     const phaseStarted = performance.now();
     try {
@@ -135,6 +139,7 @@ Deno.serve(async (request) => {
       trade: item.trade,
       description: item.description,
       descriptionSource: null,
+      estimateBasis: item.estimate_basis ?? null,
       status: item.status,
       estimatedHours: item.estimated_hours,
       estimatedHoursSource: item.estimated_hours_source ?? 'ai',
@@ -182,6 +187,17 @@ Deno.serve(async (request) => {
       );
     }
 
+    const { data: reservation, error: reserveError } = await billing.rpc('reserve_company_ai_request', {
+      p_project_id: projectId, p_user_id: authData.user.id,
+    });
+    if (reserveError || !reservation) throw new Error('Could not reserve request');
+    if (!reservation.allowed) return Response.json({
+      code: reservation.usage.status === 'exhausted' ? 'TRIAL_EXHAUSTED' : 'TRIAL_BUSY',
+      error: 'Gratis prøveperiode er brugt eller optaget af igangværende forespørgsler.',
+      usage: reservation.usage,
+    }, { status: 402, headers: corsHeaders });
+    requestId = reservation.requestId;
+
     const response = await measure('aiMs', () =>
       openai.responses.parse({
         model: 'gpt-5.6-luna',
@@ -227,10 +243,23 @@ Deno.serve(async (request) => {
       conversationMessages: messages.length,
     });
 
-    return Response.json(response.output_parsed, {
+    const { data: usage, error: finishError } = await billing.rpc('finish_company_ai_request', {
+      p_request_id: requestId, p_success: true,
+    });
+    if (finishError || !usage) throw new Error('Could not finish request');
+    requestId = undefined;
+    return Response.json({ ...response.output_parsed, usage }, {
       headers: corsHeaders,
     });
   } catch (error) {
+    if (requestId) {
+      try {
+        const { error: releaseError } = await billing.rpc('finish_company_ai_request', {
+          p_request_id: requestId, p_success: false,
+        });
+        if (releaseError) console.error('Could not release request reservation');
+      } catch { console.error('Could not release request reservation'); }
+    }
     console.error('GENERATE OFFER ERROR:', error);
 
     return Response.json(

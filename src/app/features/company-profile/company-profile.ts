@@ -14,10 +14,11 @@ import {
 } from "../../core/company/company.service";
 import { Location } from "@angular/common";
 import { TradeSelectComponent } from '../../shared/components/trade-select/trade-select.component';
+import { BillingPanelComponent } from '../../shared/components/billing-panel/billing-panel.component';
 
 @Component({
   selector: "app-company-profile",
-  imports: [PageLoading, ReactiveFormsModule, TradeSelectComponent],
+  imports: [PageLoading, ReactiveFormsModule, TradeSelectComponent, BillingPanelComponent],
   templateUrl: "./company-profile.html",
   styleUrl: "./company-profile.scss",
 })

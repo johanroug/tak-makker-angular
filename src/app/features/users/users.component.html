@@ -3,7 +3,7 @@
     <div>
       <span class="eyebrow">KUN FOR DIG</span>
       <h1>Brugere og adgang</h1>
-      <p>Hold overblik over testbrugerne, og styr hvem der kan bruge Hovedet på sømmet.</p>
+      <p>Hold overblik over brugerne, og styr hvem der kan bruge Hovedet på sømmet.</p>
     </div>
     <button type="button" (click)="reload()" [disabled]="loading() || !!busy()">
       {{ loading() ? 'Henter…' : 'Opdatér' }}
@@ -18,7 +18,7 @@
   /></label>
   <p class="scope">
     Viser op til de 1.000 nyeste brugere. En blokering gælder brugerens appadgang og sletter ikke
-    brugerens data. Nye brugere afventer din godkendelse.
+    brugerens data. Nye brugere kan selv komme i gang med en gratis prøveperiode.
   </p>
   @if (error()) {
     <p class="error" role="alert">{{ error() }}</p>
@@ -70,22 +70,14 @@
         <span
           class="status"
           [class.blocked]="user.blocked"
-          [class.pending]="!user.approved && !user.blocked"
           >{{
             user.is_admin
               ? 'Administrator'
               : user.blocked
                 ? 'Blokeret'
-                : !user.approved
-                  ? 'Afventer godkendelse'
-                  : 'Adgang åben'
+                : 'Adgang åben'
           }}</span
         >
-        @if (!user.is_admin && !user.blocked && !user.approved) {
-          <button type="button" (click)="approve(user)" [disabled]="!!busy() || loading()">
-            {{ busy() === user.id ? 'Gemmer…' : 'Godkend bruger' }}
-          </button>
-        }
         @if (!user.is_admin) {
           <button
             type="button"
@@ -97,9 +89,7 @@
               busy() === user.id
                 ? 'Gemmer…'
                 : user.blocked
-                  ? user.approved
-                    ? 'Åbn adgang'
-                    : 'Fjern blokering'
+                  ? 'Åbn adgang'
                   : 'Bloker'
             }}
           </button>

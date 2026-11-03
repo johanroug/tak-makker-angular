@@ -100,11 +100,11 @@ export class Login {
         if (data.session) {
           await this.authService.signOut();
           this.notice.set(
-            'Din bruger er oprettet og afventer godkendelse fra Hovedet på sømmet. Du kan logge ind, når din bruger er godkendt.',
+            'Din bruger er oprettet. Log ind og prøv de 10 gratis forespørgsler.',
           );
         } else
           this.notice.set(
-            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Din bruger skal også godkendes af Hovedet på sømmet, før du får adgang.',
+            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Bekræft din e-mail og log ind for at prøve de 10 gratis forespørgsler.',
           );
         return;
       }

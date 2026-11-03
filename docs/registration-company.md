@@ -23,8 +23,8 @@ The deployed AI function reads all selected trades from the project's company.
    production domain after frontend deployment.
 4. Deploy the Angular build. The profile query requires the new `companies.trade`
    column, so do not release the frontend before the migration.
-5. Register a new account, confirm its email, approve it under the existing access
-   rules, then verify the created company has the registration details and that
+5. Register a new account and confirm its email, then verify the created company
+   has the registration details and that
    the trades can be edited and saved together in the company profile.
 
 Only newly created companies receive signup defaults. Existing companies are not
@@ -46,7 +46,8 @@ https://cvrapi.dk/documentation
 ## Outstanding product work
 
 - Activate and verify company lookup and profile migration in the target environment.
-- Replace manual approval with 10 lifetime free AI requests, enforced on the server.
+- Company trial and self-service access are now deployed on the server; publish
+  the frontend and complete the walkthrough in `company-trial.md`.
 - Integrate Stripe checkout, subscription webhooks and customer portal.
 - Confirm paid price and request allowance; 149 DKK excluding VAT and 500 monthly
   requests are proposals, not accepted pricing.

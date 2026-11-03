@@ -4,6 +4,18 @@
   background: #faf9f5;
   color: #16362b;
 }
+.trial-ended {
+  margin: 16px 24px;
+  padding: 18px;
+  border: 1px solid #ded4c2;
+  border-radius: 10px;
+  color: #263d32;
+  background: #fff8e8;
+  p { font-size: 13px; line-height: 1.6; }
+  a, button { display: inline-block; padding: 8px 12px; font: inherit; font-size: 13px; }
+  a { background: #12372a; color: #fff; border-radius: 6px; text-decoration: none; }
+  button { margin-left: 10px; border: 0; background: transparent; cursor: pointer; }
+}
 .workspace-shell {
   max-width: 1800px;
   margin: auto;

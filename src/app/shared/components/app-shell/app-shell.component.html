@@ -60,6 +60,14 @@
   </div>
 
   <div class="shell-main">
+    @if (billing.endedNotice()) {
+      <section class="trial-ended" role="alert">
+        <strong>Du har brugt dine 10 gratis forespørgsler</strong>
+        <p>Vælg et abonnement for at fortsætte. Du kan stadig åbne dine projekter og hente dine tilbud.</p>
+        <a routerLink="/company-profile" fragment="subscription" (click)="billing.endedNotice.set(false)">Se abonnement</a>
+        <button type="button" (click)="billing.endedNotice.set(false)" aria-label="Luk besked om prøveperiode">Luk</button>
+      </section>
+    }
     @if (logoutError()) {
       <p role="alert">{{ logoutError() }}</p>
     }

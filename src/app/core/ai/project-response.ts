@@ -19,6 +19,7 @@ export type ProjectResponse = {
     trade: string;
     description: string;
     descriptionSource: 'ai' | 'user' | null;
+    estimateBasis?: string | null;
     status: 'suggested' | 'accepted' | 'rejected';
     estimatedHours: number | null;
     estimatedHoursSource: 'ai' | 'user';

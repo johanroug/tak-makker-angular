@@ -2,6 +2,12 @@
 
 ## Aktuelt arbejde — 3. november
 
+- [x] **Rent opgavesprog og separat beregningsgrundlag** — Nyt internt estimate_basis-felt vises som kort note under opgaveteksten. AI instrueres i at holde antagelser ude af beskrivelsen og rydde noten, når relevante fakta er afklaret. Noter kan ændres uden ændringer i manuelle timer/beskrivelser; samtidige manuelle rettelser beskyttes. Genkendelige afsluttende Foreløbigt estimeret-sætninger på ikke-godkendte forslag flyttet til noter. Migration og AI-funktion deployet; build, lagringstests og SQL-kontrol består. Frontend skal lægges op.
+- [ ] **Beregningsgrundlag: appkontrol** — Kontrollér note ved ukendt antal radiatorer/rumareal, svar med konkrete oplysninger, og kontrollér at næste svar fjerner eller tilpasser noten. Kontrollér genindlæsning, manuelle timer og PDF. Faktiske modelsvar med det nye felt er endnu ikke kontrolleret.
+
+- [x] **Virksomhedens prøveperiode og abonnementsstatus** — 10 gennemførte kald pr. virksomhed fra aktiveringen, med fælles serveroptælling, reservationer og frigivelse ved fejl. Database og generate-offer opdateret. Selvbetjent adgang uden manuel godkendelse; blokering og dataadgang bevaret. Frontend viser Dit abonnement, forbrug og besked efter sidste gratis kald med Se abonnement. Build, backend-mocktests, service-tests og database-rollbacktests består.
+- [ ] **Prøveperiode: frontend og samlet livekontrol** — Læg frontendændringerne op. Kontrollér ny tilmelding/mail, abonnementsfeltet, sidste gratis svar, besked og afvisning af næste kald. Eksisterende projekter og PDF skal fortsat kunne åbnes. Stripe-betaling er endnu ikke klar; se docs/company-trial.md.
+
 - [x] **Fagvalg som dropdown** — Fælles dropdown med checkbokse i registrering og virksomhedsprofil, valgte fag i det lukkede felt samt lukning med Escape, klik udenfor og fokus væk. Hjælpeteksten bevaret. Produktionsbuild består.
 - [ ] **Dropdown: browserkontrol** — Kontrollér flervalg, fjernelse af valg, Escape og klik udenfor på desktop/mobil. Testbrowseren kunne ikke forbinde til den separate lokale testserver; ingen browserkontrol af denne dropdown er gennemført.
 
@@ -18,7 +24,7 @@
 
 - [ ] **Blank side ved indlæsningsfejl** — Lokal rettelse klar: fejlpanel med manuel genindlæsning ved fejlede programfiler, opstartsfejl og navigationsfejl. Login-kontrol håndterer også afviste netværkskald. Build og recovery-test består; afventer deployment og browserkontrol. Skærmbilledets DNS-/netværksfejl er ikke diagnosticeret eller løst af denne ændring.
 - [ ] **CVR-opslag og fag ved registrering** — Implementeret, og databasemigrationen er kørt. Direkte CVR-opslag verificeret på localhost. Afventer frontend-deployment og samlet livekontrol af registrering og profil; se docs/registration-company.md.
-- [ ] **Gratis prøveperiode** — 10 AI-forespørgsler i alt pr. bruger uden manuel godkendelse. Skal håndhæves på serveren.
+- [x] **Gratis prøveperiode** — 10 gennemførte AI-forespørgsler i alt pr. virksomhed uden manuel godkendelse. Håndhæves på serveren; frontend/livekontrol står ovenfor.
 - [ ] **Stripe-abonnement** — Stripe valgt. Pris og månedligt antal forespørgsler afventer endelig beslutning.
 
 ## 1. Nødvendigt før første kunde

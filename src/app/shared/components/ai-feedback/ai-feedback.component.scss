@@ -2,6 +2,12 @@
   display: block;
   flex-shrink: 0;
 }
+:host(.notice) {
+  .feedback { margin: 0; padding: 16px 36px 16px 16px; box-shadow: 0 8px 32px #30291d26; }
+  .eyebrow, small { display: none; }
+  .result-title { margin: 0; }
+  .result-actions { margin: 10px 0 0; }
+}
 .feedback {
   position: relative;
   margin-bottom: 16px;

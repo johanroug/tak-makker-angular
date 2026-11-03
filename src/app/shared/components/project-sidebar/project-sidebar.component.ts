@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 
 import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
+import { BillingService, TrialError } from '../../../core/billing/billing.service';
+import { BillingPanelComponent } from '../billing-panel/billing-panel.component';
 import { OfferService } from '../../../core/offers/offer.service';
 import { offerStatusLabel } from '../../../core/offers/offer-status';
 import { AiFeedback, AiSuggestionSummary } from '../ai-feedback/ai-feedback.component';
@@ -17,7 +19,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon],
+  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon, BillingPanelComponent],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
@@ -26,6 +28,7 @@ export class ProjectSidebar implements OnDestroy {
   readonly data = input.required<ProjectData>();
 
   private readonly aiService = inject(AiService);
+  readonly billing = inject(BillingService);
 
   private readonly projectService = inject(ProjectService);
 
@@ -764,6 +767,10 @@ export class ProjectSidebar implements OnDestroy {
     if (!message || this.isSending()) {
       return;
     }
+    if (this.billing.usage()?.companyId === this.data().project.company_id && this.billing.usage()?.status === 'exhausted') {
+      this.sendError.set('Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
+      return;
+    }
 
     const priorWorkIds = new Set(this.data().workItems.map((item) => item.id));
     const priorMaterialIds = new Set(this.data().materials.map((item) => item.id));
@@ -837,7 +844,7 @@ export class ProjectSidebar implements OnDestroy {
     } catch (error) {
       console.error(error);
 
-      if (!this.destroyed) this.sendError.set(messageSaved
+      if (!this.destroyed) this.sendError.set(error instanceof TrialError ? error.message : messageSaved
         ? 'Din besked er gemt, men AI-svaret kunne ikke færdigbehandles. Genindlæs projektet, og kontrollér samtalen, før du prøver igen.'
         : 'Din besked kunne ikke gemmes. Prøv igen.');
     } finally {

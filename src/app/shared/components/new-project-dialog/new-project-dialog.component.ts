@@ -2,12 +2,14 @@ import { Component, ElementRef, inject, OnDestroy, output, signal, viewChild } f
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AiService } from '../../../core/ai/ai.service';
+import { TrialError } from '../../../core/billing/billing.service';
+import { BillingPanelComponent } from '../billing-panel/billing-panel.component';
 import type { ProjectResponse } from '../../../core/ai/project-response';
 import { ProjectService } from '../../../core/projects/project.service';
 
 @Component({
   selector: 'app-new-project-dialog',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, BillingPanelComponent],
   templateUrl: './new-project-dialog.component.html',
   styleUrl: './new-project-dialog.component.scss',
 })
@@ -120,7 +122,7 @@ export class NewProjectDialog implements OnDestroy {
       console.error('Could not prepare new project:', error);
       if (!this.destroyed) {
         this.error.set(
-          this.projectId()
+          error instanceof TrialError ? error.message : this.projectId()
             ? 'Vi kunne ikke gøre projektet helt klar. Kladden er gemt. Prøv igen, eller åbn kladden og fortsæt derfra.'
             : 'Projektet kunne ikke oprettes. Prøv igen om et øjeblik.',
         );

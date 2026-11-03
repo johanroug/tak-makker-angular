@@ -21,12 +21,17 @@
     </details>
   </header>
 
-  @if (!finalizedOfferId() && missingRequirements.length) {
-    <details class="draft-readiness">
+  @if (!finalizedOfferId()) {
+    <div #readinessSlot class="readiness-slot">
+    <details class="draft-readiness" [class.is-ready]="!missingRequirements.length" (toggle)="resetReadinessHeight()">
       <summary>
+        @if (missingRequirements.length) {
         {{ missingRequirements.length }}
         {{ missingRequirements.length === 1 ? 'punkt mangler' : 'punkter mangler' }}, før tilbuddet
         er klar
+        } @else {
+          Alle punkter er på plads
+        }
       </summary>
       <ul>
         @for (issue of missingRequirements; track issue.key) {
@@ -37,9 +42,12 @@
               {{ issue.label }}
             }
           </li>
+        } @empty {
+          <li>Tilbuddet er klar til at blive færdiggjort.</li>
         }
       </ul>
     </details>
+    </div>
   }
 
   <div class="draft-columns">
@@ -84,6 +92,9 @@
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
                   ></textarea>
+                  @if (item.estimate_basis) {
+                    <span class="estimate-basis">{{ item.estimate_basis }}</span>
+                  }
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
                   }}</span>

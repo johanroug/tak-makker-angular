@@ -23,14 +23,22 @@ let trade = 'VVS';
 let trades;
 let companyError = false;
 let member = true;
+let allowed = true;
+let failAi = false;
+const settlements = [];
+const usage = { companyId: 'project-company', status: 'trial', trialRemaining: 9 };
 const aiInputs = [];
 const result = { complete: true, workItems: [], materials: [] };
 class OpenAI {
-  responses = { parse: async (input) => { aiInputs.push(input); return { output_parsed: result }; } };
+  responses = { parse: async (input) => { aiInputs.push(input); if (failAi) throw new Error('AI failure'); return { output_parsed: result }; } };
 }
 const client = {
   auth: { getUser: async () => ({ data: { user: { id: 'user' } }, error: null }) },
-  rpc: async () => ({ data: true, error: null }),
+  rpc: async (name, args) => {
+    if (name === 'reserve_company_ai_request') return { data: { allowed, requestId: 'reservation', usage: allowed ? usage : { ...usage, status: 'exhausted' } }, error: null };
+    if (name === 'finish_company_ai_request') { settlements.push(args.p_success); return { data: usage, error: null }; }
+    return { data: true, error: null };
+  },
   from(table) {
     const filters = {};
     const query = {
@@ -81,4 +89,14 @@ assert.equal(aiInputs.length, 3, 'Do not generate unrestricted proposals if comp
 member = false;
 assert.equal((await request()).status, 403);
 assert.equal(aiInputs.length, 3);
+member = true;
+companyError = false;
+allowed = false;
+assert.equal((await request()).status, 402);
+assert.equal(aiInputs.length, 3, 'An exhausted trial must not call OpenAI');
+allowed = true;
+failAi = true;
+assert.equal((await request()).status, 500);
+assert.equal(settlements.at(-1), false, 'AI errors must release their reservation');
+assert.equal(settlements.filter(Boolean).length, 3, 'Only completed AI calls should count');
 console.log('AI trade checks passed: server company scope, fresh trade, missing trade, failed lookup and membership.');

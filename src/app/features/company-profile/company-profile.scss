@@ -207,6 +207,9 @@
 .profile-summary {
   min-width: 0;
   padding: 8px 0;
+  app-billing-panel {
+    margin-bottom: 24px;
+  }
 }
 .preview-caption {
   display: flex;

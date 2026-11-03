@@ -3,10 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthShell } from '../../shared/marketing/auth-shell.component';
+import { COMPANY_TRADES } from '../../core/company/company-trades';
+import { CompanyLookupService } from '../../core/company/company-lookup.service';
+import { TradeSelectComponent } from '../../shared/components/trade-select/trade-select.component';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterLink, AuthShell],
+  imports: [FormsModule, RouterLink, AuthShell, TradeSelectComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -18,6 +21,33 @@ export class Login {
   readonly registering = this.route.snapshot.data['register'] === true;
   readonly notice = signal('');
   repeatPassword = '';
+  private readonly companyLookup = inject(CompanyLookupService);
+  readonly trades = COMPANY_TRADES;
+  readonly lookingUp = signal(false);
+  readonly lookupMessage = signal('');
+  cvr = '';
+  companyName = '';
+  companyAddress = '';
+  selectedTrades: string[] = [];
+  phone = '';
+
+  async lookupCompany(): Promise<void> {
+    if (this.lookingUp()) return;
+    const cvr = this.cvr.trim();
+    this.lookingUp.set(true);
+    this.lookupMessage.set('');
+    try {
+      const company = await this.companyLookup.lookup(cvr);
+      if (this.cvr.trim() !== cvr) return;
+      this.companyName = company.name;
+      this.companyAddress = company.address;
+      if (!this.phone) this.phone = company.phone;
+      this.lookupMessage.set('Virksomheden er fundet. Kontrollér oplysningerne nedenfor.');
+    } catch (error) {
+      if (this.cvr.trim() === cvr)
+        this.lookupMessage.set(error instanceof Error ? error.message : 'CVR-opslag mislykkedes.');
+    } finally { this.lookingUp.set(false); }
+  }
   email = '';
   password = '';
   readonly errorMessage = signal('');
@@ -43,11 +73,20 @@ export class Login {
 
     try {
       if (this.registering) {
+        if (!/^\d{8}$/.test(this.cvr.trim()) || !this.companyName.trim() || !this.companyAddress.trim() ||
+            this.selectedTrades.length === 0 ||
+            this.selectedTrades.some((trade) => !this.trades.some((item) => item === trade))) {
+          this.errorMessage.set('Udfyld gyldigt CVR, virksomhedsnavn, adresse og fag.');
+          return;
+        }
         if (this.password.length < 8 || this.password !== this.repeatPassword) {
           this.errorMessage.set('Brug mindst 8 tegn, og skriv samme adgangskode i begge felter.');
           return;
         }
-        const { data, error } = await this.authService.signUp(this.email, this.password);
+        const { data, error } = await this.authService.signUp(this.email, this.password, {
+          cvr: this.cvr.trim(), company_name: this.companyName.trim(),
+          company_address: this.companyAddress.trim(), trades: this.selectedTrades, phone: this.phone.trim(),
+        });
         if (error) {
           this.errorMessage.set(
             error.status === 429

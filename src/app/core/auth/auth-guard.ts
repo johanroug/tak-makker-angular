@@ -8,19 +8,21 @@ export const authGuard: CanActivateFn = async () => {
   const router = inject(Router);
   const access = inject(AppAccessService);
 
-  const { data } = await authService.getUser();
-
-  if (data.user) {
-    try {
+  try {
+    const { data, error } = await authService.getUser();
+    if (error) {
+      return router.createUrlTree(['/login'], { queryParams: { access: 'unavailable' } });
+    }
+    if (data.user) {
       const state = await access.state();
       if (state === 'active') return true;
       await authService.signOut();
       return router.createUrlTree(['/login'], {
         queryParams: { access: state === 'pending' ? 'pending' : 'blocked' },
       });
-    } catch {
-      return router.createUrlTree(['/login'], { queryParams: { access: 'unavailable' } });
     }
+  } catch {
+    return router.createUrlTree(['/login'], { queryParams: { access: 'unavailable' } });
   }
 
   return router.createUrlTree(['/login']);

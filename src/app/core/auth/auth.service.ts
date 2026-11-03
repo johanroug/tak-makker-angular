@@ -58,12 +58,14 @@ export class AuthService implements OnDestroy {
     return result;
   }
 
-  async signUp(email: string, password: string) {
+  async signUp(email: string, password: string, company?: {
+    cvr: string; company_name: string; company_address: string; trades: string[]; phone: string;
+  }) {
     this.invalidate();
     return supabase.auth.signUp({
       email: email.trim(),
       password,
-      options: { emailRedirectTo: window.location.origin + '/login' },
+      options: { emailRedirectTo: window.location.origin + '/login', data: company },
     });
   }
 

@@ -11,6 +11,7 @@ import {
   Router,
   TitleStrategy,
   withInMemoryScrolling,
+  withNavigationErrorHandler,
   withViewTransitions,
 } from '@angular/router';
 import { routes } from './app.routes';
@@ -24,6 +25,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(
       routes,
+      withNavigationErrorHandler(() => {
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('app-load-failed'));
+      }),
       withInMemoryScrolling({ anchorScrolling: 'enabled' }),
       withViewTransitions({
         skipInitialTransition: true,

@@ -133,7 +133,7 @@
     color: #57534e;
   }
   input,
-  textarea {
+  textarea, select {
     width: 100%;
     box-sizing: border-box;
     min-height: 46px;
@@ -415,7 +415,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .form-field input,
-  .form-field textarea {
+  .form-field textarea, .form-field select {
     transition: none;
   }
 }

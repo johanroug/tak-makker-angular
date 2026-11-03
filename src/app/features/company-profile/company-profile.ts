@@ -13,10 +13,11 @@ import {
   type CompanyProfile,
 } from "../../core/company/company.service";
 import { Location } from "@angular/common";
+import { TradeSelectComponent } from '../../shared/components/trade-select/trade-select.component';
 
 @Component({
   selector: "app-company-profile",
-  imports: [PageLoading, ReactiveFormsModule],
+  imports: [PageLoading, ReactiveFormsModule, TradeSelectComponent],
   templateUrl: "./company-profile.html",
   styleUrl: "./company-profile.scss",
 })
@@ -61,6 +62,7 @@ export class CompanyProfileComponent implements OnInit {
   }
 
   form = new FormGroup({
+    trades: new FormControl<string[]>([], { nonNullable: true }),
     companyName: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     address: new FormControl("", { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     logoDataUrl: new FormControl<string | null>(null),
@@ -77,6 +79,11 @@ export class CompanyProfileComponent implements OnInit {
   });
 
   ngOnInit(): void { void this.loadProfile(); }
+  setTrades(trades: string[]): void {
+    const control = this.form.controls.trades;
+    control.setValue(trades);
+    control.markAsDirty();
+  }
 
   private loadingProfile = false;
   async loadProfile(): Promise<void> {

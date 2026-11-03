@@ -11,6 +11,7 @@ export type CompanyProfile = {
   logoSvgSource?: string | null;
   logoColor?: string | null;
   cvr: string;
+  trades: string[];
   contactName: string;
   phone: string;
   email: string;
@@ -51,6 +52,8 @@ export class CompanyService {
           logo_svg_source,
           logo_color,
           cvr,
+          trade,
+          trades,
           contact_name,
           phone,
           email,
@@ -84,6 +87,7 @@ export class CompanyService {
       logoSvgSource: company.logo_svg_source,
       logoColor: company.logo_color,
       cvr: company.cvr ?? '',
+      trades: company.trades ?? (company.trade ? [company.trade] : []),
       contactName: company.contact_name ?? '',
       phone: company.phone ?? '',
       email: company.email ?? '',
@@ -118,6 +122,7 @@ export class CompanyService {
             logo_svg_source: companyProfile.logoSvgSource ?? null,
             logo_color: companyProfile.logoColor ?? null,
             cvr: companyProfile.cvr.trim(),
+            trades: companyProfile.trades,
             contact_name: companyProfile.contactName.trim(),
             phone: companyProfile.phone.trim(),
             email: companyProfile.email.trim(),

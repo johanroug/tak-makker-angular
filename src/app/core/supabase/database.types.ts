@@ -41,6 +41,8 @@ export type Database = {
     Tables: {
       companies: {
         Row: {
+          trades: string[]
+          trade: string | null
           default_validity_days: number | null
           default_payment_terms: string | null
           default_reservations: string | null
@@ -58,6 +60,8 @@ export type Database = {
           phone: string | null
         }
         Insert: {
+          trades?: string[]
+          trade?: string | null
           default_validity_days?: number | null
           default_payment_terms?: string | null
           default_reservations?: string | null
@@ -75,6 +79,8 @@ export type Database = {
           phone?: string | null
         }
         Update: {
+          trades?: string[]
+          trade?: string | null
           default_validity_days?: number | null
           default_payment_terms?: string | null
           default_reservations?: string | null

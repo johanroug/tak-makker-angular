@@ -1,4 +1,25 @@
-# Hovedet på sømmet TODO — 20. oktober 2026
+# Hovedet på sømmet TODO — opdateret 3. november 2026
+
+## Aktuelt arbejde — 3. november
+
+- [x] **Fagvalg som dropdown** — Fælles dropdown med checkbokse i registrering og virksomhedsprofil, valgte fag i det lukkede felt samt lukning med Escape, klik udenfor og fokus væk. Hjælpeteksten bevaret. Produktionsbuild består.
+- [ ] **Dropdown: browserkontrol** — Kontrollér flervalg, fjernelse af valg, Escape og klik udenfor på desktop/mobil. Testbrowseren kunne ikke forbinde til den separate lokale testserver; ingen browserkontrol af denne dropdown er gennemført.
+
+- [x] **Flere fag pr. virksomhed** — Afkrydsningsfelter ved registrering og i virksomhedsprofil. Eksisterende enkeltfag bevaret i nyt trades-felt; databasemigration kørt og rollback-test bestået. AI bruger alle valgte fag uden at udvide til ikke-valgte fag. AI-funktionen er deployet. Build, serverflow-test og browserkontrol af samtidig valg af VVS/Murer består. Frontendændringen mangler produktionsdeployment.
+- [ ] **Flere fag: samlet appkontrol** — Gem fx VVS og Murer i profilen, genåbn profilen og prøv AI på et nyt badeværelsesprojekt. Kontrollér at el og malerarbejde udelades. Faktiske AI-svar med flere fag er endnu ikke kontrolleret.
+
+- [x] **AI bruger virksomhedens fag** — AI-funktionen henter faget fra projektets virksomhed på hvert kald og får faggrænser for opgaver, materialer, spørgsmål og tilbudsbeskrivelse. Eksisterende linjer fra andre fag må ikke ændres. Ukendt fag afvises; manglende fag giver afklarende instruktion. Serverflow og adgangskontrol testet med mocks; generate-offer deployet til Supabase.
+- [x] **Fagafgrænsning: første appkontrol** — Johan har bekræftet, at enkeltfagsafgrænsningen ser ud til at virke. Udvidet kontrol med flere fag står ovenfor.
+
+- [x] **Virksomhedsprofil: manglende fag-felt** — Databaseændringen 202611030001_registration_company.sql er kørt. Fag-felt og overførsel af registreringsoplysninger til nye virksomheder er aktiveret. Eksisterende virksomheder bevares.
+
+- [ ] **CVR-livefejl** — Rettet lokalt til direkte browseropslag uden Supabase. Bauhaus (19555305), navn og adresse verificeret i registreringsformularen i browseren på localhost. Afventer frontend-deployment og kontrol på produktionsdomænet.
+- [x] **CVR-oprydning i Supabase** — Den ubrugte opslagfunktion er slettet fra Supabase. Lokal serverkode, konfiguration og tilhørende test er fjernet. Direkte browseropslag og databasemigration til fag/virksomhedsoplysninger er bevaret.
+
+- [ ] **Blank side ved indlæsningsfejl** — Lokal rettelse klar: fejlpanel med manuel genindlæsning ved fejlede programfiler, opstartsfejl og navigationsfejl. Login-kontrol håndterer også afviste netværkskald. Build og recovery-test består; afventer deployment og browserkontrol. Skærmbilledets DNS-/netværksfejl er ikke diagnosticeret eller løst af denne ændring.
+- [ ] **CVR-opslag og fag ved registrering** — Implementeret, og databasemigrationen er kørt. Direkte CVR-opslag verificeret på localhost. Afventer frontend-deployment og samlet livekontrol af registrering og profil; se docs/registration-company.md.
+- [ ] **Gratis prøveperiode** — 10 AI-forespørgsler i alt pr. bruger uden manuel godkendelse. Skal håndhæves på serveren.
+- [ ] **Stripe-abonnement** — Stripe valgt. Pris og månedligt antal forespørgsler afventer endelig beslutning.
 
 ## 1. Nødvendigt før første kunde
 

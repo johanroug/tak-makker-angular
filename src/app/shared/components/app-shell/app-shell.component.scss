@@ -67,12 +67,13 @@
   min-width: 0;
 }
 .project-selector {
+  appearance: none;
   width: clamp(180px, 22vw, 290px);
   max-width: 100%;
-  padding: 10px 8px;
+  padding: 10px 40px 10px 8px;
   border: 0;
   border-radius: 9px;
-  background: transparent;
+  background: url('/icons/chevron-down.svg') right 14px center / 16px 16px no-repeat;
   color: #263d32;
   font: inherit;
   font-size: 13px;

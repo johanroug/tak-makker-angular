@@ -7,6 +7,7 @@ import { aiInstructions } from '../_shared/ai/instructions.ts';
 import { createWorkItemsContext } from '../_shared/ai/work-items-context.ts';
 import { createMaterialsContext } from '../_shared/ai/materials-context.ts';
 import { createProjectDetailsContext } from '../_shared/ai/project-details-context.ts';
+import { createCompanyTradeContext } from '../_shared/ai/company-trade-context.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -101,7 +102,7 @@ Deno.serve(async (request) => {
     }
 
     // 4. Hent eksisterende projektdata.
-    const [workItemsResult, materialsResult, messagesResult] = await measure('contextMs', () =>
+    const [workItemsResult, materialsResult, messagesResult, companyResult] = await measure('contextMs', () =>
       Promise.all([
         measure('workItemsMs', () =>
           supabase.from('project_work_items').select('*').eq('project_id', projectId),
@@ -118,10 +119,13 @@ Deno.serve(async (request) => {
             .eq('project_id', projectId)
             .order('created_at', { ascending: true }),
         ),
+        measure('companyMs', () =>
+          supabase.from('companies').select('trade, trades').eq('id', project.company_id).single(),
+        ),
       ]),
     );
 
-    if (workItemsResult.error || materialsResult.error || messagesResult.error) {
+    if (workItemsResult.error || materialsResult.error || messagesResult.error || companyResult.error || !companyResult.data) {
       throw new Error('Could not load project data');
     }
 
@@ -183,6 +187,7 @@ Deno.serve(async (request) => {
         model: 'gpt-5.6-luna',
         input: [
           { role: 'system', content: aiInstructions },
+          { role: 'system', content: createCompanyTradeContext(companyResult.data.trades ?? companyResult.data.trade) },
           {
             role: 'system',
             content: createProjectDetailsContext({

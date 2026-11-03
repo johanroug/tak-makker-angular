@@ -12,6 +12,28 @@
     </header>
 
     <form #authForm="ngForm" class="login-form" (ngSubmit)="authForm.valid && login()">
+      @if (registering) {
+        <label for="register-cvr">CVR-nummer</label>
+        <div class="cvr-lookup">
+          <input id="register-cvr" name="cvr" [(ngModel)]="cvr" inputmode="numeric"
+            pattern="[0-9]{8}" maxlength="8" placeholder="12345678" required />
+          <button type="button" (click)="lookupCompany()"
+            [disabled]="lookingUp() || isLoggingIn() || !cvr.match('^[0-9]{8}$')">
+            {{ lookingUp() ? 'Søger…' : 'Slå op' }}
+          </button>
+        </div>
+        @if (lookupMessage()) { <p class="login-notice" role="status">{{ lookupMessage() }}</p> }
+        <label>Virksomhedsnavn
+          <input name="companyName" [(ngModel)]="companyName" autocomplete="organization" maxlength="200" required />
+        </label>
+        <label>Virksomhedsadresse
+          <textarea name="companyAddress" [(ngModel)]="companyAddress" autocomplete="street-address" maxlength="500" rows="2" required></textarea>
+        </label>
+        <app-trade-select [(selected)]="selectedTrades" />
+        <label>Telefon (valgfri)
+          <input name="phone" type="tel" [(ngModel)]="phone" autocomplete="tel" maxlength="25" />
+        </label>
+      }
       <label>
         E-mail
         <input
@@ -59,7 +81,7 @@
         <p class="login-error" role="alert">{{ errorMessage() }}</p>
       }
 
-      <button type="submit" [disabled]="isLoggingIn() || authForm.invalid">
+      <button type="submit" [disabled]="isLoggingIn() || lookingUp() || authForm.invalid || (registering && !selectedTrades.length)">
         {{
           isLoggingIn()
             ? registering

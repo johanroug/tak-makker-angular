@@ -13,6 +13,7 @@ export type ProjectResponse = {
   };
 
   questions: string[];
+  scopeWarnings?: string[];
 
   workItems: {
     id: string;

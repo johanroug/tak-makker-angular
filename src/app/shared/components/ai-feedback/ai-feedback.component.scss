@@ -3,10 +3,24 @@
   flex-shrink: 0;
 }
 :host(.notice) {
-  .feedback { margin: 0; padding: 16px 36px 16px 16px; box-shadow: 0 8px 32px #30291d26; }
+  .feedback {
+    margin: 0;
+    padding: 18px 44px 16px 18px;
+    border-color: #d5dfd3;
+    background: #fffefb;
+    color: #12372a;
+    box-shadow: 0 6px 24px #12372a1f;
+  }
   .eyebrow, small { display: none; }
   .result-title { margin: 0; }
   .result-actions { margin: 10px 0 0; }
+  .result-actions button { border-color: #d5dfd3; color: #365b44; }
+  .result-actions .conversation-link {
+    border-color: transparent;
+    padding-left: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 .feedback {
   position: relative;
@@ -91,10 +105,18 @@ small {
   position: absolute;
   top: 10px;
   right: 12px;
-  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
   font-size: 20px;
   color: #78716c;
   cursor: pointer;
+  &:hover { background: #eef3e9; color: #12372a; }
 }
 button:focus-visible {
   outline: 2px solid #a855f7;
@@ -116,4 +138,15 @@ button:focus-visible {
   .spark::after {
     animation: none;
   }
+}
+.scope-warnings {
+  margin: 8px 0 0;
+  color: #5b685f;
+  font-size: 13px;
+  line-height: 1.6;
+  p { margin: 0; }
+  p + p { margin-top: 8px; }
+  a { color: #365b44; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: #12372a; text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid #8fa57d; outline-offset: 2px; }
 }

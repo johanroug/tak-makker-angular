@@ -1,9 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ProjectService } from '../../../core/projects/project.service';
+import type { AiSuggestionSummary } from '../ai-feedback/ai-feedback.component';
 
 @Injectable()
 export class WorkspaceState {
+  readonly initialAiNotice = signal<{projectId: string; summary: AiSuggestionSummary} | null>(null);
   private readonly newProjectRequests = new Subject<void>();
   readonly newProjectRequested = this.newProjectRequests.asObservable();
 

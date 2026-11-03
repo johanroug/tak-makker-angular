@@ -10,6 +10,7 @@
 | OpenAI | Leverer AI til at hjælpe med projekter og udarbejdelse af tilbud. |
 | GitHub | Gemmer projektets kildekode og versionshistorik online. |
 | Codex fra OpenAI | Hjælper med at udvikle, rette og vedligeholde projektets kode. |
+| Stripe | Håndterer betalinger. |
 
 ## Sådan hænger det sammen
 

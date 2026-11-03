@@ -27,6 +27,9 @@ ${idsInstructions}
 ${estimatesInstructions}
 
 SVAR KUN MED RELEVANTE ÆNDRINGER:
+scopeWarnings indeholder kun nye konkrete beskeder om arbejdsønsker uden for
+virksomhedens valgte fag. Brug [] ved ingen advarsler; almindelige spørgsmål,
+manglende mål og pris-/timeestimater er ikke fagadvarsler.
 Konteksten indeholder allerede de gemte oplysninger. Dit svar er et supplement,
 ikke en komplet erstatning af projektet.
 - workItems og materials skal kun indeholde nye forslag eller eksisterende

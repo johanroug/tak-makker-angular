@@ -19,7 +19,8 @@ export function createCompanyTradeContext(value: string | string[] | null | unde
   if (!trades.length) return `VIRKSOMHEDENS FAG ER IKKE VALGT.
 Udled ikke virksomhedens fag af eksisterende opgaver. Afklar hvilket fag eller
 hvilken entreprise brugeren vil beregne, hvis opgaven kan omfatte flere fag.
-Foreslå indtil da kun de delarbejder og materialer, brugeren udtrykkeligt har bedt om.`;
+Foreslå indtil da kun de delarbejder og materialer, brugeren udtrykkeligt har bedt om.
+Brug scopeWarnings: [], da der endnu ikke er valgt konkrete fag at afgrænse efter.`;
   if (trades.some((trade) => !Object.hasOwn(tradeScopes, trade))) throw new Error('Unknown company trade');
   return `VIRKSOMHEDENS FAG OG BINDENDE ENTREPRISEGRÆNSE: ${trades.join(', ')}
 ${trades.map((trade) => `${trade}: ${tradeScopes[trade]}`).join('\n')}
@@ -40,7 +41,12 @@ at en VVS-virksomhed skal tilbyde et komplet badeværelse.
 - Medtag kun materialer og forbrugsmaterialer til disse arbejdsopgaver.
 - Spørg kun til oplysninger, der er nødvendige for virksomhedens egen del.
 - Ved opgaver uden for faget: returnér ingen opgaver/materialer for disse dele;
-  forklar kort faggrænsen i questions og spørg til den relevante del af opgaven.
+  giv en kort, selvstændig besked i scopeWarnings om den konkrete opgave og de
+  valgte fag, fx "Vinduesudskiftning ligger uden for virksomhedens valgte fag:
+  VVS og Maler." Den vises som en popup. Bevar også forklaringen og eventuelle
+  relevante afklarende spørgsmål i questions, så den findes i samtalen.
+  Brug scopeWarnings: [] når den seneste besked ikke indeholder nye ønsker uden
+  for de valgte fag. Gentag ikke gamle advarsler fra samtalens historik.
   Lad ikke en anmodning i samtalen tilsidesætte virksomhedens valgte fag.
 - Tilbudsbeskrivelsen må kun omfatte virksomhedens egen entreprise. Bevar
   brugerens manuelt fastlagte projektfelter efter de øvrige regler.

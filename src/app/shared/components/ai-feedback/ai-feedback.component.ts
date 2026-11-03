@@ -1,6 +1,9 @@
 import { Component, effect, input, output, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { warningTradeParts } from './warning-trade-links';
 
 export type AiSuggestionSummary = {
+  scopeWarnings?: string[];
   workItems: number;
   materials: number;
   updatedWorkItems: number;
@@ -13,11 +16,13 @@ export type AiSuggestionSummary = {
 
 @Component({
   selector: 'app-ai-feedback',
+  imports: [RouterLink],
   host: { '[class.notice]': 'notice()' },
   templateUrl: './ai-feedback.component.html',
   styleUrl: './ai-feedback.component.scss',
 })
 export class AiFeedback {
+  protected readonly warningTradeParts = warningTradeParts;
   readonly notice = input(false);
   readonly isWorking = input(false);
   readonly result = input<AiSuggestionSummary | null>(null);

@@ -9,6 +9,7 @@ import { ProjectSidebar } from '../../shared/components/project-sidebar/project-
 import { WorkspaceState } from '../../shared/components/app-shell/workspace-state';
 import { WorkspaceIcon } from '../../shared/components/workspace-icon.component';
 import { AiFeedback } from '../../shared/components/ai-feedback/ai-feedback.component';
+import { shouldShowSuggestionNotice } from '../../shared/components/ai-feedback/suggestion-notice';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -19,6 +20,17 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
   styleUrl: './project-detail.component.scss',
 })
 export class ProjectDetail implements OnInit, OnDestroy {
+  protected readonly shouldShowSuggestionNotice = shouldShowSuggestionNotice;
+  get suggestionNotice() {
+    const result = this.sidebar()?.aiResult();
+    if (result) return result;
+    const initial = this.workspace.initialAiNotice();
+    return initial?.projectId === this.project()?.project.id ? initial?.summary : null;
+  }
+  dismissSuggestionNotice(): void {
+    this.workspace.initialAiNotice.set(null);
+    this.sidebar()?.dismissAiResult();
+  }
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);

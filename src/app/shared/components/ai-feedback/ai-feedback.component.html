@@ -22,12 +22,30 @@
     <p class="result-title" role="status">
       @if (summary.workItems || summary.materials) {
         Nye forslag er klar til dig
+      } @else if (summary.scopeWarnings?.length) {
+        Uden for dine fag
       } @else if (summary.updatedWorkItems || summary.updatedMaterials) {
         Dit tilbud er opdateret
       } @else {
         Der er svar på din besked
       }
     </p>
+    @if (summary.scopeWarnings?.length) {
+      <div class="scope-warnings" aria-label="Beskeder om dine fag">
+        @for (warning of summary.scopeWarnings; track $index) {
+          <p>
+            @for (part of warningTradeParts(warning); track $index) {
+              @if (part.link) {
+                <a routerLink="/company-profile" fragment="company-trades" (click)="dismiss.emit()"
+                  aria-label="Ret dine fag i virksomhedsprofilen">{{ part.text }}</a>
+              } @else {
+                {{ part.text }}
+              }
+            }
+          </p>
+        }
+      </div>
+    }
     <div class="result-actions">
       @if (summary.updatedWorkItems) {
         <button type="button" (click)="openTab.emit('tasks')">

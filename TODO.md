@@ -2,6 +2,13 @@
 
 ## Aktuelt arbejde — 3. november
 
+- [x] **Faglink i popup** — Fagnavne som VVS og Maler linker direkte til fagvalget i virksomhedsprofilen. Profilen ruller til og fokuserer fagvælgeren, når data er hentet. Popup lukkes ved klik. Build, typekontrol og test af tekst/linkopdeling består.
+
+- [x] **Roligere fagpopup og afgrænset samtalescroll** — Popup bruger én lys baggrund, grøn tekst og almindelig brødtekst uden indlejret orange boks. Se samtalen ruller kun chatcontaineren og fokuserer seneste besked uden sidescroll. Scroll-test dækker hovedvindue, fokus, reduceret bevægelse og andre sektionslinks.
+
+- [x] **Fagafgrænsning i popup** — AI returnerer særskilte scopeWarnings om nye ønsker uden for virksomhedens fag. Popup viser dem også uden nye linjer, både efter projektoprettelse og efterfølgende beskeder. Forklaring/afklaring bevares i samtalen. Almindelige svar og ændringer af eksisterende linjer alene udløser fortsat ikke popup. Build, SEO- og notice-/serverflowtests består; AI-funktionen er deployet.
+- [ ] **Fagpopup: appkontrol** — Med fx VVS/Maler: bed om nye vinduer og kontrollér popup og samtale. Kontrollér også nyt projekt, blanding af relevante og irrelevante fag samt efterfølgende almindelige beskeder. Frontend skal lægges op til offentlig side; modeltekst er endnu ikke livekontrolleret.
+
 - [x] **Separate komponentfiler** — Flyttet indlejret HTML og styling til .html/.scss for alle 11 komponenter, der havde indlejrede ressourcer. Komponenter bruger templateUrl/styleUrl. Produktionsbuild og SEO-kontrol består.
 
 - [x] **Opfriskning af manuel adgang** — Abonnementsstatus genhentes ved appstart, fokus og hvert minut i synlig fane. Ældre svar kan ikke overskrive en nyere intern/fri status. Serveren bekræfter intern adgang for ejerens virksomhed; service-test består.

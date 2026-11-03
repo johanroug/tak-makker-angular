@@ -6,6 +6,8 @@ import { TrialError } from '../../../core/billing/billing.service';
 import { BillingPanelComponent } from '../billing-panel/billing-panel.component';
 import type { ProjectResponse } from '../../../core/ai/project-response';
 import { ProjectService } from '../../../core/projects/project.service';
+import { WorkspaceState } from '../app-shell/workspace-state';
+import { scopeWarningSummary } from '../ai-feedback/suggestion-notice';
 
 @Component({
   selector: 'app-new-project-dialog',
@@ -16,6 +18,7 @@ import { ProjectService } from '../../../core/projects/project.service';
 export class NewProjectDialog implements OnDestroy {
   private readonly projectService = inject(ProjectService);
   private readonly aiService = inject(AiService);
+  private readonly workspace = inject(WorkspaceState);
   private readonly router = inject(Router);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('startDialog');
 
@@ -112,6 +115,8 @@ export class NewProjectDialog implements OnDestroy {
       if (this.destroyed) return;
 
       // Keep the intent in the URL so it also survives a new route component.
+      this.workspace.initialAiNotice.set(this.response?.scopeWarnings?.length
+        ? { projectId, summary: scopeWarningSummary(this.response.scopeWarnings) } : null);
       this.projectCreated.emit();
       const navigated = await this.router.navigate(['/projects', projectId], {
         queryParams: { editDetails: '1' },

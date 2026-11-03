@@ -35,7 +35,7 @@
             </div>
             <p class="required-note">Felter med * skal udfyldes.</p>
             <div class="form-grid">
-              <div class="form-field full-width">
+              <div #companyTrades id="company-trades" class="form-field full-width">
                 <app-trade-select [selected]="form.controls.trades.value" (selectedChange)="setTrades($event)" />
               </div>
               <div class="form-field full-width">

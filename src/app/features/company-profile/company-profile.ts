@@ -1,6 +1,7 @@
 import { prepareSvg, svgToPng } from './svg-logo';
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
-import { Component, ElementRef, effect, inject, OnInit, signal, viewChild } from "@angular/core";
+import { afterNextRender, Component, ElementRef, effect, inject, Injector, OnInit, signal, viewChild } from "@angular/core";
+import { ActivatedRoute } from '@angular/router';
 import {
   FormControl,
   FormGroup,
@@ -25,6 +26,9 @@ import { BillingPanelComponent } from '../../shared/components/billing-panel/bil
 export class CompanyProfileComponent implements OnInit {
   private readonly companyService = inject(CompanyService);
   private readonly location = inject(Location);
+  private readonly route = inject(ActivatedRoute);
+  private readonly injector = inject(Injector);
+  private readonly tradeSection = viewChild<ElementRef<HTMLElement>>('companyTrades');
   private readonly summary = viewChild<ElementRef<HTMLElement>>('profileSummary');
   private readonly footer = viewChild<ElementRef<HTMLElement>>('profileFooter');
 
@@ -99,6 +103,13 @@ export class CompanyProfileComponent implements OnInit {
       if (profile) {
         this.form.setValue({ ...profile, logoDataUrl: profile.logoDataUrl ?? null, logoSvgSource: profile.logoSvgSource ?? null, logoColor: profile.logoColor ?? null });
         this.hasProfile.set(true);
+        if (this.route.snapshot.fragment === 'company-trades') {
+          afterNextRender(() => {
+            const section = this.tradeSection()?.nativeElement;
+            section?.scrollIntoView({ block: 'center' });
+            section?.querySelector<HTMLElement>('summary')?.focus({ preventScroll: true });
+          }, { injector: this.injector });
+        }
       } else {
         this.message.set("Virksomhedsprofilen blev ikke fundet.");
       }

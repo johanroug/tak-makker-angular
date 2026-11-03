@@ -11,6 +11,7 @@ import { ProjectService } from '../../../core/projects/project.service';
 import { AiService } from '../../../core/ai/ai.service';
 import { BillingService, TrialError } from '../../../core/billing/billing.service';
 import { BillingPanelComponent } from '../billing-panel/billing-panel.component';
+import { WorkspaceState } from '../app-shell/workspace-state';
 import { OfferService } from '../../../core/offers/offer.service';
 import { offerStatusLabel } from '../../../core/offers/offer-status';
 import { AiFeedback, AiSuggestionSummary } from '../ai-feedback/ai-feedback.component';
@@ -29,6 +30,7 @@ export class ProjectSidebar implements OnDestroy {
 
   private readonly aiService = inject(AiService);
   readonly billing = inject(BillingService);
+  private readonly workspace = inject(WorkspaceState);
 
   private readonly projectService = inject(ProjectService);
 
@@ -71,6 +73,8 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   dismissAiResult(): void {
+    if (this.workspace.initialAiNotice()?.projectId === this.data().project.id)
+      this.workspace.initialAiNotice.set(null);
     this.aiResult.set(null);
     this.newWorkItemIds.set(new Set());
     this.newMaterialIds.set(new Set());
@@ -84,11 +88,13 @@ export class ProjectSidebar implements OnDestroy {
     this.chatOpen.set(true);
     afterNextRender(() => {
       if (this.destroyed) return;
-      const root = this.host.nativeElement;
-      const target = root.querySelector<HTMLElement>('.chat-messages .chat-message:last-child');
-      if (!target) return;
+      const messages = this.chatMessages()?.nativeElement;
+      const target = messages?.querySelector<HTMLElement>('.chat-message:last-child');
+      if (!messages || !target) return;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start', inline: 'nearest' });
+      const top = messages.scrollTop + target.getBoundingClientRect().top
+        - messages.getBoundingClientRect().top - messages.clientTop - 8;
+      messages.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? 'auto' : 'smooth' });
       target.focus({ preventScroll: true });
     }, { injector: this.injector });
   }
@@ -832,6 +838,7 @@ export class ProjectSidebar implements OnDestroy {
         );
       });
       this.aiResult.set({
+        scopeWarnings: aiResponse.scopeWarnings ?? [],
         workItems: workIds.size,
         materials: materialIds.size,
         updatedWorkItems: updatedWork.length,

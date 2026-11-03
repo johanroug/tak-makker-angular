@@ -49,19 +49,7 @@ export class AiFeedback {
 
 @Component({
   selector: 'app-new-suggestion-badge',
-  template: '✦ Nyt forslag',
-  styles: `
-    :host {
-      display: inline-block;
-      margin-bottom: 8px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: #f3e8ff;
-      color: #7e22ce;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-    }
-  `,
+  templateUrl: './new-suggestion-badge.component.html',
+  styleUrl: './new-suggestion-badge.component.scss',
 })
 export class NewSuggestionBadge {}

@@ -50,6 +50,28 @@ begin
   v_res := public.reserve_company_ai_request(v_project,v_users[2]);
   if (v_res->>'allowed')::boolean then raise exception 'Employee bypassed company limit'; end if;
   if (public.company_billing_snapshot(v_other)->>'trialUsed')::int <> 0 then raise exception 'Other company affected'; end if;
+  update public.company_billing set ai_access_override='free' where company_id=v_company;
+  if has_column_privilege('authenticated','public.company_billing','ai_access_override','UPDATE') then
+    raise exception 'User may grant free access';
+  end if;
+  -- A free company can exceed the trial limit without consuming trial calls.
+  for v_i in 1..11 loop
+    v_res := public.reserve_company_ai_request(v_project,v_users[1]);
+    if not (v_res->>'allowed')::boolean then raise exception 'Free access was limited'; end if;
+    v_usage := public.finish_company_ai_request((v_res->>'requestId')::uuid,true);
+  end loop;
+  if v_usage->>'status' <> 'free' or (v_usage->>'trialUsed')::int <> 10 then
+    raise exception 'Free calls affected trial usage';
+  end if;
+  update public.company_billing set ai_access_override='none' where company_id=v_company;
+  v_res := public.reserve_company_ai_request(v_project,v_users[1]);
+  if (v_res->>'allowed')::boolean then raise exception 'Revoked free access still bypasses quota'; end if;
+  update public.company_billing set ai_access_override='internal',subscription_status='canceled' where company_id=v_company;
+  v_res := public.reserve_company_ai_request(v_project,v_users[1]);
+  if not (v_res->>'allowed')::boolean or v_res->'usage'->>'status' <> 'internal' then
+    raise exception 'Internal access depends on paid subscription';
+  end if;
+  perform public.finish_company_ai_request((v_res->>'requestId')::uuid,true);
   -- Exhaustion restricts generation, not the member's access to project/profile data.
   if not public.can_access_app() then raise exception 'Exhaustion blocked app access'; end if;
   begin

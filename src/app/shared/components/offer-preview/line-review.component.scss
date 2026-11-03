@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  margin-top: 12px;
+}
+.line-review {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.review-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #8a6226;
+}
+.accepted {
+  color: #64816a;
+}
+.rejected {
+  color: #857c75;
+}
+.review-actions {
+  display: flex;
+  gap: 7px;
+}
+button {
+  min-height: 36px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #d4e0cd;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.approve {
+  color: #fff;
+  background: #21573a;
+  border-color: #21573a;
+}
+.reject {
+  color: #a54940;
+  background: #fff;
+  border-color: #ecd9d5;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+button:focus-visible {
+  outline: 2px solid #2574b8;
+  outline-offset: 2px;
+}
+.review-help {
+  margin: 6px 0 0;
+  color: #917a54;
+  font-size: 10px;
+}
+@media (pointer: coarse) {
+  button {
+    min-height: 44px;
+  }
+}

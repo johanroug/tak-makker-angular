@@ -1,0 +1,48 @@
+<div class="line-review">
+  <span
+    class="review-state"
+    [class.accepted]="status() === 'accepted'"
+    [class.rejected]="status() === 'rejected'"
+  >
+    @if (status() === 'accepted') {
+      <span aria-hidden="true">✓</span>
+    }
+    {{
+      status() === 'accepted'
+        ? 'Godkendt'
+        : status() === 'rejected'
+          ? 'Afvist'
+          : isNew()
+            ? 'Nyt forslag'
+            : 'Afventer godkendelse'
+    }}</span
+  >
+  <div class="review-actions">
+    @if (status() !== 'accepted') {
+      <button
+        class="approve"
+        type="button"
+        [disabled]="disabled() || !canAccept()"
+        [attr.aria-label]="'Godkend ' + label()"
+        [title]="canAccept() ? '' : 'Udfyld de påkrævede felter først'"
+        (click)="changed.emit('accepted')"
+      >
+        Godkend
+      </button>
+    }
+    @if (status() !== 'rejected') {
+      <button
+        class="reject"
+        type="button"
+        [disabled]="disabled()"
+        [attr.aria-label]="'Afvis ' + label()"
+        (click)="changed.emit('rejected')"
+      >
+        Afvis
+      </button>
+    }
+  </div>
+</div>
+@if (status() !== 'accepted' && !canAccept() && !disabled()) {
+  <p class="review-help">Udfyld de påkrævede felter for at godkende.</p>
+}

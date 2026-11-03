@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+section {
+  padding: 24px;
+  border: 1px solid #e6dfd2;
+  border-radius: 16px;
+  background: #fff;
+  color: #263d32;
+  scroll-margin-top: 24px;
+}
+h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+}
+p {
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+strong {
+  font-size: 14px;
+}
+button {
+  border: 0;
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: #12372a;
+  background: #eef5e6;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #12372a;
+}
+.compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 0 4px 8px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.compact strong {
+  font-size: 11px;
+  font-weight: 400;
+  color: #6b7569;
+}
+.compact p {
+  flex-basis: 100%;
+  margin: 4px 0;
+  font-size: 12px;
+}
+.compact button {
+  display: inline;
+  width: auto;
+  min-height: 28px;
+  margin: 0;
+  padding: 4px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #365b44;
+  font-size: 11px;
+  font-weight: 400;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+.compact button:hover {
+  background: transparent;
+  color: #12372a;
+  text-decoration-thickness: 2px;
+}
+button:focus-visible {
+  outline: 2px solid #8fa57d;
+  outline-offset: 2px;
+}

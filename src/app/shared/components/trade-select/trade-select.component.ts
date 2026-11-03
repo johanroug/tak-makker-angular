@@ -1,26 +1,17 @@
-import { Component, ElementRef, HostListener, inject, input, output, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { COMPANY_TRADES } from '../../../core/company/company-trades';
 
 @Component({
   selector: 'app-trade-select',
-  template: `
-    <fieldset>
-      <legend>Dine fag</legend>
-      <p>Dine fag hjælper os med at foreslå de rette opgaver og materialer.</p>
-      <details #dropdown (keydown.escape)="close(true); $event.preventDefault()">
-        <summary [title]="selected().join(', ')">
-          <span>{{ selected().length ? selected().join(', ') : 'Vælg fag' }}</span>
-          <span class="chevron" aria-hidden="true"></span>
-        </summary>
-        <div class="options">
-          @for (trade of trades; track trade) {
-            <label><input type="checkbox" [checked]="selected().includes(trade)"
-              (change)="toggle(trade, $any($event.target).checked)" />{{ trade }}</label>
-          }
-        </div>
-      </details>
-    </fieldset>
-  `,
+  templateUrl: './trade-select.component.html',
   styleUrl: './trade-select.component.scss',
 })
 export class TradeSelectComponent {
@@ -31,9 +22,11 @@ export class TradeSelectComponent {
   private readonly dropdown = viewChild<ElementRef<HTMLDetailsElement>>('dropdown');
 
   toggle(trade: string, checked: boolean): void {
-    this.selectedChange.emit(checked
-      ? [...new Set([...this.selected(), trade])]
-      : this.selected().filter((item) => item !== trade));
+    this.selectedChange.emit(
+      checked
+        ? [...new Set([...this.selected(), trade])]
+        : this.selected().filter((item) => item !== trade),
+    );
   }
 
   @HostListener('document:click', ['$event'])

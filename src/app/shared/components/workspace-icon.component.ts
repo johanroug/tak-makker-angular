@@ -2,29 +2,8 @@ import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-workspace-icon',
-  template: `<svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path [attr.d]="paths[name()] || paths['projects']" />
-  </svg>`,
-  styles: `
-    :host {
-      display: inline-flex;
-      width: 20px;
-      height: 20px;
-      flex: none;
-    }
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  `,
+  templateUrl: './workspace-icon.component.html',
+  styleUrl: './workspace-icon.component.scss',
 })
 export class WorkspaceIcon {
   readonly name = input('projects');

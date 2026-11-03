@@ -2,6 +2,12 @@
 
 ## Aktuelt arbejde — 3. november
 
+- [x] **Separate komponentfiler** — Flyttet indlejret HTML og styling til .html/.scss for alle 11 komponenter, der havde indlejrede ressourcer. Komponenter bruger templateUrl/styleUrl. Produktionsbuild og SEO-kontrol består.
+
+- [x] **Opfriskning af manuel adgang** — Abonnementsstatus genhentes ved appstart, fokus og hvert minut i synlig fane. Ældre svar kan ikke overskrive en nyere intern/fri status. Serveren bekræfter intern adgang for ejerens virksomhed; service-test består.
+
+- [x] **Intern og manuelt tildelt fri adgang** — company_billing.ai_access_override styrer none/free/internal fra Supabase. Ejerens identificerede virksomhed har internal. Nye gratis/interne kald tæller ikke i prøveperioden; tidligere forbrug bevares ved tilbagekaldelse. UI viser Intern adgang eller Fri adgang. Migration aktiveret, build og service-/database-rollbacktests består. Se docs/manual-ai-access.md. Frontendtekster afventer deployment.
+
 - [x] **Rent opgavesprog og separat beregningsgrundlag** — Nyt internt estimate_basis-felt vises som kort note under opgaveteksten. AI instrueres i at holde antagelser ude af beskrivelsen og rydde noten, når relevante fakta er afklaret. Noter kan ændres uden ændringer i manuelle timer/beskrivelser; samtidige manuelle rettelser beskyttes. Genkendelige afsluttende Foreløbigt estimeret-sætninger på ikke-godkendte forslag flyttet til noter. Migration og AI-funktion deployet; build, lagringstests og SQL-kontrol består. Frontend skal lægges op.
 - [ ] **Beregningsgrundlag: appkontrol** — Kontrollér note ved ukendt antal radiatorer/rumareal, svar med konkrete oplysninger, og kontrollér at næste svar fjerner eller tilpasser noten. Kontrollér genindlæsning, manuelle timer og PDF. Faktiske modelsvar med det nye felt er endnu ikke kontrolleret.
 

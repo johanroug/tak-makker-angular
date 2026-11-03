@@ -1,8 +1,26 @@
-:host { display: block; min-width: 0; }
-fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
-legend { font-size: 12px; font-weight: 600; }
-p { margin: 6px 0 10px; font-size: 12px; color: #6b7569; line-height: 1.5; }
-details { position: relative; }
+:host {
+  display: block;
+  min-width: 0;
+}
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+legend {
+  font-size: 12px;
+  font-weight: 600;
+}
+p {
+  margin: 6px 0 10px;
+  font-size: 12px;
+  color: #6b7569;
+  line-height: 1.5;
+}
+details {
+  position: relative;
+}
 summary {
   display: flex;
   align-items: center;
@@ -18,18 +36,32 @@ summary {
   font-size: 13px;
   cursor: pointer;
   list-style: none;
-  &::-webkit-details-marker { display: none; }
-  > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &::-webkit-details-marker {
+    display: none;
+  }
+  > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
-summary:focus-visible, input:focus-visible { outline: 2px solid #8fa57d; outline-offset: 2px; }
-details[open] summary { border-color: #8fa57d; }
+summary:focus-visible,
+input:focus-visible {
+  outline: 2px solid #8fa57d;
+  outline-offset: 2px;
+}
+details[open] summary {
+  border-color: #8fa57d;
+}
 .chevron {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
   background: url('/icons/chevron-down.svg') center / 16px 16px no-repeat;
 }
-details[open] .chevron { transform: rotate(180deg); }
+details[open] .chevron {
+  transform: rotate(180deg);
+}
 .options {
   position: absolute;
   inset: calc(100% + 5px) 0 auto;
@@ -53,6 +85,15 @@ label {
   color: #28432f;
   font-size: 13px;
   cursor: pointer;
-  &:hover, &:has(input:checked) { background: #eef5e6; }
+  &:hover,
+  &:has(input:checked) {
+    background: #eef5e6;
+  }
 }
-input { width: 18px; height: 18px; margin: 0; flex-shrink: 0; accent-color: #12372a; }
+input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: #12372a;
+}

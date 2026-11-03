@@ -1,0 +1,12 @@
+<section aria-labelledby="trade-links-title" appReveal>
+  <p class="eyebrow">TILBUDSARBEJDE I DIT FAG</p>
+  <h2 id="trade-links-title">Dit næste tilbud starter<br />med din opgave.</h2>
+  <div class="links">
+    @for (page of pages; track page.slug) {
+      <a [routerLink]="'/' + page.slug"
+        ><span>Tilbudsprogram til</span
+        ><strong>{{ page.trade }} <span aria-hidden="true">↗</span></strong></a
+      >
+    }
+  </div>
+</section>

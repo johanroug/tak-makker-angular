@@ -1,0 +1,21 @@
+<fieldset>
+  <legend>Dine fag</legend>
+  <p>Dine fag hjælper os med at foreslå de rette opgaver og materialer.</p>
+  <details #dropdown (keydown.escape)="close(true); $event.preventDefault()">
+    <summary [title]="selected().join(', ')">
+      <span>{{ selected().length ? selected().join(', ') : 'Vælg fag' }}</span>
+      <span class="chevron" aria-hidden="true"></span>
+    </summary>
+    <div class="options">
+      @for (trade of trades; track trade) {
+        <label
+          ><input
+            type="checkbox"
+            [checked]="selected().includes(trade)"
+            (change)="toggle(trade, $any($event.target).checked)"
+          />{{ trade }}</label
+        >
+      }
+    </div>
+  </details>
+</fieldset>

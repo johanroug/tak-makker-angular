@@ -2,7 +2,9 @@
 
 Each company starts with 10 free completed generations from activation; historical
 usage is not retroactively billed. All company members share this allowance.
-No existing administrator or approved user is silently exempted.
+Administratorrollen giver ikke automatisk fri adgang. Virksomheder kan få en
+udtrykkelig manuel undtagelse; se `manual-ai-access.md`. Ejerens virksomhed har
+nu denne interne adgang.
 
 `202611030003_company_trial.sql` creates private billing and request tables plus
 guarded RPCs. It removes manual approval as an app entry requirement. The user

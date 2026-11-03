@@ -1002,7 +1002,7 @@ body {
       color: #617068;
       opacity: 1;
     }
-    .chat-form button:not(:disabled):hover {
+    .chat-form > button:not(:disabled):hover {
       background: #1d4d3b;
     }
   }

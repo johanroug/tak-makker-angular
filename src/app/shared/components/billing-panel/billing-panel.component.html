@@ -1,0 +1,63 @@
+<section
+  [attr.id]="compact() ? null : 'subscription'"
+  [class.compact]="compact()"
+  aria-label="Dit abonnement"
+>
+  @if (!compact()) {
+    <h2>Dit abonnement</h2>
+  }
+  @if (billing.error()) {
+    <p role="status">
+      {{ billing.error() }} <button type="button" (click)="reload()">Prøv igen</button>
+    </p>
+  } @else if (billing.usage(); as usage) {
+    @if (usage.status === 'internal' || usage.status === 'free') {
+      <strong>{{ usage.status === 'internal' ? 'Intern adgang' : 'Fri adgang' }}</strong>
+      @if (!compact()) {
+        <p>Din virksomhed har fri adgang til forespørgsler uden forbrugsgrænse.</p>
+      }
+    } @else if (usage.status === 'active') {
+      <strong>Aktivt abonnement</strong>
+      @if (!compact()) {
+        <p>Din virksomhed er abonnent.</p>
+      }
+    } @else if (usage.status === 'exhausted') {
+      <strong>Du har brugt dine 10 gratis forespørgsler</strong>
+      <p>Du kan stadig åbne dine projekter og hente dine tilbud.</p>
+      @if (!compact()) {
+        <p>
+          Du har ikke et aktivt abonnement. Abonnementer er snart klar; flere forespørgsler kræver
+          et abonnement.
+        </p>
+      }
+    } @else {
+      <strong>{{
+        compact()
+          ? usage.trialRemaining === 1
+            ? '1 gratis forespørgsel tilbage'
+            : usage.trialRemaining + ' gratis forespørgsler tilbage'
+          : 'Gratis prøveperiode'
+      }}</strong>
+      @if (!compact()) {
+        <p>
+          {{ usage.trialUsed }} af {{ usage.trialLimit }} forespørgsler brugt ·
+          {{ usage.trialRemaining }} tilbage
+        </p>
+        <progress
+          [value]="usage.trialUsed"
+          [max]="usage.trialLimit"
+          aria-label="Gratis forespørgsler brugt"
+        ></progress>
+        <p>De 10 gratis forespørgsler deles af hele virksomheden. Kun gennemførte svar tæller.</p>
+      }
+      @if (usage.trialPending && !usage.canGenerate) {
+        <p>Vent på de igangværende forespørgsler.</p>
+      }
+    }
+    @if (compact()) {
+      <button type="button" (click)="openSubscription()">Se abonnement</button>
+    }
+  } @else {
+    <p role="status">Henter abonnement og forbrug…</p>
+  }
+</section>

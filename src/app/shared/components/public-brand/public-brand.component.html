@@ -1,0 +1,18 @@
+<a
+  [routerLink]="destination()"
+  [class.header-brand]="header()"
+  [class.inverse]="inverse()"
+  aria-label="Hovedet på Sømmet"
+>
+  <span class="mark"
+    ><img src="/brand-preview/reference-symbol.svg" alt="" width="48" height="48"
+  /></span>
+  <span class="wordmark"
+    ><strong
+      >Hovedet<span>på <em>Sømmet</em></span></strong
+    >
+    @if (tagline()) {
+      <small>Hjernen bag dit næste tilbud.</small>
+    }
+  </span>
+</a>

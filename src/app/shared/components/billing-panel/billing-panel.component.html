@@ -5,6 +5,16 @@
 >
   @if (!compact()) {
     <h2>Dit abonnement</h2>
+    @if (checkoutResult === 'success' && billing.usage()?.subscriptionState !== 'past_due') {
+      @if (billing.usage()?.status === 'active') {
+        <p role="status">Dit abonnement er aktivt.</p>
+      } @else {
+        <p role="status">Du er tilbage fra Stripe. Dit abonnement aktiveres, når betalingen er bekræftet. Opdatér status om et øjeblik.</p>
+        <button type="button" (click)="reload()">Opdatér status</button>
+      }
+    } @else if (checkoutResult === 'canceled') {
+      <p role="status">Betalingen blev afbrudt. Dit eksisterende forbrug er bevaret.</p>
+    }
   }
   @if (billing.error()) {
     <p role="status">
@@ -16,19 +26,44 @@
       @if (!compact()) {
         <p>Din virksomhed har fri adgang til forespørgsler uden forbrugsgrænse.</p>
       }
+    } @else if (usage.subscriptionState === 'past_due') {
+      @if (compact()) {
+        <strong>Betaling mangler</strong>
+      } @else {
+        <div class="cancellation-notice" role="status">
+          <strong>Betaling mangler</strong>
+          <p>Din abonnementsbetaling er ikke gennemført. Opdatér dit betalingskort og betal den udestående faktura hos Stripe.</p>
+          <p>Abonnementets forespørgsler bliver tilgængelige, når betalingen er bekræftet.</p>
+        </div>
+        @if (usage.trialRemaining > 0) {
+          <p>Du har stadig {{ usage.trialRemaining }} gratis forespørgsler tilbage fra din prøveperiode.</p>
+        }
+        <p>Du kan stadig åbne dine projekter og hente dine tilbud.</p>
+      }
     } @else if (usage.status === 'active') {
-      <strong>Aktivt abonnement</strong>
+      <strong>{{ compact() ? usage.paidRemaining + ' af 500 forespørgsler tilbage' : 'Aktivt abonnement' }}</strong>
       @if (!compact()) {
-        <p>Din virksomhed er abonnent.</p>
+        <p>299 kr. ekskl. moms pr. måned · 500 forespørgsler</p>
+        <p>{{ usage.paidRemaining }} af 500 forespørgsler tilbage</p>
+        <progress [value]="usage.paidRemaining || 0" max="500" aria-label="Forespørgsler tilbage i abonnementsperioden"></progress>
+        @if (usage.periodEnd) {
+          @if (usage.cancelAtPeriodEnd) {
+            <div class="cancellation-notice">
+              <strong>Abonnement opsagt</strong>
+              <p>Du har adgang til og med <b>{{ usage.periodEnd | date:'dd.MM.yyyy' }}</b>.</p>
+              <p>Abonnementet fornyes ikke.</p>
+            </div>
+          } @else {
+            <p>Ny periode fra {{ usage.periodEnd | date:'dd.MM.yyyy' }}</p>
+          }
+        }
+        @if (!usage.canGenerate) { <p role="status">De 500 forespørgsler er brugt eller optaget af igangværende kald.</p> }
       }
     } @else if (usage.status === 'exhausted') {
       <strong>Du har brugt dine 10 gratis forespørgsler</strong>
       <p>Du kan stadig åbne dine projekter og hente dine tilbud.</p>
       @if (!compact()) {
-        <p>
-          Du har ikke et aktivt abonnement. Abonnementer er snart klar; flere forespørgsler kræver
-          et abonnement.
-        </p>
+        <p>Vælg et abonnement for at fortsætte med flere forespørgsler.</p>
       }
     } @else {
       <strong>{{
@@ -53,6 +88,23 @@
       @if (usage.trialPending && !usage.canGenerate) {
         <p>Vent på de igangværende forespørgsler.</p>
       }
+    }
+    @if (!compact()) {
+      @if (usage.status !== 'internal' && usage.status !== 'free' && usage.status !== 'active' && usage.subscriptionState !== 'past_due') {
+        <div class="plan">
+          <strong>299 kr. ekskl. moms / måned</strong>
+          <p>500 forespørgsler pr. virksomhed pr. måned. Månedsvis betaling uden års binding.</p>
+          <p>Dansk moms lægges til: 373,75 kr. inkl. moms.</p>
+          <button type="button" class="subscribe" [disabled]="billing.paymentBusy() || !billing.checkoutReady()"
+            (click)="billing.openPayment('checkout')">{{ billing.paymentBusy() ? 'Åbner Stripe…' : 'Vælg abonnement' }}</button>
+          @if (!billing.checkoutReady()) { <p>Betalingsopsætningen er ved at blive gjort klar.</p> }
+        </div>
+      }
+      @if (usage.hasStripeCustomer) {
+        <button type="button" [disabled]="billing.paymentBusy()" (click)="billing.openPayment('portal')">Administrer abonnement</button>
+      }
+      @if (billing.testMode() && billing.checkoutReady()) { <p class="test-note">Testbetaling — der trækkes ikke rigtige penge.</p> }
+      @if (billing.paymentError()) { <p role="alert">{{ billing.paymentError() }}</p> }
     }
     @if (compact()) {
       <button type="button" (click)="openSubscription()">Se abonnement</button>

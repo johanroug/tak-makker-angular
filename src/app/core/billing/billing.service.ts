@@ -4,6 +4,9 @@ import { supabase } from '../supabase/supabase.client';
 export type BillingUsage = {
   companyId: string; status: 'trial' | 'exhausted' | 'active' | 'free' | 'internal';
   trialLimit: number; trialUsed: number; trialPending: number; trialRemaining: number; canGenerate: boolean;
+  paidLimit?: number; paidUsed?: number; paidPending?: number; paidRemaining?: number;
+  periodStart?: string | null; periodEnd?: string | null; cancelAtPeriodEnd?: boolean;
+  subscriptionState?: string; hasStripeCustomer?: boolean;
 };
 export class TrialError extends Error {}
 
@@ -12,6 +15,11 @@ export class BillingService implements OnDestroy {
   readonly usage = signal<BillingUsage | null>(null);
   readonly error = signal('');
   readonly endedNotice = signal(false);
+  readonly paymentBusy = signal(false);
+  readonly paymentError = signal('');
+  readonly checkoutReady = signal(false);
+  readonly testMode = signal(true);
+  private configurationLoaded = false;
   private userId: string | null | undefined;
   version = 0;
   private loadSequence = 0;
@@ -24,10 +32,52 @@ export class BillingService implements OnDestroy {
       this.usage.set(null);
       this.endedNotice.set(false);
       this.error.set('');
+      this.paymentError.set('');
     }
   }).data.subscription;
 
   ngOnDestroy(): void { this.subscription.unsubscribe(); }
+
+  limitReached(companyId?: string): boolean {
+    const usage = this.usage();
+    if (!usage || (companyId && usage.companyId !== companyId)) return false;
+    return usage.status === 'exhausted' || (usage.status === 'active' &&
+      (usage.paidUsed ?? 0) >= (usage.paidLimit ?? 500));
+  }
+
+  async loadCheckoutConfiguration(): Promise<void> {
+    if (this.configurationLoaded) return;
+    try {
+      const { data, error } = await supabase.functions.invoke('billing-session', { method: 'GET' });
+      if (error) return;
+      this.checkoutReady.set(data?.checkoutReady === true);
+      this.testMode.set(data?.testMode !== false);
+      this.configurationLoaded = data?.checkoutReady === true;
+    } catch { /* Existing project access remains available while payment is being configured. */ }
+  }
+
+  async openPayment(action: 'checkout' | 'portal'): Promise<void> {
+    if (this.paymentBusy()) return;
+    const version = this.version;
+    this.paymentBusy.set(true);
+    this.paymentError.set('');
+    try {
+      const { data, error } = await supabase.functions.invoke('billing-session', {
+        body: { action, companyId: this.usage()?.companyId },
+      });
+      if (version !== this.version) return;
+      if (error) {
+        const body = error.context instanceof Response ? await error.context.clone().json().catch(() => null) : null;
+        throw new Error(body?.error || 'Kunne ikke åbne Stripe. Prøv igen.');
+      }
+      const url = new URL(data.url);
+      if (url.protocol !== 'https:' || !['checkout.stripe.com','billing.stripe.com'].includes(url.hostname))
+        throw new Error('Stripe returnerede en ugyldig betalingsadresse.');
+      window.location.assign(url.href);
+    } catch (error) {
+      if (version === this.version) this.paymentError.set(error instanceof Error ? error.message : 'Kunne ikke åbne Stripe.');
+    } finally { this.paymentBusy.set(false); }
+  }
 
   accept(value: unknown, notify = false): void {
     if (!value || typeof value !== 'object') return;

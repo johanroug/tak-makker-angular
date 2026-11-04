@@ -131,6 +131,8 @@
 }
 .login-error,
 .login-notice {
+  p { margin: 0; }
+  ul { margin: 4px 0 0; padding-left: 20px; }
   margin: 0;
   padding: 12px;
   border: 1px solid #e5d6c5;

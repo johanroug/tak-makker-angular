@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { AuthShell } from '../../shared/marketing/auth-shell.component';
@@ -20,6 +20,7 @@ export class Login {
   private readonly route = inject(ActivatedRoute);
   readonly registering = this.route.snapshot.data['register'] === true;
   readonly notice = signal('');
+  readonly registrationComplete = signal(false);
   repeatPassword = '';
   private readonly companyLookup = inject(CompanyLookupService);
   readonly trades = COMPANY_TRADES;
@@ -53,6 +54,25 @@ export class Login {
   readonly errorMessage = signal('');
   readonly isLoggingIn = signal(false);
 
+  registrationProblems(form: NgForm): string[] {
+    if (!this.registering) return [];
+    const fields: Record<string, string> = {
+      cvr: 'CVR-nummer skal være 8 cifre.',
+      companyName: 'Udfyld virksomhedsnavn.',
+      companyAddress: 'Udfyld virksomhedsadresse.',
+      email: 'Udfyld en gyldig e-mailadresse.',
+      password: 'Adgangskoden skal være mindst 8 tegn.',
+      repeatPassword: 'Gentag adgangskoden med mindst 8 tegn.',
+    };
+    const problems = Object.entries(fields)
+      .filter(([name]) => form.controls[name]?.invalid)
+      .map(([, message]) => message);
+    if (!this.selectedTrades.length) problems.push('Vælg mindst ét fag.');
+    if (this.password && this.repeatPassword && this.password !== this.repeatPassword)
+      problems.push('Adgangskoderne skal være ens.');
+    return problems;
+  }
+
   constructor() {
     const reason = this.route.snapshot.queryParamMap.get('access');
     if (reason === 'pending')
@@ -66,7 +86,7 @@ export class Login {
   }
 
   async login() {
-    if (this.isLoggingIn()) return;
+    if (this.isLoggingIn() || this.registrationComplete()) return;
     this.errorMessage.set('');
     this.notice.set('');
     this.isLoggingIn.set(true);
@@ -106,6 +126,7 @@ export class Login {
           this.notice.set(
             'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Bekræft din e-mail og log ind for at prøve de 10 gratis forespørgsler.',
           );
+        this.registrationComplete.set(true);
         return;
       }
       const { error } = await this.authService.signIn(this.email.trim(), this.password);

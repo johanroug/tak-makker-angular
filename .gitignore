@@ -44,6 +44,12 @@ __screenshots__/
 Thumbs.db
 
 # Supabase CLI temporary files
+.env
+.env.*
+!.env.example
+supabase/.env
+supabase/.env.*
+!supabase/.env.example
 supabase/.temp/
 supabase/audits/
 

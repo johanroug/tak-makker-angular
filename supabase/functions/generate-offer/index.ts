@@ -192,8 +192,10 @@ Deno.serve(async (request) => {
     });
     if (reserveError || !reservation) throw new Error('Could not reserve request');
     if (!reservation.allowed) return Response.json({
-      code: reservation.usage.status === 'exhausted' ? 'TRIAL_EXHAUSTED' : 'TRIAL_BUSY',
-      error: 'Gratis prøveperiode er brugt eller optaget af igangværende forespørgsler.',
+      code: reservation.usage.status === 'active'
+        ? (reservation.usage.paidUsed >= reservation.usage.paidLimit ? 'MONTHLY_LIMIT_REACHED' : 'MONTHLY_BUSY')
+        : (reservation.usage.status === 'exhausted' ? 'TRIAL_EXHAUSTED' : 'TRIAL_BUSY'),
+      error: 'Virksomhedens forespørgsler er brugt eller optaget af igangværende kald.',
       usage: reservation.usage,
     }, { status: 402, headers: corsHeaders });
     requestId = reservation.requestId;

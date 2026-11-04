@@ -11,9 +11,16 @@
       </p>
     </header>
 
-    <form #authForm="ngForm" class="login-form" (ngSubmit)="authForm.valid && login()">
+    @if (registrationComplete()) {
+      <div class="login-notice" role="status">
+        <p>{{ notice() }}</p>
+      </div>
+      <p class="access-process">Du behøver ikke udfylde formularen igen. Se også i spam-mappen.</p>
+    } @else {
+    <form #authForm="ngForm" class="login-form" (ngSubmit)="authForm.valid && (!registering || !registrationProblems(authForm).length) && login()">
       @if (registering) {
-        <label for="register-cvr">CVR-nummer</label>
+        <label for="register-cvr">CVR-nummer (påkrævet)</label>
+        <small>Bruges til at registrere din virksomhed. Du kan også slå oplysningerne op.</small>
         <div class="cvr-lookup">
           <input id="register-cvr" name="cvr" [(ngModel)]="cvr" inputmode="numeric"
             pattern="[0-9]{8}" maxlength="8" placeholder="12345678" required />
@@ -38,6 +45,7 @@
         E-mail
         <input
           type="email"
+          email
           name="email"
           [(ngModel)]="email"
           autocomplete="email"
@@ -81,7 +89,17 @@
         <p class="login-error" role="alert">{{ errorMessage() }}</p>
       }
 
-      <button type="submit" [disabled]="isLoggingIn() || lookingUp() || authForm.invalid || (registering && !selectedTrades.length)">
+      @if (registering && registrationProblems(authForm).length) {
+        <div class="login-notice" role="status">
+          <p>Før du kan oprette kontoen:</p>
+          <ul>
+            @for (problem of registrationProblems(authForm); track problem) {
+              <li>{{ problem }}</li>
+            }
+          </ul>
+        </div>
+      }
+      <button type="submit" [disabled]="isLoggingIn() || lookingUp() || authForm.invalid || (registering && registrationProblems(authForm).length > 0)">
         {{
           isLoggingIn()
             ? registering
@@ -93,7 +111,8 @@
         }}
       </button>
     </form>
-    @if (registering) {
+    }
+    @if (registering && !registrationComplete()) {
       <p class="access-process">
         Opret bruger <span aria-hidden="true">→</span> Bekræft e-mail
         <span aria-hidden="true">→</span> Kom i gang

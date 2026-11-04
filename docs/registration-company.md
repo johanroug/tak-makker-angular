@@ -48,6 +48,6 @@ https://cvrapi.dk/documentation
 - Activate and verify company lookup and profile migration in the target environment.
 - Company trial and self-service access are now deployed on the server; publish
   the frontend and complete the walkthrough in `company-trial.md`.
-- Integrate Stripe checkout, subscription webhooks and customer portal.
-- Confirm paid price and request allowance; 149 DKK excluding VAT and 500 monthly
-  requests are proposals, not accepted pricing.
+- Stripe checkout, subscription webhooks and customer portal are implemented.
+  Complete sandbox configuration and payment verification in `stripe-setup.md`.
+- Agreed plan: 299 DKK excluding VAT and 500 requests per paid monthly period.

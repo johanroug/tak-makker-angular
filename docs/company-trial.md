@@ -26,13 +26,12 @@ The member RPC exposes only the current company's subscription status and usage.
 Exhaustion does not affect ordinary project, profile or PDF access. The UI shows
 usage in the profile, conversation and project-creation dialog. Completion number
 10 raises a persistent, dismissible notice with a link to the profile's subscription
-section. Payment is not available yet; that section makes this clear.
+section. Payment setup and the paid allowance are described in `stripe-setup.md`.
 
-Stripe integration, paid plan price, renewal rules and paid monthly allowance are
-still separate work. The private `subscription_status` and `access_until` fields
-provide a future integration point. No API currently grants paid access to users.
-An active subscription with a future access date bypasses the trial counter; do
-not activate this field until the paid usage policy is implemented.
+The Stripe migration adds a separate allowance of 500 completed requests per
+paid billing period at 299 DKK excluding VAT per month. Signed webhooks confirm
+paid access. Trial usage is retained separately; free/internal overrides bypass
+both quotas. Checkout remains disabled until webhook and VAT setup is complete.
 
 ## Deployment and verification
 

@@ -38,7 +38,9 @@
 - [ ] **Blank side ved indlæsningsfejl** — Lokal rettelse klar: fejlpanel med manuel genindlæsning ved fejlede programfiler, opstartsfejl og navigationsfejl. Login-kontrol håndterer også afviste netværkskald. Build og recovery-test består; afventer deployment og browserkontrol. Skærmbilledets DNS-/netværksfejl er ikke diagnosticeret eller løst af denne ændring.
 - [ ] **CVR-opslag og fag ved registrering** — Implementeret, og databasemigrationen er kørt. Direkte CVR-opslag verificeret på localhost. Afventer frontend-deployment og samlet livekontrol af registrering og profil; se docs/registration-company.md.
 - [x] **Gratis prøveperiode** — 10 gennemførte AI-forespørgsler i alt pr. virksomhed uden manuel godkendelse. Håndhæves på serveren; frontend/livekontrol står ovenfor.
-- [ ] **Stripe-abonnement** — Stripe valgt. Pris og månedligt antal forespørgsler afventer endelig beslutning.
+- [x] **Stripe-implementering, 4. november** — 299 kr. ekskl. moms og 500 gennemførte kald pr. betalt månedlig periode. Checkout, signeret webhook, kundeportal og serverkvote implementeret. Migration og tre Edge Functions udrullet; build, målrettede tests og database-rollbacktests består. Manuel intern/fri adgang bevares.
+- [x] **Stripe: sandbox-kontrol** — Checkout med moms, betalt adgang, AI-forbrug, portal, opsigelse/genaktivering og gendannet adgang efter efterfølgende testbetaling bekræftet i appen. Afvist kort og fejlbesked kontrolleret. Tests med simulering og manuelle periodeændringer dokumenteret; almindelig automatisk månedlig fornyelse er ikke browserbekræftet. Se docs/stripe-setup.md.
+- [ ] **Stripe: frontend og live** — Læg frontend op, aktivér/verificér livekonto og opret livepris, momssats og webhook. Afvikl sandbox-referencer kontrolleret før skift til live-secrets. Livebetaling er fortsat deaktiveret.
 
 ## 1. Nødvendigt før første kunde
 

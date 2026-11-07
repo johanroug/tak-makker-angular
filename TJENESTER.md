@@ -2,22 +2,24 @@
 
 | Tjeneste | Bruges til |
 |---|---|
-| Resend | Sender bekræftelsesmails og mails til nulstilling af adgangskoder via Supabase. |
-| Simply.com | DNS til hovedetpåsømmet.dk (hjemmeside) | Hoster hjemmesiden og gør Hovedet på sømmet tilgængelig på nettet. |og hovedetpaasommet.dk (e-mail). |
+| Simply.com | Hjemmeside, DNS, virksomhedsmail, loginmails via SMTP og krypterede databasebackups. |
 | Punktum dk | Administrerer registreringen af de to .dk-domæner. |
 | Supabase | Leverer database, brugerlogin, adgangskontrol og serverfunktioner. |
 | OpenAI | Leverer AI til at hjælpe med projekter og udarbejdelse af tilbud. |
-| GitHub | Gemmer projektets kildekode og versionshistorik online. |
+| GitHub | Kildekode, automatisk udgivelse fra main samt backup- og gendannelsesjobs. |
 | Codex fra OpenAI | Hjælper med at udvikle, rette og vedligeholde projektets kode. |
 | Stripe | Håndterer betalinger. |
 
 ## Sådan hænger det sammen
 
-- **Hjemmeside:** hovedetpåsømmet.dk → DNS hos Simply → Vercel.
+- **Hjemmeside:** hovedetpåsømmet.dk → DNS og webhotel hos Simply. GitHub Actions udgiver fra main.
 - **Brugere og data:** Hjemmesiden → Supabase.
-- **Loginmails:** Supabase → Resend → brugerens indbakke. Afsenderdomænet er hovedetpaasommet.dk.
+- **Loginmails:** Supabase → Simply SMTP → brugerens indbakke. Afsender: system@hovedetpaasommet.dk.
 - **AI:** Supabases serverfunktion → OpenAI.
 
 Oversigten dækker de tjenester og udviklingsværktøjer, vi har identificeret til projektet.
 
-Johan har bekræftet opsætningen af de nye domæner hos Vercel, Resend og Supabase samt fungerende registrering, korrekt mailafsender og nulstillingslink. Status og resterende oprydning står i DOMAIN-SKIFTE.md.
+Vercel-projektet er slettet. Resend er erstattet af Simply SMTP; oprettelse,
+bekræftelse, nulstilling og efterfølgende login er bekræftet af Johan den
+7. november 2026. Afvikling af Resend-nøgler, historiske data og DNS afventer.
+Se docs/smtp-simply.md. Ældre domæneskifthistorik står i DOMAIN-SKIFTE.md.

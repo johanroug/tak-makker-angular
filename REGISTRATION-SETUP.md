@@ -9,7 +9,10 @@ Se `docs/company-trial.md` for serveroptælling, udrulning og tests.
 Den tidligere godkendelsesprocedure nedenfor beskriver den historiske opsætning.
 Genkør ikke den gamle godkendelsesmigration, da den genindfører godkendelseskravet.
 
-Domæne- og navneskift til **Hovedet på sømmet**: Følg DOMAIN-SKIFTE.md. Hjemmesiden bruger hovedetpåsømmet.dk, og mailafsenderen skal bruge hovedetpaasommet.dk efter separat Resend-verifikation.
+Hjemmesiden bruger hovedetpåsømmet.dk. Loginmails sendes fra
+system@hovedetpaasommet.dk via Simply SMTP fra 7. november 2026.
+Aktuel SMTP-opsætning og teststatus står i docs/smtp-simply.md.
+DOMAIN-SKIFTE.md indeholder også den historiske Resend-opsætning.
 
 ## Udrulning
 

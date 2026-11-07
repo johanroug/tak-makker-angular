@@ -78,13 +78,13 @@
       <p>Hvis du vælger at slå CVR op, sender din browser CVR-nummeret til cvrapi.dk og modtager offentlige virksomhedsoplysninger. Leverandøren modtager også tekniske forbindelsesoplysninger, herunder din IP-adresse. Ved enkeltmandsvirksomheder kan virksomhedsoplysninger også være personoplysninger. Du kan i stedet udfylde oplysningerne selv.</p>
       <h2>5. Leverandører og modtagere</h2>
       <ul>
-        <li>Simply.com: hjemmeside, virksomhedens e-mail og krypterede databasebackups.</li>
+        <li>Simply.com: hjemmeside, virksomhedens e-mail, bekræftelses- og nulstillingsmails via Supabase samt krypterede databasebackups.</li>
         <li>Supabase: brugerlogin, database og serverfunktioner. Projektets primære database ligger i EU-regionen Irland.</li>
         <li>OpenAI: behandler de projektoplysninger, opgave- og materialelister og samtalebeskeder, der sendes for at danne forslag. Kundedata, som indgår i projektkonteksten, kan derfor indgå i kaldet. Indtast kun det nødvendige.</li>
-        <li>Resend: sender loginrelaterede e-mails, herunder bekræftelse og nulstilling af adgangskode.</li>
         <li>Stripe: betalings- og abonnementsbehandling, når du benytter betalingsfunktioner. Vi gemmer ikke fulde betalingskortnumre i appens database. Stripe kan også behandle oplysninger som selvstændig dataansvarlig til egne lovpligtige og sikkerhedsmæssige formål.</li>
         <li>GitHub Actions: bygger hjemmesiden og behandler midlertidigt databasedata ved backup og gendannelsestest. Den gemte backup på Simply er krypteret.</li>
       </ul>
+      <p>Frem til skiftet den 7. november 2026 blev loginrelaterede mails sendt gennem Resend. Tjenesten bruges ikke længere til nye loginmails. Historiske afsendelsesoplysninger kan fortsat være omfattet af Resends opbevaringsvilkår, mens den tidligere integration afvikles.</p>
       <p>Oplysninger kan desuden videregives til myndigheder, hvis lovgivningen kræver det, og til rådgivere, når det er nødvendigt for et konkret krav eller vores retlige forpligtelser.</p>
       <h2>6. Behandling uden for EU/EØS</h2>
       <p>En EU-database betyder ikke, at alle leverandørers aktiviteter foregår i EU/EØS. Blandt andet support, e-mail, betalingsbehandling, automatiserede jobs og behandling af forslag kan involvere lande uden for EU/EØS.</p>

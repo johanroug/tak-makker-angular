@@ -14,7 +14,7 @@ Oprettelsesteksten er information, ikke et særskilt GDPR-samtykke.
   `docs/databehandleraftale-udkast.md`. Færdiggør bilag og indgå aftalen.
   Privatlivspolitikken er ikke den aftale. Brug anonymiserede testopgaver indtil da.
 - Kontrollér konkrete databehandleraftaler, underdatabehandlere og
-  overførselsgrundlag hos Supabase, OpenAI, Resend, Simply, GitHub og Stripe.
+  overførselsgrundlag hos Supabase, OpenAI, Simply, GitHub og Stripe.
   En offentlig GDPR-side beviser ikke, at den relevante aftale er indgået.
 - Johan har godkendt 30 dage for appens aktivitetslogs og egne backupfiler.
   Dagligt backupjob rydder aktivitetslogs op før dump og egne arkiver efter
@@ -33,6 +33,10 @@ Oprettelsesteksten er information, ikke et særskilt GDPR-samtykke.
   Der gives ingen ubetinget garanti om træning, lagring eller EU-behandling.
 
 ## Leverandørstatus bekræftet af Johan
+
+- Loginmails er skiftet fra Resend til Simply SMTP 7. november 2026.
+  system@hovedetpaasommet.dk er testet ved både oprettelse og nulstilling
+  med efterfølgende login. Resend-nøgler, historiske data og DNS afventer oprydning.
 
 - Simply DPA 1.8: status Underskrevet i kontrolpanelet den 7. november 2026,
   vist klokkeslæt 13:25:59, kontoejer Johan Steiner Roug. Johan har gemt

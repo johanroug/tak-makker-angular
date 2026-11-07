@@ -1,7 +1,8 @@
 # Flytning til Simply
 
 Appen er statisk bygget Angular, inklusive fire prerenderede offentlige sider.
-Supabase, Stripe og Resend fortsætter som separate tjenester. Ingen Node-server
+Supabase og Stripe fortsætter som separate tjenester. Loginmails er senere
+skiftet fra Resend til Simply SMTP; se smtp-simply.md. Ingen Node-server
 skal startes på Simply. Det eksisterende Vercel-deployment bevares under testen.
 
 ## Status 7. november 2026

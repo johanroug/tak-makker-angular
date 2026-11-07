@@ -184,9 +184,12 @@ og relevante videre underdatabehandlere registreres i den færdige version.
 | --- | --- | --- |
 | Supabase | Database, login og serverfunktioner; konto- og projektdata | Primær database i Irland. Support/øvrige behandlinger og overførsler skal verificeres i kontoens aftaler. |
 | OpenAI | Generering af forslag ud fra projektkontekst og samtaler | Der er ikke dokumenteret EU-residency for den aktuelle API-konto. Aftale, indstillinger og overførsler skal verificeres. |
-| Simply.com | Webhosting og krypterede databasebackups; eventuelt persondata i supportmail | Leverandøren oplyser danske datacentre. Kontoens databehandleraftale skal indgås og gemmes. |
+| Simply.com A/S, CVR 29412006, Højvangen 4, 8660 Skanderborg | Webhosting, krypterede databasebackups, bekræftelses-/nulstillingsmails og virksomhedsmail | Leverandøren oplyser danske datacentre. Kontoens DPA 1.8 er underskrevet af Johan 7. november 2026, og bekræftelsen er gemt. |
 | GitHub Actions | Midlertidige databasedumps ved backup og dekrypterede data i gendannelsestest | GitHub-hostede runners. Ingen dokumenteret EU-begrænsning; aftale og overførselsgrundlag skal verificeres. |
-| Resend | Bekræftelses- og nulstillingsmails, e-mailadresse og indhold | Kontoens aftalepart, behandlingslande og grundlag skal verificeres. |
+
+Resend blev erstattet af Simply SMTP 7. november 2026 og bruges ikke længere
+til nye loginmails. Historiske leveringsdata og de tidligere nøgler skal
+afvikles særskilt; de er ikke dokumenteret slettet endnu.
 
 Stripe behandler betalingsoplysninger for vores eget abonnement. Dets
 rolle skal vurderes for denne særskilte behandling; Stripe modtager ikke

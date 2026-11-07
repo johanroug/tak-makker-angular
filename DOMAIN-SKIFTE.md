@@ -1,5 +1,10 @@
 # Hovedet på sømmet — navn, web og e-mail
 
+> Aktuel status 7. november 2026: Hjemmesiden ligger hos Simply; Vercel-projektet
+> er slettet. Loginmails sendes via Simply SMTP fra system@hovedetpaasommet.dk.
+> Se docs/smtp-simply.md for den gældende mailopsætning. Resend-afsnittene
+> nedenfor er historik og må ikke bruges som aktuel installationsvejledning.
+
 ## De nye adresser
 
 | Formål | Adresse |

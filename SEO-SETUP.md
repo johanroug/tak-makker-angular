@@ -33,7 +33,7 @@ Kontrollen kan genkøres med `npm run check:seo`. Den bruger ikke spec-filer ell
 ## Google Search Console — Johan
 
 1. Åbn https://search.google.com/search-console og tilføj en **domæneejendom** for `hovedetpåsømmet.dk`.
-2. Kopiér Googles konkrete TXT-verifikationsværdi. Tilføj den som en ny TXT-post for roddomænet i Simplys DNS-administration. Bevar Resends og Vercels eksisterende poster.
+2. Kopiér Googles konkrete TXT-verifikationsværdi. Tilføj den som en ny TXT-post for roddomænet i Simplys DNS-administration. Bevar aktuelle web- og mailposter; gamle Resend-/Vercel-poster skal kun fjernes som del af en kontrolleret afvikling.
 3. Gå tilbage til Search Console og verificér. TXT-værdien er kontospecifik og skal komme fra Google; den er ikke opfundet eller gemt i projektet.
 4. Indsend `https://xn--hovedetpsmmet-wfb00a.dk/sitemap.xml` under Sitemaps.
 5. Brug URL-inspektion på forsiden og de tre fagsider. Kontrollér den gengivne side og Googles valgte canonical. Anmod om indeksering, hvis muligheden vises.

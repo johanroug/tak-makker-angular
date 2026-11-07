@@ -29,13 +29,18 @@ remote="$SIMPLY_SSH_USER@ssh.simply.com"
 # Fail before dumping if the account does not match the already deployed site.
 ssh "${ssh_options[@]}" "$remote" 'test "$(pwd -P)" = /var/www/hovedetpaasommet.dk && test -d public_html && command -v sha256sum >/dev/null'
 
-# Keep credentials out of the URL/command line; CLI reads SUPABASE_DB_PASSWORD.
-database_url='postgresql://postgres.agbugdzobpkpgfischvi@aws-1-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require'
+# With --db-url, CLI 2.118.0 takes credentials from the URL and ignores both
+# SUPABASE_DB_PASSWORD and --password. Percent-encode special characters.
+# Do not enable shell tracing/debug output. Mask the derived URL too.
+database_url=$(node -e 'const u = new URL("postgresql://postgres.agbugdzobpkpgfischvi@aws-1-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require"); u.password = process.env.SUPABASE_DB_PASSWORD; process.stdout.write(u.href)')
+if [[ "${GITHUB_ACTIONS:-}" == true ]]; then
+  printf '::add-mask::%s\n' "${database_url//%/%25}"
+fi
 supabase db dump --db-url "$database_url" --role-only --file "$workspace/roles.sql"
 supabase db dump --db-url "$database_url" --file "$workspace/schema.sql"
 supabase db dump --db-url "$database_url" --data-only --use-copy \
   -x storage.buckets_vectors -x storage.vector_indexes --file "$workspace/data.sql"
-unset SUPABASE_DB_PASSWORD
+unset SUPABASE_DB_PASSWORD database_url
 for name in roles schema data; do
   [[ -s "$workspace/$name.sql" ]] || { echo "Empty $name dump" >&2; exit 1; }
 done

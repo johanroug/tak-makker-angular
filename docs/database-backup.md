@@ -52,9 +52,14 @@ After merging to main, run **Test Supabase backup restore** with Run workflow.
 It needs only the existing encryption and SSH secrets, not the production
 database password. It downloads the newest completed archive from Simply,
 decrypts it, starts an isolated local Supabase database on the hosted runner,
-restores roles/schema/data in one transaction and compares every COPY table's
+restores roles/schema/data in one transaction as the disposable container's
+`supabase_admin` bootstrap administrator (needed for backed-up role settings),
+and compares every COPY table's
 row count with the archive. The temporary database is stopped after the test;
 the runner and plaintext files are discarded. Nothing is uploaded as an artifact.
 It does not test live login, Storage objects, external services or a full disaster
 recovery onto a newly hosted project. No writes are made to the production site
 or database.
+Hosted projects do not expose this superuser. A hosted disaster recovery may
+require adapting privileged role settings separately; the container test does
+not prove that an unchanged dump can be restored as hosted `postgres`.

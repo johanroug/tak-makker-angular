@@ -48,6 +48,9 @@ sed -i 's/^project_id = .*/project_id = "backup-restore-check"/' "$workspace/sup
 started=true
 supabase db start --workdir "$workspace"
 [[ "$(docker inspect --format '{{.Name}}' "$container")" == "/$container" ]] || exit 1
+# Use the local container's bootstrap administrator for role settings such as
+# log_min_messages. The hosted postgres role is intentionally not a superuser.
+# This account is only used inside the disposable container, never remotely.
 # One transaction and ON_ERROR_STOP: a failed statement fails the test.
 if ! {
   printf 'BEGIN;\n'
@@ -55,7 +58,7 @@ if ! {
   printf '\nSET session_replication_role = replica;\n'
   cat "$workspace/data.sql"
   printf '\nSET session_replication_role = origin;\nCOMMIT;\n'
-} | docker exec -i "$container" psql -X -U postgres -d postgres \
+} | docker exec -i "$container" psql -X -U supabase_admin -d postgres \
     --set ON_ERROR_STOP=1 > "$workspace/restore.log" 2>&1; then
   grep -m 1 'ERROR:' "$workspace/restore.log" || true
   echo 'Restore failed in disposable database; production was not contacted.' >&2

@@ -28,7 +28,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const counts = copyCounts(readFileSync(process.argv[2], 'utf8'));
   for (const [table, expected] of counts) {
     const result = execFileSync('docker', ['exec', '-i', container, 'psql', '-X', '-At',
-      '-U', 'postgres', '-d', 'postgres', '-c', `SELECT count(*) FROM ${table}`],
+      '-U', 'supabase_admin', '-d', 'postgres', '-c', `SELECT count(*) FROM ${table}`],
       { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
     if (Number(result.trim()) !== expected) throw new Error(`Row count mismatch in ${table}`);
   }

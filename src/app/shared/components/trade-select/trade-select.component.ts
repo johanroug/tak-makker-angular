@@ -15,6 +15,8 @@ import { COMPANY_TRADES } from '../../../core/company/company-trades';
   styleUrl: './trade-select.component.scss',
 })
 export class TradeSelectComponent {
+  private static nextId = 0;
+  readonly inputIdPrefix = `trade-select-${TradeSelectComponent.nextId++}`;
   readonly selected = input<string[]>([]);
   readonly selectedChange = output<string[]>();
   readonly trades = COMPANY_TRADES;
@@ -34,9 +36,11 @@ export class TradeSelectComponent {
     if (!this.host.nativeElement.contains(event.target as Node)) this.close();
   }
 
-  @HostListener('focusout', ['$event'])
-  onFocusOut(event: FocusEvent): void {
-    if (!this.host.nativeElement.contains(event.relatedTarget as Node | null)) this.close();
+  @HostListener('document:focusin', ['$event'])
+  onFocusIn(event: FocusEvent): void {
+    // Close only after focus has actually moved outside. Closing during a
+    // label's intermediate focusout can interrupt native activation.
+    if (!this.host.nativeElement.contains(event.target as Node | null)) this.close();
   }
 
   close(focus = false): void {

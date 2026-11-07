@@ -7,14 +7,16 @@
       <span class="chevron" aria-hidden="true"></span>
     </summary>
     <div class="options">
-      @for (trade of trades; track trade) {
-        <label
-          ><input
+      @for (trade of trades; track trade; let index = $index) {
+        <div class="option" [class.selected]="selected().includes(trade)">
+          <input
+            [id]="inputIdPrefix + '-' + index"
             type="checkbox"
             [checked]="selected().includes(trade)"
             (change)="toggle(trade, $any($event.target).checked)"
-          />{{ trade }}</label
-        >
+          />
+          <label [for]="inputIdPrefix + '-' + index">{{ trade }}</label>
+        </div>
       }
     </div>
   </details>

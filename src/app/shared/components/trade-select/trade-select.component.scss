@@ -74,23 +74,32 @@ details[open] .chevron {
   background: #fffefb;
   box-shadow: 0 8px 24px #12372a1a;
 }
+.option {
+  position: relative;
+  border-radius: 4px;
+  &:hover,
+  &.selected {
+    background: #eef5e6;
+  }
+}
 label {
   display: flex;
   align-items: center;
-  gap: 10px;
   min-height: 44px;
-  padding: 8px 10px;
+  padding: 8px 10px 8px 38px;
   box-sizing: border-box;
   border-radius: 4px;
   color: #28432f;
   font-size: 13px;
   cursor: pointer;
-  &:hover,
-  &:has(input:checked) {
-    background: #eef5e6;
-  }
 }
 input {
+  position: absolute;
+  z-index: 1;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
   width: 18px;
   height: 18px;
   margin: 0;

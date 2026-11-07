@@ -2,6 +2,7 @@ import { activityGuard } from './core/activity/activity.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
 import { TRADE_PAGES } from './features/trades/trade-pages';
+import { LEGAL_PAGES } from './features/legal/legal-pages';
 
 export const routes: Routes = [
   {
@@ -23,6 +24,12 @@ export const routes: Routes = [
     title: page.title,
     data: { page, seo: { path: '/' + page.slug, description: page.description } },
     loadComponent: () => import('./features/trades/trade.component').then((m) => m.TradeComponent),
+  })),
+  ...LEGAL_PAGES.map((page) => ({
+    path: page.slug,
+    title: `${page.title} | Hovedet på sømmet`,
+    data: { legal: page, seo: { path: '/' + page.slug, description: page.description } },
+    loadComponent: () => import('./features/legal/legal.component').then((m) => m.LegalComponent),
   })),
   {
     path: 'login',

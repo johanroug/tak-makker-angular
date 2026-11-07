@@ -1,0 +1,53 @@
+# Betingelser og privatliv — 7. november 2026
+
+Offentlige sider: /handelsbetingelser, /privatlivspolitik, /kontakt.
+Adresse og juridisk navn er bekræftet af Johan. CVR er under registrering;
+betalingsfunktionerne er fortsat lukket på offentlige origins i sandbox.
+Siderne beskriver det planlagte B2B-abonnement særskilt fra gratis prøveadgang.
+Der er links ved oprettelse, i den offentlige footer og i arbejdsrummet.
+Oprettelsesteksten er information, ikke et særskilt GDPR-samtykke.
+
+## Før betalende kunder og almindelige persondata i kunders projekter
+
+- Tilføj det tildelte CVR og kontrollér momsregistrering før Stripe Live.
+- Udkastet til kundernes databehandleraftale ligger i
+  `docs/databehandleraftale-udkast.md`. Færdiggør bilag og indgå aftalen.
+  Privatlivspolitikken er ikke den aftale. Brug anonymiserede testopgaver indtil da.
+- Kontrollér konkrete databehandleraftaler, underdatabehandlere og
+  overførselsgrundlag hos Supabase, OpenAI, Resend, Simply, GitHub og Stripe.
+  En offentlig GDPR-side beviser ikke, at den relevante aftale er indgået.
+- Fastlæg og gennemfør sletterutiner for konti, tekniske logs og backups.
+  Koden har ikke automatisk backup-udløb eller generel konto-oprydning.
+  Politikken lover derfor ikke automatisk sletning efter 30 dage.
+  Aktivitetsvisningens 30-dages filter er ikke en slettefunktion.
+- Gentag relevante sletninger, hvis en gammel backup gendannes. Backup- og
+  restorejobs behandler data på GitHub-hostede runners; alt foregår ikke i EU.
+- OpenAI: brugerens skærmbillede viser alle tre Sharing-valg som Disabled.
+  Responses-kaldet angiver nu `store: false`. Samtaler gemmes fortsat i Supabase
+  og sendes med som kontekst. Dette er ikke Zero Data Retention, ændrer ikke
+  nødvendigvis sikkerhedslogning/caching og sletter ikke tidligere lagrede svar.
+  Koden sender fortsat projektkontekst med kundedata til OpenAI.
+  Der gives ingen ubetinget garanti om træning, lagring eller EU-behandling.
+
+## Leverandørstatus bekræftet af Johan
+
+- Simply DPA 1.8: status Underskrevet i kontrolpanelet den 7. november 2026,
+  vist klokkeslæt 13:25:59, kontoejer Johan Steiner Roug. Johan har gemt
+  bekræftelsen og aftaledokumenterne.
+- Supabase: Legal Documents oplyser, at DPA indgår i Terms of Service uden
+  særskilt underskrift. Johan har gemt DPA og TIA. Overførselsvurderingen skal
+  stadig gennemgås; download alene dokumenterer ikke tilstrækkelig beskyttelse.
+- OpenAI: Johan har gemt den offentlige DPA. Den aftale, der gælder for den
+  konkrete API-konto, og overførselsgrundlaget skal fortsat være dokumenteret.
+- Ved betalt køb: vis vilkår før bestilling og gem version/tidspunkt for accept.
+
+## Kilder
+
+- https://forbrugerombudsmanden.dk/alle-emner/anden-lovgivning/e-handelsloven
+- https://www.datatilsynet.dk/Media/C/0/Registreredes%20rettigheder.pdf
+- https://supabase.com/legal/privacy-resources/data-residency-and-transfers-faq
+- https://developers.openai.com/api/docs/guides/your-data
+
+Der er ikke foretaget ekstern juridisk gennemgang. De konkrete drifts- og
+aftalepunkter ovenfor skal afklares før betalt lancering og almindelig
+behandling af kundevirksomhedernes personoplysninger.

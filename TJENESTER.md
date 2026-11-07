@@ -3,9 +3,8 @@
 | Tjeneste | Bruges til |
 |---|---|
 | Resend | Sender bekræftelsesmails og mails til nulstilling af adgangskoder via Supabase. |
-| Simply.com | DNS til hovedetpåsømmet.dk (hjemmeside) og hovedetpaasommet.dk (e-mail). |
+| Simply.com | DNS til hovedetpåsømmet.dk (hjemmeside) | Hoster hjemmesiden og gør Hovedet på sømmet tilgængelig på nettet. |og hovedetpaasommet.dk (e-mail). |
 | Punktum dk | Administrerer registreringen af de to .dk-domæner. |
-| Vercel | Hoster hjemmesiden og gør Hovedet på sømmet tilgængelig på nettet. |
 | Supabase | Leverer database, brugerlogin, adgangskontrol og serverfunktioner. |
 | OpenAI | Leverer AI til at hjælpe med projekter og udarbejdelse af tilbud. |
 | GitHub | Gemmer projektets kildekode og versionshistorik online. |

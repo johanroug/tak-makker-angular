@@ -203,6 +203,9 @@ Deno.serve(async (request) => {
     const response = await measure('aiMs', () =>
       openai.responses.parse({
         model: 'gpt-5.6-luna',
+        // Conversation history lives in Supabase and is supplied on every call.
+        // Opt out of Responses application-state storage (not abuse monitoring).
+        store: false,
         input: [
           { role: 'system', content: aiInstructions },
           { role: 'system', content: createCompanyTradeContext(companyResult.data.trades ?? companyResult.data.trade) },

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { LegalLinksComponent } from '../../shared/components/legal-links/legal-links.component';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TradePage } from './trade-pages';
 import { TradeLinksComponent } from './trade-links.component';
@@ -9,7 +10,7 @@ import { ProductPreview } from '../../shared/marketing/product-preview.component
 
 @Component({
   selector: 'app-trade',
-  imports: [RouterLink, TradeLinksComponent, PublicBrandComponent, MarketingHeader, ProductPreview],
+  imports: [RouterLink, TradeLinksComponent, PublicBrandComponent, MarketingHeader, ProductPreview, LegalLinksComponent],
   templateUrl: './trade.component.html',
   styleUrl: './trade.component.scss',
 })

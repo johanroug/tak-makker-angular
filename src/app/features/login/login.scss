@@ -164,3 +164,5 @@
     font-size: 28px;
   }
 }
+:host .legal-notice { font-size: 14px; line-height: 1.65; margin-top: 24px; }
+:host .legal-notice a { text-decoration: underline; text-underline-offset: 3px; }

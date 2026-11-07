@@ -23,6 +23,11 @@ RewriteCond %{THE_REQUEST} \s/+(tilbudsprogram-til-toemrer|tilbudsprogram-til-mu
 RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)/$ /$1 [R=301,L]
 RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)$ $1/index.html [END]
 
+# Public legal/contact pages must work on direct visits and refresh.
+RewriteCond %{THE_REQUEST} \s/+(handelsbetingelser|privatlivspolitik|kontakt)/(?:[?\s]) [NC]
+RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)/$ /$1 [R=301,L]
+RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)$ $1/index.html [END]
+
 # Private app routes use the CSR shell, never the prerendered landing page.
 RewriteRule ^(login|register|forgot-password|reset-password|projects|offers|activity|users|company-profile)(/.*)?$ index.csr.html [END]
 

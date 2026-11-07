@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { TRADE_PAGES } from '../src/app/features/trades/trade-pages.ts';
 import { BRAND_NAME, SITE_ORIGIN } from '../src/app/core/brand.ts';
+import { LEGAL_PAGES } from '../src/app/features/legal/legal-pages.ts';
 
 const origin = SITE_ORIGIN;
 const output = new URL('../dist/hovedet-paa-soemmet-angular/browser/', import.meta.url);
@@ -17,7 +18,7 @@ const pages = [
 ];
 const titles = new Set();
 const descriptions = new Set();
-const urls = new Set(pages.map((page) => origin + '/' + page.slug));
+const urls = new Set([...pages, ...LEGAL_PAGES].map((page) => origin + '/' + page.slug));
 
 for (const page of pages) {
   const file = page.slug ? page.slug + '/index.html' : 'index.html';
@@ -79,6 +80,17 @@ for (const page of pages) {
   );
 }
 
+for (const page of LEGAL_PAGES) {
+  const document = parseHtml(read(page.slug + '/index.html'));
+  assert.equal(document.title, `${page.title} | ${BRAND_NAME}`);
+  assert.equal(document.querySelector('h1')?.textContent.trim(), page.title);
+  assert.equal(document.querySelector('link[rel="canonical"]')?.href, origin + '/' + page.slug);
+  assert.equal(document.querySelector('meta[name="robots"]')?.content, 'index, follow');
+  assert(document.querySelector('main')?.textContent.includes('Birkerød Kongevej 126'));
+  assert(document.querySelector('a[href="/privatlivspolitik"]'));
+  assert(document.querySelector('a[href="/handelsbetingelser"]'));
+}
+
 for (const file of ['index.csr.html', '404.html']) {
   const document = parseHtml(read(file));
   assert.equal(
@@ -102,7 +114,7 @@ const sitemap = new JSDOM(read('sitemap.xml'), { contentType: 'application/xml' 
 assert.deepEqual(
   new Set([...sitemap.querySelectorAll('loc')].map((node) => node.textContent)),
   urls,
-  'sitemap contains exactly the four public pages',
+  'sitemap contains all public pages',
 );
 assert(
   read('robots.txt').includes(`Sitemap: ${origin}/sitemap.xml`),
@@ -118,5 +130,5 @@ assert(
   'private app uses non-prerendered shell',
 );
 console.log(
-  'SEO checks passed: 4 prerendered public pages, metadata, internal links, sitemap, robots, client shell and static 404.',
+  'SEO checks passed: 7 prerendered public pages, metadata, legal/contact content, internal links, sitemap, robots, client shell and static 404.',
 );

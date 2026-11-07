@@ -118,6 +118,12 @@
         <span aria-hidden="true">→</span> Kom i gang
       </p>
     }
+    @if (registering) {
+      <p class="legal-notice">Kontoen er til erhvervsbrug. Læs vores
+        <a routerLink="/handelsbetingelser" target="_blank" rel="noopener">handelsbetingelser</a> og
+        <a routerLink="/privatlivspolitik" target="_blank" rel="noopener">privatlivspolitik</a> inden oprettelsen.
+        Prøveadgangen bliver ikke automatisk til et betalt abonnement.</p>
+    }
     <p class="auth-switch">
       {{ registering ? 'Har du allerede en bruger?' : 'Ny hos Hovedet på sømmet?' }}
       <a [routerLink]="registering ? '/login' : '/register'">{{

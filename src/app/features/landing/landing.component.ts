@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { LegalLinksComponent } from '../../shared/components/legal-links/legal-links.component';
 import { RouterLink } from '@angular/router';
 import { TradeLinksComponent } from '../trades/trade-links.component';
 import { PublicBrandComponent } from '../../shared/components/public-brand/public-brand.component';
@@ -11,6 +12,7 @@ import { ProductPreview } from '../../shared/marketing/product-preview.component
   selector: 'app-landing',
   imports: [
     RouterLink,
+    LegalLinksComponent,
     TradeLinksComponent,
     PublicBrandComponent,
     ParallaxDirective,

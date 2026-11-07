@@ -1,4 +1,10 @@
-# Hovedet på sømmet TODO — opdateret 3. november 2026
+# Hovedet på sømmet TODO — opdateret 6. november 2026
+
+- [x] **Simply: lokal uploadpakke, 7. november** — build:simply klargør det statiske Angular-build med Apache-routing, rigtig 404, cache-headere og noindex på preview-adressen. Produktionsbuild og eksisterende SEO-kontrol består. Upload-ZIP indeholder også .htaccess. Se docs/simply-migration.md.
+- [x] **Simply: hjemmeside flyttet og testet, 7. november** — Filer uploadet af Johan, Apache-routing rettet og testet, domænealias og DNS/HTTPS oprettet. Login/projekt, AI og PDF bekræftet af Johan. www og maildomænets webviderestilling kontrolleret; negativ DNS-cache kan stadig forsinke enkelte klienter. Mail-/Resend-poster bevaret.
+- [ ] **Simply: automatisk deployment** — Johan har valgt main. Workflow og SSH-uploadscript er klar lokalt; build, SEO og mocked deployment-tests består. Særskilt deployment-nøgle oprettet i Git-ignoreret mappe, og servernøglen verificeret mod DNSSEC-bekræftet SSHFP. Offentlig nøgle skal tilføjes i Simply, GitHub environment-secrets oprettes, og første Actions-deployment testes. Ingen nøgle eller workflow er endnu lagt op af Codex. Se docs/simply-migration.md.
+
+- [ ] **Simply-flytning: hovedetpaasommet.dk** — Johan har den 6. november vist, at https://hovedetpaasommet.dk/ giver DNS-fejl: serverens IP-adresse blev ikke fundet. Mail på domænet er sat op og testet separat. Undersøg web-DNS, HTTPS og den ønskede viderestilling til det primære hjemmesidedomæne ved flytningen til Simply. Bevar mail-/Resend-poster. Fejlen er noteret, ikke rettet.
 
 ## Aktuelt arbejde — 3. november
 
@@ -38,7 +44,9 @@
 - [ ] **Blank side ved indlæsningsfejl** — Lokal rettelse klar: fejlpanel med manuel genindlæsning ved fejlede programfiler, opstartsfejl og navigationsfejl. Login-kontrol håndterer også afviste netværkskald. Build og recovery-test består; afventer deployment og browserkontrol. Skærmbilledets DNS-/netværksfejl er ikke diagnosticeret eller løst af denne ændring.
 - [ ] **CVR-opslag og fag ved registrering** — Implementeret, og databasemigrationen er kørt. Direkte CVR-opslag verificeret på localhost. Afventer frontend-deployment og samlet livekontrol af registrering og profil; se docs/registration-company.md.
 - [x] **Gratis prøveperiode** — 10 gennemførte AI-forespørgsler i alt pr. virksomhed uden manuel godkendelse. Håndhæves på serveren; frontend/livekontrol står ovenfor.
-- [ ] **Stripe-abonnement** — Stripe valgt. Pris og månedligt antal forespørgsler afventer endelig beslutning.
+- [x] **Stripe-implementering, 4. november** — 299 kr. ekskl. moms og 500 gennemførte kald pr. betalt månedlig periode. Checkout, signeret webhook, kundeportal og serverkvote implementeret. Migration og tre Edge Functions udrullet; build, målrettede tests og database-rollbacktests består. Manuel intern/fri adgang bevares.
+- [x] **Stripe: sandbox-kontrol** — Checkout med moms, betalt adgang, AI-forbrug, portal, opsigelse/genaktivering og gendannet adgang efter efterfølgende testbetaling bekræftet i appen. Afvist kort og fejlbesked kontrolleret. Tests med simulering og manuelle periodeændringer dokumenteret; almindelig automatisk månedlig fornyelse er ikke browserbekræftet. Se docs/stripe-setup.md.
+- [ ] **Stripe: frontend og live** — Læg frontend op, aktivér/verificér livekonto og opret livepris, momssats og webhook. Afvikl sandbox-referencer kontrolleret før skift til live-secrets. Livebetaling er fortsat deaktiveret.
 
 ## 1. Nødvendigt før første kunde
 

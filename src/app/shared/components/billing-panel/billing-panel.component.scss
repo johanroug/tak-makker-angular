@@ -82,3 +82,20 @@ button:focus-visible {
   outline: 2px solid #8fa57d;
   outline-offset: 2px;
 }
+.plan { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e6dfd2; }
+button.subscribe { background: #12372a; color: #fff; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.test-note { color: #876321; }
+.cancellation-notice {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid #e5d6b6;
+  border-left: 4px solid #ae7b24;
+  border-radius: 8px;
+  background: #fff7e9;
+  color: #654919;
+
+  strong { display: block; }
+  p { margin: 6px 0 0; }
+  b { white-space: nowrap; }
+}

@@ -773,8 +773,10 @@ export class ProjectSidebar implements OnDestroy {
     if (!message || this.isSending()) {
       return;
     }
-    if (this.billing.usage()?.companyId === this.data().project.company_id && this.billing.usage()?.status === 'exhausted') {
-      this.sendError.set('Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
+    if (this.billing.limitReached(this.data().project.company_id)) {
+      this.sendError.set(this.billing.usage()?.status === 'active'
+        ? 'Virksomhedens 500 forespørgsler er brugt i denne periode. Se næste periode under Dit abonnement.'
+        : 'Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
       return;
     }
 

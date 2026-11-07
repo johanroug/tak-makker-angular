@@ -44,8 +44,17 @@ __screenshots__/
 Thumbs.db
 
 # Supabase CLI temporary files
+.env
+.env.*
+!.env.example
+supabase/.env
+supabase/.env.*
+!supabase/.env.example
 supabase/.temp/
 supabase/audits/
 
 # Generated PDF previews
 /output/pdf/
+
+# Local SSH deployment credentials (never part of the website or repository)
+/.simply-deploy/

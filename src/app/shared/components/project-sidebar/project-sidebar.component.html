@@ -51,7 +51,7 @@
       @if (sendError()) {
         <p class="send-error" role="alert">{{ sendError() }}</p>
       }
-      <button type="submit" [disabled]="isSending() || !messageControl.value.trim() || (billing.usage()?.companyId === data().project.company_id && billing.usage()?.status === 'exhausted')">
+      <button type="submit" [disabled]="isSending() || !messageControl.value.trim() || billing.limitReached(data().project.company_id)">
         {{ isSending() ? 'Arbejder på dit tilbud…' : 'Send besked' }} <span aria-hidden="true">↗</span>
       </button>
     </form>

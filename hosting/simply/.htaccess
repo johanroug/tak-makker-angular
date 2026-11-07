@@ -1,0 +1,48 @@
+# Static Angular build. Upload to public_html together with the built files.
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+DirectorySlash Off
+ErrorDocument 404 /404.html
+
+RewriteEngine On
+RewriteOptions AllowNoSlash
+
+# Certificate issuance/renewal must bypass all canonical-domain redirects.
+RewriteRule ^\.well-known/acme-challenge/ - [END]
+
+# The mail domain is an alternate web address, not a second copy of the site.
+RewriteCond %{HTTP_HOST} ^(www\.)?hovedetpaasommet\.dk$ [NC]
+RewriteRule ^ https://xn--hovedetpsmmet-wfb00a.dk%{REQUEST_URI} [R=301,L,NE]
+
+# Only redirect the real www domain. The Simply preview URL must stay usable.
+RewriteCond %{HTTP_HOST} ^www\.xn--hovedetpsmmet-wfb00a\.dk$ [NC]
+RewriteRule ^ https://xn--hovedetpsmmet-wfb00a.dk%{REQUEST_URI} [R=301,L,NE]
+
+# Keep the existing slash-free canonical URLs for the prerendered trade pages.
+RewriteCond %{THE_REQUEST} \s/+(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)/(?:[?\s]) [NC]
+RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)/$ /$1 [R=301,L]
+RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)$ $1/index.html [END]
+
+# Private app routes use the CSR shell, never the prerendered landing page.
+RewriteRule ^(login|register|forgot-password|reset-password|projects|offers|activity|users|company-profile)(/.*)?$ index.csr.html [END]
+
+# Serve real assets as files. Missing assets and unknown routes must remain 404.
+# No catch-all rewrite to index.html: that would turn broken links into HTTP 200.
+
+<IfModule mod_headers.c>
+  # HTML and routing configuration are refreshed on every visit/deployment.
+  <FilesMatch "\.(html|json|xml|txt|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  # Angular production assets have content hashes, so unchanged URLs are safe to cache.
+  <FilesMatch "[-.][A-Za-z0-9_-]{8,}\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "^(index\.csr|404)\.html$">
+    Header always set X-Robots-Tag "noindex, follow"
+  </FilesMatch>
+  # Preview host is not a second public copy for search engines.
+  SetEnvIf Host "\.unoeuro-server\.com(:[0-9]+)?$" simply_preview
+  Header always set X-Robots-Tag "noindex, nofollow" env=simply_preview
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>

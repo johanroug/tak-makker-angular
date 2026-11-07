@@ -1,4 +1,14 @@
 
+[functions.billing-session]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/billing-session/index.ts"
+
+[functions.stripe-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/stripe-webhook/index.ts"
+
 [functions.generate-offer]
 enabled = true
 verify_jwt = false

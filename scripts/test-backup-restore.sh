@@ -15,7 +15,7 @@ cleanup() {
     supabase stop --workdir "$workspace" --no-backup >/dev/null 2>&1 || true
   fi
   rm -f "$workspace/key" "$workspace/known_hosts" "$workspace/passphrase" \
-    "$workspace/roles.sql" "$workspace/schema.sql" "$workspace/data.sql" \
+    "$workspace/roles.sql" "$workspace/schema.sql" "$workspace/data.sql" "$workspace/restore-data.sql" \
     "$workspace/archive.tar.gz" "$workspace/backup.gpg" "$workspace/manifest.txt" "$workspace/restore.log"
 }
 trap cleanup EXIT
@@ -50,6 +50,7 @@ started=true
 # own migrations. A database-only start can leave those tables unavailable.
 supabase start --workdir "$workspace" --exclude studio,imgproxy,edge-runtime,logflare,vector,supavisor
 [[ "$(docker inspect --format '{{.Name}}' "$container")" == "/$container" ]] || exit 1
+node scripts/prepare-restore-data.mjs "$workspace/data.sql" "$workspace/restore-data.sql" "$container"
 # Use the local container's bootstrap administrator for role settings such as
 # log_min_messages. The hosted postgres role is intentionally not a superuser.
 # This account is only used inside the disposable container, never remotely.
@@ -58,7 +59,7 @@ if ! {
   printf 'BEGIN;\n'
   cat "$workspace/roles.sql" "$workspace/schema.sql"
   printf '\nSET session_replication_role = replica;\n'
-  cat "$workspace/data.sql"
+  cat "$workspace/restore-data.sql"
   printf '\nSET session_replication_role = origin;\nCOMMIT;\n'
 } | docker exec -i "$container" psql -X -U supabase_admin -d postgres \
     --set ON_ERROR_STOP=1 > "$workspace/restore.log" 2>&1; then
@@ -66,5 +67,5 @@ if ! {
   echo 'Restore failed in disposable database; production was not contacted.' >&2
   exit 1
 fi
-node scripts/check-restored-row-counts.mjs "$workspace/data.sql" "$container"
+node scripts/check-restored-row-counts.mjs "$workspace/restore-data.sql" "$container"
 echo "PASS: downloaded, decrypted and restored $filename in disposable Supabase."

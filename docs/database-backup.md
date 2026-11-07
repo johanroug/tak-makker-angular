@@ -64,3 +64,12 @@ or database.
 Hosted projects do not expose this superuser. A hosted disaster recovery may
 require adapting privileged role settings separately; the container test does
 not prove that an unchanged dump can be restored as hosted `postgres`.
+
+Storage schema compatibility: before restoring, the test checks the local managed
+Auth/Storage tables against COPY entries in the original archive. A missing
+Storage table may be omitted from the **temporary restore input only** if the
+archive contains exactly zero rows for it; each omission is logged explicitly.
+Missing Auth tables, application tables, or nonempty Storage tables are never
+silently skipped. The encrypted original archive is not changed. Row counts are
+compared for all COPY tables in the prepared restore input. This checks all
+archived rows, but not the schema of newer empty managed Storage tables.

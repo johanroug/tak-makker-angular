@@ -2,6 +2,12 @@ export const STRIPE_VERSION = '2026-10-28.endive';
 export const PLAN_AMOUNT = 29900;
 export const PAID_LIMIT = 500;
 
+export function paymentsEnabled(origin: string, secretKey: string, allowLive: boolean): boolean {
+  if (secretKey.startsWith('sk_test_'))
+    return origin === 'http://localhost:4200' || origin === 'http://127.0.0.1:4200';
+  return allowLive && secretKey.startsWith('sk_live_');
+}
+
 export async function checkoutIdempotencyKey(companyId: string, attempt: string, params: Record<string, string>): Promise<string> {
   const canonical = new URLSearchParams(Object.entries(params).sort(([a], [b]) => a.localeCompare(b))).toString();
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical));

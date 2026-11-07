@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js';
-import { appOrigin, BillingError, checkoutIdempotencyKey, stripe, stripeKey, validatePlan } from '../_shared/billing/stripe.ts';
+import { appOrigin, BillingError, checkoutIdempotencyKey, paymentsEnabled, stripe, stripeKey, validatePlan } from '../_shared/billing/stripe.ts';
 
 Deno.serve(async (request) => {
   let origin: string;
@@ -8,14 +8,17 @@ Deno.serve(async (request) => {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' };
   if (request.method === 'OPTIONS') return new Response(null, { headers });
+  const paymentEnabled = paymentsEnabled(origin, Deno.env.get('STRIPE_SECRET_KEY') ?? '',
+    Deno.env.get('STRIPE_ALLOW_LIVE') === 'true');
   // Public status exposes configuration readiness, never secrets or customer data.
   if (request.method === 'GET') return Response.json({
-    checkoutReady: ((Deno.env.get('STRIPE_SECRET_KEY') ?? '').startsWith('sk_test_') ||
-      (Deno.env.get('STRIPE_ALLOW_LIVE') === 'true' && (Deno.env.get('STRIPE_SECRET_KEY') ?? '').startsWith('sk_live_'))) && !!Deno.env.get('STRIPE_PRICE_ID') &&
+    checkoutReady: paymentEnabled && !!Deno.env.get('STRIPE_PRICE_ID') &&
       !!Deno.env.get('STRIPE_WEBHOOK_SECRET') && !!Deno.env.get('STRIPE_TAX_RATE_ID'),
     testMode: !(Deno.env.get('STRIPE_SECRET_KEY') ?? '').startsWith('sk_live_'),
   }, { headers });
   if (request.method !== 'POST') return new Response(null, { status: 405, headers });
+  if (!paymentEnabled) return Response.json({ error: 'Abonnementer åbner snart. Du kan fortsat bruge dine gratis forespørgsler.' },
+    { status: 503, headers });
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   let companyId: string | undefined;
   let token: string | undefined;

@@ -96,12 +96,12 @@
           <p>500 forespørgsler pr. virksomhed pr. måned. Månedsvis betaling uden års binding.</p>
           <p>Dansk moms lægges til: 373,75 kr. inkl. moms.</p>
           <button type="button" class="subscribe" [disabled]="billing.paymentBusy() || !billing.checkoutReady()"
-            (click)="billing.openPayment('checkout')">{{ billing.paymentBusy() ? 'Åbner Stripe…' : 'Vælg abonnement' }}</button>
-          @if (!billing.checkoutReady()) { <p>Betalingsopsætningen er ved at blive gjort klar.</p> }
+            (click)="billing.openPayment('checkout')">{{ !billing.checkoutReady() ? 'Abonnementer åbner snart' : billing.paymentBusy() ? 'Åbner Stripe…' : 'Vælg abonnement' }}</button>
         </div>
       }
       @if (usage.hasStripeCustomer) {
-        <button type="button" [disabled]="billing.paymentBusy()" (click)="billing.openPayment('portal')">Administrer abonnement</button>
+        <button type="button" [disabled]="billing.paymentBusy() || !billing.checkoutReady()" (click)="billing.openPayment('portal')">Administrer abonnement</button>
+        @if (!billing.checkoutReady()) { <p>Abonnementer åbner snart.</p> }
       }
       @if (billing.testMode() && billing.checkoutReady()) { <p class="test-note">Testbetaling — der trækkes ikke rigtige penge.</p> }
       @if (billing.paymentError()) { <p role="alert">{{ billing.paymentError() }}</p> }

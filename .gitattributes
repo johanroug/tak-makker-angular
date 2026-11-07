@@ -2,3 +2,5 @@ scripts/deploy-simply.sh text eol=lf
 scripts/check-simply-deploy.sh text eol=lf
 scripts/backup-supabase.sh text eol=lf
 scripts/test-backup-restore.sh text eol=lf
+scripts/prune-simply-backups.sh text eol=lf
+scripts/check-backup-retention.sh text eol=lf

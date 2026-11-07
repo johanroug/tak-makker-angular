@@ -214,9 +214,14 @@ beskrevet i privatlivspolitikken. Det er ikke en projektbackup-modtager.
 
 ### Skal være aftalt og operationelt før accept
 
-- Slettefrist for konto- og projektdata ved kundens instruks.
-- Backup-retention og håndtering af sletteanmodninger i eksisterende arkiver.
-  Der er aktuelt ingen automatisk udløb; dette må ikke beskrives som implementeret.
+- Slettefrist for aktive konto- og projektdata: inden 30 dage efter bekræftet
+  instruks, medmindre lov kræver fortsat opbevaring. Proceduren er manuel.
+- Egne backups: 30 dage ved daglig oprydning efter verificeret ny backup;
+  appens aktivitetslogs: 30 dage ved det daglige job. Aktivering kræver merge
+  og en vellykket kørsel. Fejl overvåges og håndteres manuelt.
+- Simplys separate webhotelbackups kan bevare en tidligere arkivfil yderligere
+  cirka 30 dage. Samlet backuphale er dermed cirka 60 dage efter aktiv sletning.
+  Tidligere sletninger gentages før en gendannet kopi sættes i drift.
 - Udleveringsformat og procedure for alle kundens projektdata.
 - Hvem der modtager sikkerhedshenvendelser og håndterer hændelser, herunder
   ajourførte kontaktoplysninger hos begge parter.

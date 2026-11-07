@@ -16,10 +16,13 @@ Oprettelsesteksten er information, ikke et særskilt GDPR-samtykke.
 - Kontrollér konkrete databehandleraftaler, underdatabehandlere og
   overførselsgrundlag hos Supabase, OpenAI, Resend, Simply, GitHub og Stripe.
   En offentlig GDPR-side beviser ikke, at den relevante aftale er indgået.
-- Fastlæg og gennemfør sletterutiner for konti, tekniske logs og backups.
-  Koden har ikke automatisk backup-udløb eller generel konto-oprydning.
-  Politikken lover derfor ikke automatisk sletning efter 30 dage.
-  Aktivitetsvisningens 30-dages filter er ikke en slettefunktion.
+- Johan har godkendt 30 dage for appens aktivitetslogs og egne backupfiler.
+  Dagligt backupjob rydder aktivitetslogs op før dump og egne arkiver efter
+  verificeret upload. Aktivering kræver merge til main og en vellykket kørsel.
+  Konto-/projektsletning er en manuel supportprocedure, ikke automatisk ved
+  abonnementsophør. Frist: inden 30 dage efter bekræftet anmodning.
+  Se `docs/data-deletion.md`. Simplys egne backupkopier kan overleve vores
+  arkiver yderligere cirka 30 dage; politikken beskriver den forskel.
 - Gentag relevante sletninger, hvis en gammel backup gendannes. Backup- og
   restorejobs behandler data på GitHub-hostede runners; alt foregår ikke i EU.
 - OpenAI: brugerens skærmbillede viser alle tre Sharing-valg som Disabled.

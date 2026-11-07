@@ -23,9 +23,20 @@ AES-256, verifies a decryption round trip, then uploads only encrypted bytes ove
 SSH. Remote SHA-256 must match before the `.part` file becomes a finished backup.
 No backup is committed or uploaded as a GitHub artifact. Files are stored under
 `/var/www/hovedetpaasommet.dk/private-backups`, outside `public_html`, mode 700.
-Existing backups are not deleted automatically. Watch the 10 GB hosting quota;
-the job prints total backup directory size. A failed run leaves existing backups
+After a verified new upload, completed archives older than 30 days are deleted
+automatically using their UTC filenames. Directory and symlink checks prevent
+deletion outside the fixed private backup folder; the latest verified archive is
+always preserved. Watch the 10 GB hosting quota; the job prints directory size.
+A failed run before upload/verification leaves existing backups
 untouched; a failed transfer may leave a `.part` file that is not a valid backup.
+
+The same daily job deletes only `public.activity_events` rows at least 30 days
+old **before** creating a new snapshot. AI usage, invoices, messages and projects
+are not included in this cleanup. The job must be merged to main and run
+successfully before these automatic policies are active. Monitor failures; if
+backups fail, old archives are deliberately preserved until manual follow-up.
+Simply's separate webhosting backups may retain removed archives for roughly
+another 30 days. Our archive expiry is not immediate erasure of those copies.
 
 ## Activation and verification
 
@@ -42,7 +53,9 @@ untouched; a failed transfer may leave a `.part` file that is not a valid backup
 
 An encryption/checksum check does not prove the database can be restored. The
 first live backup completed on 7 November 2026 (581 KB encrypted, verified on
-Simply). The disposable-database restore test is still pending.
+Simply). The disposable-database restore test passed on 7 November 2026, as
+confirmed by Johan's successful GitHub Actions run. Its scope and Storage
+compatibility exceptions are described below.
 GitHub schedules may be delayed; monitor Actions failures and last successful
 backup date. Enable GitHub Actions failure notifications for the account.
 

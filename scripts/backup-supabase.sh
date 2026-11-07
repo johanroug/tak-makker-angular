@@ -36,6 +36,15 @@ database_url=$(node -e 'const u = new URL("postgresql://postgres.agbugdzobpkpgfi
 if [[ "${GITHUB_ACTIONS:-}" == true ]]; then
   printf '::add-mask::%s\n' "${database_url//%/%25}"
 fi
+# Purge only approved activity logs before the new snapshot. Pass the password
+# through the environment, not a Docker command-line value or SQL/log output.
+export PGPASSWORD="$SUPABASE_DB_PASSWORD"
+docker run --rm -i --env PGPASSWORD --env PGSSLMODE=require \
+  --env PGHOST=aws-1-eu-west-1.pooler.supabase.com --env PGPORT=5432 \
+  --env PGUSER=postgres.agbugdzobpkpgfischvi --env PGDATABASE=postgres \
+  public.ecr.aws/supabase/postgres:17.6.1.171 \
+  psql -X --set ON_ERROR_STOP=1 --file=- < scripts/prune-activity.sql
+unset PGPASSWORD
 supabase db dump --db-url "$database_url" --role-only --file "$workspace/roles.sql"
 supabase db dump --db-url "$database_url" --file "$workspace/schema.sql"
 supabase db dump --db-url "$database_url" --data-only --use-copy \
@@ -60,5 +69,6 @@ checksum=$(sha256sum "$workspace/backup.gpg" | cut -d ' ' -f 1)
 ssh "${ssh_options[@]}" "$remote" 'set -eu; test ! -L private-backups; mkdir -p private-backups; chmod 700 private-backups; test "$(cd private-backups && pwd -P)" = /var/www/hovedetpaasommet.dk/private-backups'
 ssh "${ssh_options[@]}" "$remote" "set -eu; umask 077; cat > private-backups/$filename.part; printf '%s  %s\n' '$checksum' 'private-backups/$filename.part' | sha256sum -c -; mv private-backups/$filename.part private-backups/$filename" < "$workspace/backup.gpg"
 echo "Verified encrypted backup uploaded: $filename"
-# No deletion of previous backups. Monitor the hosting quota before adding retention.
+# Prune only after remote checksum verification and final rename succeeded.
+ssh "${ssh_options[@]}" "$remote" "bash -s -- '$filename'" < scripts/prune-simply-backups.sh
 ssh "${ssh_options[@]}" "$remote" 'du -sh private-backups'

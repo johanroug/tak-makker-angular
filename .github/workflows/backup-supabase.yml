@@ -27,6 +27,8 @@ jobs:
           node-version: '24.20.0'
       - name: Install pinned backup CLI
         run: npm install --prefix "$RUNNER_TEMP/backup-cli" --no-package-lock --no-save supabase@2.118.0
+      - name: Check backup retention safeguards
+        run: bash scripts/check-backup-retention.sh
       - name: Encrypt and upload database backup
         env:
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}

@@ -41,6 +41,20 @@ untouched; a failed transfer may leave a `.part` file that is not a valid backup
    temporary plaintext files securely when finished.
 
 An encryption/checksum check does not prove the database can be restored. The
-first live backup and a disposable-project restore test are still pending.
+first live backup completed on 7 November 2026 (581 KB encrypted, verified on
+Simply). The disposable-database restore test is still pending.
 GitHub schedules may be delayed; monitor Actions failures and last successful
 backup date. Enable GitHub Actions failure notifications for the account.
+
+## Manual restore test in GitHub Actions
+
+After merging to main, run **Test Supabase backup restore** with Run workflow.
+It needs only the existing encryption and SSH secrets, not the production
+database password. It downloads the newest completed archive from Simply,
+decrypts it, starts an isolated local Supabase database on the hosted runner,
+restores roles/schema/data in one transaction and compares every COPY table's
+row count with the archive. The temporary database is stopped after the test;
+the runner and plaintext files are discarded. Nothing is uploaded as an artifact.
+It does not test live login, Storage objects, external services or a full disaster
+recovery onto a newly hosted project. No writes are made to the production site
+or database.

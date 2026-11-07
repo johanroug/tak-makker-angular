@@ -88,7 +88,7 @@ export class ProjectService {
         const { data, error } = await supabase
           .from('projects')
           .select(
-            '*, workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
+            '*, company:companies!projects_company_id_fkey(name,cvr,address,phone,email), workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
           )
           .eq('id', projectId)
           .order('created_at', { referencedTable: 'workItems', ascending: true })
@@ -102,8 +102,8 @@ export class ProjectService {
           throw new Error('Kunne ikke hente projekt: ' + error.message);
         }
 
-        const { workItems, materials, messages, ...project } = data;
-        return { project, workItems, materials, messages };
+        const { company, workItems, materials, messages, ...project } = data;
+        return { project, company, workItems, materials, messages };
       },
       { projectId, onlyFailure: true },
     );
@@ -475,6 +475,7 @@ export class ProjectService {
   async updateProjectDetails(
     projectId: string,
     changes: {
+      hourlyRate?: number | null;
       customerName?: string;
       customerAddress?: string;
       title?: string;
@@ -488,6 +489,14 @@ export class ProjectService {
     type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
 
     const updates: ProjectUpdate = {};
+
+    if (changes.hourlyRate !== undefined) {
+      if (changes.hourlyRate !== null &&
+          (!Number.isFinite(changes.hourlyRate) || changes.hourlyRate < 0)) {
+        throw new Error('Timeprisen skal være et tal på mindst 0 kr., eller være tom.');
+      }
+      updates.hourly_rate = changes.hourlyRate;
+    }
 
     if (changes.customerName !== undefined) {
       updates.customer_name = changes.customerName.trim();

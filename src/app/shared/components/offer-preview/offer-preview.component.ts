@@ -24,6 +24,7 @@ import { materialCategory } from './material-category';
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 type EditableDetails = {
+  hourlyRate: number | null;
   customerName: string;
   customerAddress: string;
   title: string;
@@ -179,6 +180,7 @@ export class OfferPreview {
   }
 
   readonly detailsForm = new FormGroup({
+    hourlyRate: new FormControl<number | null>(null),
     validityDays: new FormControl<number | null>(null),
     paymentTerms: new FormControl('', { nonNullable: true }),
     reservations: new FormControl('', { nonNullable: true }),
@@ -303,7 +305,9 @@ export class OfferPreview {
   }
 
   fixRequirement(issue: OfferRequirement): void {
-    if (issue.action === 'details') {
+    if (issue.action === 'company') {
+      void this.router.navigate(['/company-profile']);
+    } else if (issue.action === 'details') {
       this.startEditing();
       if (issue.field) {
         this.detailsDialog()
@@ -389,6 +393,7 @@ export class OfferPreview {
     const project = this.data().project;
 
     this.originalDetails = {
+      hourlyRate: project.hourly_rate,
       customerName: project.customer_name ?? '',
       customerAddress: project.customer_address ?? '',
       title: project.title ?? '',
@@ -427,6 +432,7 @@ export class OfferPreview {
     const original = this.originalDetails;
 
     const changes: {
+      hourlyRate?: number | null;
       customerName?: string;
       customerAddress?: string;
       title?: string;
@@ -436,6 +442,12 @@ export class OfferPreview {
       paymentTerms?: string;
       reservations?: string;
     } = {};
+
+    if (current.hourlyRate !== null && !validAmount(current.hourlyRate)) {
+      this.saveError.set('Timeprisen skal være et tal på mindst 0 kr., eller være tom.');
+      return;
+    }
+    if (current.hourlyRate !== original.hourlyRate) changes.hourlyRate = current.hourlyRate;
 
     if (current.customerName !== original.customerName) {
       changes.customerName = current.customerName;

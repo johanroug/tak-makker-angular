@@ -4,8 +4,8 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 export type OfferRequirement = {
   key: string;
   label: string;
-  action?: 'details' | 'tasks' | 'materials';
-  field?: 'title' | 'customerName' | 'customerAddress' | 'description';
+  action?: 'details' | 'tasks' | 'materials' | 'company';
+  field?: 'title' | 'customerName' | 'customerAddress' | 'description' | 'hourlyRate';
 };
 
 export function validAmount(value: number | null): value is number {
@@ -15,6 +15,20 @@ export function validAmount(value: number | null): value is number {
 export function offerRequirements(data: ProjectData): OfferRequirement[] {
   const issues: OfferRequirement[] = [];
   const project = data.project;
+  const company = data.company;
+  const missingCompanyFields: string[] = [];
+  if (!company?.name?.trim()) missingCompanyFields.push('navn');
+  if (!/^[0-9]{8}$/.test(company?.cvr?.trim() ?? '')) missingCompanyFields.push('CVR (8 cifre)');
+  if (!company?.address?.trim()) missingCompanyFields.push('adresse');
+  if (!company?.phone?.trim()) missingCompanyFields.push('telefon');
+  if (!company?.email?.trim()) missingCompanyFields.push('e-mail');
+  if (missingCompanyFields.length) {
+    issues.push({
+      key: 'company',
+      label: `Udfyld virksomhedsprofilens ${missingCompanyFields.join(', ')}`,
+      action: 'company',
+    });
+  }
   for (const [field, value, label] of [
     ['title', project.title, 'Udfyld projekttitel'],
     ['customerName', project.customer_name, 'Udfyld kundenavn'],
@@ -24,7 +38,7 @@ export function offerRequirements(data: ProjectData): OfferRequirement[] {
     if (!value?.trim()) issues.push({ key: field, label, action: 'details', field });
   }
   if (!validAmount(project.hourly_rate)) {
-    issues.push({ key: 'hourlyRate', label: 'Projektets timepris mangler eller er ugyldig' });
+    issues.push({ key: 'hourlyRate', label: 'Projektets timepris mangler eller er ugyldig', action: 'details', field: 'hourlyRate' });
   }
   const work = data.workItems.filter((item) => item.status === 'accepted');
   const materials = data.materials.filter((item) => item.status === 'accepted');

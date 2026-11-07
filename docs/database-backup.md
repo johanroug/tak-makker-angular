@@ -51,7 +51,8 @@ backup date. Enable GitHub Actions failure notifications for the account.
 After merging to main, run **Test Supabase backup restore** with Run workflow.
 It needs only the existing encryption and SSH secrets, not the production
 database password. It downloads the newest completed archive from Simply,
-decrypts it, starts an isolated local Supabase database on the hosted runner,
+decrypts it, starts an isolated local Supabase stack (including Storage so its
+managed table migrations run) on the hosted runner,
 restores roles/schema/data in one transaction as the disposable container's
 `supabase_admin` bootstrap administrator (needed for backed-up role settings),
 and compares every COPY table's

@@ -46,7 +46,9 @@ PY
 supabase init --workdir "$workspace" --yes
 sed -i 's/^project_id = .*/project_id = "backup-restore-check"/' "$workspace/supabase/config.toml"
 started=true
-supabase db start --workdir "$workspace"
+# Start the services too: Storage initializes its managed tables through its
+# own migrations. A database-only start can leave those tables unavailable.
+supabase start --workdir "$workspace" --exclude studio,imgproxy,edge-runtime,logflare,vector,supavisor
 [[ "$(docker inspect --format '{{.Name}}' "$container")" == "/$container" ]] || exit 1
 # Use the local container's bootstrap administrator for role settings such as
 # log_min_messages. The hosted postgres role is intentionally not a superuser.

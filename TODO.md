@@ -1,4 +1,10 @@
-# Hovedet på sømmet TODO — opdateret 3. november 2026
+# Hovedet på sømmet TODO — opdateret 6. november 2026
+
+- [x] **Simply: lokal uploadpakke, 7. november** — build:simply klargør det statiske Angular-build med Apache-routing, rigtig 404, cache-headere og noindex på preview-adressen. Produktionsbuild og eksisterende SEO-kontrol består. Upload-ZIP indeholder også .htaccess. Se docs/simply-migration.md.
+- [x] **Simply: hjemmeside flyttet og testet, 7. november** — Filer uploadet af Johan, Apache-routing rettet og testet, domænealias og DNS/HTTPS oprettet. Login/projekt, AI og PDF bekræftet af Johan. www og maildomænets webviderestilling kontrolleret; negativ DNS-cache kan stadig forsinke enkelte klienter. Mail-/Resend-poster bevaret.
+- [ ] **Simply: automatisk deployment** — Johan har valgt main. Workflow og SSH-uploadscript er klar lokalt; build, SEO og mocked deployment-tests består. Særskilt deployment-nøgle oprettet i Git-ignoreret mappe, og servernøglen verificeret mod DNSSEC-bekræftet SSHFP. Offentlig nøgle skal tilføjes i Simply, GitHub environment-secrets oprettes, og første Actions-deployment testes. Ingen nøgle eller workflow er endnu lagt op af Codex. Se docs/simply-migration.md.
+
+- [ ] **Simply-flytning: hovedetpaasommet.dk** — Johan har den 6. november vist, at https://hovedetpaasommet.dk/ giver DNS-fejl: serverens IP-adresse blev ikke fundet. Mail på domænet er sat op og testet separat. Undersøg web-DNS, HTTPS og den ønskede viderestilling til det primære hjemmesidedomæne ved flytningen til Simply. Bevar mail-/Resend-poster. Fejlen er noteret, ikke rettet.
 
 ## Aktuelt arbejde — 3. november
 

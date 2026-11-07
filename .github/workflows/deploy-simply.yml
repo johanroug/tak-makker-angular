@@ -1,0 +1,63 @@
+name: Deploy website to Simply
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: simply-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24.20.0'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:simply
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: simply-website
+          path: dist/hovedet-paa-soemmet-angular/browser/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: simply-production
+      url: https://xn--hovedetpsmmet-wfb00a.dk/
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: simply-website
+          path: dist/hovedet-paa-soemmet-angular/browser/
+      - name: Upload website over SSH
+        env:
+          SIMPLY_SSH_USER: ${{ secrets.SIMPLY_SSH_USER }}
+          SIMPLY_SSH_PRIVATE_KEY: ${{ secrets.SIMPLY_SSH_PRIVATE_KEY }}
+          SIMPLY_SSH_KNOWN_HOSTS: ${{ secrets.SIMPLY_SSH_KNOWN_HOSTS }}
+        run: bash scripts/deploy-simply.sh
+      - name: Check public website
+        run: |
+          curl --fail --silent --show-error --location --retry 3 --max-time 30 --output /dev/null https://xn--hovedetpsmmet-wfb00a.dk/
+          curl --fail --silent --show-error --location --retry 3 --max-time 30 --output /dev/null https://xn--hovedetpsmmet-wfb00a.dk/login

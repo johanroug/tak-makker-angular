@@ -58,3 +58,6 @@ supabase/audits/
 
 # Local SSH deployment credentials (never part of the website or repository)
 /.simply-deploy/
+
+# Local manual administration tools and their private instructions
+/.local-tools/

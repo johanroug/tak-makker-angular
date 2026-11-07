@@ -33,6 +33,9 @@ at leverandørers separate logs eller sikkerhedsbackups har samme udløb.
    anmodning uden at afklare virksomhedens instruks.
 3. Tilbyd udlevering før sletning. PDF'er alene er ikke nødvendigvis alle data;
    udlever relevante projekt-, kunde- og samtaleoplysninger sikkert som JSON/CSV.
+   Produktdata kan samles med `.local-tools/export-company.sql`; omfang, undtagelser
+   og sikker håndtering er beskrevet i `.local-tools/company-export.md`. Vurder øvrige
+   konto-/forbrugsoplysninger særskilt efter anmodningens omfang.
 4. Afklar aktive Stripe-abonnementer, fælles medlemskaber, lovpligtige
    regnskabsoplysninger, retskrav og eventuelle Storage-filer. En databasesletning
    opsiger ikke Stripe og fjerner ikke automatisk leverandørkopier.

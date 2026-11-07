@@ -188,8 +188,15 @@ og relevante videre underdatabehandlere registreres i den færdige version.
 | GitHub Actions | Midlertidige databasedumps ved backup og dekrypterede data i gendannelsestest | GitHub-hostede runners. Ingen dokumenteret EU-begrænsning; aftale og overførselsgrundlag skal verificeres. |
 
 Resend blev erstattet af Simply SMTP 7. november 2026 og bruges ikke længere
-til nye loginmails. Historiske leveringsdata og de tidligere nøgler skal
-afvikles særskilt; de er ikke dokumenteret slettet endnu.
+til nye loginmails. Johan har efterfølgende bekræftet, at API-nøglen,
+Resend-domænet, de tre tilhørende DNS-records og Resend-kontoen er fjernet.
+Dette dokumenterer ikke, hvornår Resend sletter historiske leveringsdata.
+
+GitHub-afklaring afventer svar på supportsagen: Den nye gratis organisation
+viser Corporate (GitHub Customer Agreement). Repository og backupjobs er
+endnu ikke flyttet til organisationen. Organisationens aftalestatus må derfor
+ikke bruges som dokumentation for de nuværende kørsler. DPA-dækning for
+GitHub-hostede runners og det relevante overførselsgrundlag er ikke afklaret.
 
 Stripe behandler betalingsoplysninger for vores eget abonnement. Dets
 rolle skal vurderes for denne særskilte behandling; Stripe modtager ikke
@@ -220,17 +227,28 @@ beskrevet i privatlivspolitikken. Det er ikke en projektbackup-modtager.
 - Slettefrist for aktive konto- og projektdata: inden 30 dage efter bekræftet
   instruks, medmindre lov kræver fortsat opbevaring. Proceduren er manuel.
 - Egne backups: 30 dage ved daglig oprydning efter verificeret ny backup;
-  appens aktivitetslogs: 30 dage ved det daglige job. Aktivering kræver merge
-  og en vellykket kørsel. Fejl overvåges og håndteres manuelt.
+  appens aktivitetslogs: 30 dage ved det daglige job. Johan har bekræftet merge
+  og en vellykket kørsel 7. november 2026. Fejl kræver manuel opfølgning.
 - Simplys separate webhotelbackups kan bevare en tidligere arkivfil yderligere
   cirka 30 dage. Samlet backuphale er dermed cirka 60 dage efter aktiv sletning.
   Tidligere sletninger gentages før en gendannet kopi sættes i drift.
-- Udleveringsformat og procedure for alle kundens projektdata.
+- Anmodninger om udlevering og sletning modtages på
+  kontakt@hovedetpaasommet.dk. Identitet og bemyndigelse kontrolleres før
+  behandling, og omfanget af fælles virksomhedsdata afklares med kunden.
+  Produktdata kan udleveres som JSON gennem en beskyttet kanal. Det manuelle
+  værktøj og kontrolleret omfang er beskrevet i `.local-tools/company-export.md`.
+  Rækkeantal og virksomhedsafgrænsning er kontrolleret 7. november 2026;
+  en lokal JSON-fil fra Johans egen virksomhed er gemt og verificeret med
+  Windows-wrapperen. Sikker modtagerlevering skal stadig afprøves inden
+  første udlevering. Øvrige konto-/forbrugsdata vurderes særskilt efter
+  anmodningens omfang. Manuel sletteprocedure er beskrevet i `docs/data-deletion.md`.
 - Hvem der modtager sikkerhedshenvendelser og håndterer hændelser, herunder
   ajourførte kontaktoplysninger hos begge parter.
 - Dokumentation af administrative adgange, MFA og regelmæssig adgangskontrol.
 - Kontrol af underdatabehandleraftaler og konkrete tredjelandsoverførsler.
-- Kontrol af OpenAI-kontoens indstillinger for lagring og eventuel datadeling.
+- OpenAI: Alle tre Sharing-valg er vist som Disabled, og serverfunktionen
+  angiver `store: false`. Det er ikke Zero Data Retention og dokumenterer
+  ikke i sig selv aftaledækning eller grundlag for tredjelandsoverførsler.
 
 ## Grundlag for udkastet
 

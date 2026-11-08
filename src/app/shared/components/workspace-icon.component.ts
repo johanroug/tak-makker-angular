@@ -8,6 +8,7 @@ import { Component, input } from '@angular/core';
 export class WorkspaceIcon {
   readonly name = input('projects');
   readonly paths: Record<string, string> = {
+    subscription: 'M3 5h18v14H3ZM3 9h18M7 15h4',
     account: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2Z',
     projects: 'M3 7h7l2 2h9v11H3ZM3 7V4h7l2 3h9v2',
     company: 'M4 21V7h16v14M9 7V3h6v4M8 11h1m6 0h1m-8 4h1m6 0h1M10 21v-3h4v3M2 21h20',

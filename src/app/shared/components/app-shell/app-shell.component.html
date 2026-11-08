@@ -26,6 +26,7 @@
             }
           </select>
         </label>
+        <a class="header-subscription" routerLink="/company-profile" fragment="subscription"><app-workspace-icon name="subscription" /> Abonnement</a>
         <button type="button" class="new-project-button" (click)="createProject()">
           <span aria-hidden="true">＋</span> Nyt projekt
         </button>
@@ -98,6 +99,7 @@
     (click)="closeMenu()"
     ><app-workspace-icon name="company" /> Virksomhedsprofil</a
   >
+  <a routerLink="/company-profile" fragment="subscription" (click)="closeMenu()"><app-workspace-icon name="subscription" /> Abonnement</a>
   @if (activity.isAdmin()) {
     <span class="navigation-label">Administration</span>
     <a

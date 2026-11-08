@@ -82,7 +82,7 @@ button:focus-visible {
   outline: 2px solid #8fa57d;
   outline-offset: 2px;
 }
-.plan { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e6dfd2; }
+
 button.subscribe { background: #12372a; color: #fff; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 .test-note { color: #876321; }
@@ -99,3 +99,25 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   p { margin: 6px 0 0; }
   b { white-space: nowrap; }
 }
+
+.plan {
+  position: relative; overflow: hidden; margin-top: 24px; padding: 28px 22px 22px;
+  border: 1px solid #345a47; border-radius: 14px;
+  background: radial-gradient(ellipse at top right, #315e46 0, transparent 65%), #12372a;
+  color: #fffdf5; box-shadow: 0 12px 26px #12372a20;
+}
+.plan-label { display: block; color: #e6c58e; font-size: 9px; letter-spacing: .14em; font-weight: 700; }
+.plan h3 { margin: 14px 0 22px; font-size: clamp(24px, 2.2vw, 30px); line-height: 1.15; letter-spacing: -.03em; color: #fffdf5; }
+.plan-price { display: flex; align-items: center; gap: 10px; }
+.plan-price > span { font-size: 64px; line-height: 1; font-weight: 750; letter-spacing: -.06em; }
+.plan-price b { font-size: 22px; }
+.plan-price small { display: block; margin-top: 4px; font-size: 11px; color: #dae5d6; }
+.plan .plan-tax { margin: 8px 0 22px; color: #c4d5c7; font-size: 11px; }
+.plan-benefits { display: grid; gap: 13px; margin: 0 0 24px; padding: 20px 0 0; border-top: 1px solid #ffffff26; list-style: none; }
+.plan-benefits li { display: flex; align-items: baseline; gap: 9px; font-size: 12px; line-height: 1.5; }
+.plan-benefits li > span:first-child { color: #eecb8d; font-weight: bold; }
+.plan button.subscribe { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 48px; padding: 12px; border-radius: 8px; background: #ff7936; color: #142e23; font-size: 14px; font-weight: 750; box-shadow: 0 4px 12px #0002; }
+.plan button.subscribe:not(:disabled):hover { background: #ff925b; }
+.plan button.subscribe svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; }
+.plan .plan-terms { margin: 14px 0 0; text-align: center; color: #d0dfd0; font-size: 11px; line-height: 1.7; }
+@media (max-width: 380px) { .plan { padding: 24px 16px 20px; } }

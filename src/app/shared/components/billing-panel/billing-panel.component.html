@@ -92,14 +92,22 @@
     @if (!compact()) {
       @if (usage.status !== 'internal' && usage.status !== 'free' && usage.status !== 'active' && usage.subscriptionState !== 'past_due') {
         <div class="plan">
-          <strong>299 kr. ekskl. moms / måned</strong>
-          <p>500 forespørgsler pr. virksomhed pr. måned. Månedsvis betaling uden års binding.</p>
-          <p>Dansk moms lægges til: 373,75 kr. inkl. moms.</p>
+          <span class="plan-label">DIT HÅNDVÆRK. DIT OVERBLIK.</span>
+          <h3>Giv næste tilbud<br>et forspring.</h3>
+          <div class="plan-price"><span>299</span><div><b>kr.</b><small>ekskl. moms / måned</small></div></div>
+          <p class="plan-tax">373,75 kr. inkl. moms</p>
+          <ul class="plan-benefits">
+            <li><span aria-hidden="true">✓</span><span><b>500 forespørgsler</b> hver måned</span></li>
+            <li><span aria-hidden="true">✓</span><span>Tilføj selv opgaver og materialer</span></li>
+            <li><span aria-hidden="true">✓</span><span>Gem og genbrug egne skabeloner</span></li>
+            <li><span aria-hidden="true">✓</span><span>Start projekter fra et tomt tilbud</span></li>
+          </ul>
           <button type="button" class="subscribe" [disabled]="billing.paymentBusy() || !billing.checkoutReady()"
-            (click)="billing.openPayment('checkout')">{{ !billing.checkoutReady() ? 'Abonnementer åbner snart' : billing.paymentBusy() ? 'Åbner Stripe…' : 'Vælg abonnement' }}</button>
+            (click)="billing.openPayment('checkout')">{{ !billing.checkoutReady() ? 'Abonnementer åbner snart' : billing.paymentBusy() ? 'Åbner Stripe…' : 'Vælg abonnement' }}<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></button>
+          <p class="plan-terms">For hele virksomheden · Månedsvis betaling<br>Ingen årsbinding</p>
         </div>
       }
-      @if (usage.hasStripeCustomer) {
+      @if (usage.hasStripeCustomer && (usage.status === 'active' || usage.subscriptionState === 'past_due')) {
         <button type="button" [disabled]="billing.paymentBusy() || !billing.checkoutReady()" (click)="billing.openPayment('portal')">Administrer abonnement</button>
         @if (!billing.checkoutReady()) { <p>Abonnementer åbner snart.</p> }
       }

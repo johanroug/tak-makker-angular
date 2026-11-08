@@ -1,0 +1,63 @@
+<details #toolsMenu class="tools-menu">
+  <summary><app-workspace-icon name="tasks" /> Handlinger <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></summary>
+  <div class="tool-actions" aria-label="Manuelle opgaver og skabeloner">
+    <button type="button" [disabled]="busy() || disabled()" (click)="open('work')">Tilføj opgave</button>
+    <button type="button" [disabled]="busy() || disabled()" (click)="open('material')">Tilføj materiale</button>
+    <button type="button" [disabled]="busy() || disabled()" (click)="open('apply')">Indsæt skabelon</button>
+    <button type="button" [disabled]="busy() || disabled()" (click)="open('save')">Gem som skabelon</button>
+  </div>
+</details>
+@if (notice()) { <div class="tool-notice" role="status">{{ notice() }}<button type="button" aria-label="Luk besked" (click)="notice.set('')">×</button></div> }
+<dialog #toolDialog class="tool-dialog" aria-labelledby="tool-title" (cancel)="$event.preventDefault(); close()" (click)="$event.target === toolDialog ? close() : null">
+  @if (mode(); as currentMode) {
+    <header class="tool-dialog-header">
+      <h2 id="tool-title">{{ currentMode === 'work' ? 'Ny opgave' : currentMode === 'material' ? 'Nyt materiale' : currentMode === 'save' ? 'Gem virksomhedsskabelon' : 'Indsæt virksomhedsskabelon' }}</h2>
+      <button type="button" aria-label="Luk" [disabled]="busy()" (click)="close()">×</button>
+    </header>
+    <form (submit)="$event.preventDefault(); submit()">
+      <div class="tool-form-content">
+      <fieldset [disabled]="busy() || disabled()">
+        @if (currentMode === 'work' || currentMode === 'material') {
+          <div class="line-fields" [formGroup]="line">
+            @if (currentMode === 'work') {
+              <label>Fag<input formControlName="trade" maxlength="100" required /></label>
+              <label>Beskrivelse<textarea formControlName="description" rows="3" required></textarea></label>
+              <label>Forventede timer<input type="number" formControlName="hours" min="0" step="0.5" /></label>
+            } @else {
+              <label>Materialenavn<input formControlName="name" required /></label>
+              <label>Antal<input type="number" formControlName="quantity" min="0" step="any" /></label>
+              <label>Enhed<input formControlName="unit" required /></label>
+              <label>Kr. pr. enhed ekskl. moms<input type="number" formControlName="unitPrice" min="0" step="0.01" /></label>
+            }
+          </div>
+        } @else if (currentMode === 'save') {
+          <label>Skabelonnavn<input [formControl]="name" maxlength="100" required /></label>
+          <p>Godkendte linjer er valgt på forhånd. Du kan tilvælge andre linjer. Kundeoplysninger og samtaler kopieres ikke. Fjern selv kundenavne og særlige aftaler fra linjernes beskrivelser før lagring. Projektets timepris følger ikke med.</p>
+          @for (item of data().workItems; track item.id) {
+            @if (item.status !== 'rejected') { <label class="choice"><input type="checkbox" [checked]="workIds().includes(item.id)" (change)="toggle('work', item.id)" />{{ item.description || 'Opgave uden beskrivelse' }} · {{ item.estimated_hours ?? '—' }} timer</label> }
+          }
+          @for (item of data().materials; track item.id) {
+            @if (item.status !== 'rejected') { <label class="choice"><input type="checkbox" [checked]="materialIds().includes(item.id)" (change)="toggle('material', item.id)" />{{ item.name }} · {{ item.quantity ?? '—' }} {{ item.unit }}</label> }
+          }
+        } @else {
+          @if (loading()) { <p role="status">Henter skabeloner…</p> }
+          @else {
+            <label>Skabelon<select [formControl]="templateId"><option value="">Vælg skabelon</option>
+              @for (item of templates(); track item.id) { <option [value]="item.id">{{ item.name }} · {{ item.work_items.length }} opgaver · {{ item.materials.length }} materialer</option> }
+            </select></label>
+            @if (!templates().length && !error()) { <p>Ingen skabeloner endnu. Gem udvalgte linjer fra et projekt først.</p> }
+            <p>Linjerne tilføjes til projektet til gennemgang. Eksisterende linjer og projektets timepris bevares.</p>
+            <button type="button" (click)="load()">Hent skabeloner igen</button>
+            @if (templateId.value) { <button type="button" class="delete" (click)="remove()">Slet valgt skabelon</button> }
+          }
+        }
+        @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+      </fieldset>
+      </div>
+        <div class="form-actions">
+          <button type="button" [disabled]="busy()" (click)="close()">Annuller</button>
+          <button type="submit" class="primary" [disabled]="busy() || disabled() || loading() || currentMode === 'apply' && !templateId.value">{{ busy() ? 'Gemmer…' : currentMode === 'apply' ? 'Indsæt skabelon' : 'Gem' }}</button>
+        </div>
+    </form>
+  }
+</dialog>

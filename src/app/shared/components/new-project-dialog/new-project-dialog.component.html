@@ -6,6 +6,10 @@
   [attr.aria-busy]="isWorking()"
 >
   @if (isWorking()) {
+    @if (mode() !== 'ai') {
+      <h2 id="new-project-title">Opretter dit projekt…</h2>
+      <p role="status">Gemmer projektets oplysninger. Der bruges ingen AI-forespørgsler.</p>
+    } @else {
     <div class="ai-working">
       <div class="ai-orbit" aria-hidden="true"><span>✦</span></div>
       <span class="eyebrow">DIT TILBUD TAGER FORM</span>
@@ -19,17 +23,24 @@
         ><span>Dit projekt</span>
       </div>
     </div>
+    }
   } @else {
+    <div class="dialog-layout">
+    <div class="dialog-fixed">
     <div class="dialog-header">
-      <span class="eyebrow">ET NYT PROJEKT STARTER HER</span>
+      <span id="new-project-title" class="eyebrow">ET NYT PROJEKT STARTER HER</span>
       <button type="button" class="close-button" aria-label="Luk" (click)="close()">×</button>
     </div>
-    <h2 id="new-project-title">Hvad skal vi hjælpe dig med?</h2>
-    <p class="intro">
-      Beskriv opgaven med dine egne ord. Få et første overblik, så du kan
-      koncentrere dig om detaljerne.
-    </p>
-    <form (submit)="$event.preventDefault(); continue()">
+    <fieldset class="creation-modes" aria-label="Projektets start" [disabled]="!!projectId()">
+      <label class="mode-choice mode-describe" [class.is-selected]="mode() === 'ai'"><input type="radio" name="creation-mode" [checked]="mode() === 'ai'" (change)="mode.set('ai')" /><span class="mode-symbol"><app-workspace-icon name="chat" /></span><span>Beskriv opgaven</span><span class="selection-mark" aria-hidden="true">✓</span></label>
+      <label class="mode-choice mode-template" [class.is-selected]="mode() === 'template'"><input type="radio" name="creation-mode" [checked]="mode() === 'template'" (change)="mode.set('template')" /><span class="mode-symbol"><app-workspace-icon name="tasks" /></span><span>Brug en skabelon</span><span class="selection-mark" aria-hidden="true">✓</span></label>
+      <label class="mode-choice mode-empty" [class.is-selected]="mode() === 'empty'"><input type="radio" name="creation-mode" [checked]="mode() === 'empty'" (change)="mode.set('empty')" /><span class="mode-symbol"><app-workspace-icon name="offers" /></span><span>Start tomt</span><span class="selection-mark" aria-hidden="true">✓</span></label>
+    </fieldset>
+    <p class="mode-description" role="status">{{ mode() === 'ai' ? 'Sæt din tilbudsassistent i gang. AI omsætter dine ord til forslag til opgaver, materialer og timer.' : mode() === 'template' ? 'Genbrug virksomhedens gemte opgaver og materialer.' : 'Opret projektet, og tilføj selv kundeoplysninger, opgaver og materialer.' }}</p>
+    </div>
+    <div class="dialog-content">
+    @if (mode() === 'ai') {
+    <form id="new-project-form" (submit)="$event.preventDefault(); continue()">
       <app-billing-panel [compact]="true" (subscriptionRequested)="close()" />
       <label for="new-project-description">Fortæl om projektet</label>
       <textarea
@@ -47,16 +58,38 @@
       @if (error()) {
         <p class="start-error" role="alert">{{ error() }}</p>
       }
-      <div class="dialog-actions">
-        @if (error() && projectId()) {
-          <button type="button" class="secondary-button" (click)="openDraft()">Åbn kladden</button>
-        } @else {
-          <button type="button" class="secondary-button" (click)="close()">Annuller</button>
-        }
-        <button type="submit" class="continue-button" [disabled]="!prompt.value.trim()">
-          {{ error() ? 'Prøv igen' : 'Fortsæt' }} <span aria-hidden="true">→</span>
-        </button>
-      </div>
     </form>
+    } @else {
+      @if (mode() === 'template') {
+        @if (templatesLoading()) { <p role="status">Henter skabeloner…</p> }
+        @else if (templatesError()) { <p role="alert">{{ templatesError() }}</p><button type="button" (click)="loadTemplates()">Prøv igen</button> }
+        @else if (!templates().length) {
+          <div class="template-empty">
+            <div class="empty-symbol"><app-workspace-icon name="tasks" /></div>
+            <div><h3>Din erfaring er værd at gemme.</h3><p>Gem de opgaver, du bruger igen og igen, fra et projekt. Så er næste tilbud allerede godt på vej.</p>
+              <button type="button" class="empty-start" (click)="mode.set('empty')">Start et tomt projekt <span aria-hidden="true">→</span></button>
+            </div>
+          </div>
+        }
+        @else {
+          <label for="new-project-template">Virksomhedens skabeloner</label>
+          <select id="new-project-template" [formControl]="templateId" [attr.disabled]="projectId() ? '' : null">
+            <option value="">Vælg skabelon</option>
+            @for (template of templates(); track template.id) { <option [value]="template.id">{{ template.name }} · {{ template.work_items.length }} opgaver · {{ template.materials.length }} materialer</option> }
+          </select>
+        }
+      }
+      @if (error()) { <p class="start-error" role="alert">{{ error() }}</p> }
+    }
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="secondary-button" (click)="close()">Annuller</button>
+      @if (projectId() && error()) { <button type="button" (click)="openDraft()">Åbn kladden</button> }
+      <button [type]="mode() === 'ai' ? 'submit' : 'button'" [attr.form]="mode() === 'ai' ? 'new-project-form' : null"
+        class="continue-button"
+        [disabled]="mode() === 'ai' ? !prompt.value.trim() : mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError())"
+        (click)="mode() !== 'ai' ? continue() : null">{{ mode() === 'ai' ? (error() ? 'Prøv igen' : 'Fortsæt') : 'Opret projekt' }}</button>
+    </div>
+    </div>
   }
 </dialog>

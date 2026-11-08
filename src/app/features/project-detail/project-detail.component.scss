@@ -126,3 +126,11 @@
     width: 100%;
   }
 }
+.heading-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
+.project-details-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 14px; border: 1px solid #bdccba; border-radius: 9px; background: #f4f7ef; color: #12372a; font-weight: 600; cursor: pointer; }
+.project-details-button:hover { background: #e8efdf; }
+.project-details-button:focus-visible { outline: 2px solid #aa702d; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .heading-actions { width: 100%; }
+  .heading-actions .history-button { width: auto; flex: 1; }
+}

@@ -516,6 +516,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      list_task_templates: { Args: { p_company_id: string }; Returns: Json }
+      save_task_template: { Args: { p_project_id: string; p_name: string; p_work_ids: string[]; p_material_ids: string[]; p_id: string }; Returns: string }
+      delete_task_template: { Args: { p_id: string }; Returns: undefined }
+      apply_task_template: { Args: { p_project_id: string; p_template_id: string; p_request_id: string }; Returns: undefined }
+      create_project_from_template: { Args: { p_company_id: string; p_template_id: string; p_request_id: string }; Returns: Database['public']['Tables']['projects']['Row'] }
       get_app_access_state: { Args: Record<PropertyKey, never>; Returns: string }
       get_company_billing: { Args: {p_company_id?: string}; Returns: Json }
       approve_app_user: { Args: {p_user_id: string}; Returns: undefined }

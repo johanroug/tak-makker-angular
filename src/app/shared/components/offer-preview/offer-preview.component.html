@@ -1,26 +1,4 @@
 <section class="offer-preview compact-draft board-draft">
-  <header class="draft-heading">
-    <div class="offer-toolbar">
-      <span class="offer-label">DIT TILBUD</span
-      ><span class="draft-badge">{{ finalizedOfferId() ? 'Færdiggjort' : 'Kladde' }}</span
-      ><button type="button" class="edit-details-button" (click)="startEditing()">✎ Rediger</button>
-    </div>
-    <p class="draft-customer">
-      {{ data().project.customer_name || 'Kunde ikke angivet' }}<span> · </span
-      >{{ data().project.customer_address || 'Adresse ikke angivet' }}
-    </p>
-    <details class="draft-details">
-      <summary>Projektbeskrivelse og tilbudstekst</summary>
-      <p class="draft-project-number">Projekt {{ data().project.project_number }}</p>
-      <h3>Projektbeskrivelse</h3>
-      <p>{{ data().project.description || 'Ingen beskrivelse' }}</p>
-      @if (data().project.offer_description) {
-        <h3>Tilbudstekst</h3>
-        <p>{{ data().project.offer_description }}</p>
-      }
-    </details>
-  </header>
-
   @if (!finalizedOfferId()) {
     <div #readinessSlot class="readiness-slot">
     <details class="draft-readiness" [class.is-ready]="!missingRequirements.length" (toggle)="resetReadinessHeight()">
@@ -130,7 +108,7 @@
                 [status]="item.status ?? 'suggested'"
                 [label]="'opgave: ' + (item.description || group.title)"
                 [canAccept]="canApproveWork(item)"
-                [disabled]="hasPendingChanges() || isSavingChanges() || isFinalizing()"
+                [disabled]="hasPendingChanges() || reviewPending('work', item.id) || isFinalizing()"
                 [isNew]="newWorkItemIds().has(item.id)"
                 (changed)="changeStatus('work', item.id, $event)"
               />
@@ -157,7 +135,7 @@
         <h3 id="draft-material-title">Materialer</h3>
         <span>{{ acceptedMaterials.length }} godkendt · {{ data().materials.length }} i alt</span>
       </div>
-      <p class="draft-empty-note">AI-priser er vejledende estimater ekskl. moms. Kontrollér og ret dem før godkendelse.</p>
+      <p class="draft-empty-note">Priser vises ekskl. moms. Kontrollér mængder og priser før godkendelse; AI-forslag er vejledende estimater.</p>
       <div class="draft-column-headings material-columns" aria-hidden="true">
         <span>Materiale</span><span>Antal</span><span>Enhed</span><span>Kr./enhed</span
         ><span>Beløb</span>
@@ -242,7 +220,7 @@
                 [status]="material.status ?? 'suggested'"
                 [label]="'materiale: ' + (material.name || 'uden navn')"
                 [canAccept]="canApproveMaterial(material)"
-                [disabled]="hasPendingChanges() || isSavingChanges() || isFinalizing()"
+                [disabled]="hasPendingChanges() || reviewPending('material', material.id) || isFinalizing()"
                 [isNew]="newMaterialIds().has(material.id)"
                 (changed)="changeStatus('material', material.id, $event)"
               />

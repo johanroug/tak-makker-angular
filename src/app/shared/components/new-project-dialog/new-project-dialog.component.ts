@@ -8,14 +8,29 @@ import type { ProjectResponse } from '../../../core/ai/project-response';
 import { ProjectService } from '../../../core/projects/project.service';
 import { WorkspaceState } from '../app-shell/workspace-state';
 import { scopeWarningSummary } from '../ai-feedback/suggestion-notice';
+import { TaskTemplateService, TaskTemplate } from '../../../core/projects/task-template.service';
+import { WorkspaceIcon } from '../workspace-icon.component';
 
 @Component({
   selector: 'app-new-project-dialog',
-  imports: [ReactiveFormsModule, BillingPanelComponent],
+  imports: [ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon],
   templateUrl: './new-project-dialog.component.html',
   styleUrl: './new-project-dialog.component.scss',
 })
 export class NewProjectDialog implements OnDestroy {
+  private readonly templatesService = inject(TaskTemplateService);
+  readonly mode = signal<'ai' | 'empty' | 'template'>('ai');
+  readonly templates = signal<TaskTemplate[]>([]);
+  readonly templatesLoading = signal(false);
+  readonly templatesError = signal('');
+  readonly templateId = new FormControl('', { nonNullable: true });
+  async loadTemplates(): Promise<void> {
+    this.templatesLoading.set(true);
+    this.templatesError.set('');
+    try { this.templates.set(await this.templatesService.list()); }
+    catch { this.templatesError.set('Skabelonerne kunne ikke hentes. Prøv igen.'); }
+    finally { this.templatesLoading.set(false); }
+  }
   private readonly projectService = inject(ProjectService);
   private readonly aiService = inject(AiService);
   private readonly workspace = inject(WorkspaceState);
@@ -31,6 +46,7 @@ export class NewProjectDialog implements OnDestroy {
   readonly loadingMessage = signal('Gør dit næste projekt klar…');
 
   private response: ProjectResponse | null = null;
+  private creationRequestId = crypto.randomUUID();
   private isPrepared = false;
   private destroyed = false;
   private messageTimer?: ReturnType<typeof setInterval>;
@@ -64,6 +80,10 @@ export class NewProjectDialog implements OnDestroy {
   open(): void {
     if (this.isWorking() || this.dialog().nativeElement.open) return;
     this.prompt.reset();
+    this.mode.set('ai');
+    this.creationRequestId = crypto.randomUUID();
+    this.templateId.reset();
+    void this.loadTemplates();
     this.error.set('');
     this.projectId.set(null);
     this.hasSavedMessage.set(false);
@@ -77,6 +97,7 @@ export class NewProjectDialog implements OnDestroy {
   }
 
   async continue(): Promise<void> {
+    if (this.mode() !== 'ai') { await this.createWithoutAi(); return; }
     const description = this.prompt.value.trim();
     if (!description || this.isWorking()) return;
 
@@ -136,6 +157,31 @@ export class NewProjectDialog implements OnDestroy {
       this.stopMessages();
       if (!this.destroyed) this.isWorking.set(false);
     }
+  }
+
+  private async createWithoutAi(): Promise<void> {
+    if (this.isWorking() || (this.mode() === 'template' && !this.templateId.value)) return;
+    this.isWorking.set(true);
+    this.error.set('');
+    try {
+      let id = this.projectId();
+      if (!id) {
+        const project = this.mode() === 'template'
+          ? await this.templatesService.createProject(this.templateId.value, this.creationRequestId)
+          : await this.projectService.createProject();
+        if (this.destroyed) return;
+        id = project.id;
+        this.projectId.set(id);
+      }
+      this.workspace.initialAiNotice.set(null);
+      if (this.destroyed) return;
+      this.projectCreated.emit();
+      const navigated = await this.router.navigate(['/projects', id], { queryParams: { editDetails: '1' } });
+      if (!navigated) throw new Error('Navigation blev afbrudt.');
+      if (!this.destroyed) this.dialog().nativeElement.close();
+    } catch {
+      this.error.set(this.projectId() ? 'Kladden er gemt. Prøv igen, eller åbn kladden.' : 'Projektet kunne ikke oprettes. Prøv igen.');
+    } finally { if (!this.destroyed) this.isWorking.set(false); }
   }
 
   async openDraft(): Promise<void> {

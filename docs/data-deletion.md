@@ -41,8 +41,10 @@ at leverandørers separate logs eller sikkerhedsbackups har samme udløb.
    opsiger ikke Stripe og fjerner ikke automatisk leverandørkopier.
 5. Foretag en konkret afhængighedskontrol i Supabase før en målrettet transaktion.
    Verificér ejerskab, medlemskaber, projekter, tilbud, beskeder, materialer,
-   aktivitetslogs, AI-registreringer og Auth-bruger. Brug aldrig en generel
-   Auth-sletning som garanti for, at alt er væk. Ingen generisk massesletning
+   aktivitetslogs, AI-registreringer og Auth-bruger.
+   Kontrollér også virksomhedens opgaveskabeloner og projektets tekniske
+   skabelonindsættelsesmarkører; de slettes via cascade ved virksomhedssletning.
+   Brug aldrig en generel Auth-sletning som garanti for, at alt er væk. Ingen generisk massesletning
    er automatiseret med denne ændring.
 6. Kontrollér resultatet, og bekræft over for anmoderen, hvilke aktive data der
    er slettet, og hvad der eventuelt bevares med begrundelse og opbevaringskriterium.

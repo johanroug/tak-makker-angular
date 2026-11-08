@@ -72,7 +72,7 @@ export class OfferPreview {
   }
 
   changeStatus(kind: 'work' | 'material', id: string, status: 'accepted' | 'rejected'): void {
-    if (this.hasPendingChanges() || this.isSavingChanges() || this.isFinalizing()) return;
+    if (this.hasPendingChanges() || this.reviewPending(kind, id) || this.isFinalizing()) return;
     if (kind === 'work' ? !this.data().workItems.some(item => item.id === id) : !this.data().materials.some(item => item.id === id)) return;
     if (status === 'accepted') {
       if (kind === 'work') {
@@ -127,6 +127,10 @@ export class OfferPreview {
   readonly openDetailsInitially = input(false);
   readonly hasPendingChanges = input(false);
   readonly isSavingChanges = input(false);
+  readonly pendingReviews = input<ReadonlySet<string>>(new Set());
+  reviewPending(kind: 'work' | 'material', id: string): boolean {
+    return this.pendingReviews().has(JSON.stringify([this.data().project.id, kind, id, 'status']));
+  }
   readonly requestTab = output<'tasks' | 'materials'>();
   readonly detailsOpened = output<void>();
   private readonly detailsDialog =

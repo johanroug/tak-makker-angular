@@ -1,4 +1,5 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
+import { ProjectTools } from '../../shared/components/project-tools/project-tools.component';
 import { Component, inject, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-detail',
-  imports: [PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar, WorkspaceIcon, AiFeedback],
+  imports: [ProjectTools, PageLoading, ReactiveFormsModule, OfferPreview, ProjectSidebar, WorkspaceIcon, AiFeedback],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })
@@ -40,6 +41,9 @@ export class ProjectDetail implements OnInit, OnDestroy {
 
   reviewItems(tab: 'tasks' | 'materials'): void {
     this.preview()?.revealSection(tab);
+  }
+  editProjectDetails(): void {
+    this.preview()?.startEditing();
   }
   private readonly workspace = inject(WorkspaceState);
 

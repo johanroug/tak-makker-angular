@@ -100,6 +100,12 @@ export class ProjectSidebar implements OnDestroy {
   }
   readonly editError = signal('');
   readonly pendingSaves = signal(0);
+  readonly pendingReviews = signal<ReadonlySet<string>>(new Set());
+  private async saveReview(key: string, save: () => Promise<void>): Promise<void> {
+    this.pendingReviews.update(keys => new Set([...keys, key]));
+    try { await save(); }
+    finally { this.pendingReviews.update(keys => { const next = new Set(keys); next.delete(key); return next; }); }
+  }
   readonly fieldSaveStates = signal<Record<string, 'editing' | 'saving' | 'saved' | 'error'>>({});
   private readonly fieldVersions = new Map<string, number>();
   private readonly fieldTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -510,6 +516,8 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   async updateWorkItemStatus(workItemId: string, status: 'accepted' | 'rejected'): Promise<void> {
+    const key = this.fieldKey('work', workItemId, 'status');
+    if (this.pendingReviews().has(key)) return;
     const item = this.data().workItems.find((workItem) => workItem.id === workItemId);
 
     if (status === 'accepted' && (!item || !this.canAcceptWorkItem(item))) {
@@ -517,7 +525,7 @@ export class ProjectSidebar implements OnDestroy {
     }
 
     try {
-      await this.saveEdit(() =>
+      await this.saveReview(key, () =>
         this.projectService.updateWorkItemStatus(this.data().project.id, workItemId, status),
       );
 
@@ -673,6 +681,8 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   async updateMaterialStatus(materialId: string, status: 'accepted' | 'rejected'): Promise<void> {
+    const key = this.fieldKey('material', materialId, 'status');
+    if (this.pendingReviews().has(key)) return;
     const material = this.data().materials.find((item) => item.id === materialId);
 
     if (status === 'accepted' && (!material || !this.canAcceptMaterial(material))) {
@@ -680,7 +690,7 @@ export class ProjectSidebar implements OnDestroy {
     }
 
     try {
-      await this.saveEdit(() =>
+      await this.saveReview(key, () =>
         this.projectService.updateMaterialStatus(this.data().project.id, materialId, status),
       );
 

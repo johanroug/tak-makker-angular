@@ -10,6 +10,32 @@ import { Database } from '../supabase/database.types';
   providedIn: 'root',
 })
 export class ProjectService {
+  async addManualLine(projectId: string, kind: 'work' | 'material', values: {
+    id: string; description: string; trade: string; hours: number | null;
+    name: string; quantity: number | null; unit: string; unitPrice: number | null;
+  }): Promise<void> {
+    const amounts = kind === 'work' ? [values.hours] : [values.quantity, values.unitPrice];
+    if (amounts.some(value => value !== null && (!Number.isFinite(value) || value < 0))) throw new Error('Tal skal være mindst 0.');
+    if (kind === 'work' ? !values.description.trim() || !values.trade.trim() : !values.name.trim() || !values.unit.trim()) {
+      throw new Error('Udfyld de krævede felter.');
+    }
+    const result = kind === 'work'
+      ? await supabase.from('project_work_items').insert({ id: values.id, project_id: projectId,
+          description: values.description.trim(), trade: values.trade.trim(), estimated_hours: values.hours,
+          estimated_hours_source: 'user', status: 'suggested' })
+      : await supabase.from('project_materials').insert({ id: values.id, project_id: projectId,
+          name: values.name.trim(), quantity: values.quantity, quantity_source: 'user', unit: values.unit.trim(),
+          unit_source: 'user', unit_price: values.unitPrice, status: 'suggested' });
+    if (result.error) {
+      // The same client-generated ID is retained for a retry after a lost response.
+      if (result.error.code === '23505') {
+        const { data, error } = await supabase.from(kind === 'work' ? 'project_work_items' : 'project_materials')
+          .select('id').eq('id', values.id).eq('project_id', projectId).maybeSingle();
+        if (!error && data) return;
+      }
+      throw new Error('Linjen kunne ikke gemmes. Prøv igen.');
+    }
+  }
   private readonly activity = inject(ActivityService);
   private readonly authService = inject(AuthService);
   private readonly membershipService = inject(CompanyMembershipService);

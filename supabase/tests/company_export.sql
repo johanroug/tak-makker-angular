@@ -3,6 +3,7 @@
 -- Run in one transaction, ending in rollback. No public-table reads/writes.
 create temporary table companies(id uuid, name text);
 create temporary table company_members(id uuid, company_id uuid, user_id uuid);
+create temporary table task_templates(id uuid, company_id uuid, name text);
 create temporary table projects(id uuid, company_id uuid, title text);
 create temporary table project_messages(id uuid, project_id uuid, created_at timestamptz, content text);
 create temporary table project_work_items(id text, project_id uuid, status text);
@@ -17,6 +18,7 @@ insert into companies values
  ('00000000-0000-0000-0000-000000000003', 'Empty');
 insert into projects
  select id, id, name from companies where name <> 'Empty';
+insert into task_templates select id, id, name from companies where name <> 'Empty';
 insert into company_members
  select id, id, '00000000-0000-0000-0000-000000000099'::uuid from projects;
 -- Same member in both companies must not widen the export.
@@ -41,7 +43,7 @@ begin
        or payload->'company'->>'id' <> c.id::text then
       raise exception 'Incorrect company';
     end if;
-    foreach section in array array['memberships','projects','messages','work_items',
+    foreach section in array array['task_templates','memberships','projects','messages','work_items',
       'materials','offers','offer_work_items','offer_materials'] loop
       if jsonb_array_length(payload->section) <> (case when c.name = 'Empty' then 0 else 1 end) then
         raise exception 'Missing or extra rows in %', section;

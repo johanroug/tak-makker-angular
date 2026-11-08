@@ -1,0 +1,36 @@
+:host { display: block; }
+.tools-menu { position: relative; }
+summary { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 14px; border: 1px solid #bdccba; border-radius: 9px; background: #f4f7ef; color: #12372a; cursor: pointer; font-weight: 600; list-style: none; white-space: nowrap; }
+summary::-webkit-details-marker { display: none; }
+summary svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+summary:focus-visible { outline: 2px solid #aa702d; outline-offset: 3px; }
+.tool-actions { position: absolute; top: calc(100% + 8px); right: 0; z-index: 40; display: grid; gap: 4px; width: 230px; padding: 8px; background: #fffdf8; border: 1px solid #dce2d6; border-radius: 12px; box-shadow: 0 12px 30px #12372a24; }
+.tool-actions button { text-align: left; background: transparent; border-color: transparent; }
+.tool-actions button:hover { background: #edf3e7; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+.tool-dialog { position: fixed; inset: 0; margin: auto; width: min(620px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid #dce2d6; border-radius: 18px; background: #fffdf8; color: #12372a; overflow: hidden; }
+.tool-dialog::backdrop { background: #14251ecc; backdrop-filter: blur(3px); }
+.tool-dialog-header { display: flex; align-items: start; justify-content: space-between; gap: 16px; padding: 24px; border-bottom: 1px solid #e4e7de; }
+.tool-dialog-header h2 { margin: 0; font-size: 23px; line-height: 1.3; }
+.tool-dialog-header button { padding: 0 7px; font-size: 26px; line-height: 1; border: 0; background: transparent; }
+.tool-dialog[open] { display: flex; flex-direction: column; height: min(760px, calc(100dvh - 32px)); }
+.tool-dialog-header { flex: none; }
+.tool-dialog form { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+.tool-dialog fieldset { display: block; min-width: 0; padding: 0; }
+.tool-form-content { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 12px 24px 20px; }
+.tool-dialog .form-actions { flex: none; margin: 0; padding: 18px 24px; border-top: 1px solid #e4e7de; background: #fffdf8; }
+.tool-notice { position: fixed; bottom: 24px; right: 24px; z-index: 100; display: flex; align-items: start; gap: 14px; max-width: min(400px, calc(100vw - 32px)); padding: 16px; border-radius: 12px; background: #12372a; color: white; box-shadow: 0 8px 24px #0003; line-height: 1.5; font-size: 14px; }
+.tool-notice button { color: white; background: transparent; border: 0; padding: 0 4px; }
+button { padding: 10px 14px; background: #edf3e7; color: #12372a; border: 1px solid #ccd8c7; border-radius: 7px; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+button.primary { color: white; background: #12372a; }
+button.delete { color: #9c3520; margin: 8px; }
+fieldset { min-width: 0; border: 0; padding: 20px 0 0; margin: 0; }
+legend { font-weight: 700; padding-top: 20px; }
+p { line-height: 1.6; margin: 12px 0; font-size: 14px; }
+label { display: grid; gap: 7px; margin: 12px 0; font-weight: 600; font-size: 14px; }
+input:not([type=checkbox]), textarea, select { min-width: 0; width: 100%; padding: 10px; border: 1px solid #bccdbb; border-radius: 7px; background: white; color: #12372a; font: inherit; }
+.choice { display: flex; align-items: start; gap: 10px; font-weight: 400; }
+.choice input { flex: none; margin-top: 4px; }
+.form-actions { margin-top: 20px; }
+.error { color: #a12e1e; }

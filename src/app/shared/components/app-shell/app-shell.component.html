@@ -63,7 +63,7 @@
     @if (billing.endedNotice()) {
       <section class="trial-ended" role="alert">
         <strong>Du har brugt dine 10 gratis forespørgsler</strong>
-        <p>Vælg et abonnement for flere AI-forespørgsler. Du kan stadig arbejde manuelt, bruge skabeloner og hente dine tilbud.</p>
+        <p>Vælg et abonnement for flere AI-forespørgsler. Du kan stadig åbne dine projekter, rette eksisterende opgaver og materialer og hente dine tilbud.</p>
         <a routerLink="/company-profile" fragment="subscription" (click)="billing.endedNotice.set(false)">Se abonnement</a>
         <button type="button" (click)="billing.endedNotice.set(false)" aria-label="Luk besked om prøveperiode">Luk</button>
       </section>

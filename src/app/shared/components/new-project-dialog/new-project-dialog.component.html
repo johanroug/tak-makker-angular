@@ -60,7 +60,11 @@
       }
     </form>
     } @else {
-      @if (mode() === 'template') {
+      @if (!billing.subscriberAccess()) {
+        <p role="status"><strong>Kræver abonnement</strong></p>
+        <p>Opret tomme projekter og genbrug dine skabeloner med et abonnement.</p>
+        <app-billing-panel [compact]="true" (subscriptionRequested)="close()" />
+      } @else if (mode() === 'template') {
         @if (templatesLoading()) { <p role="status">Henter skabeloner…</p> }
         @else if (templatesError()) { <p role="alert">{{ templatesError() }}</p><button type="button" (click)="loadTemplates()">Prøv igen</button> }
         @else if (!templates().length) {
@@ -87,7 +91,7 @@
       @if (projectId() && error()) { <button type="button" (click)="openDraft()">Åbn kladden</button> }
       <button [type]="mode() === 'ai' ? 'submit' : 'button'" [attr.form]="mode() === 'ai' ? 'new-project-form' : null"
         class="continue-button"
-        [disabled]="mode() === 'ai' ? !prompt.value.trim() : mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError())"
+        [disabled]="mode() === 'ai' ? !prompt.value.trim() : !billing.subscriberAccess() || mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError())"
         (click)="mode() !== 'ai' ? continue() : null">{{ mode() === 'ai' ? (error() ? 'Prøv igen' : 'Fortsæt') : 'Opret projekt' }}</button>
     </div>
     </div>

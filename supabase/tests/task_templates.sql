@@ -14,7 +14,12 @@ begin
   insert into public.companies(name) values('Other fixture') returning id into v_other;
   insert into public.company_members(company_id,user_id) values(v_company,v_user);
   perform set_config('request.jwt.claim.sub',v_user::text,true);
-  select id into v_project from public.create_project(v_company);
+  v_blocked := false;
+  begin perform public.create_manual_project(v_company);
+  exception when insufficient_privilege then v_blocked := true; end;
+  if not v_blocked then raise exception 'Trial allowed manual creation'; end if;
+  insert into public.company_billing(company_id,ai_access_override) values(v_company,'internal');
+  select id into v_project from public.create_manual_project(v_company);
   select id into v_target from public.create_project(v_company);
   insert into public.project_work_items(id,project_id,trade,description,estimated_hours,estimated_hours_source,status)
     values(v_work,v_project,'VVS','Generic work',3,'user','accepted');
@@ -38,7 +43,21 @@ begin
      exists(select 1 from public.project_work_items where project_id=v_target and (status<>'suggested' or id=v_work)) then
     raise exception 'Repeated application duplicated or approved lines';
   end if;
-  -- Exhaust the trial without invoking OpenAI, then create and apply a template.
+  -- Removing access blocks templates and manual inserts, while existing lines remain editable.
+  update public.company_billing set ai_access_override='none' where company_id=v_company;
+  v_blocked := false;
+  begin perform public.apply_task_template(v_target,v_template,gen_random_uuid());
+  exception when insufficient_privilege then v_blocked := true; end;
+  if not v_blocked then raise exception 'Trial allowed template application'; end if;
+  v_blocked := false;
+  begin
+    insert into public.project_work_items(id,project_id,trade,description,estimated_hours_source)
+    values(gen_random_uuid()::text,v_target,'VVS','Blocked','user');
+  exception when insufficient_privilege then v_blocked := true; end;
+  if not v_blocked then raise exception 'Trial allowed manual insert'; end if;
+  update public.project_work_items set description='Existing line still editable' where id=v_work;
+  update public.company_billing set ai_access_override='internal' where company_id=v_company;
+  -- Exhausting AI quota does not block subscriber tools.
   insert into public.company_billing(company_id) values(v_company) on conflict do nothing;
   insert into public.company_ai_requests(company_id,user_id,status,charge_trial)
     select v_company,v_user,'succeeded',true from generate_series(1,10);

@@ -17,6 +17,8 @@ export class WorkspaceIcon {
     chat: 'M5 3h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-6 4V5a2 2 0 0 1 2-2Z',
     tasks: 'M9 5h12M9 12h12M9 19h12M2 5l2 2 3-4M2 12l2 2 3-4M2 19l2 2 3-4',
     materials: 'm12 2 9 5v10l-9 5-9-5V7Zm-9 5 9 5 9-5M12 12v10M7.5 4.5l9 5',
+    templateInsert: 'M4 3h10v4h6v14H4ZM14 3v4h6M8 12h8M12 9v6',
+    templateSave: 'M4 3h13l4 4v14H3V3ZM7 3v6h10V3M7 21v-8h10v8',
     offers: 'M14 2H5v20h14V7ZM14 2v5h5M8 12h8M8 16h8',
     logout: 'M9 3H3v18h6M13 7l5 5-5 5M7 12h15',
   };

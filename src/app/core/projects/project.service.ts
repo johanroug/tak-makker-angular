@@ -135,7 +135,7 @@ export class ProjectService {
     );
   }
 
-  async createProject() {
+  async createProject(manual = false) {
     const context: { projectId?: string } = {};
     return this.activity.measure(
       'project_created',
@@ -151,7 +151,7 @@ export class ProjectService {
 
         const companyId = await this.membershipService.getCompanyId(user.id);
 
-        const { data, error } = await supabase.rpc('create_project', {
+        const { data, error } = await supabase.rpc(manual ? 'create_manual_project' : 'create_project', {
           p_company_id: companyId,
         });
 

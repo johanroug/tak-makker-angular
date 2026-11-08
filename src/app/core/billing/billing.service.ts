@@ -38,6 +38,11 @@ export class BillingService implements OnDestroy {
 
   ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
+  subscriberAccess(companyId?: string): boolean {
+    const usage = this.usage();
+    return !!usage && (!companyId || usage.companyId === companyId) && ['active', 'free', 'internal'].includes(usage.status);
+  }
+
   limitReached(companyId?: string): boolean {
     const usage = this.usage();
     if (!usage || (companyId && usage.companyId !== companyId)) return false;

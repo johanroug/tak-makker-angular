@@ -2,7 +2,7 @@ import { Component, ElementRef, inject, OnDestroy, output, signal, viewChild } f
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AiService } from '../../../core/ai/ai.service';
-import { TrialError } from '../../../core/billing/billing.service';
+import { BillingService, TrialError } from '../../../core/billing/billing.service';
 import { BillingPanelComponent } from '../billing-panel/billing-panel.component';
 import type { ProjectResponse } from '../../../core/ai/project-response';
 import { ProjectService } from '../../../core/projects/project.service';
@@ -18,6 +18,7 @@ import { WorkspaceIcon } from '../workspace-icon.component';
   styleUrl: './new-project-dialog.component.scss',
 })
 export class NewProjectDialog implements OnDestroy {
+  readonly billing = inject(BillingService);
   private readonly templatesService = inject(TaskTemplateService);
   readonly mode = signal<'ai' | 'empty' | 'template'>('ai');
   readonly templates = signal<TaskTemplate[]>([]);
@@ -83,7 +84,7 @@ export class NewProjectDialog implements OnDestroy {
     this.mode.set('ai');
     this.creationRequestId = crypto.randomUUID();
     this.templateId.reset();
-    void this.loadTemplates();
+    void this.billing.load().then(() => { if (this.billing.subscriberAccess()) void this.loadTemplates(); });
     this.error.set('');
     this.projectId.set(null);
     this.hasSavedMessage.set(false);
@@ -160,6 +161,7 @@ export class NewProjectDialog implements OnDestroy {
   }
 
   private async createWithoutAi(): Promise<void> {
+    if (!this.billing.subscriberAccess()) return;
     if (this.isWorking() || (this.mode() === 'template' && !this.templateId.value)) return;
     this.isWorking.set(true);
     this.error.set('');
@@ -168,7 +170,7 @@ export class NewProjectDialog implements OnDestroy {
       if (!id) {
         const project = this.mode() === 'template'
           ? await this.templatesService.createProject(this.templateId.value, this.creationRequestId)
-          : await this.projectService.createProject();
+          : await this.projectService.createProject(true);
         if (this.destroyed) return;
         id = project.id;
         this.projectId.set(id);

@@ -5,8 +5,8 @@ summary::-webkit-details-marker { display: none; }
 summary svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
 summary:focus-visible { outline: 2px solid #aa702d; outline-offset: 3px; }
 .tool-actions { position: absolute; top: calc(100% + 8px); right: 0; z-index: 40; display: grid; gap: 4px; width: 230px; padding: 8px; background: #fffdf8; border: 1px solid #dce2d6; border-radius: 12px; box-shadow: 0 12px 30px #12372a24; }
-.tool-actions button { text-align: left; background: transparent; border-color: transparent; }
-.tool-actions button:hover { background: #edf3e7; }
+.tool-actions button { display: flex; align-items: center; gap: 12px; text-align: left; background: transparent; border-color: transparent; }
+.tool-actions button:not(:disabled):hover { background: #edf3e7; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 .tool-dialog { position: fixed; inset: 0; margin: auto; width: min(620px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid #dce2d6; border-radius: 18px; background: #fffdf8; color: #12372a; overflow: hidden; }
 .tool-dialog::backdrop { background: #14251ecc; backdrop-filter: blur(3px); }
@@ -34,3 +34,6 @@ input:not([type=checkbox]), textarea, select { min-width: 0; width: 100%; paddin
 .choice input { flex: none; margin-top: 4px; }
 .form-actions { margin-top: 20px; }
 .error { color: #a12e1e; }
+
+.tool-actions button:disabled { opacity: 1; color: #929b91; cursor: not-allowed; }
+.tool-actions > p { margin: 4px 14px; color: #7b6846; font-size: 12px; font-weight: 600; }

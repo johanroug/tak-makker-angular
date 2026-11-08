@@ -52,3 +52,9 @@ Skabeloner er virksomhedsdata og følger med databasebackup. De slettes ved
 sletning af virksomheden via foreign key cascade. Udlevering omfatter også
 skabeloner; den lokale eksport-helper er opdateret hertil. Tabellen med
 indsættelsesmarkører er teknisk metadata, ikke en genbrugelig skabelon.
+
+## Abonnement
+
+Manuel tilføjelse af opgaver/materialer, lagring og indsættelse af skabeloner samt oprettelse af tomme projekter kræver aktivt abonnement eller tildelt fri/intern adgang. Prøvekunder kan stadig vælge startkortene, men får besked om abonnement og kan ikke oprette fra dem. Eksisterende linjer kan fortsat redigeres og godkendes. AI-forbrug begrænser ikke disse abonnementsfunktioner.
+
+Kontrollen er aktiveret i databasen med `202611080002_subscriber_project_tools.sql`.

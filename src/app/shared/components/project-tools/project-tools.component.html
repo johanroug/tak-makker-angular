@@ -1,10 +1,11 @@
 <details #toolsMenu class="tools-menu">
   <summary><app-workspace-icon name="tasks" /> Handlinger <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></summary>
   <div class="tool-actions" aria-label="Manuelle opgaver og skabeloner">
-    <button type="button" [disabled]="busy() || disabled()" (click)="open('work')">Tilføj opgave</button>
-    <button type="button" [disabled]="busy() || disabled()" (click)="open('material')">Tilføj materiale</button>
-    <button type="button" [disabled]="busy() || disabled()" (click)="open('apply')">Indsæt skabelon</button>
-    <button type="button" [disabled]="busy() || disabled()" (click)="open('save')">Gem som skabelon</button>
+    @if (!billing.subscriberAccess(data().project.company_id)) { <p>Kræver abonnement</p> }
+    <button type="button" [disabled]="busy() || disabled() || !billing.subscriberAccess(data().project.company_id)" (click)="open('work')"><app-workspace-icon name="tasks" />Tilføj opgave</button>
+    <button type="button" [disabled]="busy() || disabled() || !billing.subscriberAccess(data().project.company_id)" (click)="open('material')"><app-workspace-icon name="materials" />Tilføj materiale</button>
+    <button type="button" [disabled]="busy() || disabled() || !billing.subscriberAccess(data().project.company_id)" (click)="open('apply')"><app-workspace-icon name="templateInsert" />Indsæt skabelon</button>
+    <button type="button" [disabled]="busy() || disabled() || !billing.subscriberAccess(data().project.company_id)" (click)="open('save')"><app-workspace-icon name="templateSave" />Gem som skabelon</button>
   </div>
 </details>
 @if (notice()) { <div class="tool-notice" role="status">{{ notice() }}<button type="button" aria-label="Luk besked" (click)="notice.set('')">×</button></div> }

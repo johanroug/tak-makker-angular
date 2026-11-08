@@ -534,6 +534,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      create_manual_project: {
+        Args: { p_company_id: string }
+        Returns: Database["public"]["Tables"]["projects"]["Row"]
+        SetofOptions: {
+          from: "*"
+          to: "projects"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_project: {
         Args: { p_company_id: string }
         Returns: Database["public"]["Tables"]["projects"]["Row"]

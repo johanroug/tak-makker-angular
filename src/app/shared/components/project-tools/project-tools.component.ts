@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, inject, input, output, signal, viewChild } from '@angular/core';
+import { BillingService } from '../../../core/billing/billing.service';
 import { WorkspaceIcon } from '../workspace-icon.component';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProjectService } from '../../../core/projects/project.service';
@@ -10,6 +11,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
   templateUrl: './project-tools.component.html', styleUrl: './project-tools.component.scss',
 })
 export class ProjectTools {
+  readonly billing = inject(BillingService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly menu = viewChild.required<ElementRef<HTMLDetailsElement>>('toolsMenu');
   private readonly modal = viewChild.required<ElementRef<HTMLDialogElement>>('toolDialog');
@@ -51,6 +53,7 @@ export class ProjectTools {
   private requestProjectId = '';
   open(mode: 'work' | 'material' | 'save' | 'apply'): void {
     if (this.busy() || this.disabled()) return;
+    if (!this.billing.subscriberAccess(this.data().project.company_id)) { this.notice.set('Disse funktioner kræver abonnement. Se abonnement under virksomhedsprofilen.'); this.menu().nativeElement.open = false; return; }
     this.mode.set(mode); this.error.set(''); this.notice.set('');
     this.requestId = crypto.randomUUID(); this.requestTemplateId = ''; this.requestProjectId = this.data().project.id;
     this.name.reset(); this.line.reset(); this.templateId.reset();
@@ -73,6 +76,7 @@ export class ProjectTools {
   }
   async submit(): Promise<void> {
     if (this.busy() || this.disabled() || this.loading() || !this.mode()) return;
+    if (!this.billing.subscriberAccess(this.data().project.company_id)) return;
     const projectId = this.data().project.id;
     if (projectId !== this.requestProjectId) { this.close(); return; }
     this.busy.set(true); this.error.set('');

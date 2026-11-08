@@ -16,11 +16,48 @@ export interface TradePage {
 
 export const TRADE_PAGES: TradePage[] = [
   {
+    slug: 'tilbudsprogram-til-vvs',
+    trade: 'VVS',
+    title: 'Tilbudsprogram til VVS | Hovedet på sømmet',
+    description: 'Lav VVS-tilbud med overblik over arbejdsopgaver, materialer og timer. Tilpas dine priser, og hent en PDF med dit logo. Prøv 10 gratis forespørgsler.',
+    heading: 'Styr på rørene.',
+    accent: 'Og på tilbuddet.',
+    image: '/marketing/craft-still-life.jpg',
+    shortIntro: 'Saml VVS-opgaver, materialer og arbejdstid i et tilbud, du selv gennemgår og prissætter.',
+    singular: 'VVS',
+    intro: 'Et VVS-tilbud skal gøre det tydeligt, hvad kunden får, og hvilke forhold prisen bygger på. Beskriv arbejdet i Hovedet på sømmet, gennemgå forslagene og tilpas udkastet med din erfaring og dine leverandørpriser.',
+    sections: [
+      {
+        heading: 'Fra besigtigelse til konkrete arbejdsopgaver',
+        text: 'Beskriv installationen, kundens ønsker og de forhold, du kender på stedet. Ved udskiftning af radiatorer kan du eksempelvis skelne mellem afmontering, montering og afsluttende kontrol. Vælg VVS som virksomhedens fag, så forslagene tager udgangspunkt i din entreprise. Du afgør, hvilke opgaver der skal med.',
+      },
+      {
+        heading: 'Brug dine egne materialer og priser',
+        text: 'Gennemgå forslag til radiatorer, ventiler, tilslutninger og øvrige materialer. Kontrollér antal, dimensioner og produktvalg mod de faktiske installationer. Indtast dine aktuelle enhedspriser, ret de estimerede timer og angiv projektets timepris. Programmet har ikke en direkte forbindelse til din grossists priser.',
+      },
+      {
+        heading: 'Et samlet tilbud med klare forudsætninger',
+        text: 'Tilføj kundens oplysninger, beskriv omfanget og angiv betalingsbetingelser og forbehold. Godkend de opgaver og materialer, der skal indgå, og hent det færdige tilbud som PDF med firmaoplysninger og logo. Du sender selv tilbuddet til kunden.',
+      },
+    ],
+    example: {
+      title: 'Eksempel: Udskiftning af to radiatorer',
+      description: 'Notér antal, placering, ønskede produkter og de eksisterende forhold. Et tilbudsudkast kan opdeles i:',
+      items: ['Afmontering og håndtering af de eksisterende radiatorer', 'Montering og tilslutning af nye radiatorer', 'Tilpasning af ventiler og tilslutningsmaterialer', 'Kontrol, aflevering og oprydning'],
+      check: 'Kontrollér selv produktvalg, dimensionering, adgangsforhold og nødvendige følgearbejder. Eksemplet viser en tilbudsopdeling og er ikke en installationsvejledning eller en komplet materialeliste.',
+    },
+    questions: [
+      { question: 'Henter programmet mine aktuelle grossistpriser?', answer: 'Nej. Du kontrollerer og indtaster selv priserne fra dine leverandører. Materiale- og timeforslag skal gennemgås, før du godkender dem.' },
+      { question: 'Kan jeg bruge forskellige timepriser på mine projekter?', answer: 'Ja. Din standardtimepris kopieres til nye projekter, og du kan ændre timeprisen på det enkelte projekt under Rediger.' },
+      { question: 'Kan jeg prøve tilbudsprogrammet gratis?', answer: 'Du kan oprette en konto uden betalingskort og bruge virksomhedens 10 gratis forespørgsler. Kun gennemførte svar tæller.' },
+    ],
+  },
+  {
     slug: 'tilbudsprogram-til-toemrer',
     trade: 'Tømrere',
     title: 'Tilbudsprogram til tømrere | Hovedet på sømmet',
     description:
-      'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Bliv testfirma hos Hovedet på sømmet.',
+      'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Prøv 10 gratis forespørgsler uden betalingskort.',
     heading: 'Godt håndværk.',
     accent: 'Også på papiret.',
     image: '/marketing/carpentry.jpg',
@@ -74,7 +111,7 @@ export const TRADE_PAGES: TradePage[] = [
     trade: 'Murere',
     title: 'Tilbudsprogram til murere | Hovedet på sømmet',
     description:
-      'Lav tilbud på murer- og flisearbejde med hjælp fra Hovedet på sømmet. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Søg adgang som testfirma.',
+      'Lav tilbud på murer- og flisearbejde med hjælp fra Hovedet på sømmet. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Prøv 10 gratis forespørgsler.',
     heading: 'Styr på tilbuddet.',
     accent: 'Helt ned i fugen.',
     image: '/marketing/craft-still-life.jpg',
@@ -128,7 +165,7 @@ export const TRADE_PAGES: TradePage[] = [
     trade: 'Malere',
     title: 'Tilbudsprogram til malere | Hovedet på sømmet',
     description:
-      'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Hovedet på sømmet og hent en PDF. Bliv testfirma.',
+      'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Hovedet på sømmet og hent en PDF. Prøv 10 gratis forespørgsler.',
     heading: 'Et godt tilbud.',
     accent: 'Med den rette finish.',
     image: '/marketing/painting.jpg',

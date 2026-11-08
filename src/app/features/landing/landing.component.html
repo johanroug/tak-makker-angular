@@ -11,7 +11,7 @@
         </p>
         <div class="hero-actions">
           <a class="marketing-button" routerLink="/register"
-            >Bliv testfirma <span aria-hidden="true">↗</span></a
+            >Prøv gratis <span aria-hidden="true">↗</span></a
           ><button class="demo-link" type="button" (click)="demoDialog.showModal()">
             <span class="play" aria-hidden="true">▶</span> Se hvordan det virker
           </button>
@@ -71,10 +71,10 @@
         height="1024"
         loading="lazy"
       />
-      <h2 id="testers-title">Vær med fra <em>begyndelsen.</em></h2>
-      <p>Vi søger testfirmaer. Din hverdag er med til at forme Hovedet på sømmet.</p>
+      <h2 id="testers-title">Dit næste tilbud.<br /><em>Med overblik fra start.</em></h2>
+      <p>Opret din konto, og prøv 10 gratis forespørgsler. Intet betalingskort kræves.</p>
       <a class="marketing-button orange" routerLink="/register"
-        >Bliv testfirma <span aria-hidden="true">↗</span></a
+        >Prøv gratis <span aria-hidden="true">↗</span></a
       >
     </section>
     <div class="below-fold">
@@ -101,11 +101,11 @@
           <p>Du henter det færdige tilbud som PDF og sender det selv til kunden.</p>
         </details>
         <details>
-          <summary>Hvad sker der, når jeg bliver testfirma?</summary>
+          <summary>Hvordan kommer jeg i gang?</summary>
           <p>
-            Opret en bruger, bekræft din e-mail, og afvent godkendelse. Som testfirma kan du bruge
-            Hovedet på sømmet på rigtige opgaver og være med til at forme udviklingen med dine
-            erfaringer.
+            Opret din konto, bekræft din e-mail, og udfyld virksomhedsprofilen. Derefter kan du
+            oprette dit første projekt og bruge virksomhedens 10 gratis forespørgsler uden
+            betalingskort. Gennemgå forslagene, tilpas priserne, og hent dit tilbud som PDF.
           </p>
         </details>
       </section>
@@ -148,6 +148,6 @@
     <p class="demo-explanation" aria-live="polite">{{ steps[step()].text }}</p>
     <app-product-preview [phase]="step()" />
     <p class="demo-note">Illustrativ gennemgang. Du kontrollerer og godkender altid indholdet.</p>
-    <a class="marketing-button" routerLink="/register">Bliv testfirma ↗</a>
+    <a class="marketing-button" routerLink="/register">Prøv gratis ↗</a>
   </dialog>
 </div>

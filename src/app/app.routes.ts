@@ -13,7 +13,7 @@ export const routes: Routes = [
       seo: {
         path: '/',
         description:
-          'Lav tilbud med Hovedet på sømmet. Få hjælp til opgaver, materialer og priser, tilpas med din faglighed, og hent en PDF. Bliv testfirma og vær med til at forme udviklingen.',
+          'Lav tilbud med Hovedet på sømmet. Få hjælp til opgaver, materialer og priser, tilpas med din faglighed, og hent en PDF. Prøv 10 gratis forespørgsler uden betalingskort.',
       },
     },
     loadComponent: () =>
@@ -38,7 +38,7 @@ export const routes: Routes = [
   },
   {
     path: 'register',
-    title: 'Bliv testfirma | Hovedet på sømmet',
+    title: 'Opret konto | Hovedet på sømmet',
     loadComponent: () => import('./features/login/login').then((m) => m.Login),
     data: { register: true },
   },

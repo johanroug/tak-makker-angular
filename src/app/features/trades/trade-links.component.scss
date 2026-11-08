@@ -2,7 +2,7 @@
   display: block;
 }
 section {
-  padding: 60px 24px;
+  padding: 60px var(--trade-links-padding-inline, 24px);
   color: #20392f;
 }
 .eyebrow {
@@ -52,9 +52,9 @@ strong span {
 }
 @media (min-width: 800px) {
   section {
-    padding: 70px 7%;
+    padding: 70px var(--trade-links-padding-inline, 7%);
   }
   .links {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }

@@ -14,7 +14,7 @@
   ],
   "rewrites": [
     {
-      "source": "/:page(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler)",
+      "source": "/:page(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs)",
       "destination": "/:page/index.html"
     },
     {

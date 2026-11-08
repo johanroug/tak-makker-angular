@@ -130,5 +130,5 @@ assert(
   'private app uses non-prerendered shell',
 );
 console.log(
-  'SEO checks passed: 7 prerendered public pages, metadata, legal/contact content, internal links, sitemap, robots, client shell and static 404.',
+  'SEO checks passed: 8 prerendered public pages, metadata, legal/contact content, internal links, sitemap, robots, client shell and static 404.',
 );

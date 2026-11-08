@@ -9,15 +9,20 @@
           }}</em>
         </h2>
         <span class="story-rule" aria-hidden="true"></span>
+        @if (mode() === 'register') {
+          <div class="trial-highlight">
+            <strong>Prøv 10 gratis forespørgsler</strong>
+            <p>Til virksomhedens næste tilbud. Intet betalingskort kræves.</p>
+          </div>
+        } @else {
         <p>
           {{
-            mode() === 'register'
-              ? 'Prøv 10 gratis forespørgsler til virksomhedens næste tilbud.'
-              : mode() === 'recover'
+            mode() === 'recover'
                 ? 'Vi hjælper dig sikkert tilbage til dine opgaver og tilbud.'
                 : 'Fra den første beskrivelse til et tilbud med dit navn på.'
           }}
         </p>
+        }
       </div>
       <img
         class="auth-story-photo"

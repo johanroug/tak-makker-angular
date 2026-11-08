@@ -220,3 +220,11 @@
   .marketing-header { flex-wrap: wrap; }
   .marketing-header nav { margin-left: auto; }
 }
+.marketing-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  vertical-align: -0.125em;
+  pointer-events: none;
+}

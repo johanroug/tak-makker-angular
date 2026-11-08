@@ -5,7 +5,7 @@
     @for (page of pages; track page.slug) {
       <a [routerLink]="'/' + page.slug"
         ><span>Tilbudsprogram til</span
-        ><strong>{{ page.trade }} <span aria-hidden="true">↗</span></strong></a
+        ><strong>{{ page.trade }} <span aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></span></strong></a
       >
     }
   </div>

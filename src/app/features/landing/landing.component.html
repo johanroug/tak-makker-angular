@@ -11,12 +11,12 @@
         </p>
         <div class="hero-actions">
           <a class="marketing-button" routerLink="/register"
-            >Prøv gratis <span aria-hidden="true">↗</span></a
+            >Prøv gratis <span aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></span></a
           ><button class="demo-link" type="button" (click)="demoDialog.showModal()">
-            <span class="play" aria-hidden="true">▶</span> Se hvordan det virker
+            <span class="play" aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z" /></svg></span> Se hvordan det virker
           </button>
         </div>
-        <p class="access-note">Vær med til at forme din tilbudsassistent.</p>
+        <p class="access-note">10 gratis forespørgsler. Intet betalingskort kræves.</p>
       </div>
       <div class="hero-visual">
         <img
@@ -58,7 +58,7 @@
         (click)="demoDialog.showModal()"
       >
         <span class="poster-ui" aria-hidden="true"><app-product-preview /></span
-        ><span class="poster-play" aria-hidden="true">▶</span
+        ><span class="poster-play" aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z" /></svg></span
         ><span class="poster-label">Se arbejdsgangen · 3 trin</span>
       </button>
     </section>
@@ -74,7 +74,7 @@
       <h2 id="testers-title">Dit næste tilbud.<br /><em>Med overblik fra start.</em></h2>
       <p>Opret din konto, og prøv 10 gratis forespørgsler. Intet betalingskort kræves.</p>
       <a class="marketing-button orange" routerLink="/register"
-        >Prøv gratis <span aria-hidden="true">↗</span></a
+        >Prøv gratis <span aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></span></a
       >
     </section>
     <div class="below-fold">
@@ -115,7 +115,7 @@
     <app-legal-links />
     <app-public-brand [tagline]="false" />
     <p>Din faglighed. Din virksomhed. Dit tilbud.</p>
-    <a routerLink="/login">Log ind ↗</a>
+    <a routerLink="/login">Log ind <svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></a>
   </footer>
   <dialog #demoDialog class="demo-dialog" aria-labelledby="demo-title">
     <div class="demo-dialog-heading">
@@ -148,6 +148,6 @@
     <p class="demo-explanation" aria-live="polite">{{ steps[step()].text }}</p>
     <app-product-preview [phase]="step()" />
     <p class="demo-note">Illustrativ gennemgang. Du kontrollerer og godkender altid indholdet.</p>
-    <a class="marketing-button" routerLink="/register">Prøv gratis ↗</a>
+    <a class="marketing-button" routerLink="/register">Prøv gratis <svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></a>
   </dialog>
 </div>

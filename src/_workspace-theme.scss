@@ -1101,3 +1101,29 @@ app-offer-detail .offer-document.offer-document.offer-document {
 @media (max-width: 700px) { .document-parties { grid-template-columns: 1fr 1fr; } .document-price-highlight { grid-column: 1 / -1; } .document-summary-values > div { padding: 0 8px; } .company-details > strong { font-size: 17px; } .document-letterhead { flex-wrap: wrap; } }
 
 }
+
+app-offer-detail .offer-document.offer-document.offer-document {
+  .document-total {
+    background: #e8eee5;
+    color: #12372a;
+    span, strong { color: #12372a; }
+  }
+  .document-lines .work-table tbody td:first-of-type {
+    text-align: left;
+  }
+  .document-lines .work-table tbody td p {
+    text-align: left;
+  }
+}
+
+app-offer-detail .offer-document.offer-document.offer-document {
+  .company-logo {
+    width: 150px;
+    height: 90px;
+    object-fit: contain;
+    object-position: left center;
+  }
+  @media (max-width: 700px) {
+    .company-logo { width: 110px; height: 70px; }
+  }
+}

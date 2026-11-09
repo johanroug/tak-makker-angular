@@ -47,6 +47,14 @@ export class OfferPdfService {
       });
     }
     content.push(this.parties(data));
+    content.push({ stack: [
+      { text: 'Prisoversigt', fontSize: 16, bold: true, margin: [0, 0, 0, 7] },
+      { columns: [
+        { stack: [{ text: 'Arbejde' }, { text: this.formatMoney(offer.pricing_labor), bold: true, fontSize: 12 }] },
+        { stack: [{ text: 'Materialer' }, { text: this.formatMoney(offer.pricing_materials), bold: true, fontSize: 12 }] },
+        { stack: [{ text: 'Moms (' + this.formatQuantity(offer.pricing_vat_rate * 100) + ' %)' }, { text: this.formatMoney(offer.pricing_vat_amount), bold: true, fontSize: 12 }] },
+      ], columnGap: 20 },
+    ], margin: [0, 0, 0, 20] });
     if (offer.project_description?.trim()) {
       content.push(
         { text: 'OM OPGAVEN', style: 'eyebrow', headlineLevel: 1, margin: [0, 0, 0, 7] },
@@ -144,7 +152,7 @@ export class OfferPdfService {
             columns: [
               {
                 text:
-                  [offer.company_phone, offer.company_email].filter(Boolean).join('  ·  ') ||
+                  [offer.company_name, offer.company_cvr ? 'CVR ' + offer.company_cvr : null, offer.company_address, offer.company_phone, offer.company_email].filter(Boolean).join('  ·  ') ||
                   offer.company_name ||
                   '',
                 width: '*',
@@ -183,16 +191,17 @@ export class OfferPdfService {
         {
           columns: [
             ...(offer.company_logo_data_url
-              ? [{ image: offer.company_logo_data_url, fit: [58, 44], width: 58 } as Content]
+              ? [{ image: offer.company_logo_data_url, fit: [105, 63], width: 105 } as Content]
               : []),
             { width: '*', stack: company },
             {
               width: 143,
               alignment: 'right',
               stack: [
-                { text: 'TILBUD', style: 'eyebrow', margin: [0, 0, 0, 6] },
+                { text: 'TILBUD', fontSize: 18, bold: true, margin: [0, 0, 0, 6] },
                 { text: offer.offer_number ?? '', fontSize: 12, bold: true, margin: [0, 0, 0, 5] },
-                { text: this.formatDate(offer.finalized_at), fontSize: 8, color: this.muted },
+                { text: 'Tilbudsdato: ' + this.formatDate(offer.finalized_at), fontSize: 8, color: this.muted },
+                { text: offer.validity_days == null ? '' : 'Gyldigt i ' + offer.validity_days + ' dage', fontSize: 8, color: this.muted, margin: [0, 4, 0, 0] },
               ],
             },
           ],
@@ -208,9 +217,8 @@ export class OfferPdfService {
               x2: 499.28,
               y2: 0,
               lineWidth: 0.5,
-              lineColor: this.border,
+              lineColor: this.accent,
             },
-            { type: 'line', x1: 0, y1: 0, x2: 64, y2: 0, lineWidth: 3, lineColor: this.accent },
           ],
         },
       ],
@@ -222,12 +230,12 @@ export class OfferPdfService {
     const offer = data.offer;
     return {
       table: {
-        widths: ['*', '*'],
+        widths: ['*', '*', 175],
         body: [
           [
             {
               stack: [
-                { text: 'TIL', style: 'eyebrow', color: this.muted, margin: [0, 0, 0, 6] },
+                { text: 'Kunde', bold: true, color: this.muted, margin: [0, 0, 0, 6] },
                 {
                   text: offer.customer_name || 'Kunde ikke angivet',
                   fontSize: 10,
@@ -251,20 +259,21 @@ export class OfferPdfService {
                   margin: [0, 0, 0, 4],
                 },
                 {
-                  text:
-                    offer.validity_days == null
-                      ? 'Gyldighed ikke angivet'
-                      : 'Gyldigt i ' + offer.validity_days + ' dage fra tilbudsdato',
+                  text: offer.project_title ?? '',
                   fontSize: 8.5,
                   color: this.muted,
                 },
               ],
             },
+            { fillColor: this.sage, stack: [
+              { text: 'Samlet pris inkl. moms', bold: true, color: this.muted, margin: [0, 0, 0, 8] },
+              { text: this.formatMoney(offer.pricing_total), fontSize: 18, bold: true, color: this.ink },
+            ] },
           ],
         ],
       },
       layout: {
-        fillColor: () => this.cream,
+        fillColor: () => null,
         hLineWidth: () => 0,
         vLineWidth: () => 0,
         paddingLeft: () => 13,
@@ -286,28 +295,29 @@ export class OfferPdfService {
       group.items.push(item);
       groups.set(key, group);
     }
-    return this.itemTable(
-      'Arbejde',
-      'OPGAVE',
-      'TIMER',
-      'KR./TIME',
-      data.offer.pricing_labor,
-      [...groups.values()].flatMap((group) => group.items.map((item) => ({
-        group: group.trade,
-        title: item.description ?? '',
-        quantity: this.formatQuantity(item.estimated_hours),
-        unitPrice: this.formatMoney(item.hourly_rate),
-        price: item.total_price,
-      }))),
-    );
+    const rows: TableCell[][] = [];
+    for (const group of groups.values()) {
+      group.items.forEach((item, index) => rows.push([
+        index === 0 ? { text: group.trade, rowSpan: group.items.length, bold: true, fontSize: 10 } : {},
+        { text: item.description ?? '', fontSize: 8.5, color: this.muted },
+        { text: this.formatQuantity(item.estimated_hours), alignment: 'right' },
+        { text: this.formatMoney(item.total_price), alignment: 'right' },
+      ]));
+    }
+    return { stack: [
+      { text: 'Arbejdsopgaver', fontSize: 16, bold: true, margin: [0, 0, 0, 8], headlineLevel: 1 },
+      { table: { headerRows: 1, widths: [75, '*', 38, 90], body: [
+        ['Fag', 'Opgave', 'Timer', 'Pris'].map((text, index) => ({ text, bold: true, fillColor: '#F0F0EE', alignment: index > 1 ? 'right' : 'left' } as TableCell)),
+        ...rows,
+      ] }, layout: { hLineWidth: (i) => i > 1 ? 0.4 : 0, hLineColor: () => this.border, vLineWidth: () => 0, paddingTop: () => 5, paddingBottom: () => 5, paddingLeft: () => 6, paddingRight: () => 6 } },
+    ], margin: [0, 0, 0, 20] };
   }
-
   private materialsTable(data: OfferData): Content {
     return this.itemTable(
       'Materialer',
       'MATERIALE',
       'ANTAL',
-      'KR./ENHED',
+      'Enhedspris',
       data.offer.pricing_materials,
       data.materials.map((item) => ({
         title: item.name ?? '',
@@ -390,10 +400,10 @@ export class OfferPdfService {
                   width: 3,
                   canvas: [{ type: 'rect', x: 0, y: 0, w: 3, h: 13, color: this.accent }],
                 },
-                { width: '*', text: title, fontSize: 12, bold: true },
+                { width: '*', text: title, fontSize: 16, bold: true },
                 {
                   width: 120,
-                  text: this.formatMoney(subtotal),
+                  text: '',
                   fontSize: 9,
                   bold: true,
                   alignment: 'right',
@@ -406,7 +416,7 @@ export class OfferPdfService {
             {},
             {},
           ],
-          [firstLabel, quantityLabel, priceLabel, 'BELØB'].map((text, index): TableCell => ({
+          [firstLabel, quantityLabel, priceLabel, 'Pris'].map((text, index): TableCell => ({
             text,
             style: 'tableHeader',
             alignment: index ? 'right' : 'left',
@@ -421,8 +431,8 @@ export class OfferPdfService {
         vLineWidth: () => 0,
         paddingLeft: () => 8,
         paddingRight: () => 8,
-        paddingTop: (i) => (i === 0 ? 0 : i === 1 ? 7 : 8),
-        paddingBottom: (i) => (i === 0 ? 0 : i === 1 ? 7 : 8),
+        paddingTop: (i) => (i === 0 ? 0 : i === 1 ? 5 : 5),
+        paddingBottom: (i) => (i === 0 ? 0 : i === 1 ? 5 : 5),
       },
       margin: [0, 0, 0, 18],
     };
@@ -471,20 +481,20 @@ export class OfferPdfService {
           [
             {
               colSpan: 2,
-              fillColor: this.ink,
+              fillColor: this.sage,
               stack: [
                 {
                   text: 'I ALT INKL. MOMS',
                   fontSize: 7,
                   bold: true,
-                  color: '#DBE6DA',
+                  color: this.ink,
                   margin: [0, 0, 0, 7],
                 },
                 {
                   text: this.formatMoney(offer.pricing_total),
                   fontSize: 19,
                   bold: true,
-                  color: '#FFFFFF',
+                  color: this.ink,
                   alignment: 'right',
                 },
               ],

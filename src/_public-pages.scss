@@ -228,3 +228,43 @@
   vertical-align: -0.125em;
   pointer-events: none;
 }
+
+.marketing-page .trade-focus {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 48px 56px;
+  .eyebrow { margin-bottom: 16px; }
+  h2 { margin: 0 0 20px; font-size: clamp(32px, 3.3vw, 46px); line-height: 1.08; letter-spacing: -1.4px; }
+  .trade-focus-copy > p:not(.eyebrow) { max-width: 490px; color: #526459; font-size: 14px; line-height: 1.85; }
+}
+.marketing-page .trade-focus-link { display: inline-flex; align-items: center; gap: 18px; margin-top: 12px; font-size: 14px; font-weight: 650; border-bottom: 1px solid #b7c2ae; padding-bottom: 6px; }
+.marketing-page .trade-focus-example {
+  background: #12372a;
+  color: #f8f7ee;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 16px;
+  box-shadow: 0 14px 32px #12372a12;
+  h3 { font-size: 20px; line-height: 1.35; margin: 24px 0 16px; }
+  ul { padding-left: 20px; font-size: 14px; line-height: 1.9; color: #e2e9dc; }
+  > p { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid #ffffff25; color: #d5dfce; font-size: 13px; line-height: 1.7; }
+}
+.trade-focus-caption { display: block; color: #d9c28e; font-size: 11px; letter-spacing: .04em; }
+.trade-focus-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; span { padding: 7px 13px; border: 1px solid #ffffff38; border-radius: 24px; background: #ffffff10; font-size: 14px; font-weight: 650; } }
+.marketing-page .trade-relevance {
+  margin: 48px var(--trade-page-gutter, 56px);
+  padding: 28px 32px;
+  border-left: 3px solid #e76f31;
+  border-radius: 0 12px 12px 0;
+  background: #edf1e7;
+  .eyebrow { margin-bottom: 12px; }
+  h2 { font-size: clamp(24px, 3vw, 32px); margin: 0 0 16px; letter-spacing: -.7px; }
+  > p:not(.eyebrow) { color: #526459; font-size: 14px; line-height: 1.8; max-width: 760px; }
+}
+@media (max-width: 800px) {
+  .marketing-page .trade-focus { grid-template-columns: 1fr; padding: 32px 24px; }
+  .marketing-page .trade-relevance { margin-block: 32px; padding: 24px; }
+}

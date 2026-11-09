@@ -44,14 +44,14 @@
       <app-billing-panel [compact]="true" [prominent]="true" (subscriptionRequested)="close()" />
       @if (billing.usage()?.status !== 'exhausted') {
         <label for="new-project-description">Fortæl om projektet</label>
-        <textarea
+        <app-speech-input [disabled]="isWorking() || hasSavedMessage() || billing.transcriptionLimitReached()" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
           id="new-project-description"
           [formControl]="prompt"
           [readOnly]="hasSavedMessage()"
           rows="6"
           autofocus
           placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
-        ></textarea>
+        ></textarea></app-speech-input>
         <p class="hint">
           Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger
           bagefter.
@@ -93,7 +93,7 @@
       @if (projectId() && error()) { <button type="button" (click)="openDraft()">Åbn kladden</button> }
       <button [type]="mode() === 'ai' ? 'submit' : 'button'" [attr.form]="mode() === 'ai' ? 'new-project-form' : null"
         class="continue-button"
-        [disabled]="mode() === 'ai' ? !prompt.value.trim() : !billing.subscriberAccess() || mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError())"
+        [disabled]="speechBusy() || (mode() === 'ai' ? !prompt.value.trim() : !billing.subscriberAccess() || mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError()))"
         (click)="mode() !== 'ai' ? continue() : null">{{ mode() === 'ai' ? (error() ? 'Prøv igen' : 'Fortsæt') : 'Opret projekt' }}</button>
     </div>
     </div>

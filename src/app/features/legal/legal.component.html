@@ -36,7 +36,7 @@
       <p>Virksomheden får 10 gratis forespørgsler, som deles af virksomhedens brugere. Kun gennemførte svar tæller. Igangværende kald kan midlertidigt optage en forespørgsel.</p>
       <p>Der kræves ikke betalingskort til prøveadgangen, og den bliver ikke automatisk til et betalt abonnement. Når de gratis forespørgsler er brugt, kan du fortsat åbne dine projekter og hente tilbud, så længe kontoen er tilgængelig.</p>
       <h2>4. Abonnement og forbrug</h2>
-      <p>Det planlagte abonnement koster 299 kr. ekskl. moms pr. måned. Med 25 % dansk moms er prisen 373,75 kr. Abonnementet omfatter 500 forespørgsler pr. virksomhed pr. abonnementsperiode, som deles af virksomhedens brugere.</p>
+      <p>Standard-abonnementet koster 299 kr. ekskl. moms pr. måned. Med 25 % dansk moms er prisen 373,75 kr. Abonnementet omfatter 200 AI-kald og 100 transskriptioner pr. virksomhed pr. abonnementsperiode, som deles af virksomhedens brugere. Hver optagelse kan vare højst 90 sekunder, svarende til op til 150 minutters optagetid pr. periode. Kun gennemførte svar og transskriptioner tæller. Taleinput tæller separat; når teksten sendes for at få et tilbudsforslag, bruges et AI-kald.</p>
       <p>En periode følger abonnementets start- og fornyelsesdato, ikke nødvendigvis kalendermåneden. Ubrugte forespørgsler overføres ikke til næste periode. Der opkræves ikke automatisk ekstra betaling for yderligere forespørgsler; når grænsen er nået, må du afvente en ny periode.</p>
       <h2>5. Bestilling og betaling</h2>
       <p>Når betaling åbnes, bestiller du aktivt abonnementet via Stripe. Du får vist pris og betalingsvilkår, før du bekræfter. Abonnementet betales månedsvis forud og fornyes automatisk, indtil det opsiges.</p>
@@ -80,7 +80,7 @@
       <ul>
         <li>Simply.com: hjemmeside, virksomhedens e-mail, bekræftelses- og nulstillingsmails via Supabase samt krypterede databasebackups.</li>
         <li>Supabase: brugerlogin, database og serverfunktioner. Projektets primære database ligger i EU-regionen Irland.</li>
-        <li>OpenAI: behandler de projektoplysninger, opgave- og materialelister og samtalebeskeder, der sendes for at danne forslag. Kundedata, som indgår i projektkonteksten, kan derfor indgå i kaldet. Indtast kun det nødvendige.</li>
+        <li>OpenAI: behandler de projektoplysninger, opgave- og materialelister og samtalebeskeder, der sendes for at danne forslag. Ved taleinput sendes din lydoptagelse til OpenAI for at omsætte den til tekst. Vi gemmer ikke lydoptagelsen i vores database eller filarkiv. Teksten kan rettes og gemmes som en besked, når du sender den. Kundedata, som indgår i projektkonteksten eller optagelsen, kan derfor indgå i kaldet. Indtast og indtal kun det nødvendige.</li>
         <li>Stripe: betalings- og abonnementsbehandling, når du benytter betalingsfunktioner. Vi gemmer ikke fulde betalingskortnumre i appens database. Stripe kan også behandle oplysninger som selvstændig dataansvarlig til egne lovpligtige og sikkerhedsmæssige formål.</li>
         <li>GitHub Actions: bygger hjemmesiden og behandler midlertidigt databasedata ved backup og gendannelsestest. Den gemte backup på Simply er krypteret.</li>
       </ul>

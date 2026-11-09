@@ -27,7 +27,7 @@ export class AiService {
               if (billingVersion === this.billing.version) this.billing.accept(body?.usage, true);
               if (body?.code === 'TRIAL_EXHAUSTED') throw new TrialError('Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
               if (body?.code === 'TRIAL_BUSY') throw new TrialError('Dine resterende gratis forespørgsler er i gang. Vent på svar, og prøv igen.');
-              if (body?.code === 'MONTHLY_LIMIT_REACHED') throw new TrialError('Virksomhedens 500 forespørgsler for denne abonnementsperiode er brugt. Se næste periode under Dit abonnement.');
+              if (body?.code === 'MONTHLY_LIMIT_REACHED') throw new TrialError('Virksomhedens 200 forespørgsler for denne abonnementsperiode er brugt. Se næste periode under Dit abonnement.');
               if (body?.code === 'MONTHLY_BUSY') throw new TrialError('De resterende forespørgsler er i gang. Vent på svar, og prøv igen.');
             }
             console.error('AI ERROR:', error);

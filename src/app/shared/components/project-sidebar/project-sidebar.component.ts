@@ -1,5 +1,6 @@
 import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
 import { WorkspaceIcon } from '../workspace-icon.component';
+import { SpeechInput } from '../speech-input/speech-input.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { afterNextRender, Component, computed, DestroyRef, effect, ElementRef, inject, Injector, input, output, signal, viewChild } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
@@ -20,7 +21,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon, BillingPanelComponent],
+  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon, BillingPanelComponent, SpeechInput],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
@@ -59,6 +60,10 @@ export class ProjectSidebar implements OnDestroy {
   readonly offersError = signal('');
 
   readonly isSending = signal(false);
+  readonly speechBusy = signal(false);
+  appendSpeech(text: string): void {
+    this.messageControl.setValue([this.messageControl.value.trim(), text].filter(Boolean).join('\n'));
+  }
   readonly sendError = signal('');
   readonly aiResult = signal<AiSuggestionSummary | null>(null);
   readonly newWorkItemIds = signal<ReadonlySet<string>>(new Set());
@@ -776,6 +781,7 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   async sendMessage(): Promise<void> {
+    if (this.speechBusy()) return;
     const message = this.messageControl.value.trim();
 
     const projectId = this.data().project.id;
@@ -785,7 +791,7 @@ export class ProjectSidebar implements OnDestroy {
     }
     if (this.billing.limitReached(this.data().project.company_id)) {
       this.sendError.set(this.billing.usage()?.status === 'active'
-        ? 'Virksomhedens 500 forespørgsler er brugt i denne periode. Se næste periode under Dit abonnement.'
+        ? 'Virksomhedens 200 forespørgsler er brugt i denne periode. Se næste periode under Dit abonnement.'
         : 'Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
       return;
     }

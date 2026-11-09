@@ -1,0 +1,19 @@
+:host { display: block; margin: 8px 0 12px; }
+.speech-composer { position: relative; isolation: isolate; min-height: 150px; overflow: hidden; border: 1px solid #d9ded5; border-radius: 12px; background: #fafbf8; transition: border-color .15s, box-shadow .15s; }
+.speech-composer:focus-within { border-color: #b98131; box-shadow: 0 0 0 2px #b9813114; }
+.speech-composer.is-recording { border-color: #df7139; background: #fffaf6; }
+.speech-toolbar { position: absolute; z-index: 2; right: 10px; bottom: 10px; height: 42px; min-width: 42px; display: flex; align-items: center; pointer-events: none; }
+.speech-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.speech-controls { display: flex; align-items: center; gap: 4px; flex: none; pointer-events: auto; }
+.speech-controls button { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; padding: 0; border: 0; border-radius: 50%; background: #e7eee2; color: #12372a; cursor: pointer; }
+.speech-controls button:hover { background: #dce7d6; }
+.speech-controls button:focus-visible { outline: 2px solid #b98131; outline-offset: 2px; }
+.speech-controls button:disabled { opacity: .45; cursor: default; }
+.speech-controls button.recording { background: #df7139; color: #fff; }
+.speech-controls button.cancel { background: transparent; color: #6a796b; }
+.recording-dot { width: 7px; height: 7px; border-radius: 50%; background: #df7139; flex: none; }
+svg { width: 20px; height: 20px; }
+.speech-spinner { animation: speech-spin 1s linear infinite; }
+@keyframes speech-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .speech-spinner { animation: none; } }
+.speech-error { margin: 6px 0 0; color: #a13321; font-size: 13px; }

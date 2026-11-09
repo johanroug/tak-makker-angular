@@ -71,7 +71,7 @@ body {
     border-color: #dbe2d7;
     border-radius: 12px;
   }
-  app-project-sidebar .chat-form button {
+  app-project-sidebar .chat-form > button {
     background: #12372a;
     color: #fff;
   }
@@ -1126,4 +1126,27 @@ app-offer-detail .offer-document.offer-document.offer-document {
   @media (max-width: 700px) {
     .company-logo { width: 110px; height: 70px; }
   }
+}
+
+// Projected textareas share the border and toolbar of the speech composer.
+app-project-sidebar .chat-form app-speech-input .speech-composer textarea,
+app-new-project-dialog .start-dialog app-speech-input .speech-composer textarea {
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 13px 68px 14px 14px !important;
+  min-height: 150px;
+  resize: vertical;
+}
+app-project-sidebar .chat-form app-speech-input .speech-composer.is-busy textarea,
+app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy textarea {
+  padding-right: 114px !important;
 }

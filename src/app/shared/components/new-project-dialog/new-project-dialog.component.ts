@@ -10,10 +10,11 @@ import { WorkspaceState } from '../app-shell/workspace-state';
 import { scopeWarningSummary } from '../ai-feedback/suggestion-notice';
 import { TaskTemplateService, TaskTemplate } from '../../../core/projects/task-template.service';
 import { WorkspaceIcon } from '../workspace-icon.component';
+import { SpeechInput } from '../speech-input/speech-input.component';
 
 @Component({
   selector: 'app-new-project-dialog',
-  imports: [ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon],
+  imports: [ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon, SpeechInput],
   templateUrl: './new-project-dialog.component.html',
   styleUrl: './new-project-dialog.component.scss',
 })
@@ -40,6 +41,11 @@ export class NewProjectDialog implements OnDestroy {
 
   readonly projectCreated = output<void>();
   readonly prompt = new FormControl('', { nonNullable: true });
+  readonly speechBusy = signal(false);
+  private readonly speechInput = viewChild(SpeechInput);
+  appendSpeech(text: string): void {
+    this.prompt.setValue([this.prompt.value.trim(), text].filter(Boolean).join('\n'));
+  }
   readonly isWorking = signal(false);
   readonly error = signal('');
   readonly projectId = signal<string | null>(null);
@@ -94,10 +100,12 @@ export class NewProjectDialog implements OnDestroy {
   }
 
   close(): void {
+    this.speechInput()?.cancel();
     if (!this.isWorking()) this.dialog().nativeElement.close();
   }
 
   async continue(): Promise<void> {
+    if (this.speechBusy()) return;
     if (this.mode() !== 'ai') { await this.createWithoutAi(); return; }
     const description = this.prompt.value.trim();
     if (!description || this.isWorking()) return;

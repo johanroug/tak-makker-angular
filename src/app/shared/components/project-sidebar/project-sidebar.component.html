@@ -41,17 +41,17 @@
     <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
       <app-billing-panel [compact]="true" [companyId]="data().project.company_id" />
       <label class="sr-only" for="project-message">Din besked</label>
-      <textarea
+      <app-speech-input [disabled]="isSending() || billing.transcriptionLimitReached(data().project.company_id)" [context]="data().project.id" [companyId]="data().project.company_id" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
         id="project-message"
         [formControl]="messageControl"
         [readOnly]="isSending()"
         [placeholder]="data().messages.length ? 'Kom med flere input…' : 'Beskriv dit projekt…'"
         rows="3"
-      ></textarea>
+      ></textarea></app-speech-input>
       @if (sendError()) {
         <p class="send-error" role="alert">{{ sendError() }}</p>
       }
-      <button type="submit" [disabled]="isSending() || !messageControl.value.trim() || billing.limitReached(data().project.company_id)">
+      <button type="submit" [disabled]="isSending() || speechBusy() || !messageControl.value.trim() || billing.limitReached(data().project.company_id)">
         {{ isSending() ? 'Arbejder på dit tilbud…' : 'Send besked' }} <span aria-hidden="true">↗</span>
       </button>
     </form>

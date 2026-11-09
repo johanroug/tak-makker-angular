@@ -42,11 +42,14 @@
         <p>Du kan stadig åbne dine projekter og hente dine tilbud.</p>
       }
     } @else if (usage.status === 'active') {
-      <strong>{{ compact() ? usage.paidRemaining + ' af 500 forespørgsler tilbage' : 'Aktivt abonnement' }}</strong>
+      <strong>{{ compact() ? usage.paidRemaining + ' af ' + (usage.paidLimit ?? 200) + ' AI-samtaler tilbage' : 'Standard · Aktivt abonnement' }}</strong>
       @if (!compact()) {
-        <p>299 kr. ekskl. moms pr. måned · 500 forespørgsler</p>
-        <p>{{ usage.paidRemaining }} af 500 forespørgsler tilbage</p>
-        <progress [value]="usage.paidRemaining || 0" max="500" aria-label="Forespørgsler tilbage i abonnementsperioden"></progress>
+        <p>299 kr. ekskl. moms pr. måned · For hele virksomheden</p>
+        <p><b>{{ usage.paidRemaining }} af {{ usage.paidLimit ?? 200 }} AI-samtaler tilbage</b></p>
+        <progress [value]="usage.paidRemaining || 0" [max]="usage.paidLimit ?? 200" aria-label="AI-samtaler tilbage i abonnementsperioden"></progress>
+        <p><b>{{ usage.transcriptionRemaining ?? 100 }} af {{ usage.transcriptionLimit ?? 100 }} tale til tekst tilbage</b></p>
+        <progress [value]="usage.transcriptionRemaining ?? 100" [max]="usage.transcriptionLimit ?? 100" aria-label="Tale til tekst tilbage i abonnementsperioden"></progress>
+        <p>Højst 90 sek. pr. optagelse · Op til 150 minutters tale pr. periode.</p>
         @if (usage.periodEnd) {
           @if (usage.cancelAtPeriodEnd) {
             <div class="cancellation-notice">
@@ -58,7 +61,7 @@
             <p>Ny periode fra {{ usage.periodEnd | date:'dd.MM.yyyy' }}</p>
           }
         }
-        @if (!usage.canGenerate) { <p role="status">De 500 forespørgsler er brugt eller optaget af igangværende kald.</p> }
+        @if (!usage.canGenerate) { <p role="status">De 200 forespørgsler er brugt eller optaget af igangværende kald.</p> }
       }
     } @else if (usage.status === 'exhausted') {
       <strong>Du har brugt dine 10 gratis forespørgsler</strong>
@@ -85,6 +88,9 @@
           aria-label="Gratis forespørgsler brugt"
         ></progress>
         <p>De 10 gratis forespørgsler deles af hele virksomheden. Kun gennemførte svar tæller.</p>
+        @if (usage.transcriptionLimit !== undefined) {
+          <p>{{ usage.transcriptionRemaining }} af {{ usage.transcriptionLimit }} tale til tekst tilbage i prøveperioden.</p>
+        }
       }
       @if (usage.trialPending && !usage.canGenerate) {
         <p>Vent på de igangværende forespørgsler.</p>
@@ -98,7 +104,9 @@
           <div class="plan-price"><span>299</span><div><b>kr.</b><small>ekskl. moms / måned</small></div></div>
           <p class="plan-tax">373,75 kr. inkl. moms</p>
           <ul class="plan-benefits">
-            <li><span aria-hidden="true">✓</span><span><b>500 forespørgsler</b> hver måned</span></li>
+            <li><span aria-hidden="true">✓</span><span><b>200 forespørgsler</b> hver måned</span></li>
+            <li><span aria-hidden="true">✓</span><span><b>100 transskriptioner</b> hver måned</span></li>
+            <li><span aria-hidden="true">✓</span><span>90 sek. pr. optagelse · Op til 150 min. tale</span></li>
             <li><span aria-hidden="true">✓</span><span>Tilføj selv opgaver og materialer</span></li>
             <li><span aria-hidden="true">✓</span><span>Gem og genbrug egne skabeloner</span></li>
             <li><span aria-hidden="true">✓</span><span>Start projekter fra et tomt tilbud</span></li>

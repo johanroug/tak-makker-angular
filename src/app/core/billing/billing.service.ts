@@ -5,6 +5,8 @@ export type BillingUsage = {
   companyId: string; status: 'trial' | 'exhausted' | 'active' | 'free' | 'internal';
   trialLimit: number; trialUsed: number; trialPending: number; trialRemaining: number; canGenerate: boolean;
   paidLimit?: number; paidUsed?: number; paidPending?: number; paidRemaining?: number;
+  transcriptionLimit?: number; transcriptionUsed?: number; transcriptionPending?: number;
+  transcriptionRemaining?: number; canTranscribe?: boolean;
   periodStart?: string | null; periodEnd?: string | null; cancelAtPeriodEnd?: boolean;
   subscriptionState?: string; hasStripeCustomer?: boolean;
 };
@@ -47,7 +49,13 @@ export class BillingService implements OnDestroy {
     const usage = this.usage();
     if (!usage || (companyId && usage.companyId !== companyId)) return false;
     return usage.status === 'exhausted' || (usage.status === 'active' &&
-      (usage.paidUsed ?? 0) >= (usage.paidLimit ?? 500));
+      (usage.paidUsed ?? 0) >= (usage.paidLimit ?? 200));
+  }
+
+  transcriptionLimitReached(companyId?: string): boolean {
+    const usage = this.usage();
+    if (!usage || (companyId && usage.companyId !== companyId)) return false;
+    return usage.canTranscribe === false;
   }
 
   async loadCheckoutConfiguration(): Promise<void> {

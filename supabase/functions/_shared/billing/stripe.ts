@@ -1,6 +1,6 @@
 export const STRIPE_VERSION = '2026-10-28.endive';
 export const PLAN_AMOUNT = 29900;
-export const PAID_LIMIT = 500;
+export const PAID_LIMIT = 200;
 
 export function paymentsEnabled(origin: string, secretKey: string, allowLive: boolean): boolean {
   if (secretKey.startsWith('sk_test_'))

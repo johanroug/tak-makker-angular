@@ -123,7 +123,10 @@
             <div class="document-reference">
               <span class="document-label">TILBUD</span>
               <strong>{{ data.offer.offer_number }}</strong>
-              <span>{{ data.offer.finalized_at | date: 'dd.MM.yyyy' }}</span>
+              <span>Tilbudsdato: {{ data.offer.finalized_at | date: 'dd.MM.yyyy' }}</span>
+              @if (data.offer.validity_days !== null) {
+                <span>Gyldigt i {{ data.offer.validity_days }} dage</span>
+              }
             </div>
           </header>
           <div class="document-intro">
@@ -134,20 +137,28 @@
           </div>
           <section class="document-parties" aria-label="Kunde og projekt">
             <div>
-              <h3 class="document-label">TIL</h3>
+              <h3 class="document-label">Kunde</h3>
               <strong>{{ data.offer.customer_name || 'Kunde ikke angivet' }}</strong>
               <p>{{ data.offer.customer_address || 'Adresse ikke angivet' }}</p>
             </div>
             <div>
-              <h3 class="document-label">PROJEKT</h3>
+              <h3 class="document-label">Projekt</h3>
               <strong>{{ data.offer.project_number }}</strong>
               <p>
-                {{
-                  data.offer.validity_days === null
-                    ? 'Gyldighed ikke angivet'
-                    : 'Gyldigt i ' + data.offer.validity_days + ' dage fra tilbudsdato'
-                }}
+                {{ data.offer.project_title }}
               </p>
+            </div>
+            <div class="document-price-highlight">
+              <span>Samlet pris inkl. moms</span>
+              <strong>{{ data.offer.pricing_total | number: '1.2-2' }} kr.</strong>
+            </div>
+          </section>
+          <section class="document-summary" aria-label="Prisoversigt">
+            <h3>Prisoversigt</h3>
+            <div class="document-summary-values">
+              <div><span>Arbejde</span><strong>{{ data.offer.pricing_labor | number: '1.2-2' }} kr.</strong></div>
+              <div><span>Materialer</span><strong>{{ data.offer.pricing_materials | number: '1.2-2' }} kr.</strong></div>
+              <div><span>Moms ({{ data.offer.pricing_vat_rate * 100 | number: '1.0-2' }} %)</span><strong>{{ data.offer.pricing_vat_amount | number: '1.2-2' }} kr.</strong></div>
             </div>
           </section>
           @if (data.offer.project_description) {
@@ -159,8 +170,7 @@
           @if (data.workItems.length) {
             <section class="document-lines" aria-labelledby="document-work-title">
               <div class="document-section-heading">
-                <h3 id="document-work-title">Arbejde</h3>
-                <strong>{{ data.offer.pricing_labor | number: '1.2-2' }} kr.</strong>
+                <h3 id="document-work-title">Arbejdsopgaver</h3>
               </div>
               <div
                 class="document-table-scroll"
@@ -168,28 +178,29 @@
                 role="region"
                 aria-label="Arbejdsopgaver, scroll vandret på små skærme"
               >
-                <table>
+                <table class="work-table">
                   <thead>
                     <tr>
+                      <th scope="col">Fag</th>
                       <th scope="col">Opgave</th>
                       <th scope="col">Timer</th>
-                      <th scope="col">Kr./time</th>
-                      <th scope="col">Beløb</th>
+                      <th scope="col">Pris</th>
                     </tr>
                   </thead>
                   <tbody>
-                    @for (item of data.workItems; track item.id) {
-                      <tr>
+                    @for (group of workGroups(); track group.trade) {
+                    @for (item of group.items; track item.id; let first = $first; let last = $last) {
+                      <tr [class.group-end]="last">
+                        @if (first) { <th class="trade-name" scope="rowgroup" [attr.rowspan]="group.items.length">{{ group.trade }}</th> }
                         <td>
-                          <strong>{{ item.trade }}</strong>
                           <p>{{ item.description }}</p>
                         </td>
                         <td>{{ item.estimated_hours | number: '1.0-2' }}</td>
-                        <td>{{ item.hourly_rate | number: '1.2-2' }} kr.</td>
                         <td>
                           <strong>{{ item.total_price | number: '1.2-2' }} kr.</strong>
                         </td>
                       </tr>
+                    }
                     }
                   </tbody>
                 </table>
@@ -200,7 +211,6 @@
             <section class="document-lines" aria-labelledby="document-material-title">
               <div class="document-section-heading">
                 <h3 id="document-material-title">Materialer</h3>
-                <strong>{{ data.offer.pricing_materials | number: '1.2-2' }} kr.</strong>
               </div>
               <div
                 class="document-table-scroll"
@@ -213,8 +223,8 @@
                     <tr>
                       <th scope="col">Materiale</th>
                       <th scope="col">Antal</th>
-                      <th scope="col">Kr./enhed</th>
-                      <th scope="col">Beløb</th>
+                      <th scope="col">Enhedspris</th>
+                      <th scope="col">Pris</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -268,6 +278,9 @@
           </div>
           <footer class="document-footer">
             <div>
+              <strong>{{ data.offer.company_name }}</strong>
+              @if (data.offer.company_cvr) { <span>CVR {{ data.offer.company_cvr }}</span> }
+              @if (data.offer.company_address) { <span>{{ data.offer.company_address }}</span> }
               @if (data.offer.company_phone) {
                 <span>{{ data.offer.company_phone }}</span>
               }

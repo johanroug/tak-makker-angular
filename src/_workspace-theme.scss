@@ -927,7 +927,7 @@ body {
   }
   .draft-fields .draft-task-description input,
   .draft-fields .draft-hours-input,
-  .draft-fields.material-columns input {
+  .draft-fields.material-columns input:not([type='checkbox']) {
     appearance: textfield;
     border: 1px solid transparent !important;
     border-radius: 6px;
@@ -944,13 +944,13 @@ body {
   }
   .draft-fields .draft-task-description input:hover,
   .draft-fields .draft-hours-input:hover,
-  .draft-fields.material-columns input:hover {
+  .draft-fields.material-columns input:not([type='checkbox']):hover {
     border-color: #aabaae !important;
     background: #fff !important;
   }
   .draft-fields .draft-task-description input:focus,
   .draft-fields .draft-hours-input:focus,
-  .draft-fields.material-columns input:focus {
+  .draft-fields.material-columns input:not([type='checkbox']):focus {
     border-color: #aabaae !important;
     background: #fff !important;
   }
@@ -1079,4 +1079,25 @@ body {
       background: #1d4d3b;
     }
   }
+}
+
+app-offer-detail .offer-document.offer-document.offer-document {
+// Compact quotation document.
+.document-letterhead { border-bottom: 2px solid #ef7435; align-items: center; &::after { display: none; } }
+.sender { align-items: center; }
+.company-logo { width: 76px; height: 68px; }
+.company-details > strong { font-size: 22px; line-height: 1.2; }
+.document-reference { border-left: 1px solid #ccd0cb; padding-left: 20px; .document-label { font-size: 23px; margin: 0; } }
+.document-parties { grid-template-columns: 1fr 1fr 1.35fr; background: transparent; padding: 0; gap: 24px; align-items: center; > div:nth-child(2) { border-left: 1px solid #ccd0cb; padding-left: 24px; } .document-label { font-size: 13px; letter-spacing: 0; margin-bottom: 2px; } }
+.document-price-highlight { padding: 18px; border-radius: 12px; background: #f3f5f1; span { color: #526459; font-weight: 650; } strong { font-size: clamp(20px, 2.4vw, 30px); line-height: 1.4; white-space: nowrap; } }
+.document-summary { margin-bottom: 24px; h3 { font-size: 22px; margin: 0 0 8px; } }
+.document-summary-values { display: grid; grid-template-columns: repeat(3, 1fr); padding: 12px 0; border-block: 1px solid #ccd0cb; > div { padding: 0 20px; display: grid; line-height: 1.5; + div { border-left: 1px solid #ccd0cb; } } strong { font-size: 16px; } }
+.document-section-heading { padding: 0; border: 0; margin-bottom: 8px; h3 { font-size: 22px; } }
+.document-lines table { th, td { padding: 6px 8px; } thead th { background: #f0f0ee; text-transform: none; font-size: 11px; } p { margin: 0; font-size: 12px; line-height: 1.45; } td strong { font-weight: 500; } }
+.document-lines .work-table { th:first-child { width: 18%; } th:nth-child(2) { width: 52%; text-align: left; } th:nth-child(3) { width: 10%; } tbody td { border-bottom: 0; } .group-end td { border-bottom: 1px solid #ccd6cd; } .trade-name { background: transparent; text-transform: none; font-size: 14px; text-align: left; color: #12372a; vertical-align: middle; border-bottom: 1px solid #ccd6cd; } }
+.document-pricing { border: 1px solid #ccd0cb; border-radius: 10px; overflow: hidden; }
+.document-total { background: #e8eee5; }
+.document-footer { border-top: 1px solid #aab5ab; }
+@media (max-width: 700px) { .document-parties { grid-template-columns: 1fr 1fr; } .document-price-highlight { grid-column: 1 / -1; } .document-summary-values > div { padding: 0 8px; } .company-details > strong { font-size: 17px; } .document-letterhead { flex-wrap: wrap; } }
+
 }

@@ -278,19 +278,27 @@ export class OfferPdfService {
   }
 
   private workItemsTable(data: OfferData): Content {
+    const groups = new Map<string, { trade: string; items: OfferData['workItems'] }>();
+    for (const item of data.workItems) {
+      const trade = item.trade?.trim() || 'Øvrigt arbejde';
+      const key = trade.toLocaleLowerCase('da-DK');
+      const group = groups.get(key) ?? { trade, items: [] };
+      group.items.push(item);
+      groups.set(key, group);
+    }
     return this.itemTable(
       'Arbejde',
       'OPGAVE',
       'TIMER',
       'KR./TIME',
       data.offer.pricing_labor,
-      data.workItems.map((item) => ({
-        title: item.trade ?? '',
-        description: item.description,
+      [...groups.values()].flatMap((group) => group.items.map((item) => ({
+        group: group.trade,
+        title: item.description ?? '',
         quantity: this.formatQuantity(item.estimated_hours),
         unitPrice: this.formatMoney(item.hourly_rate),
         price: item.total_price,
-      })),
+      }))),
     );
   }
 
@@ -317,6 +325,7 @@ export class OfferPdfService {
     priceLabel: string,
     subtotal: number,
     items: {
+      group?: string;
       title: string;
       description?: string | null;
       quantity: string;
@@ -324,10 +333,29 @@ export class OfferPdfService {
       price: number | null;
     }[],
   ): Content {
-    const rows: TableCell[][] = items.map((item) => [
+    const groupRows = new Set<number>();
+    let previousGroup: string | undefined;
+    const rows: TableCell[][] = [];
+    for (const item of items) {
+      if (item.group && item.group !== previousGroup) {
+        groupRows.add(rows.length + 2);
+        rows.push([
+          {
+            colSpan: 4,
+            columns: [
+              { width: 3, canvas: [{ type: 'rect', x: 0, y: 0, w: 3, h: 11, color: this.accent }] },
+              { width: '*', text: item.group, fontSize: 10, bold: true, color: this.ink },
+            ],
+            columnGap: 7,
+            margin: [0, 8, 0, 0],
+          }, {}, {}, {},
+        ]);
+        previousGroup = item.group;
+      }
+      rows.push([
       {
         stack: [
-          { text: item.title, style: 'itemTitle' },
+          { text: item.title, style: item.group ? 'itemDescription' : 'itemTitle' },
           ...(item.description
             ? [
                 {
@@ -342,7 +370,8 @@ export class OfferPdfService {
       { text: item.quantity, alignment: 'right', fontSize: 8.5 },
       { text: item.unitPrice, alignment: 'right', fontSize: 8.5 },
       { text: this.formatMoney(item.price), alignment: 'right', style: 'money' },
-    ]);
+      ]);
+    }
     return {
       table: {
         headerRows: 2,
@@ -387,7 +416,7 @@ export class OfferPdfService {
         ],
       },
       layout: {
-        hLineWidth: (i) => (i > 2 ? 0.45 : 0),
+        hLineWidth: (i) => (i > 2 && !groupRows.has(i) && !groupRows.has(i - 1) ? 0.45 : 0),
         hLineColor: () => this.border,
         vLineWidth: () => 0,
         paddingLeft: () => 8,

@@ -1,5 +1,5 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -22,6 +22,18 @@ export class OfferDetail implements OnInit {
   private readonly offerPdfService = inject(OfferPdfService);
 
   readonly data = signal<OfferData | null>(null);
+  readonly workGroups = computed(() => {
+    const groups = new Map<string, { trade: string; items: NonNullable<OfferData>['workItems']; total: number }>();
+    for (const item of this.data()?.workItems ?? []) {
+      const trade = item.trade?.trim() || 'Øvrigt arbejde';
+      const key = trade.toLocaleLowerCase('da-DK');
+      const group = groups.get(key) ?? { trade, items: [], total: 0 };
+      group.items.push(item);
+      group.total += Number(item.total_price ?? 0);
+      groups.set(key, group);
+    }
+    return [...groups.values()];
+  });
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
   readonly isDownloadingPdf = signal(false);

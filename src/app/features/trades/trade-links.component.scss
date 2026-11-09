@@ -50,6 +50,14 @@ strong {
 strong span {
   color: #a05130;
 }
+.other-trades {
+  margin-top: 26px;
+  padding-left: 16px;
+  border-left: 2px solid #d6b28e;
+  p { margin: 0 0 6px; max-width: 850px; font-size: 14px; line-height: 1.8; color: #526459; }
+  strong { display: inline; margin: 0; font-size: inherit; color: #20392f; }
+  > span { font-size: 12px; color: #6a796b; }
+}
 @media (min-width: 800px) {
   section {
     padding: 70px var(--trade-links-padding-inline, 7%);

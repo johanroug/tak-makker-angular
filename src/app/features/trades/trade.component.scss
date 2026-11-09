@@ -166,3 +166,39 @@ h1 {
     padding-right: 16px;
   }
 }
+.trade-screenshot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.trade-image-stage {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(10px, 2vw, 24px);
+  border-radius: 22px;
+  background: linear-gradient(135deg, #e6edde, #f5f0e5 58%, #eddfcd);
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 12px 4% -12px;
+    border-radius: 24px;
+    background: #dce5d5;
+    transform: rotate(-1deg);
+    opacity: .55;
+  }
+}
+.trade-image-frame {
+  overflow: hidden;
+  padding: clamp(4px, .7vw, 9px);
+  border: 1px solid #ffffff;
+  border-radius: 12px;
+  background: #fffdf8;
+  box-shadow: 0 20px 36px -18px #12372a50, 0 3px 10px #12372a0c;
+}
+.trade-image-frame .trade-screenshot { border-radius: 6px; }
+.trade-example .example-note { margin-top: 24px; }
+@media (max-width: 600px) {
+  .trade-image-stage { border-radius: 14px; }
+  .trade-image-frame { border-radius: 8px; }
+}

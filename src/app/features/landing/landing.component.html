@@ -29,7 +29,7 @@
         />
         <div class="hero-glow" aria-hidden="true"></div>
         <div class="hero-blueprint" aria-hidden="true"></div>
-        <div class="hero-product" appParallax><app-product-preview /></div>
+        <div class="hero-product" appParallax><img class="hero-product-screenshot" src="/marketing/trin-2-tilpas-tilbuddet.png" alt="Hovedet på Sømmet med samtale, arbejdsopgaver, materialer og samlet tilbudspris." width="1823" height="905" /></div>
         <span class="example-note">Illustrativt eksempel · Du har sidste ord.</span>
       </div>
     </section>
@@ -41,9 +41,18 @@
     <section class="walkthrough" id="saadan" aria-labelledby="walkthrough-title">
       <div>
         <h2 id="walkthrough-title">Fra første tanke<br />til <em>færdigt tilbud.</em></h2>
+        <figure class="workflow-story">
+          <a href="/marketing/saadan-virker-hovedet-paa-soemmet.jpg" target="_blank" rel="noopener" aria-label="Se illustrationen i fuld størrelse (åbner i en ny fane)">
+            <img src="/marketing/saadan-virker-hovedet-paa-soemmet.jpg"
+              alt="Fire trin fra papirbunker til overblik: En håndværker kæmper med tilbuddet, beskriver opgaven på sin tablet, får overblik over arbejdsopgaver og materialer og kan holde fri."
+              width="1376" height="768" loading="lazy" decoding="async" />
+          </a>
+          <figcaption>Skriv eller indtal din opgave. Tilpas opgaver, materialer og priser — og hent dit tilbud som PDF.</figcaption>
+        </figure>
         <div class="steps">
           @for (item of steps; track item.title; let i = $index) {
             <button type="button" (click)="step.set(i); demoDialog.showModal()">
+              <img class="step-screenshot" [src]="item.image" [alt]="item.alt" [width]="item.width" [height]="item.height" loading="lazy" decoding="async" />
               <span class="step-number">0{{ i + 1 }}<i aria-hidden="true"></i></span
               ><strong>{{ item.title }}</strong
               ><span>{{ item.text }}</span>
@@ -51,16 +60,6 @@
           }
         </div>
       </div>
-      <button
-        class="demo-poster"
-        type="button"
-        aria-label="Åbn interaktiv gennemgang af tilbudsarbejdet"
-        (click)="demoDialog.showModal()"
-      >
-        <span class="poster-ui" aria-hidden="true"><app-product-preview /></span
-        ><span class="poster-play" aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z" /></svg></span
-        ><span class="poster-label">Se arbejdsgangen · 3 trin</span>
-      </button>
     </section>
     <section class="testing-banner" aria-labelledby="testers-title">
       <img
@@ -146,8 +145,10 @@
       }
     </div>
     <p class="demo-explanation" aria-live="polite">{{ steps[step()].text }}</p>
-    <app-product-preview [phase]="step()" />
-    <p class="demo-note">Illustrativ gennemgang. Du kontrollerer og godkender altid indholdet.</p>
+    <a class="demo-screenshot" [href]="steps[step()].image" target="_blank" rel="noopener" aria-label="Åbn skærmbilledet i fuld størrelse i en ny fane">
+      <img [src]="steps[step()].image" [alt]="steps[step()].alt" [width]="steps[step()].width" [height]="steps[step()].height" />
+    </a>
+    <p class="demo-note">Tryk på billedet for at se det i fuld størrelse. Eksempeldata er vist.</p>
     <a class="marketing-button" routerLink="/register">Prøv gratis <svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></a>
   </dialog>
 </div>

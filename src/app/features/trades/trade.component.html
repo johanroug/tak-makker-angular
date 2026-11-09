@@ -26,11 +26,14 @@
       </div>
     </section>
     <section class="trade-example" aria-label="Illustrativt tilbudseksempel">
-      <app-product-preview
-        [chat]="false"
-        [trade]="page.singular"
-        [title]="page.example.title.replace('Eksempel: ', '')"
-      />
+      <div class="trade-image-stage">
+        <div class="trade-image-frame">
+      <img class="trade-screenshot" [src]="page.screenshot"
+        [width]="page.screenshotWidth" [height]="page.screenshotHeight"
+        [alt]="'Eksempel på arbejdsopgaver, materialer og tilbudspris for ' + page.singular"
+        loading="lazy" decoding="async" />
+        </div>
+      </div>
       <p class="example-note">Illustrativt eksempel · Du kontrollerer og godkender indholdet.</p>
     </section>
     <section class="faq" aria-labelledby="faq-title">

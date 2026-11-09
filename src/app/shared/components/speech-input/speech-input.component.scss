@@ -1,5 +1,5 @@
 :host { display: block; margin: 8px 0 12px; }
-.speech-composer { position: relative; isolation: isolate; min-height: 150px; overflow: hidden; border: 1px solid #d9ded5; border-radius: 12px; background: #fafbf8; transition: border-color .15s, box-shadow .15s; }
+.speech-composer { position: relative; isolation: isolate; min-height: 128px; overflow: hidden; border: 1px solid #d9ded5; border-radius: 12px; background: #fafbf8; transition: border-color .15s, box-shadow .15s; }
 .speech-composer:focus-within { border-color: #b98131; box-shadow: 0 0 0 2px #b9813114; }
 .speech-composer.is-recording { border-color: #df7139; background: #fffaf6; }
 .speech-toolbar { position: absolute; z-index: 2; right: 10px; bottom: 10px; height: 42px; min-width: 42px; display: flex; align-items: center; pointer-events: none; }

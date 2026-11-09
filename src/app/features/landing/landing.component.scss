@@ -140,7 +140,7 @@ h1 {
 }
 .walkthrough {
   display: grid;
-  grid-template-columns: 1.65fr 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 48px;
   align-items: center;
   padding: 48px 56px;
@@ -178,6 +178,38 @@ h2 {
     line-height: 1.8;
     color: #7a8272;
   }
+}
+.workflow-story {
+  margin: 0 0 32px;
+  a { display: block; border-radius: 12px; overflow: hidden; }
+  img { display: block; width: 100%; height: auto; }
+  figcaption { margin: 12px 0 0; color: #526459; font-size: 13px; line-height: 1.6; }
+}
+.step-screenshot {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #f1f2ec;
+  border: 1px solid #dce2d7;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+.hero-product-screenshot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid #dce2d7;
+  box-shadow: 0 16px 48px #12372a20;
+}
+.demo-screenshot {
+  display: block;
+  border: 1px solid #dce2d7;
+  border-radius: 10px;
+  overflow: hidden;
+  img { display: block; width: 100%; height: auto; }
 }
 .step-number {
   color: #e76f31;

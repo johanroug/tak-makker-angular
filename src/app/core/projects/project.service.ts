@@ -22,10 +22,10 @@ export class ProjectService {
     const result = kind === 'work'
       ? await supabase.from('project_work_items').insert({ id: values.id, project_id: projectId,
           description: values.description.trim(), trade: values.trade.trim(), estimated_hours: values.hours,
-          estimated_hours_source: 'user', status: 'suggested' })
+          estimated_hours_source: 'user', status: 'accepted' })
       : await supabase.from('project_materials').insert({ id: values.id, project_id: projectId,
           name: values.name.trim(), quantity: values.quantity, quantity_source: 'user', unit: values.unit.trim(),
-          unit_source: 'user', unit_price: values.unitPrice, status: 'suggested' });
+          unit_source: 'user', unit_price: values.unitPrice, status: 'accepted' });
     if (result.error) {
       // The same client-generated ID is retained for a retry after a lost response.
       if (result.error.code === '23505') {
@@ -260,7 +260,7 @@ export class ProjectService {
         trade: item.trade,
         description: item.description,
         estimate_basis: item.estimateBasis ?? null,
-        status: 'suggested',
+        status: 'accepted',
         estimated_hours: item.estimatedHours,
         estimated_hours_source: 'ai',
       });
@@ -345,7 +345,7 @@ export class ProjectService {
         project_id: projectId,
         id: material.id,
         name: material.name,
-        status: 'suggested',
+        status: 'accepted',
         quantity: material.quantity,
         quantity_source: 'ai',
         unit: material.unit,

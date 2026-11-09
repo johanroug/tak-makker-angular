@@ -736,9 +736,9 @@ body {
     display: grid;
   }
   .work-columns {
-    grid-template-columns: minmax(0, 1.8fr) minmax(52px, 0.7fr) minmax(46px, 0.6fr) minmax(
+    grid-template-columns: minmax(0, 3.2fr) minmax(48px, 0.45fr) minmax(44px, 0.45fr) minmax(
         62px,
-        0.8fr
+        0.65fr
       );
     gap: 10px;
   }
@@ -759,7 +759,7 @@ body {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     column-gap: 10px;
-    padding: 12px 4px;
+    padding: 7px 4px;
     margin: 0;
     border: 0;
     border-bottom: 1px solid #e9ede5;
@@ -782,6 +782,9 @@ body {
   .draft-task-description textarea {
     font-size: 12px;
   }
+  .draft-fields input {
+    height: 32px;
+  }
   .draft-task-description textarea {
     min-height: 44px;
     padding: 4px 2px;
@@ -793,7 +796,17 @@ body {
     text-align: right;
   }
   .draft-rate {
-    text-align: center;
+    text-align: right;
+  }
+  .work-columns > :nth-child(2),
+  .work-columns > :nth-child(3),
+  .work-columns > :nth-child(4) {
+    text-align: right;
+  }
+  .material-columns > :nth-child(2),
+  .material-columns > :nth-child(4),
+  .material-columns > :nth-child(5) {
+    text-align: right;
   }
   .draft-line-details {
     margin-top: 6px;
@@ -879,7 +892,6 @@ body {
   .draft-details,
   .draft-section-heading > span,
   .draft-column-headings,
-  .draft-empty-note,
   .draft-rate,
   .column-total {
     color: #4d6255;
@@ -912,6 +924,67 @@ body {
   .draft-task-description textarea {
     border-color: transparent;
     &:hover { border-color: #aabaae; }
+  }
+  .draft-fields .draft-task-description input,
+  .draft-fields .draft-hours-input,
+  .draft-fields.material-columns input {
+    appearance: textfield;
+    border: 1px solid transparent !important;
+    border-radius: 6px;
+    background: transparent !important;
+    padding: 0 6px;
+    box-shadow: none;
+    outline: none;
+  }
+  .draft-fields .draft-hours-input {
+    text-align: right;
+  }
+  .draft-fields.material-columns input[type='number'] {
+    text-align: right;
+  }
+  .draft-fields .draft-task-description input:hover,
+  .draft-fields .draft-hours-input:hover,
+  .draft-fields.material-columns input:hover {
+    border-color: #aabaae !important;
+    background: #fff !important;
+  }
+  .draft-fields .draft-task-description input:focus,
+  .draft-fields .draft-hours-input:focus,
+  .draft-fields.material-columns input:focus {
+    border-color: #aabaae !important;
+    background: #fff !important;
+  }
+  .draft-task-description .draft-description-preview {
+    position: absolute;
+    z-index: 8;
+    top: calc(100% - 2px);
+    left: 0;
+    display: none;
+    width: max-content;
+    max-width: min(560px, 70vw);
+    padding: 8px 10px;
+    border: 1px solid #cbd6ca;
+    border-radius: 7px;
+    background: #fff;
+    box-shadow: 0 5px 16px #12372a20;
+    color: #19382e;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+  }
+  .draft-task-description:hover .draft-description-preview,
+  .draft-task-description:focus-within .draft-description-preview {
+    display: block;
+  }
+  .draft-fields .draft-hours-input::-webkit-inner-spin-button,
+  .draft-fields .draft-hours-input::-webkit-outer-spin-button,
+  .draft-fields.material-columns input[type='number']::-webkit-inner-spin-button,
+  .draft-fields.material-columns input[type='number']::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
   }
   .draft-fields input:focus-visible,
   .draft-task-description textarea:focus-visible,

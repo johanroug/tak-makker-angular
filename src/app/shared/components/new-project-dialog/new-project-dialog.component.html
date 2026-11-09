@@ -41,20 +41,22 @@
     <div class="dialog-content">
     @if (mode() === 'ai') {
     <form id="new-project-form" (submit)="$event.preventDefault(); continue()">
-      <app-billing-panel [compact]="true" (subscriptionRequested)="close()" />
-      <label for="new-project-description">Fortæl om projektet</label>
-      <textarea
-        id="new-project-description"
-        [formControl]="prompt"
-        [readOnly]="hasSavedMessage()"
-        rows="6"
-        autofocus
-        placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
-      ></textarea>
-      <p class="hint">
-        Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger
-        bagefter.
-      </p>
+      <app-billing-panel [compact]="true" [prominent]="true" (subscriptionRequested)="close()" />
+      @if (billing.usage()?.status !== 'exhausted') {
+        <label for="new-project-description">Fortæl om projektet</label>
+        <textarea
+          id="new-project-description"
+          [formControl]="prompt"
+          [readOnly]="hasSavedMessage()"
+          rows="6"
+          autofocus
+          placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
+        ></textarea>
+        <p class="hint">
+          Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger
+          bagefter.
+        </p>
+      }
       @if (error()) {
         <p class="start-error" role="alert">{{ error() }}</p>
       }
@@ -62,8 +64,8 @@
     } @else {
       @if (!billing.subscriberAccess()) {
         <p role="status"><strong>Kræver abonnement</strong></p>
-        <p>Opret tomme projekter og genbrug dine skabeloner med et abonnement.</p>
-        <app-billing-panel [compact]="true" (subscriptionRequested)="close()" />
+        <p class="mb-4">Opret tomme projekter og genbrug dine skabeloner med et abonnement.</p>
+        <app-billing-panel [compact]="true" [prominent]="true" (subscriptionRequested)="close()" />
       } @else if (mode() === 'template') {
         @if (templatesLoading()) { <p role="status">Henter skabeloner…</p> }
         @else if (templatesError()) { <p role="alert">{{ templatesError() }}</p><button type="button" (click)="loadTemplates()">Prøv igen</button> }

@@ -17,6 +17,7 @@ export class BillingPanelComponent {
   readonly checkoutResult = this.route.snapshot.queryParamMap.get('checkout');
   readonly companyId = input<string>();
   readonly compact = input(false);
+  readonly prominent = input(false);
   readonly subscriptionRequested = output<void>();
   constructor() {
     void this.billing.loadCheckoutConfiguration();

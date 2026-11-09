@@ -121,3 +121,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .plan button.subscribe svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; }
 .plan .plan-terms { margin: 14px 0 0; text-align: center; color: #d0dfd0; font-size: 11px; line-height: 1.7; }
 @media (max-width: 380px) { .plan { padding: 24px 16px 20px; } }
+
+.compact.usage-alert { justify-content: flex-start; gap: 10px 16px; padding: 16px 18px; margin-bottom: 18px; border: 1px solid #e0c48d; border-left: 4px solid #b57b23; border-radius: 10px; background: #fff7e7; color: #624817; }
+.compact.usage-alert strong { order: 0; flex: 1 1 250px; font-size: 17px; line-height: 1.4; font-weight: 700; color: #624817; }
+.compact.usage-alert button { order: 1; padding: 7px 10px; min-height: 36px; border: 1px solid #c8ab72; border-radius: 6px; color: #624817; background: #fffdf7; font-size: 13px; font-weight: 600; text-decoration: none; }
+.compact.usage-alert button:hover { background: #f3e6ca; }
+.compact.usage-alert p { order: 2; margin: 0; font-size: 13px; line-height: 1.5; }

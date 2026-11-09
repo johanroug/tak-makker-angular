@@ -35,10 +35,8 @@ ikke en komplet erstatning af projektet.
 - workItems og materials skal kun indeholde nye forslag eller eksisterende
   linjer med ændrede AI-estimater. Udelad uændrede linjer; brug [] uden ændringer.
 - For eksisterende arbejdsopgaver medtages kun linjer, hvor estimatedHours
-  skal ændres og estimatedHoursSource ikke er "user", eller hvor estimateBasis
-  skal ændres eller fjernes. En note må opdateres, selvom timerne er brugerens.
-  Returnér estimateBasis: null for at fjerne en afklaret note. Bevar beskrivelse,
-  status og brugerens timer, også ved ændringer af noten alene.
+  skal ændres og estimatedHoursSource ikke er "user". Bevar beskrivelse,
+  status og brugerens timer. estimateBasis skal altid være null.
 - For eksisterende materialer medtages kun linjer, hvor quantity eller unit
   skal ændres og det tilsvarende source-felt ikke er "user", eller hvor
   unitPrice mangler og skal udfyldes med et prisestimat, eller brugerens

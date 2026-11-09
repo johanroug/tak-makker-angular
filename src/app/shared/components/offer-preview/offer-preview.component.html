@@ -61,26 +61,28 @@
               <div class="draft-fields work-columns">
                 <label class="draft-name draft-task-description">
                   <span class="field-caption">Opgave</span>
-                  <textarea
+                  <input
+                    type="text"
                     class="draft-text"
-                    rows="2"
                     aria-label="Arbejdsbeskrivelse"
+                    [title]="item.description || ''"
                     placeholder="Beskriv opgaven"
                     [value]="item.description || ''"
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
-                  ></textarea>
-                  @if (item.estimate_basis) {
-                    <span class="estimate-basis">{{ item.estimate_basis }}</span>
-                  }
+                  />
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
+                  }}</span>
+                  <span class="draft-description-preview" aria-hidden="true">{{
+                    item.description || ''
                   }}</span>
                 </label>
                 <label
                   ><span class="field-caption">Timer</span
                   ><input
                     type="number"
+                    class="draft-hours-input"
                     min="0"
                     step="0.5"
                     aria-label="Estimeret tid i timer"
@@ -135,7 +137,6 @@
         <h3 id="draft-material-title">Materialer</h3>
         <span>{{ acceptedMaterials.length }} godkendt · {{ data().materials.length }} i alt</span>
       </div>
-      <p class="draft-empty-note">Priser vises ekskl. moms. Kontrollér mængder og priser før godkendelse; AI-forslag er vejledende estimater.</p>
       <div class="draft-column-headings material-columns" aria-hidden="true">
         <span>Materiale</span><span>Antal</span><span>Enhed</span><span>Kr./enhed</span
         ><span>Beløb</span>

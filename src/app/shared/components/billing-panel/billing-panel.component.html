@@ -1,6 +1,7 @@
 <section
   [attr.id]="compact() ? null : 'subscription'"
   [class.compact]="compact()"
+  [class.usage-alert]="compact() && prominent() && billing.usage()?.status === 'exhausted'"
   aria-label="Dit abonnement"
 >
   @if (!compact()) {

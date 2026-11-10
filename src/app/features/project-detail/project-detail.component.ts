@@ -57,12 +57,32 @@ export class ProjectDetail implements OnInit, OnDestroy {
       if (!viewport) return;
 
       const mobileLayout = window.matchMedia('(max-width: 900px)');
+      let viewportWidth = viewport.width;
+      let smallestEditingHeight = viewport.height;
       let frame = 0;
       const revealField = () => {
         frame = 0;
         const field = document.activeElement;
-        if (!mobileLayout.matches || !(field instanceof HTMLElement) || !host.contains(field) ||
-          !field.matches('input:not([readonly]), textarea:not([readonly])')) return;
+        if (!mobileLayout.matches || viewport.scale !== 1 || !(field instanceof HTMLElement) ||
+          !host.contains(field) || !field.matches('input:not([readonly]), textarea:not([readonly])')) {
+          viewportWidth = viewport.width;
+          smallestEditingHeight = viewport.height;
+          return;
+        }
+
+        if (Math.abs(viewport.width - viewportWidth) > 1) {
+          viewportWidth = viewport.width;
+          smallestEditingHeight = viewport.height;
+        }
+
+        // Dismissing the mobile keyboard can restore viewport height without blurring the field.
+        if (viewport.height - smallestEditingHeight >= 120) {
+          smallestEditingHeight = viewport.height;
+          host.style.removeProperty('--keyboard-inset');
+          field.blur();
+          return;
+        }
+        smallestEditingHeight = Math.min(smallestEditingHeight, viewport.height);
 
         const keyboardInset = Math.max(0, window.innerHeight - viewport.height);
         host.style.setProperty('--keyboard-inset', `${keyboardInset}px`);
@@ -82,10 +102,12 @@ export class ProjectDetail implements OnInit, OnDestroy {
       };
 
       host.addEventListener('focusin', scheduleReveal);
+      host.addEventListener('focusout', scheduleReveal);
       viewport.addEventListener('resize', scheduleReveal);
       destroyRef.onDestroy(() => {
         cancelAnimationFrame(frame);
         host.removeEventListener('focusin', scheduleReveal);
+        host.removeEventListener('focusout', scheduleReveal);
         viewport.removeEventListener('resize', scheduleReveal);
       });
     });

@@ -66,7 +66,6 @@ export class ProjectDetail implements OnInit, OnDestroy {
 
         const keyboardInset = Math.max(0, window.innerHeight - viewport.height);
         host.style.setProperty('--keyboard-inset', `${keyboardInset}px`);
-        host.style.setProperty('--keyboard-offset', `${Math.max(0, keyboardInset - viewport.offsetTop)}px`);
         const bounds = field.getBoundingClientRect();
         const visibleBottom = viewport.offsetTop + viewport.height - 16;
         const coveredHeight = Math.min(bounds.bottom - visibleBottom, bounds.top - viewport.offsetTop - 16);

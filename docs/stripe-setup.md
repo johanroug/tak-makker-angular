@@ -1,7 +1,8 @@
 # Stripe-abonnement
 
-Planen er 299 kr. ekskl. moms pr. virksomhed om måneden, med 500 gennemførte
-AI-forespørgsler pr. betalt abonnementsperiode. Med dansk moms bliver det 373,75 kr.
+Standard er 299 kr. ekskl. moms pr. virksomhed om måneden, med 200 gennemførte
+AI-kald og 100 transskriptioner pr. betalt abonnementsperiode. Hver optagelse er
+højst 90 sekunder (op til 150 minutters tale). Med dansk moms bliver det 373,75 kr.
 Alle medarbejdere deler kvoten. Fejlede kald tæller ikke; reserverede kald optager
 midlertidigt en plads. Ny periode giver ny kvote, uden overførsel af ubrugte kald.
 Manuel `free`/`internal`-adgang bevares ved Stripe-opdateringer.
@@ -112,6 +113,9 @@ Ingen rigtige betalinger er oprettet under implementeringen.
 1. Gennemfør aktivering og virksomhedsverifikation i Stripe livekontoen.
 2. Opret/kopiér produkt og månedlig pris til live: 299 DKK ekskl. moms. Opret
    aktiv dansk momssats på 25 % exclusive i live og kontrollér prisens tax behavior.
+   Produktnavn: Hovedet på Sømmet — Standard. Beskrivelse: 200 AI-kald og 100
+   transskriptioner pr. virksomhed pr. måned. Højst 90 sekunder pr. optagelse.
+   Kontrollér teksten ved kopiering: den gamle sandboxbeskrivelse kan nævne 500 kald.
 3. Opret live-webhook med samme URL og seks events som ovenfor. Brug den
    live-destinations egen signing secret.
 4. Identificér og afvikl sandbox-kunder/abonnementer, og ryd deres Stripe-referencer

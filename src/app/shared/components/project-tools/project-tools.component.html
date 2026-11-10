@@ -25,12 +25,12 @@
             @if (currentMode === 'work') {
               <label>Fag<input formControlName="trade" maxlength="100" required /></label>
               <label>Beskrivelse<textarea formControlName="description" rows="3" required></textarea></label>
-              <label>Forventede timer<input type="number" formControlName="hours" min="0" step="0.5" /></label>
+              <label>Forventede timer<input type="number" inputmode="decimal" formControlName="hours" min="0" step="0.5" /></label>
             } @else {
               <label>Materialenavn<input formControlName="name" required /></label>
-              <label>Antal<input type="number" formControlName="quantity" min="0" step="any" /></label>
+              <label>Antal<input type="number" inputmode="decimal" formControlName="quantity" min="0" step="any" /></label>
               <label>Enhed<input formControlName="unit" required /></label>
-              <label>Kr. pr. enhed ekskl. moms<input type="number" formControlName="unitPrice" min="0" step="0.01" /></label>
+              <label>Kr. pr. enhed ekskl. moms<input type="number" inputmode="decimal" formControlName="unitPrice" min="0" step="0.01" /></label>
             }
           </div>
         } @else if (currentMode === 'save') {

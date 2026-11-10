@@ -32,7 +32,7 @@
     </div>
   }
 
-  <div class="draft-columns">
+  <div class="draft-columns" (click)="selectInputValue($event)">
     <section
       class="draft-section tasks-column"
       data-draft-section="tasks"
@@ -89,7 +89,7 @@
                 <label class="draft-hours"
                   ><app-workspace-icon class="mobile-detail-icon" name="clock" /><span class="field-caption">Timer</span
                   ><input
-                    type="number"
+                    type="number" inputmode="decimal"
                     class="draft-hours-input"
                     min="0"
                     step="0.5"
@@ -192,7 +192,7 @@
                 <label
                   ><span class="field-caption">Antal</span
                   ><input
-                    type="number"
+                    type="number" inputmode="decimal"
                     min="0"
                     step="any"
                     aria-label="Antal"
@@ -219,7 +219,7 @@
                 <label class="material-unit-price"
                   ><span class="field-caption">Kr./enhed</span
                   ><input
-                    type="number"
+                    type="number" inputmode="decimal"
                     min="0"
                     step="any"
                     aria-label="Enhedspris i kroner"
@@ -411,12 +411,12 @@
 
       <label>
         Timepris (kr. ekskl. moms) <small>Gælder alle arbejdsopgaver i dette projekt</small>
-        <input type="number" min="0" step="0.01" formControlName="hourlyRate" />
+        <input type="number" inputmode="decimal" min="0" step="0.01" formControlName="hourlyRate" />
       </label>
 
       <label
         >Gyldighed (dage fra tilbudsdato)<input
-          type="number"
+          type="number" inputmode="numeric"
           min="1"
           step="1"
           formControlName="validityDays"

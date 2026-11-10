@@ -1,6 +1,6 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { ProjectTools } from '../../shared/components/project-tools/project-tools.component';
-import { afterNextRender, Component, computed, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -41,6 +41,28 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly preview = viewChild(OfferPreview);
   private readonly injector = inject(Injector);
   readonly mobileSection = signal<WorkspaceSection>('tasks');
+  readonly mobileViewportBottom = signal(0);
+
+  constructor() {
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const viewport = window.visualViewport;
+      const updateViewport = () => {
+        this.mobileViewportBottom.set(viewport && viewport.scale === 1
+          ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+          : 0);
+      };
+      viewport?.addEventListener('resize', updateViewport);
+      viewport?.addEventListener('scroll', updateViewport);
+      window.addEventListener('resize', updateViewport);
+      updateViewport();
+      destroyRef.onDestroy(() => {
+        viewport?.removeEventListener('resize', updateViewport);
+        viewport?.removeEventListener('scroll', updateViewport);
+        window.removeEventListener('resize', updateViewport);
+      });
+    });
+  }
   readonly mobileSections = [
     { id: 'chat', label: 'Samtale', title: 'Samtale', icon: 'chat' },
     { id: 'tasks', label: 'Opgaver', title: 'Arbejdsopgaver', icon: 'wrench' },

@@ -104,6 +104,13 @@ export class OfferPreview {
   private readonly editingTrades = new Map<string, string>();
   private readonly editingMaterialNames = new Map<string, string>();
 
+  selectInputValue(event: MouseEvent): void {
+    const input = event.target;
+    if (input instanceof HTMLInputElement && (input.type === 'text' || input.type === 'number')) {
+      input.select();
+    }
+  }
+
   editField(kind: 'work' | 'material', id: string, field: string, event: Event, save: boolean): void {
     const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
     if (kind === 'material' && field === 'name') {

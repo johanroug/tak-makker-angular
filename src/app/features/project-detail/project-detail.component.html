@@ -1,4 +1,4 @@
-<div class="project-workspace">
+<div class="project-workspace" [style.--mobile-viewport-bottom]="mobileViewportBottom() + 'px'">
   @if (suggestionNotice; as result) {
     @if (shouldShowSuggestionNotice(result)) {
     <div class="suggestion-notice">

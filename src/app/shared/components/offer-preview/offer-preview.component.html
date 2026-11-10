@@ -3,6 +3,8 @@
     <div #readinessSlot class="readiness-slot">
     <details class="draft-readiness" [class.is-ready]="!missingRequirements.length" (toggle)="resetReadinessHeight()">
       <summary>
+        <app-workspace-icon class="mobile-detail-icon" [name]="missingRequirements.length ? 'warning' : 'checkCircle'" />
+        <span>
         @if (missingRequirements.length) {
         {{ missingRequirements.length }}
         {{ missingRequirements.length === 1 ? 'punkt mangler' : 'punkter mangler' }}, før tilbuddet
@@ -10,6 +12,8 @@
         } @else {
           Alle punkter er på plads
         }
+        </span>
+        <app-workspace-icon class="mobile-detail-icon readiness-chevron" name="chevron" />
       </summary>
       <ul>
         @for (issue of missingRequirements; track issue.key) {
@@ -45,7 +49,7 @@
       @for (group of workGroups; track group.key) {
         <section class="draft-trade-group" [attr.aria-label]="group.title">
           <div class="draft-trade-heading">
-            <h4>{{ group.title }}</h4>
+            <h4><app-workspace-icon class="mobile-detail-icon" name="wrench" />{{ group.title }}</h4>
             <span
               >{{ group.items.length }} {{ group.items.length === 1 ? 'opgave' : 'opgaver' }}</span
             >
@@ -59,11 +63,11 @@
               [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null"
             >
               <div class="draft-fields work-columns">
-                <label class="draft-name draft-task-description">
+                <div class="draft-name draft-task-description">
                   <span class="field-caption">Opgave</span>
                   <input
                     type="text"
-                    class="draft-text"
+                    class="draft-text desktop-work-description"
                     aria-label="Arbejdsbeskrivelse"
                     [title]="item.description || ''"
                     placeholder="Beskriv opgaven"
@@ -71,15 +75,19 @@
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
                   />
+                  <textarea class="mobile-work-description" rows="2" aria-label="Arbejdsbeskrivelse" placeholder="Beskriv opgaven"
+                    [value]="item.description || ''"
+                    (input)="editField('work', item.id, 'description', $event, false)"
+                    (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
                   }}</span>
                   <span class="draft-description-preview" aria-hidden="true">{{
                     item.description || ''
                   }}</span>
-                </label>
-                <label
-                  ><span class="field-caption">Timer</span
+                </div>
+                <label class="draft-hours"
+                  ><app-workspace-icon class="mobile-detail-icon" name="clock" /><span class="field-caption">Timer</span
                   ><input
                     type="number"
                     class="draft-hours-input"
@@ -89,7 +97,7 @@
                     [value]="item.estimated_hours ?? ''"
                     (input)="editField('work', item.id, 'hours', $event, false)"
                     (blur)="editField('work', item.id, 'hours', $event, true)"
-                  /><span class="draft-save-status" role="status">{{
+                  /><span class="mobile-price" aria-hidden="true">t</span><span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'hours')
                   }}</span></label
                 >
@@ -102,8 +110,10 @@
                   }}</span
                 >
                 <strong class="draft-line-total"
-                  ><span class="field-caption">Beløb</span
-                  >{{ getWorkItemPrice(item) | number: '1.0-0' }} kr.</strong
+                  ><span class="field-caption">Beløb</span>
+                  <app-workspace-icon class="mobile-detail-icon" name="coins" />
+                  <span class="desktop-price">{{ getWorkItemPrice(item) | number: '1.0-0' }} kr.</span>
+                  <span class="mobile-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
               <app-line-review
@@ -123,7 +133,13 @@
         </p>
       }
       <div class="column-total">
-        <span>Godkendt arbejde</span><strong>{{ laborTotal | number: '1.0-2' }} kr.</strong>
+        <span><app-workspace-icon class="mobile-detail-icon" name="calculator" />Godkendt arbejde</span>
+        <strong class="desktop-price">{{ laborTotal | number: '1.0-2' }} kr.</strong>
+        <strong class="mobile-price">{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
+      </div>
+      <div class="draft-add-line">
+        <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('work')"><span aria-hidden="true">+</span> Tilføj opgave</button>
+        @if (!canAddLine()) { <small>Kræver abonnement</small> }
       </div>
     </section>
 
@@ -172,6 +188,7 @@
                     textSaveLabel('material', material.id, 'name')
                   }}</span></label
                 >
+                <div class="material-quantity">
                 <label
                   ><span class="field-caption">Antal</span
                   ><input
@@ -198,7 +215,8 @@
                     textSaveLabel('material', material.id, 'unit')
                   }}</span></label
                 >
-                <label
+                </div>
+                <label class="material-unit-price"
                   ><span class="field-caption">Kr./enhed</span
                   ><input
                     type="number"
@@ -213,8 +231,10 @@
                   }}</span></label
                 >
                 <strong class="draft-line-total"
-                  ><span class="field-caption">Beløb</span
-                  >{{ getMaterialPrice(material) | number: '1.0-0' }} kr.</strong
+                  ><span class="field-caption">Beløb</span>
+                  <app-workspace-icon class="mobile-detail-icon" name="coins" />
+                  <span class="desktop-price">{{ getMaterialPrice(material) | number: '1.0-0' }} kr.</span>
+                  <span class="mobile-price">{{ getMaterialPrice(material) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
               <app-line-review
@@ -234,7 +254,13 @@
         </p>
       }
       <div class="column-total">
-        <span>Godkendte materialer</span><strong>{{ materialsTotal | number: '1.0-2' }} kr.</strong>
+        <span><app-workspace-icon class="mobile-detail-icon" name="calculator" />Godkendte materialer</span>
+        <strong class="desktop-price">{{ materialsTotal | number: '1.0-2' }} kr.</strong>
+        <strong class="mobile-price">{{ materialsTotal | number: '1.0-2' : 'da' }} kr.</strong>
+      </div>
+      <div class="draft-add-line">
+        <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('material')"><span aria-hidden="true">+</span> Tilføj materiale</button>
+        @if (!canAddLine()) { <small>Kræver abonnement</small> }
       </div>
     </section>
   </div>

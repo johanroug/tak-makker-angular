@@ -257,3 +257,10 @@ app-ai-feedback {
     font-size: 16px;
   }
 }
+@media (max-width: 900px) {
+  :host { display: contents; }
+  .conversation-rail:not(.mobile-chat-active),
+  .conversation-heading { display: none; }
+  .mobile-chat-active .conversation-body { display: flex; }
+  .chat-form textarea { font-size: 16px; }
+}

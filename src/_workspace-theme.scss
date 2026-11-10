@@ -1150,3 +1150,269 @@ app-project-sidebar .chat-form app-speech-input .speech-composer.is-busy textare
 app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy textarea {
   padding-right: 114px !important;
 }
+
+
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+  .draft-task-description { position: relative; min-width: 0; }
+  .mobile-work-description,
+  .mobile-detail-icon,
+  .mobile-price { display: none; }
+  .material-quantity { display: contents; }
+
+  .draft-add-line {
+    display: grid;
+    justify-items: start;
+    gap: 5px;
+    margin-top: 12px;
+    button {
+      min-height: 44px;
+      padding-inline: 16px;
+      border: 0;
+      border-radius: 999px;
+      background: #12372a;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      > span {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        margin-inline-end: 4px;
+        border-radius: 50%;
+        background: #fff;
+        color: #12372a;
+      }
+      &:disabled { opacity: .55; cursor: not-allowed; }
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .project-workspace { background: #f6f1e7; }
+  .project-workspace .project-layout[data-mobile-section='chat'] .offer-preview.compact-draft.board-draft,
+  .project-workspace .project-layout[data-mobile-section='tasks'] .board-draft .draft-section.materials-column,
+  .project-workspace .project-layout[data-mobile-section='materials'] .board-draft .draft-section.tasks-column,
+  .project-workspace .project-layout[data-mobile-section='offer'] .offer-preview.compact-draft.board-draft .draft-columns,
+  .project-workspace .project-layout:is([data-mobile-section='tasks'], [data-mobile-section='materials'])
+    .offer-preview.compact-draft.board-draft :is(.draft-terms, .draft-price-details, .offer-footer, .draft-pending-note) {
+    display: none;
+  }
+
+  .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
+    gap: 10px;
+    .draft-columns { grid-template-columns: minmax(0, 1fr); }
+    .draft-section {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .draft-column-headings,
+    .draft-section-heading,
+    .draft-task-description > .desktop-work-description,
+    .draft-fields.work-columns .draft-rate,
+    .draft-fields.work-columns .field-caption,
+    .desktop-price { display: none; }
+    .mobile-price { display: inline; }
+    .mobile-detail-icon { display: inline-flex; width: 16px; height: 16px; }
+    .draft-readiness {
+      padding: 0;
+      font-size: 14px;
+      font-weight: 650;
+      summary {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        list-style: none;
+        &::-webkit-details-marker { display: none; }
+      }
+      &:not(.is-ready) { color: #a33d0b; }
+      &[open] .readiness-chevron { transform: rotate(90deg); }
+      ul { margin: 0 10px 10px; }
+    }
+    :is(.draft-trade-group, .draft-material-group):first-of-type { margin-top: 0; }
+    .draft-trade-heading { padding: 8px 10px; }
+    .tasks-column .draft-trade-heading h4 { display: flex; align-items: center; gap: 7px; }
+    .draft-section .draft-row {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 4px 8px;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #e0e5dc;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 1px 3px #12372a0a;
+    }
+    .tasks-column .draft-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+    .draft-fields.work-columns {
+      display: contents;
+      > .draft-name { grid-area: 2 / 1 / auto / -1; }
+      .draft-hours {
+        grid-area: 3 / 1;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding-inline: 7px;
+        isolation: isolate;
+        &::before {
+          content: '';
+          position: absolute;
+          z-index: -1;
+          inset: 8px 0;
+          border-radius: 8px;
+          background: #f6f1e7;
+        }
+        > .mobile-price { font-size: 13px; color: #4d6255; }
+      }
+      .draft-hours > .draft-hours-input { width: 48px; text-align: center; padding-inline: 2px; }
+      .draft-line-total { grid-area: 3 / 2; }
+    }
+    .draft-fields .draft-line-total {
+      display: flex;
+      align-items: center;
+      justify-self: start;
+      gap: 5px;
+      min-width: 0;
+      min-height: 32px;
+      padding: 3px 7px;
+      border-radius: 8px;
+      background: #f6f1e7;
+      text-align: left;
+      font-size: 14px;
+    }
+    .draft-task-description > .mobile-work-description,
+    .draft-task-description > .draft-description-preview {
+      width: 100%;
+      min-height: 48px;
+      box-sizing: border-box;
+      padding: 5px 2px;
+      border: 1px solid transparent;
+      color: #12372a;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.45;
+    }
+    .draft-task-description > .mobile-work-description {
+      display: block;
+      field-sizing: content;
+      background: transparent;
+      resize: none;
+      &:focus { border-color: #aabaae; }
+    }
+    .draft-task-description > .draft-description-preview {
+      position: static;
+      max-width: none;
+      visibility: hidden;
+      white-space: pre-wrap;
+    }
+    @supports (field-sizing: content) {
+      .draft-task-description > .draft-description-preview,
+      .draft-task-description:is(:hover, :focus-within) > .draft-description-preview { display: none; }
+    }
+    @supports not (field-sizing: content) {
+      .draft-task-description > .mobile-work-description { position: absolute; inset: 0; height: 100%; }
+      .draft-task-description > .draft-description-preview { display: block; }
+    }
+    .draft-section .draft-fields input:not([type='checkbox']) { height: 48px; font-size: 16px; }
+
+    .draft-section app-line-review {
+      &,
+      .line-review { display: contents; }
+      .review-state {
+        grid-area: 1 / 1 / auto / -1;
+        justify-self: start;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #edf0ec;
+        color: #435449;
+        font-size: 12px;
+      }
+      .review-state.accepted { background: #e3efde; color: #245831; font-weight: 650; }
+      .review-state.rejected { background: #f5e9e6; color: #843b31; }
+      .review-state:has(.mobile-review-label) .desktop-review-label { display: none; }
+      .mobile-review-label { display: inline; }
+      .review-actions { grid-area: 3 / 3; justify-content: flex-end; gap: 6px; }
+      .review-actions button { min-width: 48px; min-height: 48px; padding: 4px 9px; }
+      .review-actions .reject {
+        position: relative;
+        border-color: transparent;
+        background: transparent;
+        padding-inline: 12px;
+        font-weight: 650;
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 7px 0;
+          border: 1px solid #ce8b7c;
+          border-radius: 7px;
+          pointer-events: none;
+        }
+      }
+      .review-help { grid-column: 1 / -1; }
+    }
+    .tasks-column .draft-row:has(.approve) .review-actions { grid-area: 4 / 1 / auto / -1; }
+
+    .materials-column .draft-row { grid-template-columns: minmax(0, 1fr) auto; }
+    .draft-fields.material-columns {
+      display: contents;
+      > .draft-name { grid-area: 2 / 1 / auto / -1; }
+      .field-caption { display: none; }
+      .material-quantity {
+        grid-area: 3 / 1;
+        position: relative;
+        isolation: isolate;
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr);
+        width: min(100%, 148px);
+        min-width: 0;
+        padding-inline: 4px;
+        &::before {
+          content: '';
+          position: absolute;
+          z-index: -1;
+          inset: 7px 0;
+          border-radius: 8px;
+          background: #f6f1e7;
+        }
+        input[type='number'] { text-align: center; padding-inline: 3px; }
+      }
+      .material-unit-price {
+        grid-area: 3 / 2;
+        display: flex;
+        align-items: center;
+        > input { width: 66px; padding-inline: 4px; }
+        > .field-caption { display: inline; order: 1; margin: 0; font-size: 12px; }
+      }
+      .draft-line-total { grid-area: 4 / 1; }
+    }
+    .materials-column .draft-row .review-actions { grid-area: 4 / 2; justify-self: end; }
+    .column-total {
+      margin: 12px 0;
+      padding: 12px;
+      gap: 8px;
+      border: 0;
+      border-radius: 10px;
+      background: #e3ecdf;
+      > span { display: flex; align-items: center; gap: 7px; }
+      > strong { font-size: 17px; text-align: right; }
+    }
+    .draft-add-line {
+      justify-items: stretch;
+      margin-top: 0;
+      text-align: center;
+      button { min-height: 48px; }
+    }
+    .draft-readiness summary,
+    .draft-details summary,
+    .offer-footer button { min-height: 48px; }
+    .draft-readiness summary,
+    .draft-details summary { align-content: center; }
+    .offer-footer { position: static; }
+    .finalize-actions { grid-template-columns: minmax(0, 1fr); }
+  }
+}

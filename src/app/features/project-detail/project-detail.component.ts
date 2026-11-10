@@ -1,6 +1,6 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { ProjectTools } from '../../shared/components/project-tools/project-tools.component';
-import { Component, inject, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -13,6 +13,7 @@ import { AiFeedback } from '../../shared/components/ai-feedback/ai-feedback.comp
 import { shouldShowSuggestionNotice } from '../../shared/components/ai-feedback/suggestion-notice';
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
+type WorkspaceSection = 'chat' | 'tasks' | 'materials' | 'offer';
 
 @Component({
   selector: 'app-project-detail',
@@ -38,9 +39,33 @@ export class ProjectDetail implements OnInit, OnDestroy {
 
   protected readonly sidebar = viewChild(ProjectSidebar);
   private readonly preview = viewChild(OfferPreview);
+  private readonly injector = inject(Injector);
+  readonly mobileSection = signal<WorkspaceSection>('tasks');
+  readonly mobileSections = [
+    { id: 'chat', label: 'Samtale', title: 'Samtale', icon: 'chat' },
+    { id: 'tasks', label: 'Opgaver', title: 'Arbejdsopgaver', icon: 'wrench' },
+    { id: 'materials', label: 'Materialer', title: 'Materialer', icon: 'materials' },
+    { id: 'offer', label: 'Tilbud', title: 'Tilbud', icon: 'offers' },
+  ] as const;
+  readonly mobileTitle = computed(() => this.mobileSections.find(section => section.id === this.mobileSection())?.title);
+  countApprovedLines(items: ProjectData['workItems'] | ProjectData['materials']): number {
+    return items.filter(item => item.status === 'accepted').length;
+  }
+
+  selectMobileSection(section: WorkspaceSection): void {
+    if (this.mobileSection() === section) return;
+    this.mobileSection.set(section);
+    window.scrollTo({ top: 0 });
+  }
+
+  openSuggestion(tab: 'tasks' | 'materials' | 'chat'): void {
+    if (tab === 'chat') this.mobileSection.set(tab);
+    this.sidebar()?.openAiTarget(tab);
+  }
 
   reviewItems(tab: 'tasks' | 'materials'): void {
-    this.preview()?.revealSection(tab);
+    this.mobileSection.set(tab);
+    afterNextRender(() => this.preview()?.revealSection(tab), { injector: this.injector });
   }
   editProjectDetails(): void {
     this.preview()?.startEditing();
@@ -75,6 +100,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.routeSubscription = this.route.paramMap.subscribe((params) => {
       const projectId = params.get('projectId') ?? '';
+      this.mobileSection.set('tasks');
 
       this.isEditingTitle.set(false);
       this.titleError.set('');

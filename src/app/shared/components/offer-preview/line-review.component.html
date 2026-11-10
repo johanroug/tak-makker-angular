@@ -7,7 +7,7 @@
     @if (status() === 'accepted') {
       <span aria-hidden="true">✓</span>
     }
-    {{
+    <span class="desktop-review-label">{{
       status() === 'accepted'
         ? 'Godkendt'
         : status() === 'rejected'
@@ -15,8 +15,9 @@
           : isNew()
             ? 'Nyt forslag'
             : 'Afventer godkendelse'
-    }}</span
-  >
+    }}</span>
+    @if (status() === 'suggested') { <span class="mobile-review-label">Foreslået</span> }
+  </span>
   <div class="review-actions">
     @if (status() !== 'accepted') {
       <button

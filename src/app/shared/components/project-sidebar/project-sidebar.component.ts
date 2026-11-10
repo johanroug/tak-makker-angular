@@ -44,6 +44,7 @@ export class ProjectSidebar implements OnDestroy {
   readonly messageAdded = output<void>();
   readonly sectionRequested = output<'tasks' | 'materials'>();
   readonly chatOpen = signal(false);
+  readonly mobileChatActive = input(false);
   private readonly historyDialog = viewChild.required<ElementRef<HTMLDialogElement>>('historyDialog');
   private readonly chatMessages = viewChild<ElementRef<HTMLElement>>('chatMessages');
   private readonly latestMessageId = computed(() => this.data().messages.at(-1)?.id);
@@ -304,6 +305,7 @@ export class ProjectSidebar implements OnDestroy {
     effect(() => {
       this.latestMessageId();
       this.chatOpen();
+      this.mobileChatActive();
       afterNextRender(() => {
         const messages = this.chatMessages()?.nativeElement;
         if (messages) messages.scrollTop = messages.scrollHeight;

@@ -1,6 +1,8 @@
 <details #toolsMenu class="tools-menu">
-  <summary><app-workspace-icon name="tasks" /> Handlinger <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></summary>
+  <summary aria-label="Projekthandlinger"><span class="desktop-tools-label"><app-workspace-icon name="tasks" /> Handlinger <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg></span><span class="mobile-tools-label" aria-hidden="true">⋯</span></summary>
   <div class="tool-actions" aria-label="Manuelle opgaver og skabeloner">
+    <button class="mobile-tool-action" type="button" aria-haspopup="dialog" (click)="closeMenu(); detailsRequested.emit()">Projektoplysninger</button>
+    <button class="mobile-tool-action" type="button" aria-haspopup="dialog" (click)="closeMenu(); historyRequested.emit()">Tilbudshistorik</button>
     @if (!billing.subscriberAccess(data().project.company_id)) { <p>Kræver abonnement</p> }
     <button type="button" [disabled]="busy() || disabled() || !billing.subscriberAccess(data().project.company_id)" (click)="open('work')"><app-workspace-icon name="tasks" />Tilføj opgave</button>
     <button type="button" [disabled]="busy() || disabled() || !billing.subscriberAccess(data().project.company_id)" (click)="open('material')"><app-workspace-icon name="materials" />Tilføj materiale</button>

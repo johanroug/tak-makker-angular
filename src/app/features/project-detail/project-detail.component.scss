@@ -21,6 +21,9 @@
 .project-main {
   min-width: 0;
 }
+.mobile-heading,
+.mobile-progress,
+.mobile-workspace-nav { display: none; }
 .workspace-heading {
   display: flex;
   align-items: center;
@@ -133,4 +136,60 @@
 @media (max-width: 600px) {
   .heading-actions { width: 100%; }
   .heading-actions .history-button { width: auto; flex: 1; }
+}
+@media (max-width: 900px) {
+  .project-shell { padding: 12px 14px calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .project-layout { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .project-main { grid-row: 1; }
+  .workspace-heading { flex-wrap: nowrap; align-items: center; margin-bottom: 12px; }
+  .workspace-heading > div:first-child { min-width: 0; }
+  .workspace-heading .heading-actions { width: auto; flex: none; }
+  .heading-actions > :is(.project-details-button, .history-button),
+  .workspace-heading .desktop-heading { display: none; }
+  .workspace-heading .mobile-heading { display: block; }
+  .workspace-heading .heading-actions { gap: 5px; }
+  .mobile-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: #e3ecdf;
+    color: #12372a;
+    font-size: 13px;
+    white-space: nowrap;
+    app-workspace-icon { width: 16px; height: 16px; }
+  }
+  .project-layout[data-mobile-section='tasks'] .mobile-heading { font-size: clamp(19px, 5.7vw, 28px); }
+  .mobile-workspace-nav {
+    position: fixed;
+    z-index: 20;
+    inset: auto 0 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid #e0e5dc;
+    background: #fffdf8;
+    button {
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 4px;
+      min-height: 56px;
+      padding: 4px 0;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #12372a;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button[aria-pressed='true'] { background: #12372a; color: #fff; }
+  }
+  .project-layout[data-mobile-section='chat']:has(app-project-sidebar textarea:focus) + .mobile-workspace-nav {
+    visibility: hidden;
+  }
 }

@@ -10,7 +10,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, registerLocaleData } from '@angular/common';
+import localeDa from '@angular/common/locales/da';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -20,6 +21,9 @@ import { OfferPdfService } from '../../../core/offers/offer-pdf.service';
 import { offerRequirements, OfferRequirement, validAmount } from '../../../core/offers/offer-readiness';
 import { LineReview } from './line-review.component';
 import { materialCategory } from './material-category';
+import { WorkspaceIcon } from '../workspace-icon.component';
+
+registerLocaleData(localeDa);
 
 type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
@@ -37,7 +41,7 @@ type EditableDetails = {
 
 @Component({
   selector: 'app-offer-preview',
-  imports: [ReactiveFormsModule, DecimalPipe, LineReview],
+  imports: [ReactiveFormsModule, DecimalPipe, LineReview, WorkspaceIcon],
   templateUrl: './offer-preview.component.html',
   styleUrl: './offer-preview.component.scss',
 })
@@ -52,6 +56,9 @@ export class OfferPreview {
   readonly pdfError = signal('');
 
   readonly data = input.required<ProjectData>();
+  readonly canAddLine = input(false);
+  readonly addLineBusy = input(false);
+  readonly addLine = output<'work' | 'material'>();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly readinessSlot = viewChild<ElementRef<HTMLElement>>('readinessSlot');
   private preservedReadinessHeight = 0;

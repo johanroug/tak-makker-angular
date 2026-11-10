@@ -30,6 +30,8 @@ export class ProjectTools {
   readonly data = input.required<ProjectData>();
   readonly disabled = input(false);
   readonly changed = output<void>();
+  readonly detailsRequested = output<void>();
+  readonly historyRequested = output<void>();
   private readonly projects = inject(ProjectService);
   private readonly service = inject(TaskTemplateService);
   readonly mode = signal<'work' | 'material' | 'save' | 'apply' | null>(null);

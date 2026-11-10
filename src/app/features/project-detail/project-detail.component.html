@@ -5,7 +5,7 @@
       <app-ai-feedback
         [notice]="true"
         [result]="result"
-        (openTab)="sidebar()?.openAiTarget($event)"
+        (openTab)="openSuggestion($event)"
         (dismiss)="dismissSuggestionNotice()"
       />
     </div>
@@ -26,26 +26,38 @@
       <p role="alert">{{ errorMessage() }}</p>
       <button type="button" (click)="retryProject()">Prøv igen</button>
     } @else if (project(); as data) {
-      <main class="project-layout" animate.enter="page-reveal">
+      <main class="project-layout" [attr.data-mobile-section]="mobileSection()" animate.enter="page-reveal">
         <app-project-sidebar
           #projectSidebar
           [data]="data"
+          [mobileChatActive]="mobileSection() === 'chat'"
           (messageAdded)="refreshProject()"
           (aiCompleted)="onAiCompleted($event)"
           (sectionRequested)="reviewItems($event)"
         />
         <div class="project-main">
+          @let previewData = projectSidebar.getPreviewData(data);
           <header class="workspace-heading">
             <div>
               <p>Dit arbejdsrum · {{ data.project.project_number }}</p>
-              <h1>{{ data.project.title || 'Projekt uden titel' }}</h1>
+              <h1 class="desktop-heading">{{ data.project.title || 'Projekt uden titel' }}</h1>
+              <h1 class="mobile-heading">{{ mobileTitle() }}</h1>
             </div>
             <div class="heading-actions">
+            @if (mobileSection() === 'tasks' || mobileSection() === 'materials') {
+              @let lines = mobileSection() === 'tasks' ? previewData.workItems : previewData.materials;
+              @let approvedCount = countApprovedLines(lines);
+              <span class="mobile-progress" [attr.aria-label]="approvedCount + ' af ' + lines.length + ' godkendt'">
+                <app-workspace-icon name="checkCircle" />{{ approvedCount }} af {{ lines.length }}
+              </span>
+            }
             <button type="button" class="project-details-button" aria-haspopup="dialog" (click)="editProjectDetails()">
               <app-workspace-icon name="offers" /><span>Projektoplysninger</span>
             </button>
-            <app-project-tools [data]="data"
+            <app-project-tools #projectTools [data]="data"
               [disabled]="projectSidebar.hasPendingChanges(data) || projectSidebar.pendingSaves() > 0 || isRefreshing()"
+              (detailsRequested)="editProjectDetails()"
+              (historyRequested)="projectSidebar.openHistory()"
               (changed)="refreshProject()" />
             <button type="button" class="history-button" aria-haspopup="dialog" (click)="projectSidebar.openHistory()">
               <app-workspace-icon name="offers" />
@@ -57,7 +69,10 @@
             <p class="workspace-error" role="alert">{{ projectSidebar.editError() }}</p>
           }
           <app-offer-preview
-            [data]="projectSidebar.getPreviewData(data)"
+            [data]="previewData"
+            [canAddLine]="projectTools.billing.subscriberAccess(data.project.company_id)"
+            [addLineBusy]="projectTools.busy() || projectTools.disabled()"
+            (addLine)="projectTools.open($event)"
             [textSaveStates]="projectSidebar.fieldSaveStates()"
             (textEdited)="projectSidebar.editDraftText($event)"
             [newWorkItemIds]="projectSidebar.newWorkItemIds()"
@@ -80,6 +95,13 @@
           />
         </div>
       </main>
+      <nav class="mobile-workspace-nav" aria-label="Arbejdsrum">
+        @for (section of mobileSections; track section.id) {
+          <button type="button" [attr.aria-pressed]="mobileSection() === section.id" (click)="selectMobileSection(section.id)">
+            <app-workspace-icon [name]="section.icon" />{{ section.label }}
+          </button>
+        }
+      </nav>
     } @else {
       <main class="empty-workspace" animate.enter="page-reveal">
         <h1>Velkommen til Hovedet på sømmet</h1>

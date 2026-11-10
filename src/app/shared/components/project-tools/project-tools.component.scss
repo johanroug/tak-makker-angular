@@ -37,3 +37,13 @@ input:not([type=checkbox]), textarea, select { min-width: 0; width: 100%; paddin
 
 .tool-actions button:disabled { opacity: 1; color: #929b91; cursor: not-allowed; }
 .tool-actions > p { margin: 4px 14px; color: #7b6846; font-size: 12px; font-weight: 600; }
+.desktop-tools-label { display: inline-flex; align-items: center; gap: 8px; }
+.mobile-tools-label,
+.tool-actions .mobile-tool-action { display: none; }
+@media (max-width: 900px) {
+  .desktop-tools-label { display: none; }
+  .mobile-tools-label { display: inline; font-size: 22px; }
+  .tools-menu summary { min-width: 48px; min-height: 48px; justify-content: center; padding: 4px; }
+  .tool-actions .mobile-tool-action { display: flex; }
+  .tool-actions button { min-height: 48px; }
+}

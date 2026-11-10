@@ -190,7 +190,7 @@
     button[aria-pressed='true'] { background: #12372a; color: #fff; }
   }
   .project-workspace:has(:is(input, textarea):focus) .mobile-workspace-nav {
-    visibility: hidden;
+    bottom: var(--keyboard-offset, 0px);
   }
   .project-workspace:has(:is(input, textarea):focus) .project-shell {
     padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px) + var(--keyboard-inset, 0px));

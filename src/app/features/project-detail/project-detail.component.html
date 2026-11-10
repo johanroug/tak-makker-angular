@@ -97,7 +97,7 @@
       </main>
       <nav class="mobile-workspace-nav" aria-label="Arbejdsrum">
         @for (section of mobileSections; track section.id) {
-          <button type="button" [attr.aria-pressed]="mobileSection() === section.id" (click)="selectMobileSection(section.id)">
+          <button type="button" [attr.aria-pressed]="mobileSection() === section.id" (pointerdown)="$event.preventDefault()" (click)="selectMobileSection(section.id)">
             <app-workspace-icon [name]="section.icon" />{{ section.label }}
           </button>
         }

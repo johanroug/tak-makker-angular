@@ -29,7 +29,7 @@
     <div class="dialog-fixed">
     <div class="dialog-header">
       <span id="new-project-title" class="eyebrow">ET NYT PROJEKT STARTER HER</span>
-      <button type="button" class="close-button" aria-label="Luk" (click)="close()">×</button>
+      <button type="button" class="close-button" aria-label="Luk" autofocus (click)="close()">×</button>
     </div>
     <fieldset class="creation-modes" aria-label="Projektets start" [disabled]="!!projectId()">
       <label class="mode-choice mode-describe" [class.is-selected]="mode() === 'ai'"><input type="radio" name="creation-mode" [checked]="mode() === 'ai'" (change)="mode.set('ai')" /><span class="mode-symbol"><app-workspace-icon name="chat" /></span><span>Beskriv opgaven</span><span class="selection-mark" aria-hidden="true">✓</span></label>
@@ -49,7 +49,6 @@
           [formControl]="prompt"
           [readOnly]="hasSavedMessage()"
           rows="6"
-          autofocus
           placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
         ></textarea></app-speech-input>
         <p class="hint">

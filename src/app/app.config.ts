@@ -28,7 +28,7 @@ export const appConfig: ApplicationConfig = {
       withNavigationErrorHandler(() => {
         if (typeof window !== 'undefined') window.dispatchEvent(new Event('app-load-failed'));
       }),
-      withInMemoryScrolling({ anchorScrolling: 'enabled' }),
+      withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'top' }),
       withViewTransitions({
         skipInitialTransition: true,
         onViewTransitionCreated: ({ transition }) => {

@@ -57,15 +57,42 @@ export class ProjectDetail implements OnInit, OnDestroy {
       if (!viewport) return;
 
       const mobileLayout = window.matchMedia('(max-width: 900px)');
+      let viewportWidth = viewport.width;
+      let fullViewportHeight = viewport.height;
+      let keyboardWasOpen = false;
       let frame = 0;
       const revealField = () => {
         frame = 0;
-        const field = document.activeElement;
-        if (!mobileLayout.matches || !(field instanceof HTMLElement) || !host.contains(field) ||
-          !field.matches('input:not([readonly]), textarea:not([readonly])')) return;
+        if (viewport.scale !== 1) return;
+
+        if (Math.abs(viewport.width - viewportWidth) > 1) {
+          viewportWidth = viewport.width;
+          fullViewportHeight = viewport.height;
+          keyboardWasOpen = false;
+        }
 
         const keyboardInset = Math.max(0, window.innerHeight - viewport.height);
+        // Some browsers shrink the layout viewport too, so compare with the height before typing.
+        fullViewportHeight = Math.max(fullViewportHeight, viewport.height);
+        const keyboardHeight = Math.max(keyboardInset, fullViewportHeight - viewport.height);
+        const keyboardClosed = keyboardWasOpen && keyboardHeight <= 80;
+        if (keyboardClosed) keyboardWasOpen = false;
+
+        const field = document.activeElement;
+        if (!mobileLayout.matches || !(field instanceof HTMLElement) || !host.contains(field) ||
+          !field.matches('input:not([readonly]), textarea:not([readonly])')) {
+          if (!keyboardWasOpen) fullViewportHeight = viewport.height;
+          return;
+        }
+
         host.style.setProperty('--keyboard-inset', `${keyboardInset}px`);
+        if (keyboardHeight >= 120) keyboardWasOpen = true;
+        if (keyboardClosed) {
+          fullViewportHeight = viewport.height;
+          field.blur();
+          return;
+        }
+
         const bounds = field.getBoundingClientRect();
         const visibleBottom = viewport.offsetTop + viewport.height - 16;
         const coveredHeight = Math.min(bounds.bottom - visibleBottom, bounds.top - viewport.offsetTop - 16);

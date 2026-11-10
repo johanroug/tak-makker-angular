@@ -1,6 +1,6 @@
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { ProjectTools } from '../../shared/components/project-tools/project-tools.component';
-import { afterNextRender, Component, computed, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -48,6 +48,49 @@ export class ProjectDetail implements OnInit, OnDestroy {
     { id: 'offer', label: 'Tilbud', title: 'Tilbud', icon: 'offers' },
   ] as const;
   readonly mobileTitle = computed(() => this.mobileSections.find(section => section.id === this.mobileSection())?.title);
+
+  constructor() {
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      const viewport = window.visualViewport;
+      if (!viewport) return;
+
+      const mobileLayout = window.matchMedia('(max-width: 900px)');
+      let frame = 0;
+      const revealField = () => {
+        frame = 0;
+        const field = document.activeElement;
+        if (!mobileLayout.matches || !(field instanceof HTMLElement) || !host.contains(field) ||
+          !field.matches('input:not([readonly]), textarea:not([readonly])')) return;
+
+        const keyboardInset = Math.max(0, window.innerHeight - viewport.height);
+        host.style.setProperty('--keyboard-inset', `${keyboardInset}px`);
+        const bounds = field.getBoundingClientRect();
+        const visibleBottom = viewport.offsetTop + viewport.height - 16;
+        const coveredHeight = Math.min(bounds.bottom - visibleBottom, bounds.top - viewport.offsetTop - 16);
+        if (coveredHeight <= 0) return;
+
+        if (field.closest('dialog[open]')) {
+          field.scrollIntoView({ block: 'center', behavior: 'instant' });
+        } else {
+          window.scrollBy({ top: coveredHeight, behavior: 'instant' });
+        }
+      };
+      const scheduleReveal = () => {
+        if (!frame) frame = requestAnimationFrame(revealField);
+      };
+
+      host.addEventListener('focusin', scheduleReveal);
+      viewport.addEventListener('resize', scheduleReveal);
+      destroyRef.onDestroy(() => {
+        cancelAnimationFrame(frame);
+        host.removeEventListener('focusin', scheduleReveal);
+        viewport.removeEventListener('resize', scheduleReveal);
+      });
+    });
+  }
+
   countApprovedLines(items: ProjectData['workItems'] | ProjectData['materials']): number {
     return items.filter(item => item.status === 'accepted').length;
   }

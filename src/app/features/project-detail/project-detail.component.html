@@ -1,4 +1,5 @@
 <div class="project-workspace">
+  <div class="workspace-accent" aria-hidden="true"></div>
   @if (suggestionNotice; as result) {
     @if (shouldShowSuggestionNotice(result)) {
     <div class="suggestion-notice">
@@ -69,6 +70,8 @@
             <p class="workspace-error" role="alert">{{ projectSidebar.editError() }}</p>
           }
           <app-offer-preview
+            [activeSection]="mobileSection()"
+            (sectionChanged)="mobileSection.set($event)"
             [data]="previewData"
             [canAddLine]="projectTools.billing.subscriberAccess(data.project.company_id)"
             [addLineBusy]="projectTools.busy() || projectTools.disabled()"

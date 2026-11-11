@@ -5,7 +5,7 @@
   <div class="header-shell">
     <header class="app-header">
       <div class="header-identity">
-        <app-public-brand destination="/projects" [tagline]="false" [header]="true" />
+        <app-public-brand destination="/projects" [tagline]="false" [header]="true" [inverse]="true" />
         <p class="header-payoff">Hjernen bag dit næste tilbud.</p>
       </div>
       <div class="header-project-actions">
@@ -85,41 +85,43 @@
 <app-new-project-dialog (projectCreated)="workspace.loadProjects()" />
 
 <ng-template #navigationContent>
+  <span class="navigation-label">Arbejdsområde</span>
   <a
     routerLink="/projects"
     routerLinkActive="nav-active"
+    [routerLinkActiveOptions]="navigationMatchOptions"
     ariaCurrentWhenActive="page"
     (click)="closeMenu()"
-    ><app-workspace-icon name="projects" /> Projekter</a
+    ><app-workspace-icon name="projects" /><span>Projekter</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a
   >
   <a
     routerLink="/company-profile"
     routerLinkActive="nav-active"
+    [routerLinkActiveOptions]="navigationMatchOptions"
     ariaCurrentWhenActive="page"
     (click)="closeMenu()"
-    ><app-workspace-icon name="company" /> Virksomhedsprofil</a
+    ><app-workspace-icon name="company" /><span>Virksomhedsprofil</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a
   >
-  <a routerLink="/company-profile" fragment="subscription" (click)="closeMenu()"><app-workspace-icon name="subscription" /> Abonnement</a>
+  <a routerLink="/company-profile" fragment="subscription" routerLinkActive="nav-active" [routerLinkActiveOptions]="navigationMatchOptions" ariaCurrentWhenActive="page" (click)="closeMenu()"><app-workspace-icon name="subscription" /><span>Abonnement</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a>
   @if (activity.isAdmin()) {
-    <span class="navigation-label">Administration</span>
+    <span class="navigation-label administration-label">Administration</span>
     <a
       routerLink="/users"
       routerLinkActive="nav-active"
+      [routerLinkActiveOptions]="navigationMatchOptions"
       ariaCurrentWhenActive="page"
       (click)="closeMenu()"
-      ><app-workspace-icon name="users" /> Brugere</a
+      ><app-workspace-icon name="users" /><span>Brugere</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a
     >
     <a
       routerLink="/activity"
       routerLinkActive="nav-active"
+      [routerLinkActiveOptions]="navigationMatchOptions"
       ariaCurrentWhenActive="page"
       (click)="closeMenu()"
-      ><app-workspace-icon name="activity" /> Aktivitet</a
+      ><app-workspace-icon name="activity" /><span>Aktivitet</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a
     >
   }
-  <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()">
-    <app-workspace-icon name="logout" /> {{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}
-  </button>
 </ng-template>
 
 <dialog
@@ -128,11 +130,11 @@
   class="menu-drawer"
   aria-labelledby="drawer-title"
   (close)="isMenuOpen.set(false)"
-  (cancel)="closeMenu()"
+  (cancel)="$event.preventDefault(); closeMenu(true)"
   (click)="$event.target === menuDrawer ? closeMenu() : null"
 >
   <div class="drawer-top">
-    <h2 id="drawer-title">Dit arbejdsrum</h2>
+    <div><span class="drawer-brand">Hovedet på Sømmet</span><h2 id="drawer-title">Dit arbejdsrum</h2></div>
     <button
       type="button"
       class="drawer-close"
@@ -143,10 +145,14 @@
       ✕
     </button>
   </div>
-  <button type="button" class="new-project-button" (click)="createProject()">＋ Nyt projekt</button>
-  <nav class="side-navigation" aria-label="Mobilnavigation">
+  <button type="button" class="new-project-button" (click)="createProject()"><span aria-hidden="true">＋</span> Nyt projekt</button>
+  <nav class="side-navigation" aria-label="Arbejdsrummets navigation">
     <ng-container [ngTemplateOutlet]="navigationContent" />
   </nav>
+  <footer class="drawer-footer">
+    <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()"><app-workspace-icon name="logout" />{{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}</button>
+    <div class="drawer-payoff"><strong><app-workspace-icon name="sparkles" />Byg mere. Skriv mindre.</strong><p>Din AI-assistent til bedre tilbud.</p></div>
+  </footer>
   @if (logoutError()) {
     <p role="alert">{{ logoutError() }}</p>
   }

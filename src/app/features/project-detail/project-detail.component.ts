@@ -125,6 +125,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
     window.scrollTo({ top: 0 });
   }
 
+
   openSuggestion(tab: 'tasks' | 'materials' | 'chat'): void {
     if (tab === 'chat') this.mobileSection.set(tab);
     this.sidebar()?.openAiTarget(tab);

@@ -61,7 +61,8 @@ small {
   color: #fffaf0;
 }
 .inverse img {
-  filter: brightness(0) invert(1);
+  background: #fffaf0;
+  border-radius: 50%;
 }
 @media (max-width: 600px) {
   strong {

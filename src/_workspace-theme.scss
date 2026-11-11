@@ -295,7 +295,6 @@ body {
   .draft-fields .draft-name input {
     border-color: transparent;
     font-size: 12px;
-    padding-left: 0;
     font-weight: 600;
   }
   .draft-fields input:hover {
@@ -929,12 +928,11 @@ body {
   .draft-fields .draft-hours-input,
   .draft-fields.material-columns input:not([type='checkbox']) {
     appearance: textfield;
-    border: 1px solid transparent !important;
+    border: 1px solid transparent;
     border-radius: 6px;
-    background: transparent !important;
+    background: transparent;
     padding: 0 6px;
     box-shadow: none;
-    outline: none;
   }
   .draft-fields .draft-hours-input {
     text-align: right;
@@ -1183,6 +1181,8 @@ app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy t
         border-radius: 50%;
         background: #fff;
         color: #12372a;
+        vertical-align: middle;
+        svg { display: block; width: 14px; height: 14px; }
       }
       &:disabled { opacity: .55; cursor: not-allowed; }
     }

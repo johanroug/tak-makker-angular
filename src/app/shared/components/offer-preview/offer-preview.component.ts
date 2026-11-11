@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  effect,
   inject,
   input,
   output,
@@ -146,6 +147,13 @@ export class OfferPreview {
     return this.pendingReviews().has(JSON.stringify([this.data().project.id, kind, id, 'status']));
   }
   readonly requestTab = output<'tasks' | 'materials'>();
+  readonly activeSection = input<'chat' | 'tasks' | 'materials' | 'offer'>('tasks');
+  readonly selectedTab = signal<'tasks' | 'materials'>('tasks');
+  readonly sectionChanged = output<'tasks' | 'materials'>();
+  selectSection(section: 'tasks' | 'materials'): void {
+    this.selectedTab.set(section);
+    this.sectionChanged.emit(section);
+  }
   readonly detailsOpened = output<void>();
   private readonly detailsDialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
@@ -169,6 +177,10 @@ export class OfferPreview {
   private originalDetails: EditableDetails | null = null;
 
   constructor() {
+    effect(() => {
+      const section = this.activeSection();
+      if (section === 'tasks' || section === 'materials') this.selectedTab.set(section);
+    });
     afterNextRender(() => {
       const slot = this.readinessSlot()?.nativeElement;
       if (slot) {

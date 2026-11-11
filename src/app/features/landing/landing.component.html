@@ -4,39 +4,70 @@
   <main id="indhold">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">Mindre skrivearbejde. Mere håndværk.</p>
+        <p class="eyebrow">Til håndværkere</p>
         <h1 id="hero-title">Byg mere.<br /><em>Skriv mindre.</em></h1>
         <p class="intro">
-          Fra dine ord til et gennemarbejdet tilbud.<br />Med din faglighed ved roret.
+          Fra dine ord til et gennemarbejdet tilbud.<br />Arbejdsopgaver, materialer og priser – samlet på få minutter med din AI-assistent.
         </p>
         <div class="hero-actions">
           <a class="marketing-button" routerLink="/register"
-            >Prøv gratis <span aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></span></a
+            >Prøv gratis i dag <span aria-hidden="true">→</span></a
           ><button class="demo-link" type="button" (click)="demoDialog.showModal()">
             <span class="play" aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z" /></svg></span> Se hvordan det virker
           </button>
         </div>
         <p class="access-note">10 gratis forespørgsler. Intet betalingskort kræves.</p>
+        <ul class="hero-benefits"><li>Spar tid</li><li>Få bedre tilbud</li><li>Nem at bruge</li></ul>
       </div>
       <div class="hero-visual">
-        <img
-          class="craft-photo"
-          src="/marketing/craft-still-life.jpg"
-          alt=""
-          width="1536"
-          height="1024"
-          fetchpriority="high"
-        />
-        <div class="hero-glow" aria-hidden="true"></div>
-        <div class="hero-blueprint" aria-hidden="true"></div>
-        <div class="hero-product"><img class="hero-product-screenshot" src="/marketing/trin-2-tilpas-tilbuddet.png" alt="Hovedet på Sømmet med samtale, arbejdsopgaver, materialer og samlet tilbudspris." width="1823" height="905" /></div>
+        <app-marketing-phone class="hero-phone" />
         <span class="example-note">Illustrativt eksempel · Du har sidste ord.</span>
       </div>
     </section>
     <section class="value-strip" aria-label="Du bestemmer">
-      <p><span aria-hidden="true">▤</span> Dine priser</p>
-      <p><span aria-hidden="true">✓</span> Din godkendelse</p>
-      <p><span aria-hidden="true">♙</span> Dit navn på tilbuddet</p>
+      <p><app-workspace-icon name="chat" /> Beskriv projektet<br />med dine egne ord</p>
+      <p><app-workspace-icon name="layers" /> Få forslag til<br />opgaver og materialer</p>
+      <p><app-workspace-icon name="offers" /> Beregn pris og<br />lav et professionelt tilbud</p>
+      <p><app-workspace-icon name="bolt" /> Hurtigt, enkelt<br />og professionelt</p>
+    </section>
+    <section class="walkthrough" id="saadan" aria-labelledby="walkthrough-title">
+      <div>
+        <h2 id="walkthrough-title">Sådan virker det</h2>
+        <p class="walkthrough-intro">Fra idé til færdigt tilbud på tre enkle trin.</p>
+        <div class="steps">
+          @for (item of steps; track item.title; let i = $index) {
+            <button type="button" (click)="step.set(i); demoDialog.showModal()">
+              <app-workspace-icon class="step-icon" [name]="i === 0 ? 'chat' : i === 1 ? 'layers' : 'offers'" />
+              <span class="step-number">0{{ i + 1 }}<i aria-hidden="true"></i></span
+              ><strong>{{ item.title }}</strong
+              ><span>{{ item.text }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+    <section class="testing-banner" aria-labelledby="testers-title">
+      <img
+        class="testing-photo"
+        src="/marketing/craft-still-life.jpg"
+        alt=""
+        width="1536"
+        height="1024"
+        loading="lazy"
+      />
+      <div class="proof-copy">
+      <h2 id="testers-title">Et værktøj skabt til<br />hverdagen i byggebranchen</h2>
+      <ul class="proof-benefits"><li>Til VVS, tømrer, murer, elektriker og flere</li><li>Virker på mobil, tablet og computer</li><li>Professionelt og overskueligt resultat</li></ul>
+      <a class="marketing-button orange" routerLink="/register"
+        >Prøv gratis <span aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></span></a
+      >
+      <p>Prøv 10 gratis forespørgsler. Intet betalingskort kræves.</p>
+      </div>
+      <div class="proof-paper" aria-label="Illustrativt eksempel på et tilbud">
+        <app-public-brand [tagline]="false" />
+        <h3>Tilbud</h3><p>Renovering af badeværelse</p>
+        <dl><div><dt>Arbejdsopgaver</dt><dd>8.995 kr.</dd></div><div><dt>Materialer</dt><dd>12.640 kr.</dd></div><div><dt>I alt ekskl. moms</dt><dd>21.635 kr.</dd></div><div><dt>Moms (25 %)</dt><dd>5.409 kr.</dd></div><div class="proof-total"><dt>I alt inkl. moms</dt><dd>27.044 kr.</dd></div></dl>
+      </div>
     </section>
     <section class="trade-focus" aria-labelledby="trade-focus-title">
       <div class="trade-focus-copy">
@@ -56,44 +87,6 @@
         </ul>
         <p>Flisearbejde? Du får besked om, at det ligger uden for dine valgte fag.</p>
       </div>
-    </section>
-    <section class="walkthrough" id="saadan" aria-labelledby="walkthrough-title">
-      <div>
-        <h2 id="walkthrough-title">Fra første tanke<br />til <em>færdigt tilbud.</em></h2>
-        <figure class="workflow-story">
-          <a href="/marketing/saadan-virker-hovedet-paa-soemmet.jpg" target="_blank" rel="noopener" aria-label="Se illustrationen i fuld størrelse (åbner i en ny fane)">
-            <img src="/marketing/saadan-virker-hovedet-paa-soemmet.jpg"
-              alt="Fire trin fra papirbunker til overblik: En håndværker kæmper med tilbuddet, beskriver opgaven på sin tablet, får overblik over arbejdsopgaver og materialer og kan holde fri."
-              width="1376" height="768" loading="lazy" decoding="async" />
-          </a>
-          <figcaption>Skriv eller indtal din opgave. Tilpas opgaver, materialer og priser — og hent dit tilbud som PDF.</figcaption>
-        </figure>
-        <div class="steps">
-          @for (item of steps; track item.title; let i = $index) {
-            <button type="button" (click)="step.set(i); demoDialog.showModal()">
-              <img class="step-screenshot" [src]="item.image" [alt]="item.alt" [width]="item.width" [height]="item.height" loading="lazy" decoding="async" />
-              <span class="step-number">0{{ i + 1 }}<i aria-hidden="true"></i></span
-              ><strong>{{ item.title }}</strong
-              ><span>{{ item.text }}</span>
-            </button>
-          }
-        </div>
-      </div>
-    </section>
-    <section class="testing-banner" aria-labelledby="testers-title">
-      <img
-        class="testing-photo"
-        src="/marketing/craft-still-life.jpg"
-        alt=""
-        width="1536"
-        height="1024"
-        loading="lazy"
-      />
-      <h2 id="testers-title">Dit næste tilbud.<br /><em>Med overblik fra start.</em></h2>
-      <p>Opret din konto, og prøv 10 gratis forespørgsler. Intet betalingskort kræves.</p>
-      <a class="marketing-button orange" routerLink="/register"
-        >Prøv gratis <span aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></span></a
-      >
     </section>
     <div class="below-fold">
       <section id="fag"><app-trade-links /></section>

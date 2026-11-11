@@ -1,4 +1,10 @@
 <section class="offer-preview compact-draft board-draft">
+  <div class="quotation-workspace">
+  <div class="quotation-editor" [attr.data-active-section]="selectedTab()">
+    <div class="quotation-tabs" role="tablist" aria-label="Tilbuddets indhold">
+      <button id="tasks-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() !== 'materials'" aria-controls="tasks-panel" [attr.tabindex]="selectedTab() === 'materials' ? -1 : 0" (click)="selectSection('tasks')" (keydown.arrowright)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" (keydown.arrowleft)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" #tasksTab><app-workspace-icon name="wrench" />Arbejdsopgaver ({{ data().workItems.length }})</button>
+      <button id="materials-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() === 'materials'" aria-controls="materials-panel" [attr.tabindex]="selectedTab() === 'materials' ? 0 : -1" (click)="selectSection('materials')" (keydown.arrowleft)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" (keydown.arrowright)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" #materialsTab><app-workspace-icon name="materials" />Materialer ({{ data().materials.length }})</button>
+    </div>
   @if (!finalizedOfferId()) {
     <div #readinessSlot class="readiness-slot">
     <details class="draft-readiness" [class.is-ready]="!missingRequirements.length" (toggle)="resetReadinessHeight()">
@@ -35,6 +41,7 @@
   <div class="draft-columns" (click)="selectInputValue($event)">
     <section
       class="draft-section tasks-column"
+      id="tasks-panel" role="tabpanel" aria-labelledby="tasks-tab"
       data-draft-section="tasks"
       tabindex="-1"
       aria-labelledby="draft-work-title"
@@ -62,30 +69,23 @@
               [class.line-rejected]="item.status === 'rejected'"
               [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null"
             >
+              <button type="button" class="line-check" [class.checked]="item.status === 'accepted'" [attr.aria-label]="(item.status === 'accepted' ? 'Afvis ' : 'Godkend ') + item.description" [attr.aria-pressed]="item.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('work', item.id) || item.status !== 'accepted' && !canApproveWork(item)" (click)="changeStatus('work', item.id, item.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ item.status === 'accepted' ? '✓' : '' }}</span></button>
               <div class="draft-fields work-columns">
-                <div class="draft-name draft-task-description">
+                <label class="draft-name">
                   <span class="field-caption">Opgave</span>
                   <input
                     type="text"
-                    class="draft-text desktop-work-description"
+                    class="draft-text"
                     aria-label="Arbejdsbeskrivelse"
-                    [title]="item.description || ''"
                     placeholder="Beskriv opgaven"
                     [value]="item.description || ''"
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
                   />
-                  <textarea class="mobile-work-description" rows="2" aria-label="Arbejdsbeskrivelse" placeholder="Beskriv opgaven"
-                    [value]="item.description || ''"
-                    (input)="editField('work', item.id, 'description', $event, false)"
-                    (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
                   }}</span>
-                  <span class="draft-description-preview" aria-hidden="true">{{
-                    item.description || ''
-                  }}</span>
-                </div>
+                </label>
                 <label class="draft-hours"
                   ><app-workspace-icon class="mobile-detail-icon" name="clock" /><span class="field-caption">Timer</span
                   ><input
@@ -106,24 +106,24 @@
                   >{{
                     data().project.hourly_rate === null
                       ? '—'
-                      : (data().project.hourly_rate | number: '1.0-2')
+                      : (data().project.hourly_rate | number: '1.0-2' : 'da')
                   }}</span
                 >
                 <strong class="draft-line-total"
                   ><span class="field-caption">Beløb</span>
                   <app-workspace-icon class="mobile-detail-icon" name="coins" />
-                  <span class="desktop-price">{{ getWorkItemPrice(item) | number: '1.0-0' }} kr.</span>
+                  <span class="desktop-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span>
                   <span class="mobile-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
-              <app-line-review
+              <details class="line-actions-menu" #workReview><summary aria-label="Handlinger for opgaven">⋯</summary><app-line-review
                 [status]="item.status ?? 'suggested'"
                 [label]="'opgave: ' + (item.description || group.title)"
                 [canAccept]="canApproveWork(item)"
                 [disabled]="hasPendingChanges() || reviewPending('work', item.id) || isFinalizing()"
                 [isNew]="newWorkItemIds().has(item.id)"
-                (changed)="changeStatus('work', item.id, $event)"
-              />
+                (changed)="changeStatus('work', item.id, $event); workReview.open = false"
+              /></details>
             </article>
           }
         </section>
@@ -134,17 +134,18 @@
       }
       <div class="column-total">
         <span><app-workspace-icon class="mobile-detail-icon" name="calculator" />Godkendt arbejde</span>
-        <strong class="desktop-price">{{ laborTotal | number: '1.0-2' }} kr.</strong>
+        <strong class="desktop-price">{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
         <strong class="mobile-price">{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
       </div>
       <div class="draft-add-line">
-        <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('work')"><span aria-hidden="true">+</span> Tilføj opgave</button>
+        <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('work')"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" /></svg></span> Tilføj opgave</button>
         @if (!canAddLine()) { <small>Kræver abonnement</small> }
       </div>
     </section>
 
     <section
       class="draft-section materials-column"
+      id="materials-panel" role="tabpanel" aria-labelledby="materials-tab"
       data-draft-section="materials"
       tabindex="-1"
       aria-labelledby="draft-material-title"
@@ -174,6 +175,7 @@
               [class.line-rejected]="material.status === 'rejected'"
               [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null"
             >
+              <button type="button" class="line-check" [class.checked]="material.status === 'accepted'" [attr.aria-label]="(material.status === 'accepted' ? 'Afvis ' : 'Godkend ') + material.name" [attr.aria-pressed]="material.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id) || material.status !== 'accepted' && !canApproveMaterial(material)" (click)="changeStatus('material', material.id, material.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ material.status === 'accepted' ? '✓' : '' }}</span></button>
               <div class="draft-fields material-columns">
                 <label class="draft-name"
                   ><span class="field-caption">Materiale</span
@@ -233,18 +235,18 @@
                 <strong class="draft-line-total"
                   ><span class="field-caption">Beløb</span>
                   <app-workspace-icon class="mobile-detail-icon" name="coins" />
-                  <span class="desktop-price">{{ getMaterialPrice(material) | number: '1.0-0' }} kr.</span>
+                  <span class="desktop-price">{{ getMaterialPrice(material) | number: '1.0-0' : 'da' }} kr.</span>
                   <span class="mobile-price">{{ getMaterialPrice(material) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
-              <app-line-review
+              <details class="line-actions-menu" #materialReview><summary aria-label="Handlinger for materialet">⋯</summary><app-line-review
                 [status]="material.status ?? 'suggested'"
                 [label]="'materiale: ' + (material.name || 'uden navn')"
                 [canAccept]="canApproveMaterial(material)"
                 [disabled]="hasPendingChanges() || reviewPending('material', material.id) || isFinalizing()"
                 [isNew]="newMaterialIds().has(material.id)"
-                (changed)="changeStatus('material', material.id, $event)"
-              />
+                (changed)="changeStatus('material', material.id, $event); materialReview.open = false"
+              /></details>
             </article>
           }
         </section>
@@ -255,11 +257,11 @@
       }
       <div class="column-total">
         <span><app-workspace-icon class="mobile-detail-icon" name="calculator" />Godkendte materialer</span>
-        <strong class="desktop-price">{{ materialsTotal | number: '1.0-2' }} kr.</strong>
+        <strong class="desktop-price">{{ materialsTotal | number: '1.0-2' : 'da' }} kr.</strong>
         <strong class="mobile-price">{{ materialsTotal | number: '1.0-2' : 'da' }} kr.</strong>
       </div>
       <div class="draft-add-line">
-        <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('material')"><span aria-hidden="true">+</span> Tilføj materiale</button>
+        <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('material')"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" /></svg></span> Tilføj materiale</button>
         @if (!canAddLine()) { <small>Kræver abonnement</small> }
       </div>
     </section>
@@ -269,6 +271,16 @@
       {{ unreviewedCount }} forslag afventer godkendelse og er ikke med i prisen.
     </p>
   }
+  </div>
+  <aside class="quotation-summary" aria-label="Tilbudsoverblik" tabindex="-1">
+    <header class="quotation-summary-heading"><h2><app-workspace-icon name="offers" />Tilbud</h2><span>{{ missingRequirements.length ? 'Udkast' : 'Klar' }}</span></header>
+    <div class="quotation-paper" aria-label="Tilbudsudkast">
+      <span>{{ data().company?.name || 'Hovedet på Sømmet' }}</span>
+      <strong>Tilbud</strong>
+      <p>{{ data().project.title || 'Dit næste tilbud' }}</p>
+      <div class="paper-rule"></div><div class="paper-rule"></div><div class="paper-rule short"></div>
+      <b>{{ subtotal | number: '1.0-2' : 'da' }} kr. ekskl. moms</b>
+    </div>
   <details class="draft-details draft-terms">
     <summary>Tilbudsbetingelser</summary>
     <h3>Gyldighed</h3>
@@ -284,23 +296,21 @@
     <h3>Forbehold</h3>
     <p>{{ data().project.reservations || 'Ingen angivet' }}</p>
   </details>
-  <details class="draft-details draft-price-details">
-    <summary>
-      Prisoversigt og moms <strong>{{ total | number: '1.0-2' }} kr. inkl. moms</strong>
-    </summary>
+  <section class="draft-details draft-price-details" aria-label="Prisoversigt og moms">
     <div class="pricing-row">
-      <span>Arbejde</span><strong>{{ laborTotal | number: '1.0-2' }} kr.</strong>
+      <span>Arbejde</span><strong>{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
     </div>
     <div class="pricing-row">
-      <span>Materialer</span><strong>{{ materialsTotal | number: '1.0-2' }} kr.</strong>
+      <span>Materialer</span><strong>{{ materialsTotal | number: '1.0-2' : 'da' }} kr.</strong>
     </div>
     <div class="pricing-row">
-      <span>Subtotal</span><strong>{{ subtotal | number: '1.0-2' }} kr.</strong>
+      <span>Subtotal</span><strong>{{ subtotal | number: '1.0-2' : 'da' }} kr.</strong>
     </div>
     <div class="pricing-row">
-      <span>Moms (25%)</span><strong>{{ vatAmount | number: '1.0-2' }} kr.</strong>
+      <span>Moms (25%)</span><strong>{{ vatAmount | number: '1.0-2' : 'da' }} kr.</strong>
     </div>
-  </details>
+    <div class="quotation-grand-total"><span>I alt inkl. moms</span><strong>{{ total | number: '1.0-2' : 'da' }} kr.</strong></div>
+  </section>
 
   <div #offerFooter class="offer-footer">
     @if (finalizedOfferNumber(); as offerNumber) {
@@ -320,7 +330,7 @@
       <div class="finalize-actions">
         <div class="finalize-copy">
           <span>Godkendt i alt ekskl. moms</span
-          ><strong class="draft-subtotal">{{ subtotal | number: '1.0-2' }} kr.</strong>
+          ><strong class="draft-subtotal">{{ subtotal | number: '1.0-2' : 'da' }} kr.</strong>
           <p class="finalize-hint" role="status">
             {{
               isSavingChanges()
@@ -344,6 +354,8 @@
         </div>
       </div>
     }
+  </div>
+  </aside>
   </div>
 </section>
 <dialog

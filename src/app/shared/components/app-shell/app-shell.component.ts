@@ -14,6 +14,7 @@ import {
   RouterLink,
   RouterLinkActive,
   RouterOutlet,
+  IsActiveMatchOptions,
 } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -83,6 +84,9 @@ export class AppShell implements OnInit {
   readonly isLoggingOut = signal(false);
   readonly logoutError = signal('');
   readonly isMenuOpen = signal(false);
+  readonly navigationMatchOptions: IsActiveMatchOptions = {
+    paths: 'subset', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'exact',
+  };
   readonly isNavigating = signal(false);
   private readonly menuDrawer = viewChild.required<ElementRef<HTMLDialogElement>>('menuDrawer');
 

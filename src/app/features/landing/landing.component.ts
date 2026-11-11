@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { TradeLinksComponent } from '../trades/trade-links.component';
 import { PublicBrandComponent } from '../../shared/components/public-brand/public-brand.component';
 import { resetPublicPageScroll } from '../../shared/public-page-scroll';
-import { ParallaxDirective } from '../../shared/marketing-motion.directive';
 import { MarketingHeader } from '../../shared/marketing/marketing-header.component';
 
 @Component({
@@ -14,7 +13,6 @@ import { MarketingHeader } from '../../shared/marketing/marketing-header.compone
     LegalLinksComponent,
     TradeLinksComponent,
     PublicBrandComponent,
-    ParallaxDirective,
     MarketingHeader,
   ],
   templateUrl: './landing.component.html',

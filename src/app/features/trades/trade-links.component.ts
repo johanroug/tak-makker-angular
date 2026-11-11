@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TRADE_PAGES } from './trade-pages';
-import { RevealDirective } from '../../shared/marketing-motion.directive';
 
 @Component({
   selector: 'app-trade-links',
-  imports: [RouterLink, RevealDirective],
+  imports: [RouterLink],
   templateUrl: './trade-links.component.html',
   styleUrl: './trade-links.component.scss',
 })

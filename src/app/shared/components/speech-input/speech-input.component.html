@@ -1,6 +1,16 @@
 <div class="speech-composer" [class.is-recording]="state() === 'recording'" [class.is-busy]="state() !== 'idle'" [attr.aria-busy]="state() === 'transcribing'">
   <ng-content />
   <div class="speech-toolbar">
+    @if (state() === 'recording' || state() === 'transcribing') {
+      <div class="speech-visual" [class.processing]="state() === 'transcribing'" aria-hidden="true">
+        <span class="speech-caption">{{ state() === 'recording' ? 'Optager' : 'Omsætter til tekst…' }}</span>
+        <div class="speech-wave">
+          @for (height of waveform(); track $index) {
+            <i [style.height.px]="state() === 'recording' ? height : 8" [style.animation-delay.ms]="$index * 55"></i>
+          }
+        </div>
+      </div>
+    }
     <span class="speech-status" role="status">
       @if (state() === 'recording') { <span class="recording-dot" aria-hidden="true"></span> Optager · højst 90 sek. }
       @else if (state() === 'starting') { Åbner mikrofon… }

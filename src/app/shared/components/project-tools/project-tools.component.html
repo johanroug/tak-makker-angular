@@ -23,7 +23,13 @@
         @if (currentMode === 'work' || currentMode === 'material') {
           <div class="line-fields" [formGroup]="line">
             @if (currentMode === 'work') {
-              <label>Fag<input formControlName="trade" maxlength="100" required /></label>
+              <label>Fag<select formControlName="trade" required>
+                <option value="" disabled>Vælg fag</option>
+                @for (trade of trades; track trade) { <option [value]="trade">{{ trade }}</option> }
+              </select></label>
+              @if (line.controls.trade.value === 'Andet') {
+                <label>Angiv fag<input [formControl]="customTrade" maxlength="100" required /></label>
+              }
               <label>Beskrivelse<textarea formControlName="description" rows="3" required></textarea></label>
               <label>Forventede timer<input type="number" inputmode="decimal" formControlName="hours" min="0" step="0.5" /></label>
             } @else {

@@ -5,6 +5,10 @@
   color: #292524;
 }
 #company-trades { scroll-margin-top: 24px; }
+.profile-card {
+  box-sizing: border-box;
+  padding: 20px;
+}
 .profile-page-top {
   display: flex;
   align-items: center;
@@ -31,15 +35,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 8px 0 28px;
+  padding: 4px 0 32px;
   h1 {
-    margin: 10px 0;
+    margin: 14px 0 16px;
     font-size: clamp(28px, 4vw, 40px);
     line-height: 1.15;
     letter-spacing: -0.04em;
     font-weight: 700;
   }
   p {
+    margin: 0;
     color: #8b8173;
     font-size: 14px;
     line-height: 1.7;
@@ -65,9 +70,15 @@
 .profile-form,
 .profile-fields {
   display: grid;
-  gap: 20px;
+  gap: 24px;
   min-width: 0;
   align-items: start;
+}
+.profile-fields {
+  padding-bottom: calc(var(--profile-footer-height, 96px) + 24px);
+}
+.profile-card :is(input, textarea, select, button, summary) {
+  scroll-margin-block: 24px calc(var(--profile-footer-height, 96px) + 36px);
 }
 .profile-section {
   min-width: 0;
@@ -92,12 +103,13 @@
   gap: 14px;
   margin-bottom: 24px;
   h2 {
+    margin: 0;
     font-size: 17px;
     line-height: 1.4;
     font-weight: 700;
   }
   p {
-    margin-top: 4px;
+    margin: 6px 0 0;
     color: #8b8173;
     font-size: 12px;
     line-height: 1.6;
@@ -207,7 +219,7 @@
 }
 .profile-summary {
   min-width: 0;
-  padding: 8px 0;
+  padding: 0 0 24px;
   app-billing-panel {
     margin-bottom: 24px;
   }
@@ -223,7 +235,7 @@
   letter-spacing: 0.1em;
 }
 .sender-preview {
-  padding: 28px;
+  padding: 20px;
   border: 1px solid #e9e5dd;
   border-radius: 14px;
   background: white;
@@ -289,7 +301,7 @@
 .profile-tip {
   display: flex;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 24px;
   padding: 20px;
   border: 1px solid #eee3ca;
   border-radius: 14px;
@@ -384,8 +396,14 @@
   .company-profile {
     padding: 16px 24px 40px;
   }
+  .profile-card {
+    padding: 24px;
+  }
   .profile-section {
-    padding: 28px;
+    padding: 24px;
+  }
+  .sender-preview {
+    padding: 24px;
   }
   .form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -410,12 +428,17 @@
 @media (min-width: 1024px) {
   .profile-form {
     grid-template-columns: minmax(0, 1fr) 300px;
-    gap: 28px;
+    gap: 24px;
   }
   .profile-summary {
     position: sticky;
     top: var(--summary-top, 24px);
   }
+}
+@media (max-width: 360px) {
+  .profile-header { flex-wrap: wrap; gap: 16px; }
+  .profile-spark { margin-left: auto; }
+  .profile-page-top { flex-wrap: wrap; gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .form-field input,

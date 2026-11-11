@@ -38,6 +38,7 @@ export class CompanyProfileComponent implements OnInit {
       const footer = this.footer()?.nativeElement;
       if (!summary || !footer) return;
       const updatePosition = () => {
+        footer.closest<HTMLElement>('.profile-card')?.style.setProperty('--profile-footer-height', `${footer.offsetHeight}px`);
         const top = Math.min(24, window.innerHeight - summary.offsetHeight - footer.offsetHeight - 48);
         summary.style.setProperty('--summary-top', top + 'px');
       };

@@ -1413,6 +1413,6 @@ app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy t
     .draft-readiness summary,
     .draft-details summary { align-content: center; }
     .offer-footer { position: static; }
-    .finalize-actions { grid-template-columns: minmax(0, 1fr); }
+    .finalize-actions { grid-template-columns: minmax(0, 1fr) auto; }
   }
 }

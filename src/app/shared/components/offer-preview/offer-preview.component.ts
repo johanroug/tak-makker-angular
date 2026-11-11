@@ -152,6 +152,7 @@ export class OfferPreview {
 
   readonly detailsSaved = output<void>();
   readonly offerFinalized = output<void>();
+  readonly historyRequested = output<void>();
   readonly footerHeightChanged = output<number>();
   private readonly footer = viewChild.required<ElementRef<HTMLElement>>('offerFooter');
   private readonly destroyRef = inject(DestroyRef);

@@ -331,6 +331,8 @@
             }}
           </p>
         </div>
+        <div class="finalize-buttons">
+          <button type="button" class="history-link" aria-haspopup="dialog" (click)="historyRequested.emit()"><app-workspace-icon name="clock" />Tilbudshistorik</button>
         <button
           type="button"
           [disabled]="!canFinalizeOffer"
@@ -339,6 +341,7 @@
         >
           {{ isFinalizing() ? 'Færdiggør…' : 'Færdiggør tilbud' }} <span aria-hidden="true">→</span>
         </button>
+        </div>
       </div>
     }
   </div>

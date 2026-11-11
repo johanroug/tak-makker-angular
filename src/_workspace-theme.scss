@@ -1357,40 +1357,6 @@ app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy t
     }
     .tasks-column .draft-row:has(.approve) .review-actions { grid-area: 4 / 1 / auto / -1; }
 
-    .materials-column .draft-row { grid-template-columns: minmax(0, 1fr) auto; }
-    .draft-fields.material-columns {
-      display: contents;
-      > .draft-name { grid-area: 2 / 1 / auto / -1; }
-      .field-caption { display: none; }
-      .material-quantity {
-        grid-area: 3 / 1;
-        position: relative;
-        isolation: isolate;
-        display: grid;
-        grid-template-columns: 52px minmax(0, 1fr);
-        width: min(100%, 148px);
-        min-width: 0;
-        padding-inline: 4px;
-        &::before {
-          content: '';
-          position: absolute;
-          z-index: -1;
-          inset: 7px 0;
-          border-radius: 8px;
-          background: #f6f1e7;
-        }
-        input[type='number'] { text-align: center; padding-inline: 3px; }
-      }
-      .material-unit-price {
-        grid-area: 3 / 2;
-        display: flex;
-        align-items: center;
-        > input { width: 66px; padding-inline: 4px; }
-        > .field-caption { display: inline; order: 1; margin: 0; font-size: 12px; }
-      }
-      .draft-line-total { grid-area: 4 / 1; }
-    }
-    .materials-column .draft-row .review-actions { grid-area: 4 / 2; justify-self: end; }
     .column-total {
       margin: 12px 0;
       padding: 12px;

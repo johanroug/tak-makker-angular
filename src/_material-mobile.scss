@@ -1,0 +1,70 @@
+app-offer-preview :is(.mobile-material-description, .mobile-material-caption, .mobile-material-status, .mobile-material-reject) { display: none; }
+app-offer-preview .material-edit-fields { display: contents; }
+
+@media (max-width: 900px) {
+  .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .materials-column {
+    .draft-row {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 48px;
+      align-items: start;
+      gap: 8px;
+      margin: 8px 0;
+      padding: 12px;
+      min-width: 0;
+    }
+    .line-check {
+      position: static; grid-area: 1 / 1;
+      width: 48px; height: 48px; padding: 0;
+      border: 0; background: transparent;
+      > span { display: grid; place-items: center; width: 26px; height: 26px; border: 2px solid #a9aca4; border-radius: 5px; background: #fffefb; }
+      &.checked { border: 0; background: transparent; }
+      &.checked > span { border-color: #06602c; background: #06602c; color: #fff; }
+    }
+    .line-actions-menu { display: none; }
+    .mobile-material-reject {
+      display: inline-flex; align-items: center; justify-content: center; grid-area: 1 / 3;
+      width: 48px; min-height: 48px; margin: 0; padding: 0;
+      border: 0; border-radius: 8px; background: transparent; color: #a54940;
+      font: inherit; font-size: 12px; cursor: pointer;
+      &:hover:not(:disabled) { background: #fff4ed; }
+      &:disabled { opacity: .45; cursor: not-allowed; }
+    }
+    .mobile-material-status { display: block; grid-area: 1 / 2; align-self: center; color: #4d6255; font-size: 12px; font-weight: 650; }
+    .draft-fields.material-columns {
+      display: contents;
+      > .draft-name { display: grid; grid-area: 2 / 1 / auto / -1; gap: 4px; min-width: 0; margin: 0; }
+      .desktop-material-name, .desktop-material-caption, .draft-name > .field-caption { display: none; }
+      .mobile-material-caption { display: inline; }
+      .mobile-material-description {
+        display: block; box-sizing: border-box; width: 100%; min-width: 0;
+        min-height: 48px; margin: 0; padding: 8px 4px;
+        border: 1px solid transparent; border-radius: 8px;
+        background: transparent; color: inherit;
+        font: inherit; font-size: 16px; font-weight: 650; line-height: 1.4;
+        field-sizing: content; resize: none; overflow-wrap: break-word; word-break: normal;
+        &:focus { border-color: #aabaae; outline: 2px solid #b98131; outline-offset: 1px; }
+      }
+      .material-quantity { display: contents; width: auto; min-width: 0; padding: 0; &::before { content: none; } }
+      .material-edit-fields { display: grid; grid-area: 3 / 1 / auto / -1; grid-template-columns: repeat(auto-fit, minmax(min(100%, 80px), 1fr)); gap: 10px; min-width: 0; container: material-fields / inline-size; }
+      @container material-fields (max-width: 259px) {
+        .material-edit-fields .material-unit-price { grid-column: 1 / -1; }
+      }
+      :is(.material-amount-field, .material-unit-field, .material-unit-price) {
+        display: grid; align-items: start; align-content: start; gap: 6px;
+        grid-area: auto; min-width: 0; width: auto; margin: 0; padding: 0;
+        > .field-caption { display: block; order: initial; margin: 0; font-size: 12px; font-weight: 650; line-height: 1.4; text-align: left; white-space: nowrap; word-break: normal; overflow-wrap: normal; }
+      }
+      input:not([type='checkbox']) { box-sizing: border-box; width: 100%; min-width: 0; min-height: 48px; height: 48px; margin: 0; padding: 8px; font-size: 16px; text-align: left; }
+      .draft-save-status { position: static; max-width: none; margin: 0; padding: 0; box-shadow: none; background: transparent; font-size: 11px; white-space: normal; }
+      .draft-line-total {
+        display: flex; grid-area: 4 / 1 / auto / -1;
+        align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 12px;
+        min-width: 0; width: 100%; min-height: 40px; margin: 0; padding: 10px 0 0;
+        border-top: 1px solid #e9e1d6; border-radius: 0; background: transparent;
+        .field-caption { display: block; margin: 0; font-size: 13px; font-weight: 500; white-space: nowrap; }
+        .mobile-detail-icon { display: none; }
+        .mobile-price { margin-left: auto; font-size: 18px; font-weight: 750; white-space: nowrap; }
+      }
+    }
+  }
+}

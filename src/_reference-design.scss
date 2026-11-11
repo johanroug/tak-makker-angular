@@ -218,10 +218,6 @@ app-new-project-dialog .start-dialog {
     .draft-fields.work-columns { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
     .draft-fields.work-columns > .draft-name { grid-area: auto; grid-column: 1 / -1; }
     .draft-fields.work-columns .draft-hours, .draft-fields.work-columns .draft-line-total { grid-area: auto; }
-    .draft-fields.material-columns { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 8px; }
-    .draft-fields.material-columns .draft-name { grid-area: auto; grid-column: 1 / -1; }
-    .draft-fields.material-columns .material-quantity { grid-area: auto; display: flex; gap: 6px; }
-    .draft-fields.material-columns .material-unit-price, .draft-fields.material-columns .draft-line-total { grid-area: auto; }
     .draft-section .line-actions-menu app-line-review { display: block; }
     .draft-section .line-actions-menu .line-review { display: grid; }
     .finalize-buttons { display: flex; }

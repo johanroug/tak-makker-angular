@@ -1,4 +1,14 @@
-# Hovedet på sømmet TODO — opdateret 6. november 2026
+# Hovedet på sømmet TODO — opdateret 11. november 2026
+
+## Materialekort på mobil — 11. november 2026
+
+- [x] Materialebeskrivelse og godkendelsesstatus øverst. Trepriksmenuen er skjult på mobil; afventende materialer har en direkte Afvis-knap. Desktopmenuen bevares.
+- [x] Separat grid med Antal, Enhed og Pris/stk.; mindst 48 px høje redigerbare felter.
+- [x] Samlet pris på en selvstændig bundrække; ingen labels, der knækker midt i ord.
+- [x] Bevar inline-redigering, validering, godkendelse/afvisning og beregninger; desktop-layout bevares.
+- [x] Kontrollér 320, 375, 390 og 430 px uden vandret scrolling samt desktop. Alle felter er mindst 48 px høje; labels passer på én linje. Desktop beholder fem kolonner.
+- [x] Kør komponenttests og Angular-build med SEO-kontrol. Alle 5 tests består; produktionsbuild og SEO-kontrol består.
+
 
 - [x] **Simply: lokal uploadpakke, 7. november** — build:simply klargør det statiske Angular-build med Apache-routing, rigtig 404, cache-headere og noindex på preview-adressen. Produktionsbuild og eksisterende SEO-kontrol består. Upload-ZIP indeholder også .htaccess. Se docs/simply-migration.md.
 - [x] **Simply: hjemmeside flyttet og testet, 7. november** — Filer uploadet af Johan, Apache-routing rettet og testet, domænealias og DNS/HTTPS oprettet. Login/projekt, AI og PDF bekræftet af Johan. www og maildomænets webviderestilling kontrolleret; negativ DNS-cache kan stadig forsinke enkelte klienter. Mail-/Resend-poster bevaret.

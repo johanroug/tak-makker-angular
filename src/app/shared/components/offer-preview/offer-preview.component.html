@@ -176,22 +176,27 @@
               [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null"
             >
               <button type="button" class="line-check" [class.checked]="material.status === 'accepted'" [attr.aria-label]="(material.status === 'accepted' ? 'Afvis ' : 'Godkend ') + material.name" [attr.aria-pressed]="material.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id) || material.status !== 'accepted' && !canApproveMaterial(material)" (click)="changeStatus('material', material.id, material.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ material.status === 'accepted' ? '✓' : '' }}</span></button>
+              <span class="mobile-material-status">{{ material.status === 'accepted' ? 'Godkendt' : material.status === 'rejected' ? 'Afvist' : 'Afventer' }}</span>
+              @if (material.status !== 'accepted' && material.status !== 'rejected') {
+                <button type="button" class="mobile-material-reject" [attr.aria-label]="'Afvis materiale: ' + (material.name || 'uden navn')" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id)" (click)="changeStatus('material', material.id, 'rejected')">Afvis</button>
+              }
               <div class="draft-fields material-columns">
                 <label class="draft-name"
                   ><span class="field-caption">Materiale</span
                   ><input
-                    class="draft-text"
+                    class="draft-text desktop-material-name"
                     type="text"
                     aria-label="Materialenavn"
                     [value]="material.name || ''"
                     (input)="editField('material', material.id, 'name', $event, false)"
                     (blur)="editField('material', material.id, 'name', $event, true)"
-                  /><span class="draft-save-status" role="status">{{
+                  /><textarea class="mobile-material-description" rows="2" aria-label="Materialebeskrivelse" [value]="material.name || ''" (input)="editField('material', material.id, 'name', $event, false)" (blur)="editField('material', material.id, 'name', $event, true)"></textarea><span class="draft-save-status" role="status">{{
                     textSaveLabel('material', material.id, 'name')
                   }}</span></label
                 >
+                <div class="material-edit-fields">
                 <div class="material-quantity">
-                <label
+                <label class="material-amount-field"
                   ><span class="field-caption">Antal</span
                   ><input
                     type="number" inputmode="decimal"
@@ -205,7 +210,7 @@
                     textSaveLabel('material', material.id, 'quantity')
                   }}</span></label
                 >
-                <label
+                <label class="material-unit-field"
                   ><span class="field-caption">Enhed</span
                   ><input
                     type="text"
@@ -219,7 +224,7 @@
                 >
                 </div>
                 <label class="material-unit-price"
-                  ><span class="field-caption">Kr./enhed</span
+                  ><span class="field-caption"><span class="desktop-material-caption">Kr./enhed</span><span class="mobile-material-caption">Pris/stk.</span></span
                   ><input
                     type="number" inputmode="decimal"
                     min="0"
@@ -232,11 +237,12 @@
                     textSaveLabel('material', material.id, 'unitPrice')
                   }}</span></label
                 >
+                </div>
                 <strong class="draft-line-total"
-                  ><span class="field-caption">Beløb</span>
+                  ><span class="field-caption"><span class="desktop-material-caption">Beløb</span><span class="mobile-material-caption">Samlet pris</span></span>
                   <app-workspace-icon class="mobile-detail-icon" name="coins" />
                   <span class="desktop-price">{{ getMaterialPrice(material) | number: '1.0-0' : 'da' }} kr.</span>
-                  <span class="mobile-price">{{ getMaterialPrice(material) | number: '1.0-0' : 'da' }} kr.</span></strong
+                  <span class="mobile-price">{{ getMaterialPrice(material) | number: '1.0-2' : 'da' }} kr.</span></strong
                 >
               </div>
               <details class="line-actions-menu" #materialReview><summary aria-label="Handlinger for materialet">⋯</summary><app-line-review

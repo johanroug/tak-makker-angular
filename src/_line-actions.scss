@@ -1,3 +1,28 @@
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .draft-row .line-check {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  > span {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #a9b5a7;
+    border-radius: 6px;
+    background: #fffefb;
+    color: #fff;
+    svg { display: block; width: 18px; height: 18px; visibility: hidden; }
+  }
+  &.checked {
+    border: 0;
+    background: transparent;
+    > span { border-color: #06602c; background: #06602c; svg { visibility: visible; } }
+  }
+  &:hover:not(:disabled) > span { border-color: #06602c; }
+  &:focus-visible { outline: 2px solid #b98131; outline-offset: 3px; }
+}
+
 @media (min-width: 901px) {
   .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
     .draft-row { padding-right: 12px; }

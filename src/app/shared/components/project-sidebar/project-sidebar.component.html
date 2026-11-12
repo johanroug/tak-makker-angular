@@ -58,6 +58,8 @@
   </div>
 </aside>
 <dialog #historyDialog class="history-dialog" aria-label="Tilbudshistorik">
+  <header class="history-dialog-header">
+    <h2>Tilbudshistorik</h2>
   <button
     type="button"
     class="history-close"
@@ -65,10 +67,10 @@
     (click)="historyDialog.close()"
     autofocus
   >
-    ✕
+    ×
   </button>
+  </header>
   <div class="offers-panel">
-    <h2>Tilbudshistorik</h2>
     <p class="offers-message">
       Den aktuelle kladde vises i projektets tilbudsvisning. Herunder finder du de færdiggjorte
       tilbud.

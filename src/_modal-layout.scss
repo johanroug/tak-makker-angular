@@ -1,0 +1,80 @@
+html:has(dialog[open]) { overflow: hidden; }
+
+// Keep the frame still: only the inset body owns scrolling.
+dialog[open]:is(.details-dialog, .tool-dialog, .history-dialog, .demo-dialog, .start-dialog) {
+  --modal-space: clamp(16px, 3vw, 28px);
+  box-sizing: border-box;
+  border: 1px solid #dedfd4;
+  border-radius: 22px;
+  background: #fffaf4;
+  color: #12372a;
+  box-shadow: 0 28px 90px #092e2940;
+  &::backdrop { background: #09271f99; backdrop-filter: blur(4px); }
+  :is(.modal-close, .history-close, .demo-close, .close-button), .tool-dialog-header > button {
+    position: static; display: grid; place-items: center; flex: none;
+    width: 40px; height: 40px; min-height: 40px; margin: 0; padding: 0;
+    border: 1px solid #dce2d8; border-radius: 12px; background: #f2f4ec;
+    color: #234d3b; font-size: 24px; line-height: 1; cursor: pointer;
+    &:hover:not(:disabled) { background: #e5eddf; }
+    &:focus-visible { outline: 2px solid #b98131; outline-offset: 2px; }
+  }
+}
+
+:is(.modal-scroll-body, .tool-form-content, .dialog-content, .demo-scroll-body, .history-dialog .offers-panel) {
+  scrollbar-width: thin;
+  scrollbar-color: #b5c1b0 transparent;
+}
+
+app-offer-preview dialog.details-dialog.details-dialog:not(.success-dialog) {
+  padding: 0; overflow: hidden; max-height: calc(100dvh - 32px);
+  &[open] { display: flex; flex-direction: column; height: min(840px, calc(100dvh - 32px)); }
+  .modal-header { flex: none; align-items: center; padding: var(--modal-space); border-bottom: 1px solid #e8e1d6; }
+  .modal-header h2 { font-size: clamp(18px, 2.5vw, 23px); line-height: 1.3; color: #12372a; }
+  .modal-header p { color: #7a8373; font-size: 13px; line-height: 1.5; }
+  .offer-details-form { display: flex; flex-direction: column; flex: 1; min-height: 0; margin: 0; gap: 0; overflow: hidden; }
+  .modal-scroll-body {
+    flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    margin: 10px 10px; padding: 8px calc(var(--modal-space) - 10px) 18px;
+    scrollbar-gutter: stable;
+  }
+  .modal-fields { gap: 20px; }
+  .form-actions {
+    position: static; flex: none; margin: 0; padding: 16px var(--modal-space);
+    border-top: 1px solid #e8e1d6; background: #fffaf4; gap: 10px;
+    button { min-height: 44px; border-radius: 11px; padding: 10px 18px; }
+  }
+  .save-button { background: #063c2b; color: #fff; }
+  .cancel-button { background: transparent; border-color: #ccd6c9; color: #234d3b; }
+}
+
+app-project-sidebar dialog.history-dialog.history-dialog {
+  width: min(680px, calc(100vw - 32px));
+  padding: 0; overflow: hidden;
+  &[open] { display: flex; flex-direction: column; }
+  .history-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex: none; padding: var(--modal-space); border-bottom: 1px solid #e8e1d6; }
+  .history-dialog-header h2 { margin: 0; font-size: clamp(18px, 2.5vw, 23px); line-height: 1.3; }
+  .history-close { min-width: 40px; float: none; }
+  .offers-panel { min-height: 0; overflow-y: auto; overscroll-behavior: contain; margin: 10px; padding: 8px calc(var(--modal-space) - 10px) 18px; scrollbar-gutter: stable; }
+}
+
+.marketing-page dialog.demo-dialog {
+  padding: 0; overflow: hidden;
+  &[open] { display: flex; flex-direction: column; }
+  .demo-dialog-heading { flex: none; padding: var(--modal-space); margin: 0; border-bottom: 1px solid #e8e1d6; }
+  .demo-tabs { flex: none; margin: 0; padding: 14px var(--modal-space) 0; }
+  .demo-scroll-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; margin: 10px; padding: 0 calc(var(--modal-space) - 10px); }
+  .demo-dialog-footer { flex: none; padding: 16px var(--modal-space); border-top: 1px solid #e8e1d6; }
+}
+
+dialog.tool-dialog {
+  .tool-dialog-header { padding: var(--modal-space); background: #fffaf4; }
+  .tool-form-content { margin: 10px; padding: 8px calc(var(--modal-space) - 10px) 18px; }
+  .form-actions { background: #fffaf4; padding-inline: var(--modal-space); }
+}
+
+@media (max-width: 480px) {
+  app-offer-preview dialog.details-dialog:not(.success-dialog), dialog.tool-dialog, dialog.history-dialog, .marketing-page dialog.demo-dialog {
+    width: calc(100vw - 20px); max-height: calc(100dvh - 20px); border-radius: 18px;
+  }
+  app-offer-preview dialog.details-dialog:not(.success-dialog)[open] { height: calc(100dvh - 20px); }
+}

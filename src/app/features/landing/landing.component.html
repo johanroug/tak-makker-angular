@@ -158,11 +158,15 @@
         </button>
       }
     </div>
+    <div class="demo-scroll-body">
     <p class="demo-explanation" aria-live="polite">{{ steps[step()].text }}</p>
     <a class="demo-screenshot" [href]="steps[step()].image" target="_blank" rel="noopener" aria-label="Åbn skærmbilledet i fuld størrelse i en ny fane">
       <img [src]="steps[step()].image" [alt]="steps[step()].alt" [width]="steps[step()].width" [height]="steps[step()].height" />
     </a>
     <p class="demo-note">Tryk på billedet for at se det i fuld størrelse. Eksempeldata er vist.</p>
+    </div>
+    <div class="demo-dialog-footer">
     <a class="marketing-button" routerLink="/register">Prøv gratis <svg class="marketing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12" /></svg></a>
+    </div>
   </dialog>
 </div>

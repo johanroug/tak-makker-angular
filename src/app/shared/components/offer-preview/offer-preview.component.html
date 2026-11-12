@@ -36,7 +36,7 @@
               [class.line-rejected]="item.status === 'rejected'"
               [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null"
             >
-              <button type="button" class="line-check" [class.checked]="item.status === 'accepted'" [attr.aria-label]="(item.status === 'accepted' ? 'Afvis ' : 'Godkend ') + item.description" [attr.aria-pressed]="item.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('work', item.id) || item.status !== 'accepted' && !canApproveWork(item)" (click)="changeStatus('work', item.id, item.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ item.status === 'accepted' ? '✓' : '' }}</span></button>
+              <button type="button" class="line-check" [class.checked]="item.status === 'accepted'" [attr.aria-label]="(item.status === 'accepted' ? 'Afvis ' : 'Godkend ') + item.description" [attr.aria-pressed]="item.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('work', item.id) || item.status !== 'accepted' && !canApproveWork(item)" (click)="changeStatus('work', item.id, item.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7" /></svg></span></button>
               @if (item.status !== 'accepted' && item.status !== 'rejected') {
                 <button type="button" class="mobile-work-reject" [attr.aria-label]="'Afvis opgave: ' + (item.description || group.title)" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('work', item.id)" (click)="changeStatus('work', item.id, 'rejected')">Afvis</button>
               }
@@ -141,7 +141,7 @@
               [class.line-rejected]="material.status === 'rejected'"
               [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null"
             >
-              <button type="button" class="line-check" [class.checked]="material.status === 'accepted'" [attr.aria-label]="(material.status === 'accepted' ? 'Afvis ' : 'Godkend ') + material.name" [attr.aria-pressed]="material.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id) || material.status !== 'accepted' && !canApproveMaterial(material)" (click)="changeStatus('material', material.id, material.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ material.status === 'accepted' ? '✓' : '' }}</span></button>
+              <button type="button" class="line-check" [class.checked]="material.status === 'accepted'" [attr.aria-label]="(material.status === 'accepted' ? 'Afvis ' : 'Godkend ') + material.name" [attr.aria-pressed]="material.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id) || material.status !== 'accepted' && !canApproveMaterial(material)" (click)="changeStatus('material', material.id, material.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4.5 4.5L19 7" /></svg></span></button>
               @if (material.status !== 'accepted' && material.status !== 'rejected') {
                 <button type="button" class="mobile-material-reject" [attr.aria-label]="'Afvis materiale: ' + (material.name || 'uden navn')" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id)" (click)="changeStatus('material', material.id, 'rejected')">Afvis</button>
               }
@@ -378,6 +378,7 @@
     [formGroup]="detailsForm"
     (submit)="$event.preventDefault(); saveDetails()"
   >
+    <div class="modal-scroll-body">
     <fieldset class="modal-fields" [disabled]="isSaving()">
       <label>
         Projekttitel <small>Påkrævet før færdiggørelse</small>
@@ -441,6 +442,8 @@
         </p>
       }
 
+    </fieldset>
+    </div>
       <div class="form-actions">
         <button type="submit" class="save-button" [disabled]="isSaving()">
           {{ isSaving() ? 'Gemmer...' : 'Gem ændringer' }}
@@ -455,7 +458,6 @@
           Annuller
         </button>
       </div>
-    </fieldset>
   </form>
 </dialog>
 

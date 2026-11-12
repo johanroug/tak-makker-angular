@@ -2,6 +2,8 @@
   display: block;
 }
 .login-card {
+  box-sizing: border-box;
+  padding: clamp(20px, 4vw, 32px);
   width: 100%;
   max-width: 420px;
   min-width: 0;

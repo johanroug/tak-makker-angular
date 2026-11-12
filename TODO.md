@@ -1,8 +1,16 @@
-# Hovedet på sømmet TODO — opdateret 11. november 2026
+# Hovedet på sømmet TODO — opdateret 12. november 2026
+
+## Opgavekort på mobil — 12. november 2026
+
+- [x] Samme struktur som materialekort: redigerbar beskrivelse ved checkboxen uden statustekst, Timer/Timepris og separat Samlet pris.
+- [x] Mindst 48 px høje felter; timepris åbner den eksisterende projektdialog og gælder fortsat alle opgaver.
+- [x] Fjern trepriksmenuen på mobil og desktop; bevar godkendelse, direkte afvisning af forslag og genaktivering af afviste opgaver. Desktop beholder rækkeopstillingen.
+- [x] Kontrollér 320, 375, 390 og 430 px uden vandret scrolling samt desktop med den faktiske komponent og lokale testdata.
+- [x] Browserkontrol af begge korttyper og timepris-modal samt Angular-produktionsbuild og SEO-kontrol. Komponenttests er fjernet fra den aktuelle projektversion. Build har fortsat budget- og CommonJS-advarsler. Ingen databaseændringer.
 
 ## Materialekort på mobil — 11. november 2026
 
-- [x] Materialebeskrivelse og godkendelsesstatus øverst. Trepriksmenuen er skjult på mobil; afventende materialer har en direkte Afvis-knap. Desktopmenuen bevares.
+- [x] Materialebeskrivelsen står ved checkboxen uden statustekst. Trepriksmenuen er fjernet på mobil og desktop; afventende materialer har en direkte Afvis-knap.
 - [x] Separat grid med Antal, Enhed og Pris/stk.; mindst 48 px høje redigerbare felter.
 - [x] Samlet pris på en selvstændig bundrække; ingen labels, der knækker midt i ord.
 - [x] Bevar inline-redigering, validering, godkendelse/afvisning og beregninger; desktop-layout bevares.

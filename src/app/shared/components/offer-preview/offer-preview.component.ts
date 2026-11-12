@@ -20,7 +20,6 @@ import { ProjectService } from '../../../core/projects/project.service';
 import { OfferService } from '../../../core/offers/offer.service';
 import { OfferPdfService } from '../../../core/offers/offer-pdf.service';
 import { offerRequirements, OfferRequirement, validAmount } from '../../../core/offers/offer-readiness';
-import { LineReview } from './line-review.component';
 import { materialCategory } from './material-category';
 import { WorkspaceIcon } from '../workspace-icon.component';
 
@@ -42,7 +41,7 @@ type EditableDetails = {
 
 @Component({
   selector: 'app-offer-preview',
-  imports: [ReactiveFormsModule, DecimalPipe, LineReview, WorkspaceIcon],
+  imports: [ReactiveFormsModule, DecimalPipe, WorkspaceIcon],
   templateUrl: './offer-preview.component.html',
   styleUrl: './offer-preview.component.scss',
 })
@@ -61,12 +60,6 @@ export class OfferPreview {
   readonly addLineBusy = input(false);
   readonly addLine = output<'work' | 'material'>();
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly readinessSlot = viewChild<ElementRef<HTMLElement>>('readinessSlot');
-  private preservedReadinessHeight = 0;
-  resetReadinessHeight(): void {
-    this.preservedReadinessHeight = 0;
-    this.readinessSlot()?.nativeElement.style.removeProperty('min-height');
-  }
   readonly newWorkItemIds = input<ReadonlySet<string>>(new Set());
   readonly newMaterialIds = input<ReadonlySet<string>>(new Set());
   readonly statusChanged = output<{kind: 'work' | 'material'; id: string; status: 'accepted' | 'rejected'}>();
@@ -157,6 +150,7 @@ export class OfferPreview {
   readonly detailsOpened = output<void>();
   private readonly detailsDialog =
     viewChild.required<ElementRef<HTMLDialogElement>>('detailsDialog');
+  private readonly hourlyRateInput = viewChild.required<ElementRef<HTMLInputElement>>('hourlyRateInput');
 
   readonly detailsSaved = output<void>();
   readonly offerFinalized = output<void>();
@@ -182,20 +176,6 @@ export class OfferPreview {
       if (section === 'tasks' || section === 'materials') this.selectedTab.set(section);
     });
     afterNextRender(() => {
-      const slot = this.readinessSlot()?.nativeElement;
-      if (slot) {
-        const preserveHeight = () => {
-          const height = Math.ceil(slot.getBoundingClientRect().height);
-          if (height > this.preservedReadinessHeight) {
-            this.preservedReadinessHeight = height;
-            slot.style.minHeight = `${height}px`;
-          }
-        };
-        const readinessObserver = new ResizeObserver(preserveHeight);
-        readinessObserver.observe(slot);
-        preserveHeight();
-        this.destroyRef.onDestroy(() => readinessObserver.disconnect());
-      }
       const footer = this.footer().nativeElement;
       const measure = () => {
         const height = Math.ceil(footer.getBoundingClientRect().height);
@@ -419,7 +399,7 @@ export class OfferPreview {
     }
   }
 
-  startEditing(): void {
+  startEditing(focusField?: 'hourlyRate'): void {
     if (this.isSaving() || this.isEditing()) return;
     const project = this.data().project;
 
@@ -440,6 +420,12 @@ export class OfferPreview {
     this.saveError.set('');
     this.isEditing.set(true);
     this.detailsDialog().nativeElement.showModal();
+    if (focusField === 'hourlyRate') {
+      const field = this.hourlyRateInput().nativeElement;
+      field.focus();
+      field.select();
+      field.scrollIntoView({ block: 'center' });
+    }
     this.detailsOpened.emit();
   }
 

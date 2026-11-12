@@ -14,7 +14,7 @@ accept: juridisk navn, CVR, adresse og kontaktperson med e-mail.
 
 **Databehandler:** Hovedet på Sømmet v/Johan Steiner Roug,
 Birkerød Kongevej 126, 3460 Birkerød, Danmark.
-CVR-registrering afventer godkendelse; nummer tilføjes inden endelig indgåelse.
+CVR: 46908171.
 Kontakt om databeskyttelse: kontakt@hovedetpaasommet.dk.
 
 Aftalen indgås ved særskilt skriftlig eller dokumenteret elektronisk accept

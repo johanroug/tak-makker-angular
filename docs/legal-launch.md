@@ -1,7 +1,7 @@
 # Betingelser og privatliv — 7. november 2026
 
 Offentlige sider: /handelsbetingelser, /privatlivspolitik, /kontakt.
-Adresse og juridisk navn er bekræftet af Johan. CVR er under registrering;
+Adresse og juridisk navn er bekræftet af Johan. CVR: 46908171, oplyst af Johan 12. november 2026;
 betalingsfunktionerne er fortsat lukket på offentlige origins i sandbox.
 Siderne beskriver det planlagte B2B-abonnement særskilt fra gratis prøveadgang.
 Der er links ved oprettelse, i den offentlige footer og i arbejdsrummet.
@@ -9,7 +9,7 @@ Oprettelsesteksten er information, ikke et særskilt GDPR-samtykke.
 
 ## Før betalende kunder og almindelige persondata i kunders projekter
 
-- Tilføj det tildelte CVR og kontrollér momsregistrering før Stripe Live.
+- CVR 46908171 er tilføjet. Kontrollér momsregistrering før Stripe Live.
 - Udkastet til kundernes databehandleraftale ligger i
   `docs/databehandleraftale-udkast.md`. Færdiggør bilag og indgå aftalen.
   Privatlivspolitikken er ikke den aftale. Brug anonymiserede testopgaver indtil da.

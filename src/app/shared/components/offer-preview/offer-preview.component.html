@@ -5,39 +5,6 @@
       <button id="tasks-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() !== 'materials'" aria-controls="tasks-panel" [attr.tabindex]="selectedTab() === 'materials' ? -1 : 0" (click)="selectSection('tasks')" (keydown.arrowright)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" (keydown.arrowleft)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" #tasksTab><app-workspace-icon name="wrench" />Arbejdsopgaver ({{ data().workItems.length }})</button>
       <button id="materials-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() === 'materials'" aria-controls="materials-panel" [attr.tabindex]="selectedTab() === 'materials' ? 0 : -1" (click)="selectSection('materials')" (keydown.arrowleft)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" (keydown.arrowright)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" #materialsTab><app-workspace-icon name="materials" />Materialer ({{ data().materials.length }})</button>
     </div>
-  @if (!finalizedOfferId()) {
-    <div #readinessSlot class="readiness-slot">
-    <details class="draft-readiness" [class.is-ready]="!missingRequirements.length" (toggle)="resetReadinessHeight()">
-      <summary>
-        <app-workspace-icon class="mobile-detail-icon" [name]="missingRequirements.length ? 'warning' : 'checkCircle'" />
-        <span>
-        @if (missingRequirements.length) {
-        {{ missingRequirements.length }}
-        {{ missingRequirements.length === 1 ? 'punkt mangler' : 'punkter mangler' }}, før tilbuddet
-        er klar
-        } @else {
-          Alle punkter er på plads
-        }
-        </span>
-        <app-workspace-icon class="mobile-detail-icon readiness-chevron" name="chevron" />
-      </summary>
-      <ul>
-        @for (issue of missingRequirements; track issue.key) {
-          <li>
-            @if (issue.action) {
-              <button type="button" (click)="fixRequirement(issue)">{{ issue.label }} →</button>
-            } @else {
-              {{ issue.label }}
-            }
-          </li>
-        } @empty {
-          <li>Tilbuddet er klar til at blive færdiggjort.</li>
-        }
-      </ul>
-    </details>
-    </div>
-  }
-
   <div class="draft-columns" (click)="selectInputValue($event)">
     <section
       class="draft-section tasks-column"
@@ -70,22 +37,27 @@
               [attr.data-new-suggestion]="newWorkItemIds().has(item.id) ? 'true' : null"
             >
               <button type="button" class="line-check" [class.checked]="item.status === 'accepted'" [attr.aria-label]="(item.status === 'accepted' ? 'Afvis ' : 'Godkend ') + item.description" [attr.aria-pressed]="item.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('work', item.id) || item.status !== 'accepted' && !canApproveWork(item)" (click)="changeStatus('work', item.id, item.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ item.status === 'accepted' ? '✓' : '' }}</span></button>
+              @if (item.status !== 'accepted' && item.status !== 'rejected') {
+                <button type="button" class="mobile-work-reject" [attr.aria-label]="'Afvis opgave: ' + (item.description || group.title)" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('work', item.id)" (click)="changeStatus('work', item.id, 'rejected')">Afvis</button>
+              }
               <div class="draft-fields work-columns">
                 <label class="draft-name">
                   <span class="field-caption">Opgave</span>
                   <input
                     type="text"
-                    class="draft-text"
+                    class="draft-text desktop-work-name"
                     aria-label="Arbejdsbeskrivelse"
                     placeholder="Beskriv opgaven"
                     [value]="item.description || ''"
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
                   />
+                  <textarea class="mobile-work-description" rows="2" aria-label="Arbejdsbeskrivelse på mobil" [value]="item.description || ''" (input)="editField('work', item.id, 'description', $event, false)" (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
                   }}</span>
                 </label>
+                <div class="work-edit-fields">
                 <label class="draft-hours"
                   ><app-workspace-icon class="mobile-detail-icon" name="clock" /><span class="field-caption">Timer</span
                   ><input
@@ -101,29 +73,23 @@
                     textSaveLabel('work', item.id, 'hours')
                   }}</span></label
                 >
-                <span class="draft-rate"
+                <button type="button" class="draft-rate desktop-work-rate" aria-label="Ret projektets timepris" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')"
                   ><span class="field-caption">Kr./time</span
                   >{{
                     data().project.hourly_rate === null
                       ? '—'
                       : (data().project.hourly_rate | number: '1.0-2' : 'da')
-                  }}</span
+                  }}</button
                 >
+                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" aria-label="Ret projektets timepris" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? 'Angiv pris' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}</button></div>
+                </div>
                 <strong class="draft-line-total"
-                  ><span class="field-caption">Beløb</span>
+                  ><span class="field-caption"><span class="desktop-work-caption">Beløb</span><span class="mobile-work-caption">Samlet pris</span></span>
                   <app-workspace-icon class="mobile-detail-icon" name="coins" />
                   <span class="desktop-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span>
                   <span class="mobile-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
-              <details class="line-actions-menu" #workReview><summary aria-label="Handlinger for opgaven">⋯</summary><app-line-review
-                [status]="item.status ?? 'suggested'"
-                [label]="'opgave: ' + (item.description || group.title)"
-                [canAccept]="canApproveWork(item)"
-                [disabled]="hasPendingChanges() || reviewPending('work', item.id) || isFinalizing()"
-                [isNew]="newWorkItemIds().has(item.id)"
-                (changed)="changeStatus('work', item.id, $event); workReview.open = false"
-              /></details>
             </article>
           }
         </section>
@@ -176,7 +142,6 @@
               [attr.data-new-suggestion]="newMaterialIds().has(material.id) ? 'true' : null"
             >
               <button type="button" class="line-check" [class.checked]="material.status === 'accepted'" [attr.aria-label]="(material.status === 'accepted' ? 'Afvis ' : 'Godkend ') + material.name" [attr.aria-pressed]="material.status === 'accepted'" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id) || material.status !== 'accepted' && !canApproveMaterial(material)" (click)="changeStatus('material', material.id, material.status === 'accepted' ? 'rejected' : 'accepted')"><span aria-hidden="true">{{ material.status === 'accepted' ? '✓' : '' }}</span></button>
-              <span class="mobile-material-status">{{ material.status === 'accepted' ? 'Godkendt' : material.status === 'rejected' ? 'Afvist' : 'Afventer' }}</span>
               @if (material.status !== 'accepted' && material.status !== 'rejected') {
                 <button type="button" class="mobile-material-reject" [attr.aria-label]="'Afvis materiale: ' + (material.name || 'uden navn')" [disabled]="hasPendingChanges() || isFinalizing() || reviewPending('material', material.id)" (click)="changeStatus('material', material.id, 'rejected')">Afvis</button>
               }
@@ -245,14 +210,6 @@
                   <span class="mobile-price">{{ getMaterialPrice(material) | number: '1.0-2' : 'da' }} kr.</span></strong
                 >
               </div>
-              <details class="line-actions-menu" #materialReview><summary aria-label="Handlinger for materialet">⋯</summary><app-line-review
-                [status]="material.status ?? 'suggested'"
-                [label]="'materiale: ' + (material.name || 'uden navn')"
-                [canAccept]="canApproveMaterial(material)"
-                [disabled]="hasPendingChanges() || reviewPending('material', material.id) || isFinalizing()"
-                [isNew]="newMaterialIds().has(material.id)"
-                (changed)="changeStatus('material', material.id, $event); materialReview.open = false"
-              /></details>
             </article>
           }
         </section>
@@ -319,6 +276,37 @@
   </section>
 
   <div #offerFooter class="offer-footer">
+  @if (!finalizedOfferId()) {
+    <div class="readiness-slot">
+    <details class="draft-readiness" [class.is-ready]="!missingRequirements.length">
+      <summary>
+        <app-workspace-icon class="readiness-icon" [name]="missingRequirements.length ? 'warning' : 'checkCircle'" />
+        <span>
+        @if (missingRequirements.length) {
+        {{ missingRequirements.length }}
+        {{ missingRequirements.length === 1 ? 'oplysning mangler' : 'oplysninger mangler' }}
+        } @else {
+          Alle punkter er på plads
+        }
+        </span>
+        <app-workspace-icon class="readiness-chevron" name="chevron" />
+      </summary>
+      <ul>
+        @for (issue of missingRequirements; track issue.key) {
+          <li>
+            @if (issue.action) {
+              <button type="button" (click)="fixRequirement(issue)"><span>{{ issue.label }}</span><span aria-hidden="true">→</span></button>
+            } @else {
+              {{ issue.label }}
+            }
+          </li>
+        } @empty {
+          <li>Tilbuddet er klar til at blive færdiggjort.</li>
+        }
+      </ul>
+    </details>
+    </div>
+  }
     @if (finalizedOfferNumber(); as offerNumber) {
       <div class="finalized-message">
         <div>
@@ -432,7 +420,7 @@
 
       <label>
         Timepris (kr. ekskl. moms) <small>Gælder alle arbejdsopgaver i dette projekt</small>
-        <input type="number" inputmode="decimal" min="0" step="0.01" formControlName="hourlyRate" />
+        <input #hourlyRateInput type="number" inputmode="decimal" min="0" step="0.01" formControlName="hourlyRate" />
       </label>
 
       <label

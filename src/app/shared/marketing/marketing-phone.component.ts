@@ -15,7 +15,7 @@ import { WorkspaceIcon } from '../components/workspace-icon.component';
       <h3>Arbejdsopgaver <small>✓ 3 af 5</small></h3>
       <div class="phone-trade"><app-workspace-icon name="wrench" />VVS <small>3 opgaver</small></div>
       @for (item of items; track item.title) {
-        <article><span class="phone-approved">✓ Godkendt</span><h4>{{ item.title }}</h4><div class="phone-amount"><span>◷ {{ item.hours }} t</span><b>{{ item.price }} kr.</b><span class="phone-reject">Afvis</span></div></article>
+        <article><span class="phone-approved">✓ Godkendt</span><h4>{{ item.title }}</h4><div class="phone-amount"><span>Din tid</span><b>Din pris</b><span class="phone-reject">Afvis</span></div></article>
       }
     </div>
   `,
@@ -44,8 +44,8 @@ import { WorkspaceIcon } from '../components/workspace-icon.component';
 })
 export class MarketingPhone {
   readonly items = [
-    { title: 'Montering og tilslutning af 3 nye radiatorer', hours: '5', price: '3.330' },
-    { title: 'Afmontering og bortskaffelse af 3 eksisterende radiatorer', hours: '2,5', price: '1.665' },
-    { title: 'Tilpasning af rør og installationer', hours: '3', price: '1.998' },
+    { title: 'Montering og tilslutning af 3 nye radiatorer' },
+    { title: 'Afmontering og bortskaffelse af 3 eksisterende radiatorer' },
+    { title: 'Tilpasning af rør og installationer' },
   ];
 }

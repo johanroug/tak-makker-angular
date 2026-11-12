@@ -28,7 +28,7 @@ export const TRADE_PAGES: TradePage[] = [
     image: '/marketing/craft-still-life.jpg',
     shortIntro: 'Saml VVS-opgaver, materialer og arbejdstid i et tilbud, du selv gennemgår og prissætter.',
     singular: 'VVS',
-    screenshot: '/marketing/tilbud-vvs-v3.jpg',
+    screenshot: '/marketing/tilbud-vvs-flexible.jpg',
     screenshotWidth: 1567, screenshotHeight: 1050,
     intro: 'Et VVS-tilbud skal gøre det tydeligt, hvad kunden får, og hvilke forhold prisen bygger på. Beskriv arbejdet i Hovedet på sømmet, gennemgå forslagene og tilpas udkastet med din erfaring og dine leverandørpriser.',
     sections: [
@@ -69,8 +69,8 @@ export const TRADE_PAGES: TradePage[] = [
     shortIntro:
       'Fra terrasse til tagarbejde. Få hjælp til opgaver, materialer og priser — tilpasset din måde at arbejde på.',
     singular: 'Tømrer',
-    screenshot: '/marketing/tilbud-toemrer-v3.jpg',
-    screenshotWidth: 1567, screenshotHeight: 1050,
+    screenshot: '/marketing/tilbud-toemrer-flexible.jpg',
+    screenshotWidth: 1553, screenshotHeight: 1040,
     intro:
       'En ny terrasse er mere end brædder og skruer. Der er underlag, konstruktion, tilpasninger og kundens valg. Hovedet på sømmet hjælper dig fra beskrivelsen af opgaven til et tilbudsudkast, som du selv gennemgår og prissætter.',
     sections: [
@@ -125,7 +125,7 @@ export const TRADE_PAGES: TradePage[] = [
     shortIntro:
       'Få hjælp til at strukturere opgaver, materialer og priser — tilpasset dit murerarbejde. Du har fagligheden. Vi hjælper med overblikket.',
     singular: 'Murer',
-    screenshot: '/marketing/tilbud-murer-v3.jpg',
+    screenshot: '/marketing/tilbud-murer-flexible.jpg',
     screenshotWidth: 1567, screenshotHeight: 1050,
     intro:
       'Når du giver tilbud på fliser eller andet murerarbejde, skal forarbejdet med. Hovedet på sømmet hjælper med at samle beskrivelsen, opgaverne og materialerne, så du kan tilpasse tilbuddet med din faglige vurdering.',
@@ -181,7 +181,7 @@ export const TRADE_PAGES: TradePage[] = [
     shortIntro:
       'Fra forarbejde til sidste strøg. Saml opgaver, materialer og dine priser i et tilbud, du selv har styr på.',
     singular: 'Maler',
-    screenshot: '/marketing/tilbud-maler-v3.jpg',
+    screenshot: '/marketing/tilbud-maler-flexible.jpg',
     screenshotWidth: 1567, screenshotHeight: 1050,
     intro:
       'Afdækning, afrensning og spartling kan fylde lige så meget i tilbuddet som selve malingen. Hovedet på sømmet hjælper dig med at samle arbejdsopgaver og materialer i et udkast, som du tilpasser til rummene og overfladerne.',

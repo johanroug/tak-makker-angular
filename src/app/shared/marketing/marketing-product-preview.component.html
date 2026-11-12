@@ -1,0 +1,30 @@
+<div class="preview-page" [class.document-mode]="mode() === 'offer'">
+  @if (mode() !== 'offer') {
+    <header class="preview-header"><app-public-brand [tagline]="false" [inverse]="true" /><div class="preview-project"><app-workspace-icon name="projects" />{{ title() }}</div><span class="preview-saved">✓ Gemt automatisk</span></header>
+  }
+  @if (mode() === 'intro') {
+    <div class="intro-stage">
+      <section class="intro-card">
+        <p class="eyebrow">Et nyt projekt starter her</p><h1>Beskriv dit projekt</h1>
+        <div class="intro-choices"><div class="selected"><app-workspace-icon name="chat" /><strong>Beskriv opgaven</strong></div><div><app-workspace-icon name="tasks" /><strong>Brug en skabelon</strong></div><div><app-workspace-icon name="offers" /><strong>Start tomt</strong></div></div>
+        <p class="intro-explanation">Sæt din tilbudsassistent i gang. Du gennemgår selv forslagene til arbejdsopgaver og materialer.</p>
+        <strong>Fortæl om projektet</strong><div class="intro-message">Jeg skal renovere et badeværelse. Der skal nye fliser, bruseniche og armaturer. Hjælp mig med at få overblik over opgaverne og materialerne.<app-workspace-icon name="chat" /></div>
+        <p class="muted">Skriv eller indtal dine ønsker. Du kan altid rette og tilføje oplysninger bagefter.</p>
+        <footer><span class="outline-action">Annuller</span><span class="orange-action">Fortsæt →</span></footer>
+      </section>
+    </div>
+  } @else if (mode() === 'work') {
+    <main class="preview-workspace">
+      <aside class="preview-panel conversation"><h2><app-workspace-icon name="sparkles" />Samtale med AI-assistent</h2><div class="conversation-content"><div class="message user"><b>Dig</b><p>Jeg skal lave et tilbud på: {{ title() }}.</p></div><div class="message"><b>Hovedet på Sømmet</b><p>Her er forslag til arbejdsopgaver og materialer. Tilpas dem, så de passer til dit arbejde.</p></div><div class="message ready"><b>✓ Klar til gennemgang</b><p>Du vælger selv indhold, tidsforbrug og priser.</p></div></div><div class="message-composer"><app-workspace-icon name="chat" /><span>Beskriv dit projekt…</span><b>➤</b></div></aside>
+      <section class="preview-panel editor"><div class="preview-tabs"><strong><app-workspace-icon name="wrench" />Arbejdsopgaver</strong><span><app-workspace-icon name="materials" />Materialer</span></div><div class="editor-body"><div class="group-heading"><app-workspace-icon name="wrench" /><b>{{ trade() }}</b><span>Dit fag</span></div><div class="row-labels"><span>Opgave</span><span>Tidsforbrug</span><span>Pris</span></div>
+        @for (task of tasks(); track task; let i = $index) {
+          <article class="task-row"><span class="approval" [class.pending]="i === tasks().length - 1">{{ i === tasks().length - 1 ? '' : '✓' }}</span><strong>{{ task }}</strong><span class="choice-field">Din tid</span><span class="choice-field">Din pris</span><span class="row-more">⋯</span></article>
+        }
+        <div class="selection-summary"><app-workspace-icon name="checkCircle" />Du vælger, hvad der kommer med i tilbuddet.</div><div class="material-preview"><h3><app-workspace-icon name="materials" />Materialer til dit projekt</h3><div>@for (material of materials(); track material) {<span>✓ {{ material }}</span>}</div></div><span class="add-action">＋ Tilføj opgave</span>
+      </div></section>
+      <aside class="preview-panel quotation"><h2><app-workspace-icon name="offers" />Tilbud<span class="ready-badge">Udkast</span></h2><div class="quotation-body"><div class="paper"><app-public-brand [tagline]="false" /><h3>Tilbud</h3><p>{{ title() }}</p><div class="paper-rule"></div><div class="paper-rule"></div><div class="paper-rule short"></div><b>Udarbejdet med din faglighed</b></div><dl><div><dt>Arbejdsopgaver</dt><dd>Dit omfang</dd></div><div><dt>Arbejdsløn</dt><dd>Din timepris</dd></div><div><dt>Materialer</dt><dd>Dine valg</dd></div><div><dt>Betingelser</dt><dd>Dine aftaler</dd></div><div class="quotation-total"><dt>Dit tilbud</dt><dd>Du godkender</dd></div></dl><span class="orange-action">Færdiggør tilbud →</span><span class="outline-action">Tilbudshistorik</span></div></aside>
+    </main>
+  } @else {
+    <main class="offer-stage"><article class="document-paper"><header><app-public-brand [tagline]="false" /><span>Dit firma. Dit aftryk.</span></header><h1>Tilbud</h1><p class="document-intro">{{ title() }}</p><h2>Arbejdsopgaver</h2><div class="document-table"><div class="document-table-heading"><span>Fag</span><span>Opgave</span><span>Status</span></div>@for (task of documentTasks(); track task.title) {<div><b>{{ task.trade }}</b><span>{{ task.title }}</span><span class="document-approved">✓ Godkendt</span></div>}</div><h2>Materialer</h2><div class="document-materials">@for (material of materials(); track material) {<div><span>{{ material }}</span><span>✓ Gennemgået</span></div>}</div></article><aside class="preview-panel offer-controls"><p class="eyebrow">Dit færdige tilbud</p><h2>Dit arbejde.<br />Dine valg.</h2><p>Arbejdsopgaver, materialer og betingelser samlet i et professionelt tilbud med dit logo.</p><dl><div><dt>Indhold</dt><dd>Godkendt af dig</dd></div><div><dt>Priser</dt><dd>Fastsat af dig</dd></div><div><dt>Modtager</dt><dd>Din kunde</dd></div></dl><span class="orange-action">↓ Hent PDF</span><p class="muted">Klar til at sende videre til kunden.</p></aside></main>
+  }
+</div>

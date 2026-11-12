@@ -5,7 +5,6 @@ import { TRADE_PAGES } from './features/trades/trade-pages';
 import { LEGAL_PAGES } from './features/legal/legal-pages';
 
 export const routes: Routes = [
-  { path: '__marketing-assets', loadComponent: () => import('./marketing-asset-capture').then(m => m.MarketingAssetCapture) },
   {
     path: '',
     pathMatch: 'full',

@@ -8,7 +8,7 @@ Implemented from the supplied homepage and workspace references:
 - Approval controls retain existing validation and saving guards. Switching tabs retains fields and includes accepted lines from both tabs in the total.
 - Mobile keeps the existing four-section navigation and shows the quotation summary in the quotation section.
 
-The current trade screenshots (`tilbud-*-v3.jpg`) and `workspace-v3.jpg` were captured locally from the actual quotation component with illustrative test data. They show the decorative green/orange rail without the former left navigation menu. Versioned filenames prevent stale browser caches. The temporary capture route and fixture were removed after verification. No live project data was modified.
+The public trade illustrations (`tilbud-*-flexible.jpg`) and `workspace-flexible.jpg` use a separate marketing mockup without concrete prices or time estimates. They retain the decorative green/orange rail without the former left navigation menu. See [marketing-examples.md](marketing-examples.md) for the complete asset replacement list. The temporary capture route was removed after verification. No live project data was modified.
 
 Validation: production build and SEO checks; two component tests covering tab changes, retained edits, totals and approval guards; browser checks of desktop/mobile layouts, tab keyboard navigation and totals updating on approval.
 

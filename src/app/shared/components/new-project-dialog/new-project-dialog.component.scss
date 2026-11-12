@@ -68,6 +68,7 @@
 .journey { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; font-size: 13px; }
 @keyframes breathe { 50% { opacity: .5; transform: scale(1.1); } }
 @media (max-width: 650px) {
+  .mode-subtitle { display: none; }
   .start-dialog[open] { width: calc(100vw - 20px); height: calc(100dvh - 20px); max-height: calc(100dvh - 20px); padding: 20px 16px; border-radius: 20px; }
   .dialog-header { gap: 10px; margin-bottom: 22px; }
   .project-start-symbol { width: 40px; height: 40px; }

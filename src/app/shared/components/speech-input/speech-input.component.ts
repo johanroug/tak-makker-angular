@@ -16,6 +16,8 @@ export class SpeechInput implements OnDestroy {
   readonly busyChange = output<boolean>();
   readonly state = signal<'idle' | 'starting' | 'recording' | 'transcribing'>('idle');
   readonly error = signal('');
+  readonly permissionDenied = signal(false);
+  readonly permissionGuide = signal<'safari' | 'chrome-ios' | 'android' | 'other'>('other');
   readonly waveform = signal<number[]>(Array(24).fill(3));
   private audioContext?: AudioContext;
   private audioSource?: MediaStreamAudioSourceNode;
@@ -34,6 +36,7 @@ export class SpeechInput implements OnDestroy {
   async start(): Promise<void> {
     if (this.disabled() || this.state() !== 'idle') return;
     this.error.set('');
+    this.permissionDenied.set(false);
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
       this.error.set('Din browser understøtter ikke optagelse. Du kan stadig skrive din besked.');
       return;
@@ -77,9 +80,15 @@ export class SpeechInput implements OnDestroy {
     } catch (error) {
       if (this.destroyed || generation !== this.generation) return;
       this.cancel();
-      this.error.set(error instanceof DOMException && error.name === 'NotAllowedError'
-        ? 'Tillad mikrofonen i browseren for at indtale din besked.'
-        : 'Kunne ikke starte mikrofonen. Kontrollér, at den er tilsluttet og ledig.');
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        const agent = navigator.userAgent;
+        const ios = /iPhone|iPad|iPod/.test(agent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+        this.permissionGuide.set(ios && /CriOS/.test(agent) ? 'chrome-ios' : ios && /Safari/.test(agent) && !/FxiOS|EdgiOS/.test(agent) ? 'safari' : /Android/.test(agent) ? 'android' : 'other');
+        this.permissionDenied.set(true);
+        this.error.set('Mikrofonen er ikke tilladt endnu.');
+      } else {
+        this.error.set('Kunne ikke starte mikrofonen. Kontrollér, at den er tilsluttet og ledig.');
+      }
     }
   }
 

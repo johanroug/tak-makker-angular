@@ -37,4 +37,31 @@
     </div>
   </div>
 </div>
-@if (error()) { <p class="speech-error" role="alert">{{ error() }}</p> }
+@if (permissionDenied()) {
+  <section class="microphone-help" aria-label="Hjælp til mikrofonadgang">
+    <strong role="alert">{{ error() }}</strong>
+    <p>Vælg <b>Tillad</b>, hvis browseren spørger. Kommer der ingen boks, kan du ændre tilladelsen her:</p>
+    <details [open]="permissionGuide() === 'safari'">
+      <summary>Safari på iPhone eller iPad</summary>
+      <ol><li>Tryk på sidemenuen ved adresselinjen (sideikonet eller <b>aA</b>).</li><li>Åbn <b>Indstillinger til websteder</b>. I nogle versioner ligger de under <b>Mere (…)</b>.</li><li>Vælg <b>Mikrofon → Tillad</b> for dette websted.</li></ol>
+      <a href="https://support.apple.com/da-dk/guide/iphone/iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Se Apples vejledning ↗</a>
+    </details>
+    <details [open]="permissionGuide() === 'chrome-ios'">
+      <summary>Chrome på iPhone eller iPad</summary>
+      <ol><li>Åbn telefonens <b>Indstillinger → Apps → Chrome</b>. Du kan også søge efter Chrome i Indstillinger.</li><li>Slå <b>Mikrofon</b> til, hvis den er slået fra.</li><li>Gå tilbage til Chrome, tryk <b>Prøv mikrofonen igen</b> herunder, og vælg <b>Tillad</b>, hvis webstedet spørger.</li></ol>
+      <p>Er mikrofonen allerede slået til? Hvis Chrome viser et <b>mikrofonikon</b> ved adresselinjen, kan du åbne det og tillade mikrofonen for dette websted. Ikonet til AI eller søgning er ikke mikrofontilladelsen.</p>
+      <a href="https://support.google.com/chrome/answer/2693767?co=GENIE.Platform%3DiOS&amp;hl=da" target="_blank" rel="noopener noreferrer">Se Googles iPhone-vejledning ↗</a>
+    </details>
+    <details [open]="permissionGuide() === 'android'">
+      <summary>Chrome på Android</summary>
+      <ol><li>Åbn Chromes menu med <b>tre prikker → Indstillinger → Websiteindstillinger → Mikrofon</b>.</li><li>Tillad, at websteder kan spørge om mikrofonadgang. Står dette websted under <b>Blokeret</b>, tryk på det og vælg <b>Tillad</b>.</li><li>Er mikrofonen stadig blokeret, åbn telefonens <b>Indstillinger → Apps → Chrome → Tilladelser → Mikrofon</b>, og tillad brug af mikrofonen.</li></ol>
+      <a href="https://support.google.com/chrome/answer/2693767?co=GENIE.Platform%3DAndroid&amp;hl=da" target="_blank" rel="noopener noreferrer">Se Googles vejledning ↗</a>
+    </details>
+    <details [open]="permissionGuide() === 'other'">
+      <summary>Andre browsere og computer</summary>
+      <p>Åbn browserens tilladelser for dette websted via ikonet ved webadressen. Find <b>Mikrofon</b>, og vælg <b>Tillad</b>. Kontrollér også i enhedens indstillinger, at din browser må bruge mikrofonen.</p>
+    </details>
+    <button type="button" class="microphone-retry" [disabled]="disabled()" (click)="start()">Prøv mikrofonen igen</button>
+    <p class="microphone-help-note">Vend tilbage hertil, når tilladelsen er ændret. Din tekst bliver stående, og du kan altid skrive videre.</p>
+  </section>
+} @else if (error()) { <p class="speech-error" role="alert">{{ error() }}</p> }

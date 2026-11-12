@@ -1,0 +1,9 @@
+app-new-project-dialog .start-dialog #new-project-form app-speech-input {
+  .speech-composer { flex: 1; display: flex; min-height: 120px; border: 1.5px solid #b8cbc0; border-radius: 16px; background: #fffefd; }
+  .speech-composer:focus-within { border-color: #bc802c; box-shadow: 0 0 0 2px #bc802c15; }
+  .speech-toolbar { right: 14px; bottom: 14px; height: 48px; }
+  .speech-controls button { width: 48px; height: 48px; background: #edf1e8; }
+  .speech-controls button.recording { background: #df7139; }
+  .speech-controls svg { width: 25px; height: 25px; }
+  .speech-visual { padding-left: 0; }
+}

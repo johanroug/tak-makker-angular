@@ -26,24 +26,28 @@
     }
   } @else {
     <div class="dialog-layout">
-    <div class="dialog-fixed">
     <div class="dialog-header">
-      <span id="new-project-title" class="eyebrow">ET NYT PROJEKT STARTER HER</span>
+      <img class="project-start-symbol" src="/brand-preview/reference-symbol.svg" alt="" width="64" height="64" />
+      <div class="dialog-heading"><span class="eyebrow">ET NYT PROJEKT STARTER HER</span><h2 id="new-project-title">Kom i gang med dit tilbud</h2></div>
       <button type="button" class="close-button" aria-label="Luk" autofocus (click)="close()">×</button>
     </div>
+    <div class="dialog-main">
+    <div class="dialog-fixed">
     <fieldset class="creation-modes" aria-label="Projektets start" [disabled]="!!projectId()">
-      <label class="mode-choice mode-describe" [class.is-selected]="mode() === 'ai'"><input type="radio" name="creation-mode" [checked]="mode() === 'ai'" (change)="mode.set('ai')" /><span class="mode-symbol"><app-workspace-icon name="chat" /></span><span>Beskriv opgaven</span><span class="selection-mark" aria-hidden="true">✓</span></label>
-      <label class="mode-choice mode-template" [class.is-selected]="mode() === 'template'"><input type="radio" name="creation-mode" [checked]="mode() === 'template'" (change)="mode.set('template')" /><span class="mode-symbol"><app-workspace-icon name="tasks" /></span><span>Brug en skabelon</span><span class="selection-mark" aria-hidden="true">✓</span></label>
-      <label class="mode-choice mode-empty" [class.is-selected]="mode() === 'empty'"><input type="radio" name="creation-mode" [checked]="mode() === 'empty'" (change)="mode.set('empty')" /><span class="mode-symbol"><app-workspace-icon name="offers" /></span><span>Start tomt</span><span class="selection-mark" aria-hidden="true">✓</span></label>
+      <label class="mode-choice mode-describe" [class.is-selected]="mode() === 'ai'"><input type="radio" name="creation-mode" aria-label="Beskriv opgaven" [checked]="mode() === 'ai'" (change)="mode.set('ai')" /><span class="mode-symbol"><app-workspace-icon name="chat" /></span><span class="mode-title">Beskriv opgaven</span><span class="mode-subtitle">Fortæl med dine egne ord</span><span class="selection-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10" /></svg></span></label>
+      <label class="mode-choice mode-template" [class.is-selected]="mode() === 'template'"><input type="radio" name="creation-mode" aria-label="Brug en skabelon" [checked]="mode() === 'template'" (change)="mode.set('template')" /><span class="mode-symbol"><app-workspace-icon name="tasks" /></span><span class="mode-title">Brug en skabelon</span><span class="mode-subtitle">Kom hurtigt i gang</span><span class="selection-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10" /></svg></span></label>
+      <label class="mode-choice mode-empty" [class.is-selected]="mode() === 'empty'"><input type="radio" name="creation-mode" aria-label="Start tomt" [checked]="mode() === 'empty'" (change)="mode.set('empty')" /><span class="mode-symbol"><app-workspace-icon name="offers" /></span><span class="mode-title">Start tomt</span><span class="mode-subtitle">Opret selv fra bunden</span><span class="selection-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10" /></svg></span></label>
     </fieldset>
-    <p class="mode-description" role="status">{{ mode() === 'ai' ? 'Sæt din tilbudsassistent i gang. AI omsætter dine ord til forslag til opgaver, materialer og timer.' : mode() === 'template' ? 'Genbrug virksomhedens gemte opgaver og materialer.' : 'Opret projektet, og tilføj selv kundeoplysninger, opgaver og materialer.' }}</p>
+    <div class="mode-description" role="status"><app-workspace-icon [name]="mode() === 'ai' ? 'sparkles' : mode() === 'template' ? 'layers' : 'offers'" /><div><strong>{{ mode() === 'ai' ? 'Sæt din tilbudsassistent i gang' : mode() === 'template' ? 'Byg videre på din erfaring' : 'Dit projekt. Dine valg.' }}</strong><p>{{ mode() === 'ai' ? 'AI omsætter dine ord til forslag til opgaver, materialer og timer.' : mode() === 'template' ? 'Genbrug virksomhedens gemte opgaver og materialer.' : 'Opret projektet, og tilføj selv kundeoplysninger, opgaver og materialer.' }}</p></div></div>
     </div>
     <div class="dialog-content">
     @if (mode() === 'ai') {
     <form id="new-project-form" (submit)="$event.preventDefault(); continue()">
-      <app-billing-panel [compact]="true" [prominent]="true" (subscriptionRequested)="close()" />
+      <div class="project-prompt-heading"><label for="new-project-description">Fortæl om projektet</label><button type="button" class="subscription-link" (click)="openSubscription()">Se abonnement <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14M10 4H4v16h16v-6" /></svg></button></div>
+      @if (!billing.usage() || billing.error() || billing.usage()?.status === 'exhausted' || billing.usage()?.subscriptionState === 'past_due') {
+        <app-billing-panel [compact]="true" [prominent]="true" (subscriptionRequested)="close()" />
+      }
       @if (billing.usage()?.status !== 'exhausted') {
-        <label for="new-project-description">Fortæl om projektet</label>
         <app-speech-input [disabled]="isWorking() || hasSavedMessage() || billing.transcriptionLimitReached()" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
           id="new-project-description"
           [formControl]="prompt"
@@ -51,9 +55,8 @@
           rows="6"
           placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
         ></textarea></app-speech-input>
-        <p class="hint">
-          Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger
-          bagefter.
+        <p class="hint"><span class="hint-icon" aria-hidden="true">i</span><span>
+          Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger senere.</span>
         </p>
       }
       @if (error()) {
@@ -87,13 +90,14 @@
       @if (error()) { <p class="start-error" role="alert">{{ error() }}</p> }
     }
     </div>
+    </div>
     <div class="dialog-actions">
       <button type="button" class="secondary-button" (click)="close()">Annuller</button>
       @if (projectId() && error()) { <button type="button" (click)="openDraft()">Åbn kladden</button> }
       <button [type]="mode() === 'ai' ? 'submit' : 'button'" [attr.form]="mode() === 'ai' ? 'new-project-form' : null"
         class="continue-button"
         [disabled]="speechBusy() || (mode() === 'ai' ? !prompt.value.trim() : !billing.subscriberAccess() || mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError()))"
-        (click)="mode() !== 'ai' ? continue() : null">{{ mode() === 'ai' ? (error() ? 'Prøv igen' : 'Fortsæt') : 'Opret projekt' }}</button>
+        (click)="mode() !== 'ai' ? continue() : null">{{ mode() === 'ai' ? (error() ? 'Prøv igen' : 'Fortsæt') : 'Opret projekt' }}<span aria-hidden="true">→</span></button>
     </div>
     </div>
   }

@@ -104,6 +104,11 @@ export class NewProjectDialog implements OnDestroy {
     if (!this.isWorking()) this.dialog().nativeElement.close();
   }
 
+  openSubscription(): void {
+    this.close();
+    void this.router.navigate(['/company-profile'], { fragment: 'subscription' });
+  }
+
   async continue(): Promise<void> {
     if (this.speechBusy()) return;
     if (this.mode() !== 'ai') { await this.createWithoutAi(); return; }

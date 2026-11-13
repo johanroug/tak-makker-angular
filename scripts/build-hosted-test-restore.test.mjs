@@ -28,6 +28,15 @@ test('never silently omits missing Auth or nonempty Storage tables',()=>{
   assert.throws(()=>build(schema,data.replace('COPY auth.users','COPY auth.unavailable_users')),/no rows were discarded/);
   assert.throws(()=>build(schema,data.replace('COPY storage.old_empty_table (id) FROM stdin;\n\\.','COPY storage.old_empty_table (id) FROM stdin;\n1\n\\.')),/no rows were discarded/);
 });
+test('accepts quoted pg_dump identifiers and matches them to unquoted target metadata',()=>{
+  const quoted=data.replaceAll('public.projects','"public"."projects"').replaceAll('public.offers','"public"."offers"')
+    .replaceAll('auth.users','"auth"."users"').replaceAll('storage.old_empty_table','"storage"."old_empty_table"');
+  const result=build(schema,quoted);
+  assert.equal(result.tableCount,3);
+  assert.deepEqual(result.omittedStorageTables,['"storage"."old_empty_table"']);
+  assert.ok(result.sql.includes('COPY "public"."projects" (id) FROM stdin;\n1\n\\.'));
+  assert.throws(()=>build(schema,data+'COPY "public"."projects" (id) FROM stdin;\n\\.\n'),/Duplicate/);
+});
 test('rejects incomplete, duplicate and unexpected data schemas',()=>{
   assert.throws(()=>build(schema,data+'COPY public.broken (id) FROM stdin;\n1'),/Incomplete/);
   assert.throws(()=>build(schema,data+data),/Duplicate/);

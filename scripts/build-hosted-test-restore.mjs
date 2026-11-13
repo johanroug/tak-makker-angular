@@ -5,16 +5,22 @@ import { omitMissingEmptyStorage } from './prepare-restore-data.mjs';
 
 export const TEST_PROJECT = 'woxioycjdjucxqiyqcyr';
 export const SOURCE_PROJECT = 'agbugdzobpkpgfischvi';
+function tableParts(table) {
+  const match = /^("(?:[^"]|"")*"|[a-z_][a-z_0-9]*)\.("(?:[^"]|"")*"|[a-z_][a-z_0-9]*)$/.exec(table);
+  if (!match) throw new Error('Invalid COPY table identifier');
+  return match.slice(1).map(part => part.startsWith('"') ? part.slice(1,-1).replaceAll('""','"') : part);
+}
+const tableKey = table => JSON.stringify(tableParts(table));
 export function buildHostedTestRestore(schema, data, managedTables, target, confirmation) {
   if (target !== TEST_PROJECT || target === SOURCE_PROJECT || confirmation !== 'RESTORE hovedet-test') throw new Error('Unexpected test restore target or confirmation');
   const counts = copyCounts(data);
-  if (!counts.some(([table]) => table === 'public.projects') || !counts.some(([table]) => table === 'public.offers')) throw new Error('Application archive required');
-  if (counts.some(([table]) => !/^(public|auth|storage)\./.test(table))) throw new Error('Unexpected data schema: review external services before restoring');
+  if (!counts.some(([table]) => tableKey(table) === '["public","projects"]') || !counts.some(([table]) => tableKey(table) === '["public","offers"]')) throw new Error('Application archive required');
+  if (counts.some(([table]) => !['public','auth','storage'].includes(tableParts(table)[0]))) throw new Error('Unexpected data schema: review external services before restoring');
+  const managedKeys = new Set([...managedTables].filter(Boolean).map(tableKey));
   const missing = new Set();
   for (const [table] of counts) {
-    if (!/^(auth|storage)\./.test(table)) continue;
-    if (!/^(auth|storage)\.[a-z_][a-z_0-9]*$/.test(table)) throw new Error('Unexpected managed identifier');
-    if (!managedTables.has(table)) missing.add(table);
+    if (!['auth','storage'].includes(tableParts(table)[0])) continue;
+    if (!managedKeys.has(tableKey(table))) missing.add(table);
   }
   const prepared = omitMissingEmptyStorage(data, missing);
   // Official hosted-restore exception: hosted postgres cannot assume ownership
@@ -24,7 +30,7 @@ export function buildHostedTestRestore(schema, data, managedTables, target, conf
     ownerOmissions++; return '-- Hosted compatibility: supabase_admin owner statement omitted';
   });
   const expected = copyCounts(prepared);
-  if (new Set(expected.map(([table]) => table)).size !== expected.length) throw new Error('Duplicate COPY table');
+  if (new Set(expected.map(([table]) => tableKey(table))).size !== expected.length) throw new Error('Duplicate COPY table');
   const checks = expected.map(([table, count]) => `DO $$ BEGIN IF (SELECT count(*) FROM ${table}) <> ${count} THEN RAISE EXCEPTION 'Backup row count mismatch'; END IF; END $$;`).join('\n');
   const sql = `\\set VERBOSITY sqlstate
 \\set SHOW_CONTEXT never

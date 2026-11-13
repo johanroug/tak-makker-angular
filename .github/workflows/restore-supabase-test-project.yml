@@ -1,0 +1,41 @@
+name: Restore backup into hovedet-test
+on:
+  workflow_dispatch:
+    inputs:
+      backup_filename:
+        description: 'Exact completed archive on Simply (before customer migration)'
+        required: true
+        default: 'supabase-20261113T094328Z-43403543491-1.tar.gz.gpg'
+        type: string
+      confirmation:
+        description: 'Type RESTORE hovedet-test (target must be empty)'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: supabase-hosted-staging-restore
+  cancel-in-progress: false
+jobs:
+  restore:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: simply-production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Restore schema and data into the empty hosted test project
+        env:
+          BACKUP_FILENAME: ${{ inputs.backup_filename }}
+          RESTORE_CONFIRMATION: ${{ inputs.confirmation }}
+          SUPABASE_TEST_DB_PASSWORD: ${{ secrets.SUPABASE_TEST_DB_PASSWORD }}
+          BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+          SIMPLY_SSH_USER: ${{ secrets.SIMPLY_SSH_USER }}
+          SIMPLY_SSH_PRIVATE_KEY: ${{ secrets.SIMPLY_SSH_PRIVATE_KEY }}
+          SIMPLY_SSH_KNOWN_HOSTS: ${{ secrets.SIMPLY_SSH_KNOWN_HOSTS }}
+        run: bash scripts/restore-supabase-test-project.sh

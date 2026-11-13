@@ -391,17 +391,10 @@
         {{ data().project.project_number }}
       </p>
 
-      <label>
-        Kundenavn <small>Påkrævet før færdiggørelse</small>
-
-        <input type="text" formControlName="customerName" placeholder="Kundenavn" />
-      </label>
-
-      <label>
-        Kundeadresse <small>Påkrævet før færdiggørelse</small>
-
-        <input type="text" formControlName="customerAddress" placeholder="Kundeadresse" />
-      </label>
+      @if (isEditing()) {
+        <app-project-customer [data]="data()" [initialMode]="customerMode()" (contactOpened)="cancelEditing()" />
+      }
+      <label>Projektets arbejdsadresse<input type="text" formControlName="workAddress" placeholder="Hvor udføres arbejdet?" /></label>
 
       <label>
         Projektbeskrivelse <small>Påkrævet før færdiggørelse</small>

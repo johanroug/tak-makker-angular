@@ -8,8 +8,8 @@ test('sandbox sessions are closed on public origins, including with live switch 
     assert.equal(paymentsEnabled(origin, 'sk_test_dummy', true), false);
   }
 });
-test('sandbox remains available on the existing localhost origins', () => {
-  for (const origin of ['http://localhost:4200', 'http://127.0.0.1:4200'])
+test('sandbox is available on local development and staging origins', () => {
+  for (const origin of ['http://localhost:4200', 'http://127.0.0.1:4200', 'http://localhost:4201', 'http://127.0.0.1:4201'])
     assert.equal(paymentsEnabled(origin, 'sk_test_dummy', false), true);
 });
 test('live sessions need the explicit live switch and a live key', () => {

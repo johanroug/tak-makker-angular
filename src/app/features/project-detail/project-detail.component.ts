@@ -3,7 +3,9 @@ import { ProjectTools } from '../../shared/components/project-tools/project-tool
 import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subscription, EMPTY, catchError, merge, switchMap, timer, fromEvent, map } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CustomerService } from '../../core/customers/customer.service';
 import { ProjectService } from '../../core/projects/project.service';
 import { OfferPreview } from '../../shared/components/offer-preview/offer-preview.component';
 import { ProjectSidebar } from '../../shared/components/project-sidebar/project-sidebar.component';
@@ -36,9 +38,10 @@ export class ProjectDetail implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
+  private readonly customers = inject(CustomerService);
 
   protected readonly sidebar = viewChild(ProjectSidebar);
-  private readonly preview = viewChild(OfferPreview);
+  protected readonly preview = viewChild(OfferPreview);
   private readonly injector = inject(Injector);
   readonly mobileSection = signal<WorkspaceSection>('tasks');
   readonly mobileSections = [
@@ -53,6 +56,19 @@ export class ProjectDetail implements OnInit, OnDestroy {
     const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
+      // Poll contact data only: do not replace unsaved project/line edits. Focus
+      // and local edits refresh immediately; polling also covers other devices.
+      merge(timer(0, 15000), fromEvent(window, 'focus'), this.customers.changes).pipe(
+        switchMap(() => {
+          const id = this.project()?.project.id;
+          return id ? this.customers.projectContact(id).pipe(map(contact => ({ projectId: id, contact })), catchError(() => EMPTY)) : EMPTY;
+        }), takeUntilDestroyed(destroyRef),
+      ).subscribe(({ projectId, contact }) => {
+        this.project.update(data => data?.project.id === projectId ? {
+          ...data, customer: contact.customer, project: { ...data.project, customer_id: contact.customer_id,
+            ...(contact.customer ? { customer_name: contact.customer.name, customer_address: contact.customer.address } : {}) },
+        } : data);
+      });
       const viewport = window.visualViewport;
       if (!viewport) return;
 

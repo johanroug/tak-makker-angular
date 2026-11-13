@@ -1,4 +1,5 @@
 import type { DraftTextEdit } from './draft-text-edit';
+import { CustomerMode, ProjectCustomer } from '../customer-picker/project-customer.component';
 import {
   afterNextRender,
   Component,
@@ -29,8 +30,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 type EditableDetails = {
   hourlyRate: number | null;
-  customerName: string;
-  customerAddress: string;
+  workAddress: string;
   title: string;
   description: string;
   offerDescription: string;
@@ -41,7 +41,7 @@ type EditableDetails = {
 
 @Component({
   selector: 'app-offer-preview',
-  imports: [ReactiveFormsModule, DecimalPipe, WorkspaceIcon],
+  imports: [ReactiveFormsModule, DecimalPipe, WorkspaceIcon, ProjectCustomer],
   templateUrl: './offer-preview.component.html',
   styleUrl: './offer-preview.component.scss',
 })
@@ -162,6 +162,9 @@ export class OfferPreview {
   readonly isEditing = signal(false);
   readonly isSaving = signal(false);
   readonly saveError = signal('');
+  readonly customerMode = signal<CustomerMode | null>(null);
+  private readonly detailsCustomer = viewChild(ProjectCustomer);
+  private originalCustomerId: string | null = null;
 
   readonly isFinalizing = signal(false);
   readonly finalizeError = signal('');
@@ -195,12 +198,7 @@ export class OfferPreview {
     validityDays: new FormControl<number | null>(null),
     paymentTerms: new FormControl('', { nonNullable: true }),
     reservations: new FormControl('', { nonNullable: true }),
-    customerName: new FormControl('', {
-      nonNullable: true,
-    }),
-    customerAddress: new FormControl('', {
-      nonNullable: true,
-    }),
+    workAddress: new FormControl('', { nonNullable: true }),
     title: new FormControl('', {
       nonNullable: true,
     }),
@@ -319,6 +317,10 @@ export class OfferPreview {
     if (issue.action === 'company') {
       void this.router.navigate(['/company-profile']);
     } else if (issue.action === 'details') {
+      if ((issue.field === 'customerName' || issue.field === 'customerAddress') && this.data().project.customer_id) {
+        void this.router.navigate(['/customers', this.data().project.customer_id]);
+        return;
+      }
       this.startEditing();
       if (issue.field) {
         this.detailsDialog()
@@ -399,14 +401,15 @@ export class OfferPreview {
     }
   }
 
-  startEditing(focusField?: 'hourlyRate'): void {
+  startEditing(focusField?: 'hourlyRate', customerMode: CustomerMode | null = null): void {
     if (this.isSaving() || this.isEditing()) return;
     const project = this.data().project;
+    this.originalCustomerId = project.customer_id;
+    this.customerMode.set(customerMode);
 
     this.originalDetails = {
       hourlyRate: project.hourly_rate,
-      customerName: project.customer_name ?? '',
-      customerAddress: project.customer_address ?? '',
+      workAddress: project.work_address ?? '',
       title: project.title ?? '',
       description: project.description ?? '',
       offerDescription: project.offer_description ?? '',
@@ -437,6 +440,7 @@ export class OfferPreview {
     this.isEditing.set(false);
     this.detailsDialog().nativeElement.close();
     this.originalDetails = null;
+    this.customerMode.set(null);
     this.saveError.set('');
   }
 
@@ -450,8 +454,7 @@ export class OfferPreview {
 
     const changes: {
       hourlyRate?: number | null;
-      customerName?: string;
-      customerAddress?: string;
+      workAddress?: string;
       title?: string;
       description?: string;
       offerDescription?: string;
@@ -466,13 +469,7 @@ export class OfferPreview {
     }
     if (current.hourlyRate !== original.hourlyRate) changes.hourlyRate = current.hourlyRate;
 
-    if (current.customerName !== original.customerName) {
-      changes.customerName = current.customerName;
-    }
-
-    if (current.customerAddress !== original.customerAddress) {
-      changes.customerAddress = current.customerAddress;
-    }
+    if (current.workAddress !== original.workAddress) changes.workAddress = current.workAddress;
 
     if (current.title !== original.title) {
       changes.title = current.title;
@@ -497,7 +494,12 @@ export class OfferPreview {
     if (current.paymentTerms !== original.paymentTerms) changes.paymentTerms = current.paymentTerms;
     if (current.reservations !== original.reservations) changes.reservations = current.reservations;
 
-    if (Object.keys(changes).length === 0) {
+    const customer = this.detailsCustomer()?.selection() ?? { valid: true, choice: null };
+    if (!customer.valid) {
+      this.saveError.set('Udfyld oplysningerne for den nye kunde.');
+      return;
+    }
+    if (Object.keys(changes).length === 0 && !customer.choice) {
       this.cancelEditing();
       return;
     }
@@ -511,7 +513,7 @@ export class OfferPreview {
     this.saveError.set('');
 
     try {
-      await this.projectService.updateProjectDetails(this.data().project.id, changes);
+      await this.projectService.updateProjectDetails(this.data().project.id, changes, customer.choice ?? undefined, this.originalCustomerId);
 
       this.isEditing.set(false);
       this.detailsDialog().nativeElement.close();

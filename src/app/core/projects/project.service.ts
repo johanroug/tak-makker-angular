@@ -5,6 +5,7 @@ import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 import type { ProjectResponse } from '../ai/project-response';
 import { Database } from '../supabase/database.types';
+import type { CustomerChoice } from '../customers/customer.service';
 
 @Injectable({
   providedIn: 'root',
@@ -114,7 +115,7 @@ export class ProjectService {
         const { data, error } = await supabase
           .from('projects')
           .select(
-            '*, company:companies!projects_company_id_fkey(name,cvr,address,phone,email), workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
+            '*, customer:customers!projects_customer_company_fkey(*), company:companies!projects_company_id_fkey(name,cvr,address,phone,email), workItems:project_work_items(*), materials:project_materials(*), messages:project_messages(*)',
           )
           .eq('id', projectId)
           .order('created_at', { referencedTable: 'workItems', ascending: true })
@@ -128,8 +129,8 @@ export class ProjectService {
           throw new Error('Kunne ikke hente projekt: ' + error.message);
         }
 
-        const { company, workItems, materials, messages, ...project } = data;
-        return { project, company, workItems, materials, messages };
+        const { customer, company, workItems, materials, messages, ...project } = data;
+        return { project, customer, company, workItems, materials, messages };
       },
       { projectId, onlyFailure: true },
     );
@@ -372,6 +373,11 @@ export class ProjectService {
       .from('projects')
       .select(
         `
+        customer_id,
+        work_address,
+        work_address_source,
+        pending_customer_email,
+        pending_customer_phone,
         customer_name,
         customer_name_source,
         customer_address,
@@ -436,6 +442,8 @@ export class ProjectService {
     );
 
     const title = aiValue(existing.title, existing.title_source, response.project.title);
+    const workAddress = aiValue(existing.work_address, existing.work_address_source,
+      response.project.workAddress === undefined ? response.customer.address : response.project.workAddress);
 
     const description = aiValue(
       existing.description,
@@ -450,11 +458,16 @@ export class ProjectService {
     );
 
     const candidates = {
-      customer_name: customerName.value,
-      customer_name_source: customerName.source,
+      customer_name: existing.customer_id ? existing.customer_name : customerName.value,
+      customer_name_source: existing.customer_id ? existing.customer_name_source : customerName.source,
 
-      customer_address: customerAddress.value,
-      customer_address_source: customerAddress.source,
+      customer_address: existing.customer_id ? existing.customer_address : customerAddress.value,
+      customer_address_source: existing.customer_id ? existing.customer_address_source : customerAddress.source,
+      // An AI address is project context, never permission to edit shared contact data.
+      work_address: workAddress.value,
+      work_address_source: workAddress.source,
+      pending_customer_email: existing.customer_id ? existing.pending_customer_email : response.customer.email ?? existing.pending_customer_email,
+      pending_customer_phone: existing.customer_id ? existing.pending_customer_phone : response.customer.phone ?? existing.pending_customer_phone,
 
       title: title.value,
       title_source: title.source,
@@ -504,6 +517,7 @@ export class ProjectService {
       hourlyRate?: number | null;
       customerName?: string;
       customerAddress?: string;
+      workAddress?: string;
       title?: string;
       description?: string;
       offerDescription?: string;
@@ -511,10 +525,16 @@ export class ProjectService {
       paymentTerms?: string;
       reservations?: string;
     },
+    customer?: CustomerChoice,
+    expectedCustomerId: string | null = null,
   ): Promise<void> {
     type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
 
     const updates: ProjectUpdate = {};
+    if (changes.workAddress !== undefined) {
+      updates.work_address = changes.workAddress.trim();
+      updates.work_address_source = 'user';
+    }
 
     if (changes.hourlyRate !== undefined) {
       if (changes.hourlyRate !== null &&
@@ -565,7 +585,17 @@ export class ProjectService {
     if (changes.paymentTerms !== undefined) updates.payment_terms = changes.paymentTerms.trim();
     if (changes.reservations !== undefined) updates.reservations = changes.reservations.trim();
 
-    if (Object.keys(updates).length === 0) {
+    if (Object.keys(updates).length === 0 && !customer) {
+      return;
+    }
+
+    if (customer) {
+      const { error } = await supabase.rpc('save_project_customer_details', {
+        p_project_id: projectId, p_customer_id: customer.id, p_changes: updates,
+        ...(expectedCustomerId ? { p_expected_customer_id: expectedCustomerId } : {}),
+        ...(customer.values ? { p_new_customer: customer.values } : {}),
+      });
+      if (error) throw new Error('Projekt- og kundeoplysningerne kunne ikke gemmes. Genindlæs, hvis kunden er ændret andetsteds.', { cause: error });
       return;
     }
 

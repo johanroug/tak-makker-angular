@@ -1,0 +1,54 @@
+name: Restore Supabase data from Simply
+on:
+  workflow_dispatch:
+    inputs:
+      backup_filename:
+        description: 'Exact supabase-…tar.gz.gpg filename from Simply'
+        required: true
+        type: string
+      confirmation:
+        description: 'Type RESTORE agbugdzobpkpgfischvi to confirm target'
+        required: true
+        type: string
+      dry_run:
+        description: 'Trial: restore and verify, then ROLLBACK (temporarily locks tables)'
+        default: true
+        type: boolean
+      maintenance_confirmed:
+        description: 'Live restore only: all app, Auth, jobs and external writers are stopped'
+        default: false
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: supabase-backup
+  cancel-in-progress: false
+jobs:
+  restore:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: simply-production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.20.0'
+      - name: Install pinned CLI
+        run: npm install --prefix "$RUNNER_TEMP/backup-cli" --no-package-lock --no-save supabase@2.118.0
+      - name: Restore selected archive
+        env:
+          BACKUP_FILENAME: ${{ inputs.backup_filename }}
+          RESTORE_CONFIRMATION: ${{ inputs.confirmation }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAINTENANCE_CONFIRMED: ${{ inputs.maintenance_confirmed }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+          SIMPLY_SSH_USER: ${{ secrets.SIMPLY_SSH_USER }}
+          SIMPLY_SSH_PRIVATE_KEY: ${{ secrets.SIMPLY_SSH_PRIVATE_KEY }}
+          SIMPLY_SSH_KNOWN_HOSTS: ${{ secrets.SIMPLY_SSH_KNOWN_HOSTS }}
+        run: |
+          export PATH="$RUNNER_TEMP/backup-cli/node_modules/.bin:$PATH"
+          bash scripts/restore-supabase.sh

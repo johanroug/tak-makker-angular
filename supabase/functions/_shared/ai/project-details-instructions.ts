@@ -1,5 +1,9 @@
 export const projectDetailsInstructions = `
 KUNDE OG PROJEKT:
+customer.email og customer.phone må kun udfyldes med e-mail og telefon, som brugeren faktisk har oplyst; ellers null.
+project.workAddress er projektets arbejdsadresse, mens customer.address er kundens kontaktadresse.
+En adresse for arbejdets udførelse hører til project.workAddress. Sæt kun customer.address, hvis den er oplyst som kontaktadresse.
+Du må aldrig beslutte, om en kunde matcher kundekartoteket; det håndteres af applikationen og brugeren.
 Returnér customer.name, customer.address, project.title, project.description og project.offerDescription som selvstændige projektfelter.
 
 Brug kun oplysninger, der fremgår af samtalen eller den aktuelle projektkontekst.

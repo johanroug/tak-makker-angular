@@ -140,6 +140,9 @@
               <h3 class="document-label">Kunde</h3>
               <strong>{{ data.offer.customer_name || 'Kunde ikke angivet' }}</strong>
               <p>{{ data.offer.customer_address || 'Adresse ikke angivet' }}</p>
+              @if (data.offer.project_work_address) { <p>Arbejdsadresse: {{ data.offer.project_work_address }}</p> }
+              @if (data.offer.customer_email) { <p>{{ data.offer.customer_email }}</p> }
+              @if (data.offer.customer_phone) { <p>{{ data.offer.customer_phone }}</p> }
             </div>
             <div>
               <h3 class="document-label">Projekt</h3>

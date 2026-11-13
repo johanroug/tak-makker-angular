@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:staging": "ng serve --configuration staging --host 127.0.0.1 --port 4201",
     "build": "ng build",
     "build:simply": "npm run build && node scripts/prepare-simply.mjs",
     "postbuild": "node scripts/prepare-static-hosting.mjs && node scripts/check-seo.mjs",

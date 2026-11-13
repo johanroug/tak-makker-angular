@@ -159,6 +159,8 @@ Deno.serve(async (request) => {
     const customer = {
       name: project.customer_name,
       address: project.customer_address,
+      email: project.pending_customer_email,
+      phone: project.pending_customer_phone,
       nameSource: project.customer_name_source,
       addressSource: project.customer_address_source,
     };
@@ -167,6 +169,8 @@ Deno.serve(async (request) => {
       title: project.title,
       description: project.description,
       offerDescription: project.offer_description,
+      workAddress: project.work_address,
+      workAddressSource: project.work_address_source,
       titleSource: project.title_source,
       descriptionSource: project.description_source,
       offerDescriptionSource: project.offer_description_source,

@@ -38,6 +38,7 @@ if [[ "${GITHUB_ACTIONS:-}" == true ]]; then
 fi
 # Purge only approved activity logs before the new snapshot. Pass the password
 # through the environment, not a Docker command-line value or SQL/log output.
+if [[ "${PRE_RESTORE_BACKUP:-false}" != true ]]; then
 export PGPASSWORD="$SUPABASE_DB_PASSWORD"
 docker run --rm -i --env PGPASSWORD --env PGSSLMODE=require \
   --env PGHOST=aws-1-eu-west-1.pooler.supabase.com --env PGPORT=5432 \
@@ -45,6 +46,7 @@ docker run --rm -i --env PGPASSWORD --env PGSSLMODE=require \
   public.ecr.aws/supabase/postgres:17.6.1.171 \
   psql -X --set ON_ERROR_STOP=1 --file=- < scripts/prune-activity.sql
 unset PGPASSWORD
+fi
 supabase db dump --db-url "$database_url" --role-only --file "$workspace/roles.sql"
 supabase db dump --db-url "$database_url" --file "$workspace/schema.sql"
 supabase db dump --db-url "$database_url" --data-only --use-copy \
@@ -70,5 +72,7 @@ ssh "${ssh_options[@]}" "$remote" 'set -eu; test ! -L private-backups; mkdir -p 
 ssh "${ssh_options[@]}" "$remote" "set -eu; umask 077; cat > private-backups/$filename.part; printf '%s  %s\n' '$checksum' 'private-backups/$filename.part' | sha256sum -c -; mv private-backups/$filename.part private-backups/$filename" < "$workspace/backup.gpg"
 echo "Verified encrypted backup uploaded: $filename"
 # Prune only after remote checksum verification and final rename succeeded.
+if [[ "${PRE_RESTORE_BACKUP:-false}" != true ]]; then
 ssh "${ssh_options[@]}" "$remote" "bash -s -- '$filename'" < scripts/prune-simply-backups.sh
+fi
 ssh "${ssh_options[@]}" "$remote" 'du -sh private-backups'

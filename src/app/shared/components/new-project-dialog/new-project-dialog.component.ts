@@ -11,14 +11,30 @@ import { scopeWarningSummary } from '../ai-feedback/suggestion-notice';
 import { TaskTemplateService, TaskTemplate } from '../../../core/projects/task-template.service';
 import { WorkspaceIcon } from '../workspace-icon.component';
 import { SpeechInput } from '../speech-input/speech-input.component';
+import { CustomerPicker, CustomerChoice } from '../customer-picker/customer-picker.component';
+import { Customer, CustomerService } from '../../../core/customers/customer.service';
+import { firstValueFrom, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-new-project-dialog',
-  imports: [ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon, SpeechInput],
+  imports: [CustomerPicker, ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon, SpeechInput],
   templateUrl: './new-project-dialog.component.html',
   styleUrl: './new-project-dialog.component.scss',
 })
 export class NewProjectDialog implements OnDestroy {
+  private readonly customers = inject(CustomerService);
+  readonly customerChoice = signal<CustomerChoice | null>(null);
+  readonly presetCustomer = signal<Customer | null>(null);
+  readonly customerLoading = signal(false);
+  private presetCustomerId: string | undefined;
+  private customerLinked = false;
+  private attachCustomer(projectId: string) {
+    const choice = this.customerChoice();
+    if (!choice || this.customerLinked) return of(undefined);
+    return (choice.values ? this.customers.save(choice.id, choice.values) : of(null as Customer | null)).pipe(
+      switchMap(() => this.customers.link(projectId, choice.id, null)),
+    );
+  }
   readonly billing = inject(BillingService);
   private readonly templatesService = inject(TaskTemplateService);
   readonly mode = signal<'ai' | 'empty' | 'template'>('ai');
@@ -84,9 +100,16 @@ export class NewProjectDialog implements OnDestroy {
     'Et godt tilbud begynder med et godt overblik…',
   ];
 
-  open(): void {
+  open(customerId?: string): void {
     if (this.isWorking() || this.dialog().nativeElement.open) return;
     this.prompt.reset();
+    this.presetCustomerId = customerId;
+    this.customerChoice.set(null); this.presetCustomer.set(null); this.customerLinked = false;
+    this.customerLoading.set(!!customerId);
+    if (customerId) this.customers.get(customerId).subscribe({
+      next: customer => { if (this.presetCustomerId !== customerId || this.destroyed) return; this.presetCustomer.set(customer); this.customerChoice.set({ id: customer.id }); this.customerLoading.set(false); },
+      error: () => { if (this.presetCustomerId !== customerId || this.destroyed) return; this.error.set('Kunden kunne ikke hentes. Luk og prøv igen.'); this.customerLoading.set(false); },
+    });
     this.mode.set('ai');
     this.creationRequestId = crypto.randomUUID();
     this.templateId.reset();
@@ -110,6 +133,7 @@ export class NewProjectDialog implements OnDestroy {
   }
 
   async continue(): Promise<void> {
+    if (this.customerLoading() || this.presetCustomerId && !this.customerChoice()) return;
     if (this.speechBusy()) return;
     if (this.mode() !== 'ai') { await this.createWithoutAi(); return; }
     const description = this.prompt.value.trim();
@@ -129,6 +153,9 @@ export class NewProjectDialog implements OnDestroy {
         this.projectCreated.emit();
       }
       if (this.destroyed) return;
+
+      await firstValueFrom(this.attachCustomer(projectId));
+      this.customerLinked = true;
 
       if (!this.hasSavedMessage()) {
         await this.projectService.addMessage(projectId, description);
@@ -189,6 +216,8 @@ export class NewProjectDialog implements OnDestroy {
         this.projectId.set(id);
       }
       this.workspace.initialAiNotice.set(null);
+      await firstValueFrom(this.attachCustomer(id));
+      this.customerLinked = true;
       if (this.destroyed) return;
       this.projectCreated.emit();
       const navigated = await this.router.navigate(['/projects', id], { queryParams: { editDetails: '1' } });

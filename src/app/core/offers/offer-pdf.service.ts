@@ -247,6 +247,9 @@ export class OfferPdfService {
                   color: this.muted,
                   fontSize: 8.5,
                 },
+                { text: offer.customer_email || '', color: this.muted, fontSize: 8.5 },
+                { text: offer.customer_phone || '', color: this.muted, fontSize: 8.5 },
+                { text: offer.project_work_address ? 'Arbejdsadresse: ' + offer.project_work_address : '', color: this.muted, fontSize: 8.5, margin: [0, 4, 0, 0] },
               ],
             },
             {

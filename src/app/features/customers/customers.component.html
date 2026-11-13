@@ -1,0 +1,71 @@
+<main class="customers-page">
+  @if (customerId()) {
+    <a class="back-link" routerLink="/customers">← Alle kunder</a>
+    @if (customer(); as c) {
+      <header><div><span class="eyebrow">KUNDEKARTOTEK</span><h1>{{ c.name }}</h1></div><button class="primary" type="button" (click)="newProject()" [disabled]="saving()">＋ Nyt projekt til kunden</button></header>
+      <section class="customer-panel">
+        <h2>Kontaktoplysninger</h2><p class="muted">Gemmes, når du forlader feltet. Ændringer gælder alle tilknyttede projekter. Arbejdsadresser og færdiggjorte tilbud bevares.</p>
+        <form [formGroup]="form" (submit)="$event.preventDefault(); save()">
+          <fieldset [disabled]="saving()" class="contact-fields">
+            <label>Navn<input formControlName="name" maxlength="200" (blur)="save()" /></label>
+            <label>Kontaktadresse<input formControlName="address" maxlength="1000" (blur)="save()" /></label>
+            <label>E-mail<input type="email" formControlName="email" maxlength="320" (blur)="save()" /></label>
+            <label>Telefon<input type="tel" formControlName="phone" maxlength="100" (blur)="save()" /></label>
+          </fieldset>
+          @if (form.invalid) { <p role="alert">Angiv et navn og en gyldig e-mail, hvis e-mail er udfyldt.</p> }
+          <p role="status">{{ saving() ? 'Gemmer…' : saved() && !form.dirty ? 'Gemt' : form.dirty ? 'Ikke gemte ændringer' : '' }}</p>
+          @if (form.dirty) { <button type="submit" [disabled]="saving() || form.invalid">Gem ændringer</button> }
+        </form>
+      </section>
+      @if (duplicates().length || duplicateOffset() > 0) {
+        <section class="customer-panel"><h2>Mulige dubletter</h2><p>Samme navn betyder ikke nødvendigvis samme kunde. Vælg selv.</p>
+          @for (duplicate of duplicates(); track duplicate.id) {
+            <div class="duplicate-row"><div><a [routerLink]="['/customers',duplicate.id]">{{ duplicate.name }}</a><p>{{ duplicate.address || 'Ingen kontaktadresse' }} · {{ duplicate.project_count }} projekter</p></div>
+              <div class="actions"><button type="button" [disabled]="saving()" (click)="mergeTarget.set(duplicate)">Samme kunde</button><button type="button" [disabled]="saving()" (click)="resolve(duplicate,false)">Forskellige kunder</button></div>
+            </div>
+          }
+          @if (mergeTarget(); as target) {
+            <div class="merge-confirm" role="group" aria-label="Bekræft sammenlægning"><p>Alle projekter fra denne kunde flyttes til <strong>{{ target.name }} · {{ target.address || 'Ingen kontaktadresse' }} · {{ target.email || 'Ingen e-mail' }} · {{ target.phone || 'Intet telefonnummer' }}</strong>. Den valgte kundes kontaktoplysninger bruges fremover; denne kundepost fjernes. Færdiggjorte tilbud og arbejdsadresser bevares.</p>
+              <button type="button" class="primary" [disabled]="saving() || form.dirty" (click)="resolve(target,true)">Bekræft sammenlægning</button> <button type="button" [disabled]="saving()" (click)="mergeTarget.set(null)">Annuller</button>
+            </div>
+          }
+          <div class="pagination"><button type="button" [disabled]="duplicateOffset() === 0" (click)="loadDuplicates(-1)">Forrige</button><button type="button" [disabled]="duplicates().length < 10" (click)="loadDuplicates(1)">Flere mulige dubletter</button></div>
+        </section>
+      }
+      <section class="customer-panel"><h2>Projekter</h2>
+        @for (project of detailProjects(); track project.id) {
+          <a class="project-link" [routerLink]="['/projects',project.id]"><span>{{ project.project_number }}</span><strong>{{ project.title || 'Projekt uden titel' }}</strong><small>{{ project.work_address }}</small><span aria-hidden="true">→</span></a>
+        } @empty { @if (!projectsLoading() && !projectsError()) { <p>Der er ingen projekter til kunden endnu.</p> } }
+        <div class="pagination"><button type="button" [disabled]="projectOffset() === 0 || projectsLoading()" (click)="loadDetailProjects(-1)">Forrige</button><button type="button" [disabled]="detailProjects().length < 20 || projectsLoading()" (click)="loadDetailProjects(1)">Næste</button></div>
+      </section>
+    }
+  } @else {
+    <header><div><span class="eyebrow">DIT ARBEJDSOMRÅDE</span><h1>Kunder</h1><p class="muted">Find kunden, og åbn projektet direkte.</p></div><button type="button" class="primary" (click)="creating.set(!creating())">{{ creating() ? 'Luk' : '＋ Ny kunde' }}</button></header>
+    @if (creating()) { <section class="customer-panel"><h2>Opret kunde</h2><fieldset [disabled]="saving()"><app-customer-picker [startNewCustomer]="true" [saveError]="error()" (selected)="create($event)" /></fieldset></section> }
+    <label class="search-field">Søg i kunder og projekter<input type="search" [formControl]="query" maxlength="160" placeholder="Navn, adresse, e-mail, telefon, projekttitel eller projektnummer" /></label>
+    <p class="muted">Seneste aktivitet først · Op til 25 kunder ad gangen</p>
+    <div class="customer-list">
+      @for (row of rows(); track row.id) {
+        <article class="customer-row">
+          <div class="row-heading"><button class="expand" type="button" [attr.aria-expanded]="expanded() === row.id" (click)="expand(row.id)"><span aria-hidden="true">{{ expanded() === row.id ? '−' : '＋' }}</span><span><strong>{{ row.name }}</strong><small>{{ row.address || 'Ingen kontaktadresse' }}</small></span><span class="project-count">{{ row.project_count }} projekter</span></button><a class="detail-link" [routerLink]="['/customers',row.id]">Kundedetaljer →</a></div>
+          @if (row.possible_duplicate) { <a class="duplicate-note" [routerLink]="['/customers',row.id]">Mulig dublet · gennemgå</a> }
+          @if (expanded() === row.id) {
+            <div class="expanded-projects">
+              @for (project of expandedProjects(); track project.id) {
+                <a class="project-link" [class.search-match]="!!query.value && project.matches" [routerLink]="['/projects',project.id]"><span>{{ project.project_number }}</span><strong>{{ project.title || 'Projekt uden titel' }}</strong><small>{{ project.work_address }}</small><span aria-hidden="true">→</span></a>
+              } @empty { @if (!projectsLoading() && !projectsError()) { <p>Ingen projekter endnu.</p> } }
+              @if (projectsLoading()) { <p role="status">Henter projekter…</p> }
+              @if (projectsError()) { <p role="alert">{{ projectsError() }}</p><button type="button" (click)="loadExpanded()">Prøv igen</button> }
+              <div class="pagination"><button type="button" [disabled]="expandedOffset() === 0 || projectsLoading()" (click)="loadExpanded(-1)">Forrige</button><button type="button" [disabled]="expandedProjects().length < 20 || projectsLoading()" (click)="loadExpanded(1)">Næste</button></div>
+            </div>
+          }
+        </article>
+      } @empty { @if (!loading() && !error()) { <p class="empty-state">{{ query.value ? 'Ingen kunder matcher søgningen.' : 'Dit kundekartotek er tomt. Opret din første kunde.' }}</p> } }
+    </div>
+    <div class="pagination"><button type="button" [disabled]="offset() === 0 || loading()" (click)="page(-1)">Forrige</button><span>Side {{ offset() / 25 + 1 }}</span><button type="button" [disabled]="rows().length < 25 || loading()" (click)="page(1)">Næste</button></div>
+  }
+  @if (loading()) { <p role="status">Henter kunder…</p> }
+  @if (customerId() && projectsLoading()) { <p role="status">Henter projekter…</p> }
+  @if (customerId() && projectsError()) { <p role="alert">{{ projectsError() }}</p><button type="button" (click)="loadDetailProjects()">Prøv igen</button> }
+  @if (error()) { <p role="alert">{{ error() }}</p><button type="button" [disabled]="saving()" (click)="reload()">Genindlæs</button> }
+</main>

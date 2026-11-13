@@ -1,0 +1,18 @@
+:host { display: block; }
+.customer-picker { display: grid; gap: .7rem; }
+.new-customer { display: grid; gap: .8rem; }
+h3 { font-weight: 700; }
+small { color: #657568; font-weight: 400; }
+.customer-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+button.primary { background: #12372a; color: white; border-color: #12372a; }
+button.mode-link { justify-self: start; border: 0; background: transparent; padding-left: 0; text-decoration: underline; }
+label { display: grid; gap: .3rem; font-weight: 600; }
+input { width: 100%; min-width: 0; padding: .65rem .8rem; border: 1px solid #d6ddd6; border-radius: .5rem; background: #fff; color: #12372a; }
+input:focus { outline: 2px solid #e76f31; outline-offset: 2px; }
+.customer-fields { display: grid; gap: .65rem; grid-template-columns: repeat(auto-fit,minmax(min(100%,190px),1fr)); }
+.customer-suggestions { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.customer-suggestions button { display: grid; gap: .2rem; text-align: left; width: 100%; background: #f6f1e7; }
+button { padding: .65rem .8rem; border: 1px solid #c9d5cc; border-radius: .5rem; color: #12372a; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+span,p { font-size: .875rem; overflow-wrap: anywhere; }
+[role=alert] { color: #9b3023; }

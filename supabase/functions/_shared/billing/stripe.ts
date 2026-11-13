@@ -4,7 +4,8 @@ export const PAID_LIMIT = 200;
 
 export function paymentsEnabled(origin: string, secretKey: string, allowLive: boolean): boolean {
   if (secretKey.startsWith('sk_test_'))
-    return origin === 'http://localhost:4200' || origin === 'http://127.0.0.1:4200';
+    return ['http://localhost:4200', 'http://127.0.0.1:4200',
+      'http://localhost:4201', 'http://127.0.0.1:4201'].includes(origin);
   return allowLive && secretKey.startsWith('sk_live_');
 }
 
@@ -116,10 +117,22 @@ export async function verifyStripeSignature(body: string, signature: string, sec
   return false;
 }
 
+
 export function appOrigin(request: Request): string {
   const configured = Deno.env.get('APP_URL') ?? 'https://xn--hovedetpsmmet-wfb00a.dk';
   const origin = request.headers.get('Origin') ?? new URL(configured).origin;
-  const allowed = new Set([new URL(configured).origin, 'http://localhost:4200', 'http://127.0.0.1:4200']);
-  if (!allowed.has(origin)) throw new BillingError('Denne hjemmeside er ikke godkendt til betaling.', 403);
+
+  const allowed = new Set([
+    new URL(configured).origin,
+    'http://localhost:4200',
+    'http://127.0.0.1:4200',
+    'http://localhost:4201', // NYT: Testmiljø
+    'http://127.0.0.1:4201', // NYT: Testmiljø
+  ]);
+
+  if (!allowed.has(origin)) {
+    throw new BillingError('Denne hjemmeside er ikke godkendt til betaling.', 403);
+  }
+
   return origin;
 }

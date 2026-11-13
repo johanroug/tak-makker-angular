@@ -1,0 +1,14 @@
+:host { display: block; margin: 1rem 0; }
+.project-customer { padding: 1rem; border: 1px solid #d6ddd6; border-radius: .75rem; display: grid; gap: 1rem; background: white; }
+.customer-heading,.customer-mode-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; }
+.customer-heading { justify-content: space-between; }
+.customer-edit-link,button { padding: .65rem .9rem; border: 1px solid #b8cbbf; border-radius: .5rem; color: #12372a; font-size: .875rem; font-weight: 650; text-decoration: none; background: #fff; }
+.customer-edit-link { background: #f6f1e7; }
+button { cursor: pointer; }
+button[aria-pressed=true] { background: #12372a; border-color: #12372a; color: white; }
+a:focus-visible,button:focus-visible { outline: 2px solid #e76f31; outline-offset: 3px; }
+.customer-summary { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; margin: 0; }
+dt { font-size: .8rem; color: #657568; margin-bottom: .2rem; }
+dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.customer-draft-note { font-size: .85rem; color: #657568; margin: 0; }
+@media(max-width:500px) { .customer-summary { grid-template-columns: 1fr; } .customer-mode-actions button { flex: 1; } }

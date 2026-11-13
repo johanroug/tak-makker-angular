@@ -35,8 +35,8 @@ hvis de ikke allerede findes på main:
 Brug en særskilt, gennemgået commit på main med `[skip ci]` i commitbeskeden,
 så push-workflowet ikke deployer. GitHubs skip-markør stopper push-workflows;
 den manuelle workflow_dispatch kan efterfølgende køres. Bevar de øvrige staged
-ændringer og lad kundekartoteket blive lokalt. Der er endnu ikke lavet commit
-eller push som del af forberedelsen.
+ændringer og lad kundekartoteket blive lokalt. Testværktøjet og efterfølgende
+rettelser er nu publiceret med `[skip ci]`; kundekartoteket er fortsat lokalt.
 
 ## Kørsel
 
@@ -53,6 +53,15 @@ eller push som del af forberedelsen.
    kundemigrationen specifikt i testprojektet. Repositoryets eksisterende
    Supabase-link forbliver rettet mod produktion og ændres ikke af workflowet;
    brug det derfor ikke med `--linked` til testmigrationen.
+
+Resultat 13. november 2026: kørsel
+`https://github.com/johanroug/tak-makker-angular/actions/runs/43484494074`
+bestod og verificerede 53 COPY-tabeller. Efterfølgende er kundemigrationen og
+de hosted adfærdstests også bestået i testprojektet. Produktion er ikke ændret.
+PostgreSQL-klienten installeres fra PostgreSQLs officielle Ubuntu-pakkekilde;
+værktøjet afhænger ikke længere af et containerregister.
+CLI-testkommandoer bruger `--linked --project-ref woxioycjdjucxqiyqcyr`;
+den eksplicitte reference erstatter målet uden at ændre det gemte produktionslink.
 
 Hvis workflowet består, vil en ny gendannelse til samme testprojekt blive afvist,
 fordi projektet nu indeholder data. Der er ingen automatisk nulstilling.

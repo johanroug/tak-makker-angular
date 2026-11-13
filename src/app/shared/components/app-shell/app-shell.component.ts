@@ -1,4 +1,5 @@
 import { AppAccessService } from '../../../core/auth/app-access.service';
+import { environment } from '../../../../environments/environment';
 import { interval } from 'rxjs';
 import { ActivityService } from '../../../core/activity/activity.service';
 import { NgTemplateOutlet } from '@angular/common';
@@ -42,6 +43,7 @@ import { BillingService } from '../../../core/billing/billing.service';
   styleUrl: './app-shell.component.scss',
 })
 export class AppShell implements OnInit {
+  readonly isTestEnvironment = environment.supabaseUrl === 'https://woxioycjdjucxqiyqcyr.supabase.co';
   readonly billing = inject(BillingService);
   readonly activity = inject(ActivityService);
   private readonly access = inject(AppAccessService);
@@ -105,7 +107,7 @@ export class AppShell implements OnInit {
   }
 
   constructor() {
-    this.workspace.newProjectRequested.pipe(takeUntilDestroyed()).subscribe(() => this.createProject());
+    this.workspace.newProjectRequested.pipe(takeUntilDestroyed()).subscribe(customerId => this.createProject(customerId));
     interval(60000)
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
@@ -152,9 +154,9 @@ export class AppShell implements OnInit {
     if (projectId) void this.router.navigate(['/projects', projectId]);
   }
 
-  createProject(): void {
+  createProject(customerId?: string): void {
     this.closeMenu();
-    this.newProjectDialog().open();
+    this.newProjectDialog().open(customerId);
   }
 
   async logout(): Promise<void> {

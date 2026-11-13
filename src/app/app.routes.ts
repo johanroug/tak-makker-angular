@@ -61,6 +61,8 @@ export const routes: Routes = [
       import('./shared/components/app-shell/app-shell.component').then((m) => m.AppShell),
     canActivateChild: [authGuard],
     children: [
+      { path: 'customers', title: 'Kunder | Hovedet på sømmet', loadComponent: () => import('./features/customers/customers.component').then(m => m.CustomersComponent) },
+      { path: 'customers/:customerId', title: 'Kunde | Hovedet på sømmet', loadComponent: () => import('./features/customers/customers.component').then(m => m.CustomersComponent) },
       {
         path: 'projects',
         children: [

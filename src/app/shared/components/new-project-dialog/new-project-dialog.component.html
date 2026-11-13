@@ -41,6 +41,9 @@
     <div class="mode-description" role="status"><app-workspace-icon [name]="mode() === 'ai' ? 'sparkles' : mode() === 'template' ? 'layers' : 'offers'" /><div><strong>{{ mode() === 'ai' ? 'Sæt din tilbudsassistent i gang' : mode() === 'template' ? 'Byg videre på din erfaring' : 'Dit projekt. Dine valg.' }}</strong><p>{{ mode() === 'ai' ? 'AI omsætter dine ord til forslag til opgaver, materialer og timer.' : mode() === 'template' ? 'Genbrug virksomhedens gemte opgaver og materialer.' : 'Opret projektet, og tilføj selv kundeoplysninger, opgaver og materialer.' }}</p></div></div>
     </div>
     <div class="dialog-content">
+    @if (customerLoading()) { <p role="status">Henter kunde…</p> }
+    @else if (presetCustomer(); as customer) { <p><strong>Kunde: {{ customer.name }}</strong><br />{{ customer.address }}</p> }
+    @else if (!projectId()) { <details><summary>Vælg eller opret kunde (valgfrit)</summary><app-customer-picker createLabel="Brug ny kunde" (selected)="customerChoice.set($event)" /></details> }
     @if (mode() === 'ai') {
     <form id="new-project-form" (submit)="$event.preventDefault(); continue()">
       <div class="project-prompt-heading"><label for="new-project-description">Fortæl om projektet</label><button type="button" class="subscription-link" (click)="openSubscription()">Se abonnement <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14M10 4H4v16h16v-6" /></svg></button></div>

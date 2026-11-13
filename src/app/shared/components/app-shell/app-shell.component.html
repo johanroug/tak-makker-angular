@@ -1,3 +1,6 @@
+@if (isTestEnvironment) {
+  <p class="test-environment-banner" role="status"><strong>TESTMILJØ · hovedet-test</strong> Ændringer påvirker ikke din rigtige database.</p>
+}
 @if (isNavigating()) {
   <div class="route-progress" role="progressbar" aria-label="Skifter side"></div>
 }
@@ -86,6 +89,7 @@
 
 <ng-template #navigationContent>
   <span class="navigation-label">Arbejdsområde</span>
+  <a routerLink="/customers" routerLinkActive="nav-active" ariaCurrentWhenActive="page" (click)="closeMenu()"><app-workspace-icon name="users" /><span>Kunder</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a>
   <a
     routerLink="/projects"
     routerLinkActive="nav-active"

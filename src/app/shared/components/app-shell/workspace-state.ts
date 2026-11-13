@@ -6,11 +6,11 @@ import type { AiSuggestionSummary } from '../ai-feedback/ai-feedback.component';
 @Injectable()
 export class WorkspaceState {
   readonly initialAiNotice = signal<{projectId: string; summary: AiSuggestionSummary} | null>(null);
-  private readonly newProjectRequests = new Subject<void>();
+  private readonly newProjectRequests = new Subject<string | undefined>();
   readonly newProjectRequested = this.newProjectRequests.asObservable();
 
-  requestNewProject(): void {
-    this.newProjectRequests.next();
+  requestNewProject(customerId?: string): void {
+    this.newProjectRequests.next(customerId);
   }
   private readonly projectService = inject(ProjectService);
   readonly projects = signal<Awaited<ReturnType<ProjectService['getProjects']>>>([]);

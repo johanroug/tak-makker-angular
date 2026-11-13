@@ -2,11 +2,14 @@ export type ProjectResponse = {
   complete: boolean;
 
   customer: {
+    email?: string | null;
+    phone?: string | null;
     name: string | null;
     address: string | null;
   };
 
   project: {
+    workAddress?: string | null;
     title: string | null;
     description: string | null;
     offerDescription: string | null;

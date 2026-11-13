@@ -25,11 +25,14 @@ export const MaterialSchema = z.object({
 export type Material = z.infer<typeof MaterialSchema>;
 
 export const ProjectCustomerSchema = z.object({
+  email: z.string().nullable().default(null),
+  phone: z.string().nullable().default(null),
   name: z.string().nullable(),
   address: z.string().nullable().default(null),
 });
 
 export const ProjectDetailsSchema = z.object({
+  workAddress: z.string().nullable().default(null),
   title: z.string().nullable().default(null),
   description: z.string().nullable().default(null),
   offerDescription: z.string().nullable().default(null),
@@ -68,6 +71,7 @@ export const ProjectDraftSchema = z.object({
     addressSource: z.enum(["ai", "user"]).nullable().default(null),
   }),
   project: ProjectDetailsSchema.extend({
+    workAddressSource: z.enum(["ai", "user"]).nullable().default(null),
     titleSource: z.enum(["ai", "user"]).nullable().default(null),
     descriptionSource: z.enum(["ai", "user"]).nullable().default(null),
     offerDescriptionSource: z.enum(["ai", "user"]).nullable().default(null),

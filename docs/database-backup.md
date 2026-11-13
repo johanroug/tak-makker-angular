@@ -1,5 +1,49 @@
 # Database backup to Simply
 
+## Manual production data restore
+
+Workflow: **Restore Supabase data from Simply**, manual only, on `main`.
+This restores the table data (including Auth) into the existing project's
+current schema. It does NOT restore roles, functions, policies, schema definitions,
+Storage files or external settings. For an older incompatible schema or a lost
+project, use a separate hosted-project disaster recovery procedure instead.
+
+1. Copy the exact completed archive filename from Simply, e.g.
+   `supabase-20261113T094328Z-43403543491-1.tar.gz.gpg`.
+2. Run the workflow with that filename, confirmation
+   `RESTORE agbugdzobpkpgfischvi`, and **dry_run checked** (the default).
+   It temporarily locks affected production tables, loads and counts the rows,
+   then rolls back. Sequence updates are omitted in trials because PostgreSQL
+   sequence changes cannot be rolled back. A trial can interrupt requests while
+   locks are held; schedule it appropriately.
+3. Before a live run, stop all application, Auth, scheduled and external writers.
+   The workflow does not automatically put the site or Supabase into maintenance.
+   Changes since the chosen archive will be replaced.
+4. Run again with the SAME filename, dry_run unchecked, and
+   maintenance_confirmed checked. A fresh encrypted backup is uploaded and
+   checksum-verified before restoring. This emergency snapshot skips activity
+   pruning and backup retention cleanup. Find its exact filename in the log.
+5. Check the workflow result and verify login, companies, projects and offers
+   before re-enabling writers. Existing sessions and external billing state may
+   no longer correspond to the restored database.
+
+The action uses the existing five backup secrets in `simply-production`.
+It serializes with the daily backup and refuses other project confirmations,
+branch names and archive filename patterns. TRUNCATE has no CASCADE: references
+from additional tables cause failure rather than deleting data outside the dump.
+The transaction uses ON_ERROR_STOP and checks every COPY table's row count before
+commit. Compatibility or privilege failures abort table changes; sequence values
+in a live restore are not transactional and can change even if a later statement
+fails. A lost connection during COMMIT requires checking database state before
+retrying. SQL logs are deliberately not published because errors may contain
+personal data. No plaintext dumps or artifacts are uploaded.
+
+The hosted restore workflow must be trialed against the actual hosted project;
+the disposable-container test alone does not verify hosted permissions. Row counts
+do not prove application behavior or validate every relationship and external
+integration. Configure required environment reviewers in GitHub separately if an
+additional approval gate is desired.
+
 Workflow: `.github/workflows/backup-supabase.yml`. Runs from `main` daily at
 02:23 UTC and manually through Actions. Requires the existing SSH secrets in
 `simply-production`, plus `SUPABASE_DB_PASSWORD` and

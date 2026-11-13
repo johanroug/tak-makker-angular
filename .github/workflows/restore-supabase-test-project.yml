@@ -29,6 +29,11 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.20.0'
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --yes postgresql-client-17
+          /usr/lib/postgresql/17/bin/psql --version
       - name: Restore schema and data into the empty hosted test project
         env:
           BACKUP_FILENAME: ${{ inputs.backup_filename }}
@@ -38,4 +43,6 @@ jobs:
           SIMPLY_SSH_USER: ${{ secrets.SIMPLY_SSH_USER }}
           SIMPLY_SSH_PRIVATE_KEY: ${{ secrets.SIMPLY_SSH_PRIVATE_KEY }}
           SIMPLY_SSH_KNOWN_HOSTS: ${{ secrets.SIMPLY_SSH_KNOWN_HOSTS }}
-        run: bash scripts/restore-supabase-test-project.sh
+        run: |
+          export PATH="/usr/lib/postgresql/17/bin:$PATH"
+          bash scripts/restore-supabase-test-project.sh

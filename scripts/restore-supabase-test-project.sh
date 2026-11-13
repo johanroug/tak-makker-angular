@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 umask 077
+command -v psql >/dev/null || { echo 'PostgreSQL client required.' >&2; exit 1; }
 # Fixed target and pooler username; never link or address the production DB.
 target='woxioycjdjucxqiyqcyr'
 [[ "${GITHUB_ACTIONS:-}" == true && "${RESTORE_CONFIRMATION:-}" == 'RESTORE hovedet-test' ]] || { echo 'GitHub Actions and test confirmation required.' >&2; exit 1; }
@@ -41,7 +42,7 @@ PY
 export PGPASSWORD="$SUPABASE_TEST_DB_PASSWORD"
 unset SUPABASE_TEST_DB_PASSWORD
 export PGHOST=aws-1-eu-west-1.pooler.supabase.com PGPORT=5432 PGUSER="postgres.$target" PGDATABASE=postgres PGSSLMODE=require PGCONNECT_TIMEOUT=20
-client=(docker run --rm -i --env PGPASSWORD --env PGHOST --env PGPORT --env PGUSER --env PGDATABASE --env PGSSLMODE --env PGCONNECT_TIMEOUT public.ecr.aws/supabase/postgres:17.6.1.171 psql -X --set ON_ERROR_STOP=1)
+client=(psql -X --set ON_ERROR_STOP=1)
 "${client[@]}" -At -c "select format('%I.%I',schemaname,tablename) from pg_tables where schemaname in ('auth','storage')" > "$workspace/managed-tables.txt"
 node scripts/build-hosted-test-restore.mjs "$workspace" "$target" "$RESTORE_CONFIRMATION"
 if ! "${client[@]}" --file=- < "$workspace/restore.sql" > "$workspace/restore.log" 2>&1; then

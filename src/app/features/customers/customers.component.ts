@@ -12,7 +12,7 @@ import { WorkspaceIcon } from '../../shared/components/workspace-icon.component'
 
 @Component({
   selector: 'app-customers', imports: [RouterLink, ReactiveFormsModule, CustomerPicker, WorkspaceIcon],
-  templateUrl: './customers.component.html', styleUrl: './customers.component.scss',
+  templateUrl: './customers.component.html', styleUrls: ['./customers.component.scss', './customers-detail.component.scss'],
 })
 export class CustomersComponent {
   readonly customerAddress = customerAddress;

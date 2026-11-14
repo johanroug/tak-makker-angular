@@ -88,8 +88,12 @@ for (const page of pages) {
     assert.equal(schema.inLanguage, 'da-DK');
     assert(document.querySelector('.hero .eyebrow').textContent.includes('TILBUDSPROGRAM TIL HÅNDVÆRKERE'));
     assert(document.querySelector('h1 em').textContent.includes('På få minutter med AI.'));
+    const preload = document.querySelector('#hero-image-preload');
+    assert.equal(preload?.getAttribute('href'), '/marketing/hero-tradesman.webp');
+    assert.equal(preload?.getAttribute('fetchpriority'), 'high');
   } else {
     assert.equal(websiteData, null, `${file}: homepage schema is not carried onto other pages`);
+    assert.equal(document.querySelector('#hero-image-preload'), null, `${file}: no unused homepage image preload`);
   }
   assert.equal(
     document.querySelectorAll('input[type="password"]').length,
@@ -145,6 +149,7 @@ for (const file of ['index.csr.html', '404.html']) {
     `${file}: no misleading homepage canonical`,
   );
   assert.equal(document.querySelectorAll('script[type="application/ld+json"]').length, 0, `${file}: no public schema in private shell`);
+  assert.equal(document.querySelector('#hero-image-preload'), null, `${file}: no public hero preload`);
   assert.equal(
     document.querySelector('app-root')?.textContent.trim(),
     '',

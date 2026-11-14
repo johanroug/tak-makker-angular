@@ -24,6 +24,16 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.meta.updateTag({ name: 'robots', content: seo ? 'index, follow' : 'noindex, follow' });
     this.document.getElementById('website-structured-data')?.remove();
     this.document.getElementById('page-structured-data')?.remove();
+    this.document.getElementById('hero-image-preload')?.remove();
+    if (seo?.path === '/') {
+      const preload = this.document.createElement('link');
+      preload.id = 'hero-image-preload';
+      preload.rel = 'preload';
+      preload.as = 'image';
+      preload.href = '/marketing/hero-tradesman.webp';
+      preload.setAttribute('fetchpriority', 'high');
+      this.document.head.appendChild(preload);
+    }
     if (seo) {
       const organizationId = SITE_ORIGIN + '/#organization';
       const structuredData = this.document.createElement('script');

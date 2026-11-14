@@ -30,8 +30,8 @@ De tre mindre JPG-filer fylder 83.783–91.458 bytes mod originalernes 198.563�
 ## Afventer adgang og målinger
 
 1. Search Console-ejer verificerer domæneejerskab via DNS, indsender /sitemap.xml og undersøger indekseringsrapporten samt Googles canonical for forsiden og hver fagside. Ingen kontoadgang var tilgængelig under implementeringen.
-2. Kør PageSpeed Insights for mobil på forsiden og de fire fagsider. Gem dato, URL, LCP, CLS, TBT og eventuelle CrUX-data. INP kan ikke konkluderes ud fra Lighthouse alene.
-3. Kontrollér visuelt ved 360, 390, 768 og 1440 px: hero, nye overskrifter, links, FAQ, billeder og vandret overflow. Visuel browserkontrol er ikke udført i denne ændring.
+2. Mobil-labmålinger på forsiden og de fire fagsider samt lokale før/efter-målinger er dokumenteret i `docs/seo-performance.md`. Faktisk INP og øvrige CrUX-feltdata udestår.
+3. Brugeren har godkendt den visuelle kontrol. Forsidens Lighthouse-skærmbilleder før/efter logooptimering er desuden gennemset med uændret udseende.
 4. Vurder Core Web Vitals ved 75-percentilen: LCP højst 2,5 s, INP højst 200 ms og CLS højst 0,1. Manglende feltdata må ikke registreres som bestået.
 5. Efter udgivelse gentages live HTTP-, canonical-, noindex- og 404-kontroller. Lokale ændringer er ikke dokumentation for den udgivne version.
 
@@ -44,4 +44,4 @@ GA4, samtykkeløsning og registreringshændelser hører til en senere etape. Pri
 - Begge sider har egen titel, beskrivelse, H1, canonical, breadcrumb-markup, CTA og links til relevante fagsider og hinanden.
 - Forsiden og fagsiderne linker til begge sider. Heroen på eksisterende sider er bevaret.
 - Angular prerendering, sitemap og Simply-regler er udvidet. SEO-kontrollen forventer nu ti offentlige sider og kontrollerer de nye siders metadata, links og hostingkonfiguration.
-- Ingen tracking eller nye produktfunktioner er tilføjet. Udgivelse og visuel browserkontrol udestår fortsat.
+- Ingen tracking eller nye produktfunktioner er tilføjet. Visuel kontrol er godkendt af brugeren; udgivelse og live-kontrol af de nye sider udestår.

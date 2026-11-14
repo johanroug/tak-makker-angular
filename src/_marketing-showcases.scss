@@ -1,0 +1,71 @@
+.marketing-page {
+  .trade-showcase, .customer-showcase {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1440px;
+    padding: 48px 56px;
+    margin: 0 auto;
+    grid-template-columns: .9fr 1.1fr;
+    gap: 48px;
+    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .24em; margin: 0 0 24px; }
+    h2 { font-size: clamp(32px, 3.3vw, 48px); font-weight: 800; letter-spacing: -1.8px; line-height: 1.12; }
+    .trade-focus-copy > p:not(.eyebrow) { font-size: 16px; line-height: 1.6; max-width: none; color: #202b26; margin: 10px 0; }
+    .trade-focus-link { border: 1px solid #163f32; border-radius: 12px; padding: 12px 22px; margin-top: 16px; gap: 24px; font-size: 17px; font-weight: 750; min-height: 48px; box-sizing: border-box; }
+    .trade-focus-link:hover { background: #e8eddd; }
+    .trade-focus-link:focus-visible { outline: 3px solid #ff6908; outline-offset: 4px; }
+    .trade-focus-link span { font-size: 26px; line-height: 1; }
+    .trade-focus-example { position: relative; box-sizing: border-box; border-radius: 20px; padding: 30px 32px; }
+    .trade-focus-example h3 { font-size: 24px; letter-spacing: -.6px; margin: 20px 0 18px; }
+    .trade-focus-example ul { list-style: none; padding: 0; margin: 0; font-size: 16px; line-height: 1.5; }
+    .trade-focus-example li { position: relative; padding-left: 31px; margin: 9px 0; }
+    .trade-focus-example li::before { content: '✓'; position: absolute; left: 0; top: -2px; font-size: 25px; font-weight: 800; }
+    .trade-focus-caption { font-size: 13px; letter-spacing: 0; }
+  }
+  .trade-showcase {
+    padding-top: 56px;
+    .trade-focus-link { color: white; background: linear-gradient(110deg, #ff790a, #ff5e00); border-color: #ff6908; }
+    .trade-focus-link:hover { background: #e95b00; }
+    .trade-focus-example { background: #fffaf380; color: #103d30; border: 1px solid #ded8cc; box-shadow: 0 8px 16px #49382210, 0 2px 4px #4938220a; padding-right: 210px; min-height: 300px; }
+    .trade-focus-caption { color: #262f29; }
+    .trade-focus-tags span { background: #dce5bf; border: 0; color: #143e30; padding: 6px 14px; font-size: 17px; }
+    .trade-focus-example ul { color: #262f29; }
+    .trade-focus-example li::before { color: #285d42; }
+    .trade-focus-example > p { color: #262f29; border-color: #cfcbbf; margin-top: 18px; font-size: 15px; line-height: 1.5; }
+    .trade-illustration { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 185px; height: 220px; }
+  }
+  .customer-showcase {
+    padding-bottom: 60px;
+    .trade-focus-example { display: grid; grid-template-columns: 100px 1fr; gap: 24px; overflow: hidden; background: radial-gradient(ellipse at top left, #285c45, transparent 65%), linear-gradient(135deg, #103b2d, #174b37); color: #fffdf4; box-shadow: none; }
+    .trade-focus-example::after { content: ''; position: absolute; width: 220px; height: 150px; border-radius: 100% 0 0; background: linear-gradient(130deg, #ffb217, #ff6b00); right: -110px; bottom: -95px; transform: rotate(-20deg); }
+    .customer-illustration { align-self: center; width: 88px; height: 128px; }
+    .customer-example-copy { border-left: 1px solid #b8cbb3; padding-left: 26px; }
+    .trade-focus-caption { color: #e6dfae; }
+    .trade-focus-example ul { color: #fffdf4; }
+    .trade-focus-example li::before { color: #ff8008; }
+    .customer-flow { position: relative; z-index: 1; grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid #b8cbb3; padding: 22px 0 0; margin: 0; list-style: none; }
+    .customer-flow li { display: flex; align-items: center; gap: 9px; padding: 0; margin: 0; font-size: 14px; font-weight: 650; }
+    .customer-flow li::before { display: none; }
+    .customer-flow li:not(:last-child)::after { content: '→'; color: #e6dfae; font-size: 24px; margin-left: 5px; }
+    .customer-flow app-workspace-icon { width: 28px; height: 28px; color: #e6dfae; flex-shrink: 0; }
+  }
+}
+@media (max-width: 1100px) {
+  .marketing-page .trade-showcase, .marketing-page .customer-showcase { gap: 28px; padding-inline: 32px; grid-template-columns: 1fr 1fr; }
+  .marketing-page .trade-showcase .trade-focus-example { padding-right: 135px; }
+  .marketing-page .trade-showcase .trade-illustration { width: 125px; right: 4px; }
+  .marketing-page .customer-showcase .trade-focus-example { grid-template-columns: 64px 1fr; gap: 16px; padding: 24px; }
+  .marketing-page .customer-showcase .customer-illustration { width: 64px; }
+  .marketing-page .customer-showcase .customer-example-copy { padding-left: 18px; }
+  .marketing-page .customer-showcase .customer-flow { flex-wrap: wrap; gap: 12px; }
+}
+@media (max-width: 800px) {
+  .marketing-page .trade-showcase, .marketing-page .customer-showcase { grid-template-columns: 1fr; padding: 32px 24px; gap: 28px; }
+  .marketing-page .trade-showcase h2, .marketing-page .customer-showcase h2 { font-size: clamp(32px, 6vw, 44px); }
+}
+@media (max-width: 420px) {
+  .marketing-page .trade-showcase .trade-focus-example { padding: 24px; }
+  .marketing-page .trade-showcase .trade-illustration { position: static; transform: none; float: right; width: 90px; height: 115px; margin: 0 0 8px 8px; }
+  .marketing-page .customer-showcase .trade-focus-example { grid-template-columns: 1fr; }
+  .marketing-page .customer-showcase .customer-illustration { display: none; }
+  .marketing-page .customer-showcase .customer-example-copy { border: 0; padding: 0; }
+}

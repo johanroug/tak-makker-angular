@@ -6,6 +6,7 @@ import { PublicBrandComponent } from '../../shared/components/public-brand/publi
 import { resetPublicPageScroll } from '../../shared/public-page-scroll';
 import { MarketingHeader } from '../../shared/marketing/marketing-header.component';
 import { MarketingPhone } from '../../shared/marketing/marketing-phone.component';
+import { MarketingCustomers } from '../../shared/marketing/marketing-customers.component';
 import { WorkspaceIcon } from '../../shared/components/workspace-icon.component';
 
 @Component({
@@ -17,6 +18,7 @@ import { WorkspaceIcon } from '../../shared/components/workspace-icon.component'
     PublicBrandComponent,
     MarketingHeader,
     MarketingPhone,
+    MarketingCustomers,
     WorkspaceIcon,
   ],
   templateUrl: './landing.component.html',

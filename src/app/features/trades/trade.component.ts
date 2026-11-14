@@ -6,10 +6,11 @@ import { TradeLinksComponent } from './trade-links.component';
 import { PublicBrandComponent } from '../../shared/components/public-brand/public-brand.component';
 import { resetPublicPageScroll } from '../../shared/public-page-scroll';
 import { MarketingHeader } from '../../shared/marketing/marketing-header.component';
+import { MarketingCustomers } from '../../shared/marketing/marketing-customers.component';
 
 @Component({
   selector: 'app-trade',
-  imports: [RouterLink, TradeLinksComponent, PublicBrandComponent, MarketingHeader, LegalLinksComponent],
+  imports: [RouterLink, TradeLinksComponent, PublicBrandComponent, MarketingHeader, MarketingCustomers, LegalLinksComponent],
   templateUrl: './trade.component.html',
   styleUrl: './trade.component.scss',
 })

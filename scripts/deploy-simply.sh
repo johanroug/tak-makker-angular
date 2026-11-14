@@ -15,6 +15,8 @@ build_directory='dist/hovedet-paa-soemmet-angular/browser'
 for required_file in index.html index.csr.html 404.html .htaccess; do
   [[ -s "$build_directory/$required_file" ]] || { echo "Missing build file: $required_file" >&2; exit 1; }
 done
+public_routes=$(tr -d '\r' < "$build_directory/.htaccess" | sed -n '/^# BEGIN Angular public routes$/,/^# END Angular public routes$/p')
+[[ "$public_routes" == *'RewriteRule '* ]] || { echo 'Missing public routing block in build .htaccess' >&2; exit 1; }
 
 ssh_directory=$(mktemp -d)
 trap 'rm -f "$ssh_directory/key" "$ssh_directory/known_hosts"; rmdir "$ssh_directory"' EXIT
@@ -47,15 +49,28 @@ rsync -az --delay-updates --exclude='.htaccess' --exclude='*.html' \
 rsync -az --delay-updates --include='*/' --include='*.html' --exclude='*' \
   -e "$rsync_shell" "$build_directory/" "$remote:public_html/"
 
-# Add the customer route while preserving the live HTTPS and hosting rules.
-ssh "${ssh_options[@]}" "$remote" 'set -eu
+# Synchronize public routes after their HTML exists, retaining Simply HTTPS rules.
+# Existing unmarked legacy routes may remain; the managed block covers new pages.
+printf '%s\n' "$public_routes" | ssh "${ssh_options[@]}" "$remote" 'set -eu
+  routing_block=$(mktemp)
+  routing_file=$(mktemp public_html/.htaccess.XXXXXX)
+  trap '\''rm -f "$routing_block" "$routing_file"'\'' EXIT
+  cat > "$routing_block"
+  grep -Fqx "# BEGIN Angular public routes" "$routing_block"
+  grep -Fqx "# END Angular public routes" "$routing_block"
+  tr -d "\r" < public_html/.htaccess | awk '\''
+    $0 == "# BEGIN Angular public routes" { managed = 1; next }
+    $0 == "# END Angular public routes" { managed = 0; next }
+    !managed { print }
+    END { if (managed) exit 1 }
+  '\'' > "$routing_file"
+  printf "\n" >> "$routing_file"
+  cat "$routing_block" >> "$routing_file"
   if ! grep -Fq "reset-password|customers|projects" public_html/.htaccess; then
     grep -Fq "reset-password|projects" public_html/.htaccess
-    routing_file=$(mktemp public_html/.htaccess.XXXXXX)
-    trap "rm -f $routing_file" EXIT
-    sed "s/reset-password|projects/reset-password|customers|projects/" public_html/.htaccess > "$routing_file"
-    chmod --reference=public_html/.htaccess "$routing_file"
-    mv "$routing_file" public_html/.htaccess
-  fi'
+    sed -i "s/reset-password|projects/reset-password|customers|projects/" "$routing_file"
+  fi
+  chmod --reference=public_html/.htaccess "$routing_file"
+  mv "$routing_file" public_html/.htaccess'
 
-echo 'Website uploaded. Existing .htaccess, certificates and old hashed assets were preserved.'
+echo 'Website uploaded. Public routes synchronized; Simply HTTPS rules, certificates and old hashed assets preserved.'

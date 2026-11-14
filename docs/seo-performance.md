@@ -12,7 +12,7 @@ Lighthouse 13.6.0 med lokal headless Chrome, mobilprofil (412 × 823), simuleret
 | https://xn--hovedetpsmmet-wfb00a.dk/tilbudsprogram-til-toemrer | 69 | 7.3 s | 0.001 | 320 ms |
 | https://xn--hovedetpsmmet-wfb00a.dk/tilbudsprogram-til-vvs | 74 | 7.3 s | 0.001 | 170 ms |
 
-Live-kørslerne for `/tilbudsberegner` og `/ai-tilbudsgenerator` blev afvist med HTTP 403. Ingen gyldige scores. Årsagen er ikke fastslået; kontrollér deployment, direkte URL-adgang og hostingregler efter udgivelse.
+Live-kørslerne for `/tilbudsberegner` og `/ai-tilbudsgenerator` blev afvist med HTTP 403. Ingen gyldige scores. Årsagen blev efterfølgende fundet og rettet live: serverens .htaccess manglede de nye slash-frie routes. Begge URL'er er nu verificeret med HTTP 200; se `docs/simply-routing-403.md`. Live-performance skal genmåles.
 
 ## Sammenligneligt lokalt produktionsbuild
 

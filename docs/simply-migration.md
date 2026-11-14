@@ -125,14 +125,21 @@ ikke --delete. Hele siden skiftes ikke atomisk, men rsync aktiverer færdige
 overførsler ved rename. En fejl ved ressourcer stopper før HTML-trinnet.
 
 Den eksisterende `.htaccess` på Simply bevares ved automatisk deployment,
-fordi den indeholder den testede Simply-HTTPS-konfiguration. Ændringer til
-`hosting/simply/.htaccess` skal derfor gennemgås og lægges op særskilt.
+fordi den indeholder den testede Simply-HTTPS-konfiguration. Den markerede
+blok `# BEGIN Angular public routes` til `# END Angular public routes`
+synkroniseres fra buildet efter HTML-upload. Resten af serverens konfiguration
+bevares; ændringer uden for denne blok skal fortsat gennemgås særskilt.
+Det forhindrer 403 på nye prerenderede mapper uden afsluttende skråstreg,
+når den gamle serverkonfiguration bruger `DirectorySlash Off`.
 En førstegangsupload til en helt ny mappe skal foretages manuelt; scriptet
 afviser en mappe uden eksisterende index.html og .htaccess.
 
 Lokal test: `bash scripts/check-simply-deploy.sh`. Den bruger falske ssh/rsync
-og kontrollerer rækkefølge, ingen sletning, streng servernøglekontrol og stop
-ved fejl. Den erstatter ikke en test med rigtig SSH-adgang på Simply.
+og kontrollerer rækkefølge, ingen sletning, streng servernøglekontrol, stop
+ved fejl, synkronisering af offentlige routes, bevarelse af HTTPS-regler og
+gentagen synkronisering uden dubletter. Den erstatter ikke en test med rigtig
+SSH-adgang på Simply. Workflowet kontrollerer også de to produkt-URL'er uden
+afsluttende skråstreg, så en ny 403-fejl får deployment-kontrollen til at fejle.
 
 Ingen adgangskoder eller private nøgler skal indsættes i chat, kode eller
 offentlige webfiler. Offentlig nøgle må indsættes i Simply; privat nøgle kun

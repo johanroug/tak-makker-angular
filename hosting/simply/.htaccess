@@ -18,7 +18,8 @@ RewriteRule ^ https://xn--hovedetpsmmet-wfb00a.dk%{REQUEST_URI} [R=301,L,NE]
 RewriteCond %{HTTP_HOST} ^www\.xn--hovedetpsmmet-wfb00a\.dk$ [NC]
 RewriteRule ^ https://xn--hovedetpsmmet-wfb00a.dk%{REQUEST_URI} [R=301,L,NE]
 
-# Keep the existing slash-free canonical URLs for the prerendered trade pages.
+# BEGIN Angular public routes
+# Keep slash-free canonical URLs for prerendered public pages.
 RewriteCond %{THE_REQUEST} \s/+(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs|tilbudsberegner|ai-tilbudsgenerator)/(?:[?\s]) [NC]
 RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs|tilbudsberegner|ai-tilbudsgenerator)/$ /$1 [R=301,L]
 RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs|tilbudsberegner|ai-tilbudsgenerator)$ $1/index.html [END]
@@ -27,6 +28,7 @@ RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram
 RewriteCond %{THE_REQUEST} \s/+(handelsbetingelser|privatlivspolitik|kontakt)/(?:[?\s]) [NC]
 RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)/$ /$1 [R=301,L]
 RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)$ $1/index.html [END]
+# END Angular public routes
 
 # Private app routes use the CSR shell, never the prerendered landing page.
 RewriteRule ^(login|register|forgot-password|reset-password|customers|projects|offers|activity|users|company-profile)(/.*)?$ index.csr.html [END]

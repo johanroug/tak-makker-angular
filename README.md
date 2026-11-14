@@ -2,7 +2,7 @@
 
 Hjemmeside: **hovedetpåsømmet.dk**. E-maildomæne: **hovedetpaasommet.dk**.
 
-Se DOMAIN-SKIFTE.md for overgangen, VERCEL-DEPLOYMENT.md for hosting, SEO-SETUP.md for søgemaskiner og TODO.md for opgaver.
+Se DOMAIN-SKIFTE.md for overgangen, docs/simply-migration.md for hosting, SEO-SETUP.md for søgemaskiner og TODO.md for opgaver.
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
 

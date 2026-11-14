@@ -19,9 +19,9 @@ RewriteCond %{HTTP_HOST} ^www\.xn--hovedetpsmmet-wfb00a\.dk$ [NC]
 RewriteRule ^ https://xn--hovedetpsmmet-wfb00a.dk%{REQUEST_URI} [R=301,L,NE]
 
 # Keep the existing slash-free canonical URLs for the prerendered trade pages.
-RewriteCond %{THE_REQUEST} \s/+(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs)/(?:[?\s]) [NC]
-RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs)/$ /$1 [R=301,L]
-RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs)$ $1/index.html [END]
+RewriteCond %{THE_REQUEST} \s/+(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs|tilbudsberegner|ai-tilbudsgenerator)/(?:[?\s]) [NC]
+RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs|tilbudsberegner|ai-tilbudsgenerator)/$ /$1 [R=301,L]
+RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram-til-maler|tilbudsprogram-til-vvs|tilbudsberegner|ai-tilbudsgenerator)$ $1/index.html [END]
 
 # Public legal/contact pages must work on direct visits and refresh.
 RewriteCond %{THE_REQUEST} \s/+(handelsbetingelser|privatlivspolitik|kontakt)/(?:[?\s]) [NC]

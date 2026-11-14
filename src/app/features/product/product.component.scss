@@ -1,0 +1,23 @@
+:host { display: block; }
+main { max-width: 1440px; margin: auto; }
+section { padding: 28px 56px; max-width: 960px; margin: auto; }
+.product-intro { padding-top: 40px; padding-bottom: 48px; }
+nav, .note { font-size: 12px; color: #52634b; line-height: 1.7; }
+.eyebrow { margin-top: 32px; }
+h1 { font-size: clamp(32px, 4.2vw, 56px); line-height: 1.12; letter-spacing: -1.5px; margin: 16px 0 24px; text-wrap: balance; }
+h2 { font-size: clamp(24px, 3vw, 32px); line-height: 1.2; letter-spacing: -.6px; margin: 0 0 20px; }
+p, li { font-size: 15px; line-height: 1.85; color: #52634b; }
+.lead { font-size: 17px; }
+section a:not(.marketing-button) { text-decoration: underline; text-underline-offset: 3px; }
+blockquote { margin: 24px 0; padding: 20px 24px; border-left: 3px solid #e76f31; background: #edf2ea; line-height: 1.85; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+caption { text-align: left; margin-bottom: 12px; color: #52634b; }
+th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #ccd6cd; }
+thead, tfoot { background: #edf2ea; }
+td:last-child { white-space: nowrap; }
+details { border-bottom: 1px solid #ccd6cd; padding: 18px 0; }
+summary { cursor: pointer; font-weight: 600; line-height: 1.6; }
+.closing { padding-top: 48px; padding-bottom: 48px; }
+@media (max-width: 800px) { section { padding: 24px; } }
+@media (max-width: 420px) { section { padding: 24px 16px; } th, td { padding: 12px 8px; } }

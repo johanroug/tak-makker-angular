@@ -23,6 +23,46 @@ export class SeoTitleStrategy extends TitleStrategy {
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'robots', content: seo ? 'index, follow' : 'noindex, follow' });
     this.document.getElementById('website-structured-data')?.remove();
+    this.document.getElementById('page-structured-data')?.remove();
+    if (seo) {
+      const organizationId = SITE_ORIGIN + '/#organization';
+      const structuredData = this.document.createElement('script');
+      structuredData.id = 'page-structured-data';
+      structuredData.type = 'application/ld+json';
+      const graph: object[] = [{
+        '@type': 'Organization',
+        '@id': organizationId,
+        name: BRAND_NAME,
+        legalName: 'Hovedet på Sømmet v/Johan Steiner Roug',
+        url: SITE_ORIGIN + '/',
+        email: 'kontakt@hovedetpaasommet.dk',
+        identifier: { '@type': 'PropertyValue', propertyID: 'CVR', value: '46908171' },
+      }];
+      if (seo.path === '/') {
+        graph.push({
+          '@type': 'SoftwareApplication',
+          '@id': SITE_ORIGIN + '/#software',
+          name: BRAND_NAME,
+          url: SITE_ORIGIN + '/',
+          applicationCategory: 'BusinessApplication',
+          operatingSystem: 'Web browser',
+          inLanguage: 'da-DK',
+          description: seo.description,
+          publisher: { '@id': organizationId },
+          featureList: ['AI-forslag til arbejdsopgaver og materialer', 'Tilpasning af timer og priser', 'Tilbud som PDF med firmaoplysninger og logo'],
+        });
+      } else {
+        graph.push({
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Forside', item: SITE_ORIGIN + '/' },
+            { '@type': 'ListItem', position: 2, name: title.split(' | ')[0], item: SITE_ORIGIN + seo.path },
+          ],
+        });
+      }
+      structuredData.textContent = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+      this.document.head.appendChild(structuredData);
+    }
     if (seo?.path === '/') {
       const structuredData = this.document.createElement('script');
       structuredData.id = 'website-structured-data';

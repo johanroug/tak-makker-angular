@@ -1,30 +1,36 @@
 # SEO for Hovedet på sømmet
 
-## Klar lokalt — 25. oktober 2026
+## Lokal opsætning — 14. november 2026
 
-Forsiden og de tre fagsider genereres som færdig HTML ved build:
+Forsiden, fire fagsider, to produktsider og tre juridiske/kontaktsider genereres som færdig HTML ved build:
 
 - `https://xn--hovedetpsmmet-wfb00a.dk/`
 - `https://xn--hovedetpsmmet-wfb00a.dk/tilbudsprogram-til-toemrer`
 - `https://xn--hovedetpsmmet-wfb00a.dk/tilbudsprogram-til-murer`
 - `https://xn--hovedetpsmmet-wfb00a.dk/tilbudsprogram-til-maler`
+- `https://xn--hovedetpsmmet-wfb00a.dk/tilbudsprogram-til-vvs`
+- `https://xn--hovedetpsmmet-wfb00a.dk/tilbudsberegner`
+- `https://xn--hovedetpsmmet-wfb00a.dk/ai-tilbudsgenerator`
+- `https://xn--hovedetpsmmet-wfb00a.dk/handelsbetingelser`
+- `https://xn--hovedetpsmmet-wfb00a.dk/privatlivspolitik`
+- `https://xn--hovedetpsmmet-wfb00a.dk/kontakt`
 
 Hver side har dansk indhold, egen titel, beskrivelse, canonical-adresse og Open Graph-metadata. Fagsiderne har forskellige tilbudseksempler, arbejdsbeskrivelser og spørgsmål. Forsiden og fagsiderne linker til hinanden.
 
-`public/sitemap.xml` indeholder kun disse offentlige sider. `robots.txt` henviser til sitemap og tillader crawling, så Google også kan se `noindex` på appens øvrige sider. Login, registrering og private app-sider bruger en separat tom appskal med `noindex`, og deres Vercel-ruter får også en `X-Robots-Tag`-header. Dette erstatter ikke appens login og adgangskontrol.
+`public/sitemap.xml` indeholder kun disse offentlige sider. `robots.txt` henviser til sitemap og tillader crawling, så Google også kan se `noindex` på appens øvrige sider. Login, registrering og private app-sider bruger en separat tom appskal med `noindex`, og Simplys appskal får også en `X-Robots-Tag`-header. Dette erstatter ikke appens login og adgangskontrol.
 
-Vercel leverer hver fagsides egen HTML. Ukendte adresser har ikke længere en generel omskrivning til forsiden; en genereret `404.html` viser appens side-ikke-fundet-visning. Den faktiske HTTP-status og routing skal kontrolleres på Vercel efter deployment.
+Simply leverer hver fagsides egen HTML. Ukendte adresser har ikke længere en generel omskrivning til forsiden; en genereret `404.html` viser appens side-ikke-fundet-visning. Den faktiske HTTP-status og routing skal kontrolleres på Simply efter deployment.
 
 ## Build og lokal kontrol
 
-Kør `npm run build`. Angular prerenderer fire offentlige sider. Derefter oprettes `404.html`, og HTML-kontrollen køres automatisk. Den kontrollerer blandt andet indhold uden JavaScript, metadata, interne links, sitemap og appskallens `noindex`.
+Kør `npm run build`. Angular prerenderer ti offentlige sider. Derefter oprettes `404.html`, og HTML-kontrollen køres automatisk. Den kontrollerer blandt andet indhold uden JavaScript, metadata, interne links, sitemap og appskallens `noindex`.
 
 Kontrollen kan genkøres med `npm run check:seo`. Den bruger ikke spec-filer eller sender kald til Supabase/OpenAI. Angular-versionerne er fastholdt på projektets eksisterende 22.2.0, inklusive de nye prerender-pakker.
 
-## Efter deployment til Vercel
+## Efter deployment til Simply
 
 1. Brug `https://hovedetpåsømmet.dk` uden www som primært domæne. `https://xn--hovedetpsmmet-wfb00a.dk` er den tekniske skrivemåde for samme adresse, ikke et andet domæne. Se DOMAIN-SKIFTE.md for opsætning og viderestillinger.
-2. Åbn alle fire offentlige adresser direkte og genindlæs dem. Vis sidens kildekode: overskrift og brødtekst skal være med før JavaScript kører.
+2. Åbn alle ti offentlige adresser direkte og genindlæs dem. Vis sidens kildekode: overskrift og brødtekst skal være med før JavaScript kører.
 3. Kontrollér `/sitemap.xml` og `/robots.txt`. De skal være henholdsvis XML og tekst, ikke Angular-forsiden.
 4. Kontrollér login, registrering, nulstilling af adgangskode og et eksisterende projektlink. Private ruter skal fortsat kræve normal adgang og have `noindex` i header/metadata.
 5. Åbn en adresse, der ikke findes. Den skal returnere HTTP 404 og må ikke vise forsiden som et gyldigt søgeresultat.
@@ -36,7 +42,7 @@ Kontrollen kan genkøres med `npm run check:seo`. Den bruger ikke spec-filer ell
 2. Kopiér Googles konkrete TXT-verifikationsværdi. Tilføj den som en ny TXT-post for roddomænet i Simplys DNS-administration. Bevar aktuelle web- og mailposter; gamle Resend-/Vercel-poster skal kun fjernes som del af en kontrolleret afvikling.
 3. Gå tilbage til Search Console og verificér. TXT-værdien er kontospecifik og skal komme fra Google; den er ikke opfundet eller gemt i projektet.
 4. Indsend `https://xn--hovedetpsmmet-wfb00a.dk/sitemap.xml` under Sitemaps.
-5. Brug URL-inspektion på forsiden og de tre fagsider. Kontrollér den gengivne side og Googles valgte canonical. Anmod om indeksering, hvis muligheden vises.
+5. Brug URL-inspektion på alle offentlige sider. Kontrollér den gengivne side og Googles valgte canonical. Anmod om indeksering, hvis muligheden vises.
 6. Følg søgninger, eksponeringer, klik og indekseringsproblemer. Indeksering og placeringer er ikke garanteret eller kontrolleret lokalt.
 
 Ingen Search Console-konto er forbundet eller verificeret af Codex. Der er ikke tilføjet analytics, cookies eller automatisk registrering af testtilmeldinger til markedsføringsmåling.
@@ -53,4 +59,4 @@ Ingen Search Console-konto er forbundet eller verificeret af Codex. Der er ikke 
 - https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics
 - https://developers.google.com/search/docs/fundamentals/seo-starter-guide
 - https://angular.dev/best-practices/performance/ssr
-- https://vercel.com/docs/project-configuration/vercel-json
+- Se `hosting/simply/.htaccess` for den aktive hostingkonfiguration.

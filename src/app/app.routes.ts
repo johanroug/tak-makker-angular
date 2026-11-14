@@ -1,3 +1,4 @@
+import { PRODUCT_PAGES } from './features/product/product-pages';
 import { activityGuard } from './core/activity/activity.guard';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth-guard';
@@ -19,6 +20,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/landing/landing.component').then((m) => m.LandingComponent),
   },
+  ...PRODUCT_PAGES.map((page) => ({
+    path: page.slug, title: page.title,
+    data: { product: page, seo: { path: '/' + page.slug, description: page.description } },
+    loadComponent: () => import('./features/product/product.component').then((m) => m.ProductComponent),
+  })),
   ...TRADE_PAGES.map((page) => ({
     path: page.slug,
     title: page.title,

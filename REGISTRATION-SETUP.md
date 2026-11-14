@@ -22,7 +22,7 @@ DOMAIN-SKIFTE.md indeholder også den historiske Resend-opsætning.
 4. Auth → URL Configuration: Site URL `https://xn--hovedetpsmmet-wfb00a.dk`. Tilføj Redirect URLs `https://xn--hovedetpsmmet-wfb00a.dk/login` og `http://localhost:4200/login`. Tilføj andre konkrete udviklingsdomæner, hvis de bruges.
 5. Kontrollér SMTP/mailafsendelse, så bekræftelsesmail kan sendes til eksterne testbrugere. Supabases indbyggede mailtjeneste har begrænsninger; se den officielle guide nedenfor.
 6. Deploy `generate-offer` i Supabase efter SQL. Funktionen kontrollerer nu appadgang før projektopslag og AI. Ingen ny secret er nødvendig.
-7. Commit/push frontendændringerne til Vercel efter SQL.
+7. Commit/push frontendændringerne til Simply efter SQL.
 
 ## Godkendelse af nye brugere
 

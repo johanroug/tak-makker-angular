@@ -1,0 +1,87 @@
+<div class="marketing-page">
+  <a class="skip-link" href="#indhold">Spring til indhold</a>
+  <app-marketing-header />
+  <main id="indhold">
+    <section class="product-intro">
+      <nav aria-label="Brødkrumme"><a routerLink="/">Forside</a><span aria-hidden="true"> / </span><span>{{ page.heading }}</span></nav>
+      <p class="eyebrow">Hovedet på sømmet</p>
+      <h1>{{ page.heading }}<br /><em>{{ page.accent }}</em></h1>
+      <p class="lead">{{ page.intro }}</p>
+      <a class="marketing-button" routerLink="/register">Prøv med 10 gratis forespørgsler →</a>
+      <p class="note">Intet betalingskort kræves. Forespørgslerne deles af virksomheden.</p>
+    </section>
+
+    @if (page.slug === 'tilbudsberegner') {
+      <section aria-labelledby="beregning">
+        <h2 id="beregning">Sådan bygger du din tilbudsberegning op</h2>
+        <p>Start med det arbejde, du har besigtiget og aftalt med kunden. Gennemgå forslagene til arbejdsopgaver, vurder timerne, og angiv projektets timepris. Kontrollér derefter materialernes mængder, enheder og enhedspriser mod opmålingen og dine leverandørpriser.</p>
+        <p>Et lavt materialeforbrug eller en glemt forberedelse kan ændre resultatet. Medregn de opgaver, der faktisk er nødvendige, eksempelvis afdækning, klargøring, montering og oprydning. Godkend kun poster, du har gennemgået.</p>
+      </section>
+      <section aria-labelledby="eksempel">
+        <h2 id="eksempel">Regneeksempel: Timer og materialer til en mindre opgave</h2>
+        <p>Eksemplet forklarer regnestykket. Beløbene er illustrative og er hverken markedspriser, et færdigt kundetilbud eller en garanti for tidsforbrug. Det er ikke en interaktiv beregner; du tilpasser dine egne projekter efter oprettelse af en konto.</p>
+        <div class="table-scroll" role="region" aria-label="Illustrativ beregning" tabindex="0">
+          <table>
+            <caption>Alle linjepriser er ekskl. moms</caption>
+            <thead><tr><th scope="col">Post</th><th scope="col">Mængde</th><th scope="col">Pris pr. enhed</th><th scope="col">Beløb</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Klargøring</th><td>2 timer</td><td>500 kr.</td><td>1.000 kr.</td></tr>
+              <tr><th scope="row">Udførelse</th><td>6 timer</td><td>500 kr.</td><td>3.000 kr.</td></tr>
+              <tr><th scope="row">Materiale A</th><td>10 stk.</td><td>120 kr.</td><td>1.200 kr.</td></tr>
+              <tr><th scope="row">Materiale B</th><td>2 stk.</td><td>150 kr.</td><td>300 kr.</td></tr>
+            </tbody>
+            <tfoot>
+              <tr><th scope="row" colspan="3">I alt ekskl. moms</th><td>5.500 kr.</td></tr>
+              <tr><th scope="row" colspan="3">Moms i eksemplet (25 %)</th><td>1.375 kr.</td></tr>
+              <tr><th scope="row" colspan="3">I alt inkl. moms</th><td>6.875 kr.</td></tr>
+            </tfoot>
+          </table>
+        </div>
+        <p>Arbejdstid beregnes her som 8 timer × 500 kr. Materialer beregnes som antal × enhedspris på hver linje. Afklar selv eventuelle øvrige udgifter og forbehold; de er ikke med i dette forenklede eksempel.</p>
+      </section>
+      <section aria-labelledby="kontrol">
+        <h2 id="kontrol">Kontrollér tilbuddet, før du laver PDF</h2>
+        <ul><li>Stemmer timer og mængder med den konkrete opgave?</li><li>Er materialernes priser aktuelle, og er alle nødvendige arbejder med?</li><li>Er kundeoplysninger, betalingsbetingelser og forbehold korrekte?</li><li>Har du gennemgået totalen og det indhold, du godkender?</li></ul>
+        <p>Se faglige eksempler på <a routerLink="/tilbudsprogram-til-maler">tilbud til malerarbejde</a> og <a routerLink="/tilbudsprogram-til-murer">tilbud til murerarbejde</a>. Vil du først have hjælp til at strukturere beskrivelsen, kan du læse om vores <a routerLink="/ai-tilbudsgenerator">AI tilbudsgenerator</a>.</p>
+      </section>
+      <section class="faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">Spørgsmål om tilbudsberegning</h2>
+        <details><summary>Henter tilbudsberegneren mine grossistpriser?</summary><p>Nej. Du kontrollerer og indtaster selv dine aktuelle materialepriser. Der er ingen direkte forbindelse til grossistens prislister.</p></details>
+        <details><summary>Kan jeg ændre timeprisen på et projekt?</summary><p>Ja. Din standardtimepris kopieres til nye projekter. Du kan ændre den på det enkelte projekt under Rediger og tilpasse arbejdsopgavernes timer.</p></details>
+        <details><summary>Kan jeg hente beregningen som et kundetilbud?</summary><p>Du kan færdiggøre tilbuddet og hente en PDF med firmaoplysninger og logo fra virksomhedsprofilen. Du sender selv PDF-filen til kunden.</p></details>
+      </section>
+    } @else {
+      <section aria-labelledby="beskrivelse">
+        <h2 id="beskrivelse">Giv AI en konkret beskrivelse af arbejdet</h2>
+        <p>En tilbudsgenerator har brug for dit kendskab til opgaven. Beskriv kundens ønsker, mål, materialevalg og eksisterende forhold. Angiv også, hvad der endnu ikke er afklaret. Vælg virksomhedens fag i profilen, så forslagene tager udgangspunkt i dit arbejde.</p>
+        <blockquote>“Kunden ønsker en træterrasse på cirka 20 m² ved huset. Der er adgang fra haven. Vi har endnu ikke aftalt træsort eller afklaret funderingen. Tilbuddet skal skelne mellem klargøring, underkonstruktion, terrassebrædder og afslutning.”</blockquote>
+        <p class="note">Illustrativ opgavebeskrivelse uden kundeoplysninger. Det er ikke en konstruktionsteknisk vejledning.</p>
+      </section>
+      <section aria-labelledby="udkast">
+        <h2 id="udkast">Fra opgavebeskrivelse til poster, du kan gennemgå</h2>
+        <p>AI kan hjælpe med at foreslå arbejdsopgaver og materialer. En mulig opdeling af terrasseopgaven er:</p>
+        <ol><li>Klargøring og opmåling af arbejdsområdet.</li><li>Underkonstruktion og materialer til den valgte løsning.</li><li>Montering og tilpasning af terrassebrædder.</li><li>Afslutninger og oprydning.</li></ol>
+        <p>Listen er en illustration, ikke et faktisk genereret eller komplet tilbud. Du skal selv afklare fundering og træsort, kontrollere konstruktion og materialemængder og tilpasse arbejdstiden. Et uklart forhold bliver ikke korrekt, blot fordi AI har foreslået en post.</p>
+        <p>Se flere hensyn i vores <a routerLink="/tilbudsprogram-til-toemrer">tilbudseksempel til tømrere</a>. For installationer kan du læse om <a routerLink="/tilbudsprogram-til-vvs">tilbudsprogram til VVS</a>.</p>
+      </section>
+      <section aria-labelledby="godkendelse">
+        <h2 id="godkendelse">Du retter priserne og godkender det færdige tilbud</h2>
+        <p>Gennemgå beskrivelser, materialer, mængder og timer. Brug dine aktuelle enhedspriser og projektets timepris. Tilføj kundeoplysninger og tilbudsbetingelser, og godkend de poster, der skal med. Læs vores <a routerLink="/tilbudsberegner">regneeksempel til tilbudsberegning</a>, hvis du vil se sammenhængen mellem timer, materialer og pris.</p>
+        <p>Når du har færdiggjort tilbuddet, kan du hente det som PDF med virksomhedens oplysninger og logo. Tilbuddet bliver ikke sendt automatisk; du sender selv filen til kunden.</p>
+      </section>
+      <section class="faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">Spørgsmål om AI tilbudsgeneratoren</h2>
+        <details><summary>Kan AI erstatte min besigtigelse og faglige vurdering?</summary><p>Nej. Du skal kontrollere forslagene mod forholdene på stedet, opmålinger og den løsning, du vil udføre. AI kan overse forhold og foreslå forkerte mængder eller timer.</p></details>
+        <details><summary>Er materialeforslagene aktuelle grossistpriser?</summary><p>Nej. Programmet har ikke direkte adgang til dine grossistpriser. Du indtaster og kontrollerer selv dine leverandørpriser.</p></details>
+        <details><summary>Er 10 gratis forespørgsler det samme som 10 tilbud?</summary><p>Nej. En forespørgsel er en anmodning til AI om hjælp. Kun gennemførte svar tæller, og du kan bruge flere forespørgsler på ét projekt. Virksomhedens 10 gratis forespørgsler kræver ikke betalingskort.</p></details>
+      </section>
+    }
+    <section class="closing" aria-labelledby="start-title">
+      <h2 id="start-title">Lav dit næste tilbud med overblik</h2>
+      <p>Opret en konto, bekræft din e-mail, og udfyld din virksomhedsprofil. Så kan du oprette dit første projekt.</p>
+      <a class="marketing-button" routerLink="/register">Prøv gratis →</a>
+    </section>
+    <app-trade-links />
+  </main>
+  <footer class="marketing-footer"><app-legal-links /><app-public-brand [tagline]="false" /><p>Din faglighed. Din virksomhed. Dit tilbud.</p><a routerLink="/login">Log ind →</a></footer>
+</div>

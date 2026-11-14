@@ -33,8 +33,9 @@
     </section>
     <section class="walkthrough" id="saadan" aria-labelledby="walkthrough-title">
       <div>
-        <h2 id="walkthrough-title">Lav tilbud til kunder i tre trin</h2>
-        <p class="walkthrough-intro">Fra beskrivelse af opgaven til et færdigt tilbud, du selv gennemgår og godkender.</p>
+        <h2 id="walkthrough-title">Tilbudsprogram til håndværkere – fra opgavebeskrivelse til PDF</h2>
+        <p class="walkthrough-intro">Lav tilbud til kunder i tre trin: Beskriv arbejdet, gennemgå AI-forslagene, og tilpas materialer, timer og priser. Du kontrollerer og godkender indholdet, før du henter tilbuddet som PDF og selv sender det til kunden.</p>
+        <p>Se et konkret regneeksempel i vores <a routerLink="/tilbudsberegner">tilbudsberegner til håndværkere</a>, eller læs hvordan en <a routerLink="/ai-tilbudsgenerator">AI tilbudsgenerator</a> hjælper fra opgavebeskrivelse til udkast.</p>
         <div class="steps">
           @for (item of steps; track item.title; let i = $index) {
             <button type="button" (click)="step.set(i); demoDialog.showModal()">
@@ -51,6 +52,8 @@
       <img
         class="testing-photo"
         src="/marketing/craft-still-life.jpg"
+        srcset="/marketing/craft-still-life-768.jpg 768w, /marketing/craft-still-life.jpg 1536w"
+        sizes="100vw"
         alt=""
         width="1536"
         height="1024"
@@ -127,12 +130,19 @@
           <p>Du henter det færdige tilbud som PDF og sender det selv til kunden.</p>
         </details>
         <details>
+          <summary>Hvordan beregner jeg prisen på mit tilbud?</summary>
+          <p>Gennemgå arbejdsopgavernes timer og materialernes mængder og enhedspriser. Brug din egen timepris, og kontrollér omfang og betingelser, før du færdiggør tilbuddet. AI-forslag er et udgangspunkt og erstatter ikke din opmåling eller aktuelle leverandørpriser. Se konkrete eksempler på <a routerLink="/tilbudsprogram-til-toemrer">tilbud til tømrerarbejde</a> og <a routerLink="/tilbudsprogram-til-vvs">VVS-tilbud</a>.</p>
+        </details>
+        <details>
+          <summary>Er 10 gratis forespørgsler det samme som 10 tilbud?</summary>
+          <p>Nej. En forespørgsel er en anmodning til AI om hjælp, og kun gennemførte svar tæller. Du kan bruge flere forespørgsler, mens du arbejder på ét projekt. De 10 gratis forespørgsler deles af virksomheden og kræver ikke betalingskort.</p>
+        </details>
+        <details>
           <summary>Hvordan kommer jeg i gang?</summary>
           <p>
             Opret din konto, bekræft din e-mail, og udfyld virksomhedsprofilen. Derefter kan du
             oprette dit første projekt og bruge virksomhedens 10 gratis forespørgsler uden
-            betalingskort. Gennemgå forslagene, tilpas priserne, og hent dit tilbud som PDF. <br>
-            Abonement er lige på trapperne
+            betalingskort. Gennemgå forslagene, tilpas priserne, og hent dit tilbud som PDF.
           </p>
         </details>
       </section>

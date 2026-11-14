@@ -1,3 +1,5 @@
+> Hostingstatus: Vercel er afviklet og bruges ikke længere. Nedenstående Vercel-instruktioner er historiske og må ikke bruges til ny DNS-opsætning. Følg `docs/simply-migration.md` og Simply-workflowet.
+
 # Hovedet på sømmet — navn, web og e-mail
 
 > Aktuel status 7. november 2026: Hjemmesiden ligger hos Simply; Vercel-projektet

@@ -5,6 +5,8 @@
       <img
         class="trade-photo"
         [src]="page.image"
+        [attr.srcset]="page.image.replace('.jpg', '-768.jpg') + ' 768w, ' + page.image + ' 1536w'"
+        sizes="(max-width: 800px) 100vw, 60vw"
         alt=""
         width="1536"
         height="1024"
@@ -38,7 +40,7 @@
     </section>
     <section class="trade-relevance" aria-labelledby="trade-relevance-title">
       <p class="eyebrow">DIT FAG SÆTTER RETNINGEN</p>
-      <h2 id="trade-relevance-title">Forslag med {{ page.singular.toLowerCase() }}faget i fokus.</h2>
+      <h2 id="trade-relevance-title">Tilbudsprogram til {{ page.trade }} – med dit fag i fokus</h2>
       <p>Vælg {{ page.singular }} i virksomhedsprofilen, så forslag til opgaver og materialer tager udgangspunkt i dit fag. Arbejder du inden for flere fag, kan du vælge dem alle.</p>
       <p>Ligger en del af projektet uden for dine valgte fag, bliver du gjort opmærksom på det. Du har overblikket over din del af opgaven.</p>
     </section>
@@ -59,6 +61,10 @@
         </details>
       }
       <details>
+        <summary>Er de gratis forespørgsler det samme som færdige tilbud?</summary>
+        <p>Nej. En forespørgsel er en anmodning til AI om hjælp. Kun gennemførte svar tæller, og du kan bruge flere forespørgsler på samme projekt. Virksomheden deler de 10 gratis forespørgsler.</p>
+      </details>
+      <details>
         <summary>Hvordan kommer jeg i gang?</summary>
         <p>
           Opret din konto, bekræft din e-mail, og udfyld virksomhedsprofilen. Du får 10 gratis
@@ -71,6 +77,8 @@
       <p class="eyebrow">Tilbud til dit fag</p>
       <h2 id="trade-advice-title">Fra din erfaring<br />til et ordentligt tilbud.</h2>
       <p class="advice-intro">{{ page.intro }}</p>
+      <p>Se også <a routerLink="/tilbudsberegner">hvordan timer og materialer indgår i tilbudsberegningen</a>, og <a routerLink="/ai-tilbudsgenerator">hvordan AI hjælper med et tilbudsudkast</a>.</p>
+      <p>Vil du se hele arbejdsgangen? Læs <a routerLink="/" fragment="saadan">hvordan du laver tilbud fra opgavebeskrivelse til PDF</a>.</p>
       @for (section of page.sections; track section.heading) {
         <details>
           <summary>{{ section.heading }}</summary>
@@ -92,6 +100,8 @@
       <img
         class="testing-photo"
         [src]="page.image"
+        [attr.srcset]="page.image.replace('.jpg', '-768.jpg') + ' 768w, ' + page.image + ' 1536w'"
+        sizes="100vw"
         alt=""
         width="1536"
         height="1024"

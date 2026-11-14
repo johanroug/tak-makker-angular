@@ -4,6 +4,7 @@ import { JSDOM } from 'jsdom';
 import { TRADE_PAGES } from '../src/app/features/trades/trade-pages.ts';
 import { BRAND_NAME, SITE_ORIGIN } from '../src/app/core/brand.ts';
 import { LEGAL_PAGES } from '../src/app/features/legal/legal-pages.ts';
+import { PRODUCT_PAGES } from '../src/app/features/product/product-pages.ts';
 
 const origin = SITE_ORIGIN;
 const output = new URL('../dist/hovedet-paa-soemmet-angular/browser/', import.meta.url);
@@ -15,6 +16,7 @@ const parseHtml = (html) =>
 const pages = [
   { slug: '', heading: 'Lav professionelle tilbud.', title: `Tilbudsprogram til håndværkere med AI | ${BRAND_NAME}` },
   ...TRADE_PAGES,
+  ...PRODUCT_PAGES,
 ];
 const titles = new Set();
 const descriptions = new Set();
@@ -64,6 +66,17 @@ for (const page of pages) {
     `${file}: expected public content`,
   );
   assert(document.querySelector('h2'), `${file}: public sections have headings`);
+  const graph = JSON.parse(document.querySelector('#page-structured-data').textContent)['@graph'];
+  assert(graph.some((node) => node['@type'] === 'Organization' && node.identifier.value === '46908171'));
+  if (page.slug) {
+    const breadcrumb = graph.find((node) => node['@type'] === 'BreadcrumbList');
+    assert.equal(breadcrumb.itemListElement[1].item, origin + '/' + page.slug);
+    if (document.querySelector('.trade-photo')) {
+      assert(document.querySelector('.trade-photo').getAttribute('srcset').includes('768w'));
+    }
+  } else {
+    assert(graph.some((node) => node['@type'] === 'SoftwareApplication' && !node.aggregateRating && !node.offers));
+  }
   const websiteData = document.querySelector('#website-structured-data');
   if (!page.slug) {
     assert(websiteData, `${file}: website structured data is prerendered`);
@@ -93,6 +106,19 @@ for (const page of pages) {
     document.querySelector('a[href="/register"]'),
     `${file}: working registration destination`,
   );
+  for (const product of PRODUCT_PAGES) {
+    if (page.slug !== product.slug) assert(document.querySelector(`a[href="/${product.slug}"]`), `${file}: product page discoverable`);
+  }
+  if (PRODUCT_PAGES.some((product) => product.slug === page.slug)) {
+    assert(configuredHosting(page.slug), `${file}: direct visits supported by Simply`);
+    assert(document.querySelectorAll('details').length >= 3);
+    assert(document.querySelector('a[href="/"]'));
+  }
+}
+
+function configuredHosting(slug) {
+  const apache = readFileSync(new URL('../hosting/simply/.htaccess', import.meta.url), 'utf8');
+  return apache.split(/\r?\n/).some((line) => line.startsWith('RewriteRule ^(') && line.includes(slug) && line.endsWith('$ $1/index.html [END]'));
 }
 
 for (const page of LEGAL_PAGES) {
@@ -118,6 +144,7 @@ for (const file of ['index.csr.html', '404.html']) {
     0,
     `${file}: no misleading homepage canonical`,
   );
+  assert.equal(document.querySelectorAll('script[type="application/ld+json"]').length, 0, `${file}: no public schema in private shell`);
   assert.equal(
     document.querySelector('app-root')?.textContent.trim(),
     '',
@@ -135,15 +162,18 @@ assert(
   read('robots.txt').includes(`Sitemap: ${origin}/sitemap.xml`),
   'robots.txt references sitemap',
 );
-const config = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8'));
-assert(
-  !config.rewrites.some((route) => route.source === '/(.*)'),
-  'unknown URLs must not become homepage responses',
-);
-assert(
-  config.rewrites.some((route) => route.destination === '/index.csr.html'),
-  'private app uses non-prerendered shell',
-);
+const apache = readFileSync(new URL('../hosting/simply/.htaccess', import.meta.url), 'utf8');
+const privateRule = apache.split(/\r?\n/).find((line) => line.startsWith('RewriteRule ^(') && line.endsWith(' index.csr.html [END]'));
+assert(privateRule, 'private app uses non-prerendered shell');
+for (const path of ['login', 'register', 'forgot-password', 'reset-password', 'customers', 'projects', 'offers', 'activity', 'users', 'company-profile']) {
+  assert(privateRule.includes(path), `${path}: private rewrite`);
+}
+for (const page of [...TRADE_PAGES, ...PRODUCT_PAGES, ...LEGAL_PAGES]) {
+  assert(configuredHosting(page.slug), `${page.slug}: public HTML served directly`);
+}
+assert(apache.includes('ErrorDocument 404 /404.html'), 'unknown URLs have a static 404');
+assert(!apache.split(/\r?\n/).some((line) => /^RewriteRule\s+\^(?:\.\*|\(\.\*\))\$?\s+\/?index\.html\b/.test(line)), 'no catch-all rewrite to homepage');
+assert(/<FilesMatch "\^\(index\\\.csr\|404\)\\\.html\$">\s*Header always set X-Robots-Tag "noindex, follow"\s*<\/FilesMatch>/.test(apache), 'private shell and 404 carry noindex headers');
 console.log(
-  'SEO checks passed: 8 prerendered public pages, metadata, legal/contact content, internal links, sitemap, robots, client shell and static 404.',
+  `SEO checks passed: ${urls.size} prerendered public pages, metadata, legal/contact content, internal links, sitemap, robots, client shell and static 404.`,
 );

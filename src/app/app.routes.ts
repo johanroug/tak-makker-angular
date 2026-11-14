@@ -74,10 +74,9 @@ export const routes: Routes = [
         children: [
           {
             path: '',
+            pathMatch: 'full',
             loadComponent: () =>
-              import('./features/project-detail/project-detail.component').then(
-                (m) => m.ProjectDetail,
-              ),
+              import('./features/projects/projects').then((m) => m.Projects),
           },
           {
             path: ':projectId',

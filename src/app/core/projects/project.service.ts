@@ -74,6 +74,29 @@ export class ProjectService {
     if (errors.length) throw errors[0];
   }
 
+  async getCustomerCount(): Promise<number> {
+    const { data: { user }, error: userError } = await this.authService.getUser();
+    if (userError || !user) throw new Error('Brugeren er ikke logget ind.');
+    const companyId = await this.membershipService.getCompanyId(user.id);
+    const { count, error } = await supabase.from('customers')
+      .select('id', { count: 'exact', head: true }).eq('company_id', companyId);
+    if (error) throw error;
+    return count ?? 0;
+  }
+
+  async getOverviewProjects() {
+    const projects = await this.getProjects();
+    if (!projects.length) return [];
+    const { data, error } = await supabase.from('projects')
+      .select('id, offers(status, finalized_at)')
+      .in('id', projects.map(project => project.id))
+      .order('finalized_at', { referencedTable: 'offers', ascending: false, nullsFirst: false })
+      .limit(1, { referencedTable: 'offers' });
+    if (error) throw error;
+    const offers = new Map(data.map(project => [project.id, project.offers]));
+    return projects.map(project => ({ ...project, offers: offers.get(project.id) ?? [] }));
+  }
+
   async getProjects() {
     const {
       data: { user },

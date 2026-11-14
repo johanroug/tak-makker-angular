@@ -1,24 +1,68 @@
-<h1>Mine projekter</h1>
+<section class="projects-dashboard">
+  <header class="welcome">
+    <h1>Velkommen tilbage{{ firstName() ? ', ' + firstName() : '' }}</h1>
+    <p>Få overblik over dine projekter, kunder og tilbud – eller opret et nyt projekt.</p>
+  </header>
 
-@if (isLoading()) {
-  <p>Henter projekter...</p>
-} @else if (errorMessage()) {
-  <p role="alert">{{ errorMessage() }}</p>
-  <button type="button" (click)="loadProjects()">Prøv igen</button>
-} @else if (projects().length === 0) {
-  <p>Du har endnu ingen projekter.</p>
-} @else {
-  <ul>
-    @for (project of projects(); track project.id) {
-      <li>
-        <a [routerLink]="['/projects', project.id]">
-          <strong>{{ project.project_number }}</strong>
-          -
-          {{ project.title || 'Projekt uden titel' }}
-        </a>
+  <nav class="overview" aria-label="Dit overblik">
+    <button type="button" class="stat-card" (click)="filter.set('all')" [attr.aria-pressed]="filter() === 'all'">
+      <span class="icon-tile"><app-workspace-icon name="projects" /></span>
+      <span class="stat-copy"><strong>{{ isLoading() || errorMessage() ? '–' : projects().length }}</strong><span>Aktive projekter</span></span><span class="arrow" aria-hidden="true">→</span>
+    </button>
+    <button type="button" class="stat-card" (click)="filter.set('finished')" [attr.aria-pressed]="filter() === 'finished'">
+      <span class="icon-tile"><app-workspace-icon name="offers" /></span>
+      <span class="stat-copy"><strong>{{ isLoading() || errorMessage() ? '–' : finishedCount() }}</strong><span>Færdige tilbud</span></span><span class="arrow" aria-hidden="true">→</span>
+    </button>
+    <a class="stat-card" routerLink="/customers">
+      <span class="icon-tile"><app-workspace-icon name="users" /></span>
+      <span class="stat-copy"><strong>{{ customerCount() ?? '–' }}</strong><span>Kunder</span></span><span class="arrow" aria-hidden="true">→</span>
+    </a>
+    <button type="button" class="stat-card" (click)="filter.set('draft')" [attr.aria-pressed]="filter() === 'draft'">
+      <span class="icon-tile"><app-workspace-icon name="layers" /></span>
+      <span class="stat-copy"><strong>{{ isLoading() || errorMessage() ? '–' : draftCount() }}</strong><span>Udkast</span></span><span class="arrow" aria-hidden="true">→</span>
+    </button>
+  </nav>
 
-        <p>Kunde: {{ project.customer_name || 'Ikke angivet' }}</p>
-      </li>
-    }
-  </ul>
-}
+  <div class="dashboard-grid">
+    <aside class="quick-actions" aria-label="Genveje">
+      <section class="create-card">
+        <span class="icon-tile plus"><app-workspace-icon name="plus" /></span>
+        <div><h2>Opret nyt projekt</h2><p>Beskriv opgaven, og få hjælp til opgaver, materialer og priser med AI.</p></div>
+        <button class="primary-button" type="button" (click)="workspace.requestNewProject()"><app-workspace-icon name="plus" /> Nyt projekt <span class="arrow" aria-hidden="true">→</span></button>
+      </section>
+      <section class="customer-card panel">
+        <span class="icon-tile"><app-workspace-icon name="users" /></span>
+        <div><h2>Kundekartotek</h2><p>Se og administrér dine kunder.</p></div>
+        <a class="outline-button" routerLink="/customers">Se kunder <span class="arrow" aria-hidden="true">→</span></a>
+      </section>
+    </aside>
+
+    <section class="project-panel panel" aria-labelledby="projects-title" [attr.aria-busy]="isLoading()">
+      <header class="panel-heading">
+        <span class="icon-tile"><app-workspace-icon name="projects" /></span><h2 id="projects-title">{{ listTitle() }}</h2>
+        <button class="text-link" type="button" (click)="filter.set(filter() === 'all' ? 'recent' : 'all')">{{ filter() === 'all' ? 'Vis seneste' : 'Se alle projekter' }}<span aria-hidden="true">→</span></button>
+      </header>
+      @if (isLoading()) {
+        <p class="list-message" role="status">Henter projekter…</p>
+      } @else if (errorMessage()) {
+        <div class="list-message"><p role="alert">{{ errorMessage() }}</p><button class="outline-button" type="button" (click)="loadProjects()">Prøv igen</button></div>
+      } @else if (!visibleProjects().length) {
+        <div class="list-message"><p>{{ projects().length ? 'Ingen projekter i denne kategori endnu.' : 'Dit næste projekt starter her. Opret dit første projekt, og kom i gang med dit tilbud.' }}</p><button class="outline-button" type="button" (click)="workspace.requestNewProject()">＋ Nyt projekt</button></div>
+      } @else {
+        <ul class="project-list">
+          @for (project of visibleProjects(); track project.id) {
+            <li><a [routerLink]="['/projects', project.id]">
+              <span class="project-number">{{ project.project_number }}</span>
+              <strong class="project-title">{{ project.title || 'Projekt uden titel' }}</strong>
+              <span class="customer-name">{{ project.customer_name || 'Ingen kunde valgt' }}</span>
+              <span class="status" [class.finished]="project.offers.length">{{ project.offers.length ? statusLabel(project.offers[0].status) : 'Intet tilbud' }}</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </a></li>
+          }
+        </ul>
+      }
+    </section>
+
+
+  </div>
+</section>

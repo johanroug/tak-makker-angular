@@ -12,23 +12,31 @@
         <p class="header-payoff">Hjernen bag dit næste tilbud.</p>
       </div>
       <div class="header-project-actions">
-        <label class="project-picker">
-          <span class="sr-only">Vælg projekt</span>
-          <app-workspace-icon name="projects" />
-          <select
-            class="project-selector"
-            aria-label="Vælg projekt"
-            [ngModel]="workspace.activeProjectId()"
-            (ngModelChange)="selectProject($event)"
-          >
-            <option value="" disabled>Vælg projekt</option>
-            @for (item of workspace.projects(); track item.id) {
-              <option [value]="item.id">
-                {{ item.project_number }} · {{ item.title || 'Projekt uden titel' }}
-              </option>
-            }
-          </select>
-        </label>
+        <details #projectPicker class="project-picker" (toggle)="onProjectPickerToggle()"
+          (keydown.escape)="closeProjectPicker(true); $event.stopPropagation()">
+          <summary class="project-selector" aria-label="Vælg projekt">
+            <app-workspace-icon name="projects" />
+            <span>{{ selectedProject() ? selectedProject()!.project_number + ' · ' + (selectedProject()!.title || 'Projekt uden titel') : 'Vælg projekt' }}</span>
+          </summary>
+          <div class="project-dropdown">
+            <label class="sr-only" for="header-project-search">Søg efter projektnummer eller titel</label>
+            <input #projectSearchInput id="header-project-search" type="search" autocomplete="off"
+              placeholder="Søg på projektnummer eller titel…" [ngModel]="projectSearch()"
+              (ngModelChange)="projectSearch.set($event)" (keydown.arrowdown)="focusFirstProject($event)" />
+            <div class="project-results" aria-label="Projekter">
+              @for (item of filteredProjects(); track item.id) {
+                <a class="project-result" [routerLink]="['/projects', item.id]"
+                  [attr.aria-current]="item.id === workspace.activeProjectId() ? 'page' : null"
+                  (click)="closeProjectPicker(true)">
+                  <span class="project-number">{{ item.project_number }}</span>
+                  <span>{{ item.title || 'Projekt uden titel' }}</span>
+                </a>
+              } @empty {
+                <p class="project-empty" role="status">{{ workspace.isLoading() ? 'Henter projekter…' : projectSearch().trim() ? 'Ingen projekter matcher din søgning.' : 'Du har ingen projekter endnu.' }}</p>
+              }
+            </div>
+          </div>
+        </details>
         <a class="header-customers" routerLink="/customers"><app-workspace-icon name="users" /> Kunder</a>
         <button type="button" class="new-project-button" (click)="createProject()">
           <span aria-hidden="true">＋</span> Nyt projekt

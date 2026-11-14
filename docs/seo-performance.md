@@ -1,5 +1,18 @@
 # Performance-måling – 14. november 2026
 
+## Ny live-kontrol efter SEO-opdateringen
+
+Den 14. november 2026 er forsiden og VVS-siden målt igen med Lighthouse mobilprofil, headless Chrome og simuleret throttling. Én kørsel pr. side; resultaterne er labdata og enkeltkørsler kan variere.
+
+| Side | Performance | LCP | CLS | TBT |
+|---|---:|---:|---:|---:|
+| Forside | 83 | 3,3 s | 0 | 360 ms |
+| VVS | 87 | 3,4 s | 0 | 250 ms |
+
+Begge sider er hurtigere i disse kørsler end den tidligere live-baseline nedenfor, men LCP er fortsat over målet på 2,5 s. Lighthouse peger på billedprioritering på forsiden, billedlevering, cachelevetider og renderblokerende ressourcer. Dette er forslag til videre undersøgelse, ikke dokumentation for årsagen til hele forsinkelsen. Faktisk INP og CrUX-feltdata er ikke målt. Rapporter: `tmp/seo-performance/home-live-current.json` og `tmp/seo-performance/vvs-live-current.json`.
+
+Brugeren har bekræftet domæneverificering og indsendt sitemap i Search Console. Begge nye produktsider bestod Googles live-test og blev indsendt til indeksering; brugeren har derefter bekræftet samme arbejdsgang for forsiden og de fire fagsider. Indeksering er endnu ikke efterkontrolleret.
+
 Lighthouse 13.6.0 med lokal headless Chrome, mobilprofil (412 × 823), simuleret netværk og 4× CPU-slowdown. Én kørsel pr. URL/variant. Målingerne er labdata og dokumenterer hverken faktisk INP eller beståede Core Web Vitals for rigtige brugere. PageSpeed Insights API afviste kaldet med HTTP 429 (kvote), så ingen CrUX-data blev hentet.
 
 ## Live-baseline

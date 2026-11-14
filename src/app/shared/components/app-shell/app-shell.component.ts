@@ -3,7 +3,7 @@ import { environment } from '../../../../environments/environment';
 import { interval } from 'rxjs';
 import { ActivityService } from '../../../core/activity/activity.service';
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, HostListener, inject, OnInit, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   NavigationStart,
@@ -80,6 +80,42 @@ export class AppShell implements OnInit {
       this.activity.record('offer_opened', true, undefined, undefined, { offerId: offer[1] });
   }
   readonly workspace = inject(WorkspaceState);
+  readonly projectSearch = signal('');
+  readonly filteredProjects = computed(() => {
+    const terms = this.projectSearch().toLocaleLowerCase('da').trim().split(/\s+/).filter(Boolean);
+    return this.workspace.projects().filter(project => {
+      const text = `${project.project_number} ${project.title || 'Projekt uden titel'}`.toLocaleLowerCase('da');
+      return terms.every(term => text.includes(term));
+    });
+  });
+  readonly selectedProject = computed(() => this.workspace.projects().find(project => project.id === this.workspace.activeProjectId()));
+  private readonly projectPicker = viewChild<ElementRef<HTMLDetailsElement>>('projectPicker');
+  private readonly projectSearchInput = viewChild<ElementRef<HTMLInputElement>>('projectSearchInput');
+
+  onProjectPickerToggle(): void {
+    if (this.projectPicker()?.nativeElement.open) {
+      this.projectSearch.set('');
+      this.projectSearchInput()?.nativeElement.focus();
+    }
+  }
+
+  closeProjectPicker(restoreFocus = false): void {
+    const picker = this.projectPicker()?.nativeElement;
+    if (!picker?.open) return;
+    picker.open = false;
+    if (restoreFocus) picker.querySelector('summary')?.focus();
+  }
+
+  focusFirstProject(event: Event): void {
+    event.preventDefault();
+    this.projectPicker()?.nativeElement.querySelector<HTMLAnchorElement>('.project-result')?.focus();
+  }
+
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:focusin', ['$event'])
+  onProjectPickerOutside(event: Event): void {
+    if (!this.projectPicker()?.nativeElement.contains(event.target as Node | null)) this.closeProjectPicker();
+  }
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly newProjectDialog = viewChild.required(NewProjectDialog);
@@ -127,6 +163,7 @@ export class AppShell implements OnInit {
         this.isNavigating.set(false);
       }
       if (event instanceof NavigationEnd) {
+        this.closeProjectPicker();
         this.recordPageVisit();
         this.closeMenu();
         this.syncSelectedProject();

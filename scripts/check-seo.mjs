@@ -13,7 +13,7 @@ const read = (path) => readFileSync(new URL(path, output), 'utf8');
 const parseHtml = (html) =>
   new JSDOM(html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')).window.document;
 const pages = [
-  { slug: '', heading: 'Byg mere.', title: `${BRAND_NAME} – tilbud til håndværkere` },
+  { slug: '', heading: 'Lav professionelle tilbud.', title: `Tilbudsprogram til håndværkere med AI | ${BRAND_NAME}` },
   ...TRADE_PAGES,
 ];
 const titles = new Set();
@@ -63,6 +63,21 @@ for (const page of pages) {
     document.querySelector('h1').textContent.includes(page.heading),
     `${file}: expected public content`,
   );
+  assert(document.querySelector('h2'), `${file}: public sections have headings`);
+  const websiteData = document.querySelector('#website-structured-data');
+  if (!page.slug) {
+    assert(websiteData, `${file}: website structured data is prerendered`);
+    const schema = JSON.parse(websiteData.textContent);
+    assert.equal(schema['@context'], 'https://schema.org');
+    assert.equal(schema['@type'], 'WebSite');
+    assert.equal(schema.name, BRAND_NAME);
+    assert.equal(schema.url, origin + '/');
+    assert.equal(schema.inLanguage, 'da-DK');
+    assert(document.querySelector('.hero .eyebrow').textContent.includes('TILBUDSPROGRAM TIL HÅNDVÆRKERE'));
+    assert(document.querySelector('h1 em').textContent.includes('På få minutter med AI.'));
+  } else {
+    assert.equal(websiteData, null, `${file}: homepage schema is not carried onto other pages`);
+  }
   assert.equal(
     document.querySelectorAll('input[type="password"]').length,
     0,

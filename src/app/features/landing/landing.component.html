@@ -4,10 +4,10 @@
   <main id="indhold">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow">Til håndværkere</p>
-        <h1 id="hero-title">Byg mere.<br /><em>Skriv mindre.</em></h1>
+        <p class="eyebrow">TILBUDSPROGRAM TIL HÅNDVÆRKERE</p>
+        <h1 id="hero-title">Lav professionelle tilbud.<br /><em>På få minutter med AI.</em></h1>
         <p class="intro">
-          Fra dine ord til et gennemarbejdet tilbud.<br />Arbejdsopgaver, materialer og priser – samlet på få minutter med din AI-assistent.
+          Beskriv opgaven med dine egne ord. AI hjælper dig med arbejdsopgaver, materialer og priser, så du hurtigt kan sende et professionelt tilbud.
         </p>
         <div class="hero-actions">
           <a class="marketing-button" routerLink="/register"
@@ -33,8 +33,8 @@
     </section>
     <section class="walkthrough" id="saadan" aria-labelledby="walkthrough-title">
       <div>
-        <h2 id="walkthrough-title">Sådan virker det</h2>
-        <p class="walkthrough-intro">Fra idé til færdigt tilbud på tre enkle trin.</p>
+        <h2 id="walkthrough-title">Lav tilbud til kunder i tre trin</h2>
+        <p class="walkthrough-intro">Fra beskrivelse af opgaven til et færdigt tilbud, du selv gennemgår og godkender.</p>
         <div class="steps">
           @for (item of steps; track item.title; let i = $index) {
             <button type="button" (click)="step.set(i); demoDialog.showModal()">
@@ -100,6 +100,10 @@
       <section class="faq" aria-labelledby="faq-title">
         <p class="eyebrow">Godt at vide</p>
         <h2 id="faq-title">Før du går i gang.</h2>
+        <details>
+          <summary>Hvordan hjælper en AI tilbudsgenerator mig?</summary>
+          <p>Hovedet på Sømmet bruger din beskrivelse til at foreslå arbejdsopgaver og materialer. Du tilpasser timer og priser med din faglige viden og henter det færdige tilbud som PDF, som du selv sender til kunden.</p>
+        </details>
         <details>
           <summary>Bestemmer AI priserne for mig?</summary>
           <p>

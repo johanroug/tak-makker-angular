@@ -8,12 +8,12 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Hovedet på sømmet – tilbud til håndværkere',
+    title: 'Tilbudsprogram til håndværkere med AI | Hovedet på sømmet',
     data: {
       seo: {
         path: '/',
         description:
-          'Lav tilbud med Hovedet på sømmet. Få hjælp til opgaver, materialer og priser, tilpas med din faglighed, og hent en PDF. Prøv 10 gratis forespørgsler uden betalingskort.',
+          'Tilbudsprogram til håndværkere: Lav professionelle tilbud med AI, tilpas opgaver, materialer og priser, og hent som PDF. Prøv 10 gratis forespørgsler.',
       },
     },
     loadComponent: () =>

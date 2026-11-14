@@ -23,12 +23,12 @@ app-landing .marketing-page.marketing-page {
   main { max-width: none; }
   .hero { max-width: none; min-height: 630px; padding: 70px max(6.4vw, calc((100vw - 1288px) / 2)) 52px; grid-template-columns: 1.05fr 1fr; background: #002e24 url('/marketing/hero-tradesman.webp') center / cover no-repeat; color: white; overflow: hidden; }
   .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #002e24ed, #002e2466 48%, transparent 75%); pointer-events: none; }
-  .hero-copy { max-width: 600px; }
+  .hero-copy { max-width: 640px; min-width: 0; }
   .hero-copy::before { display: none; }
-  .hero h1 { font-size: clamp(55px, 5.5vw, 86px); line-height: 1.03; letter-spacing: -3px; white-space: normal; margin-bottom: 25px; }
-  .hero h1 em { font-size: 1em; letter-spacing: -3px; white-space: nowrap; }
-  .hero .eyebrow { font-size: 15px; letter-spacing: .13em; margin-bottom: 18px; color: #fff; }
-  .hero .intro { font-size: 20px; line-height: 1.45; max-width: 500px; margin-bottom: 30px; color: #fff; }
+  .hero h1 { font-size: clamp(34px, 3.5vw, 54px); line-height: 1.12; letter-spacing: -.035em; white-space: normal; margin-bottom: 24px; text-wrap: initial; }
+  .hero h1 em { font-size: 1em; letter-spacing: inherit; white-space: normal; font-style: italic; }
+  .hero .eyebrow { font-size: 12px; line-height: 1.5; letter-spacing: .1em; margin-bottom: 18px; color: #fff; }
+  .hero .intro { font-size: 18px; line-height: 1.6; max-width: 500px; margin-bottom: 28px; color: #fff; }
   .hero-actions { gap: 24px; }
   .demo-link { color: white; font-size: 15px; font-weight: 700; gap: 10px; }
   .play { border-color: #fff; }
@@ -227,6 +227,21 @@ app-new-project-dialog .start-dialog {
   .project-workspace .project-main { grid-column: auto; }
   app-shell .header-shell { padding: 12px 14px; }
 }
+@media (min-width: 801px) and (max-width: 1000px) {
+  app-landing .marketing-page.marketing-page {
+    .marketing-header { padding: 18px 24px; }
+    .marketing-header nav { gap: 16px; font-size: 13px; white-space: nowrap; }
+    .marketing-header app-public-brand .wordmark strong { font-size: 20px; white-space: nowrap; }
+    .marketing-header app-public-brand img { width: 44px; height: 44px; }
+    .marketing-header nav > a[routerlink='/login'] { padding: 10px 16px; }
+    .marketing-header .marketing-button { padding: 12px 16px; font-size: 14px; }
+    .hero { padding: 48px 32px; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+    .hero-phone { width: 260px; top: 20px; right: 0; }
+    .hero-benefits { gap: 12px; font-size: 12px; }
+    .value-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .value-strip p + p { padding-left: 0; border: 0; }
+  }
+}
 @media (max-width: 800px) {
   .marketing-page .marketing-header { min-height: 84px; padding: 16px 20px; }
   .marketing-page .marketing-header nav { gap: 12px; }
@@ -238,8 +253,8 @@ app-new-project-dialog .start-dialog {
   app-landing .marketing-page.marketing-page {
     .hero { padding: 42px 24px 0; grid-template-columns: 1fr; gap: 20px; background-position: 63% center; }
     .hero::before { background: linear-gradient(90deg, #002e24f2, #002e24a6); }
-    .hero h1 { font-size: clamp(48px, 9vw, 70px); letter-spacing: -2px; }
-    .hero h1 em { letter-spacing: -2px; }
+    .hero h1 { font-size: clamp(32px, 5.7vw, 46px); letter-spacing: -.035em; }
+    .hero h1 em { letter-spacing: inherit; }
     .hero .intro { font-size: 17px; max-width: 440px; }
     .hero-actions { gap: 18px; }
     .hero-actions .marketing-button { font-size: 14px; padding: 14px 20px; }

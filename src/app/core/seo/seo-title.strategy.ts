@@ -22,6 +22,21 @@ export class SeoTitleStrategy extends TitleStrategy {
     const title = this.buildTitle(snapshot) ?? BRAND_NAME;
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'robots', content: seo ? 'index, follow' : 'noindex, follow' });
+    this.document.getElementById('website-structured-data')?.remove();
+    if (seo?.path === '/') {
+      const structuredData = this.document.createElement('script');
+      structuredData.id = 'website-structured-data';
+      structuredData.type = 'application/ld+json';
+      structuredData.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: BRAND_NAME,
+        url: SITE_ORIGIN + '/',
+        inLanguage: 'da-DK',
+        description: seo.description,
+      });
+      this.document.head.appendChild(structuredData);
+    }
 
     if (!seo) {
       this.meta.removeTag('name="description"');

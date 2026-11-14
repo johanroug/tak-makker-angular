@@ -29,7 +29,7 @@ RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)/$ /$1 [R=301,L]
 RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)$ $1/index.html [END]
 
 # Private app routes use the CSR shell, never the prerendered landing page.
-RewriteRule ^(login|register|forgot-password|reset-password|projects|offers|activity|users|company-profile)(/.*)?$ index.csr.html [END]
+RewriteRule ^(login|register|forgot-password|reset-password|customers|projects|offers|activity|users|company-profile)(/.*)?$ index.csr.html [END]
 
 # Serve real assets as files. Missing assets and unknown routes must remain 404.
 # No catch-all rewrite to index.html: that would turn broken links into HTTP 200.

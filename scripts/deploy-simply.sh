@@ -47,4 +47,15 @@ rsync -az --delay-updates --exclude='.htaccess' --exclude='*.html' \
 rsync -az --delay-updates --include='*/' --include='*.html' --exclude='*' \
   -e "$rsync_shell" "$build_directory/" "$remote:public_html/"
 
+# Add the customer route while preserving the live HTTPS and hosting rules.
+ssh "${ssh_options[@]}" "$remote" 'set -eu
+  if ! grep -Fq "reset-password|customers|projects" public_html/.htaccess; then
+    grep -Fq "reset-password|projects" public_html/.htaccess
+    routing_file=$(mktemp public_html/.htaccess.XXXXXX)
+    trap "rm -f $routing_file" EXIT
+    sed "s/reset-password|projects/reset-password|customers|projects/" public_html/.htaccess > "$routing_file"
+    chmod --reference=public_html/.htaccess "$routing_file"
+    mv "$routing_file" public_html/.htaccess
+  fi'
+
 echo 'Website uploaded. Existing .htaccess, certificates and old hashed assets were preserved.'

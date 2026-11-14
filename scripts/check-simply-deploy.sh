@@ -23,7 +23,7 @@ export DEPLOY_TEST_LOG="$test_directory/log"
 export SIMPLY_SSH_USER=test-user SIMPLY_SSH_PRIVATE_KEY=mock-private-key SIMPLY_SSH_KNOWN_HOSTS=mock-host-key
 cd "$test_directory"
 bash "$repository_root/scripts/deploy-simply.sh"
-[[ $(wc -l < "$DEPLOY_TEST_LOG") -eq 3 ]]
+[[ $(grep -c "^ssh\|^rsync" "$DEPLOY_TEST_LOG") -eq 4 ]]
 sed -n '1p' "$DEPLOY_TEST_LOG" | grep -q 'StrictHostKeyChecking=yes'
 sed -n '2p' "$DEPLOY_TEST_LOG" | grep -q -- '--exclude=\*.html'
 sed -n '3p' "$DEPLOY_TEST_LOG" | grep -q -- '--include=\*.html'

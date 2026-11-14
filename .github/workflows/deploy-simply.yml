@@ -61,3 +61,5 @@ jobs:
         run: |
           curl --fail --silent --show-error --location --retry 3 --max-time 30 --output /dev/null https://xn--hovedetpsmmet-wfb00a.dk/
           curl --fail --silent --show-error --location --retry 3 --max-time 30 --output /dev/null https://xn--hovedetpsmmet-wfb00a.dk/login
+          curl --fail --silent --show-error --location --retry 3 --max-time 30 --output /dev/null https://xn--hovedetpsmmet-wfb00a.dk/customers
+

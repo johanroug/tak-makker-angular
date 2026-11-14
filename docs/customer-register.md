@@ -2,8 +2,8 @@
 
 ## Status og checkpoint
 
-Implementeringen er forberedt i kodebasen. Produktionsmigrationen er ikke kørt,
-og hverken webappen eller Edge Function er deployet til produktion som del af denne ændring.
+Produktionsdatabasen, generate-offer og webappen er opdateret 14. november 2026.
+Se produktionsloggen nederst for backup og kontroller.
 Den eksisterende produktionsdatabases tabel-/kolonnenavne blev kontrolleret
 read-only: projekter har hidtil kundeoplysninger direkte; ingen customers-tabel.
 
@@ -225,7 +225,7 @@ fortsat ikke færdigintegreret.
 Restore-actionen til produktion og de tidligere backupændringer er bevaret i det
 eksisterende staging-område. Kun test-restore-værktøjet er committet og pushet
 med `[skip ci]`; kundekartoteket og den lokale staging-konfiguration er ikke
-publiceret. Det hidtidige produktionsdeploy er stadig commit `cfed17f`.
+publiceret. Det tidligere produktionsdeploy var commit `cfed17f`.
 
 ## Produktionsudrulning 14. november 2026
 

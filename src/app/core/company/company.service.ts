@@ -1,3 +1,4 @@
+import { SessionCache } from '../supabase/session-cache.service';
 import { ActivityService } from '../activity/activity.service';
 import { CompanyMembershipService } from './company-membership.service';
 import { AuthService } from '../auth/auth.service';
@@ -25,9 +26,21 @@ export type CompanyProfile = {
   providedIn: 'root',
 })
 export class CompanyService {
+  private readonly cache = inject(SessionCache);
   private readonly activity = inject(ActivityService);
   private readonly authService = inject(AuthService);
   private readonly membershipService = inject(CompanyMembershipService);
+  async getCurrentContactName(): Promise<string> {
+    const { data: { user }, error } = await this.authService.getUser();
+    if (error || !user) return '';
+    return this.cache.get('company:contact:' + user.id, async () => {
+      const id = await this.membershipService.getCompanyId(user.id);
+      const { data, error } = await supabase.from('companies').select('contact_name').eq('id', id).single();
+      if (error) throw error;
+      return data.contact_name ?? '';
+    });
+  }
+
   async getCurrentCompanyProfile(): Promise<CompanyProfile | null> {
     const {
       data: { user },
@@ -138,6 +151,7 @@ export class CompanyService {
         if (error) {
           throw new Error(`Kunne ikke gemme virksomhedsprofil: ${error.message}`, { cause: error });
         }
+        this.cache.clear('company:');
       },
       {},
     );

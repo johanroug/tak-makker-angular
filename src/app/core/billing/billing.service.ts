@@ -22,6 +22,10 @@ export class BillingService implements OnDestroy {
   readonly checkoutReady = signal(false);
   readonly testMode = signal(true);
   private configurationLoaded = false;
+  private configurationValidUntil = 0;
+  private configurationPending?: Promise<void>;
+  private validUntil = 0;
+  private pending?: { companyId?: string; request: Promise<void> };
   private userId: string | null | undefined;
   version = 0;
   private loadSequence = 0;
@@ -31,6 +35,11 @@ export class BillingService implements OnDestroy {
     if (id !== this.userId) {
       this.userId = id;
       this.version++;
+      this.validUntil = 0;
+      this.pending = undefined;
+      this.configurationLoaded = false;
+      this.configurationValidUntil = 0;
+      this.configurationPending = undefined;
       this.usage.set(null);
       this.endedNotice.set(false);
       this.error.set('');
@@ -58,14 +67,26 @@ export class BillingService implements OnDestroy {
     return usage.canTranscribe === false;
   }
 
-  async loadCheckoutConfiguration(): Promise<void> {
-    if (this.configurationLoaded) return;
+  loadCheckoutConfiguration(force = false): Promise<void> {
+    if (!force && this.configurationLoaded && Date.now() < this.configurationValidUntil) return Promise.resolve();
+    if (this.configurationPending) return this.configurationPending;
+    const request = this.fetchCheckoutConfiguration().finally(() => {
+      if (this.configurationPending === request) this.configurationPending = undefined;
+    });
+    this.configurationPending = request;
+    return request;
+  }
+
+  private async fetchCheckoutConfiguration(): Promise<void> {
+    await supabase.auth.getSession();
+    const version = this.version;
     try {
       const { data, error } = await supabase.functions.invoke('billing-session', { method: 'GET' });
-      if (error) return;
+      if (error || version !== this.version) return;
       this.checkoutReady.set(data?.checkoutReady === true);
       this.testMode.set(data?.testMode !== false);
-      this.configurationLoaded = data?.checkoutReady === true;
+      this.configurationLoaded = true;
+      this.configurationValidUntil = Date.now() + 60_000;
     } catch { /* Existing project access remains available while payment is being configured. */ }
   }
 
@@ -99,13 +120,30 @@ export class BillingService implements OnDestroy {
         !Number.isInteger(usage.trialRemaining) || !Number.isInteger(usage.trialUsed) ||
         typeof usage.canGenerate !== 'boolean') return;
     this.usage.set(usage);
+    this.validUntil = Date.now() + 30_000;
     this.revision++;
     this.error.set('');
     if (notify && usage.status === 'exhausted') this.endedNotice.set(true);
     if (usage.status !== 'exhausted') this.endedNotice.set(false);
   }
 
-  async load(companyId?: string): Promise<void> {
+  async load(companyId?: string, force = false): Promise<void> {
+    await supabase.auth.getSession();
+    const usage = this.usage();
+    if (!force && usage && (!companyId || usage.companyId === companyId) && Date.now() < this.validUntil) return;
+    const key = companyId ?? usage?.companyId;
+    if (this.pending && (this.pending.companyId === key || !this.pending.companyId || !key)) {
+      await this.pending.request;
+      if (!companyId || this.usage()?.companyId === companyId) return;
+    }
+    const request = this.fetchUsage(companyId).finally(() => {
+      if (this.pending?.request === request) this.pending = undefined;
+    });
+    this.pending = { companyId: key, request };
+    return request;
+  }
+
+  private async fetchUsage(companyId?: string): Promise<void> {
     const sequence = ++this.loadSequence;
     let version = this.version;
     let revision = this.revision;

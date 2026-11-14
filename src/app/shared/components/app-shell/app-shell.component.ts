@@ -58,8 +58,6 @@ export class AppShell implements OnInit {
         await this.router.navigate(['/login'], {
           queryParams: { access: state === 'pending' ? 'pending' : 'blocked' },
         });
-      } else {
-        await this.billing.load(this.billing.usage()?.companyId);
       }
     } catch {
       /* A temporary connection failure is not a confirmed block. */

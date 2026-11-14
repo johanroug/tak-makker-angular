@@ -22,12 +22,12 @@ export class BillingPanelComponent {
   constructor() {
     void this.billing.loadCheckoutConfiguration();
     effect(() => {
-      void this.billing.load(this.companyId());
+      void this.billing.load(this.companyId(), !!this.checkoutResult);
     });
   }
   reload(): void {
-    void this.billing.load(this.companyId());
-    void this.billing.loadCheckoutConfiguration();
+    void this.billing.load(this.companyId(), true);
+    void this.billing.loadCheckoutConfiguration(true);
   }
   openSubscription(): void {
     this.subscriptionRequested.emit();

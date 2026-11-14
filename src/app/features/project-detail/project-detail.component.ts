@@ -4,7 +4,7 @@ import { ProjectTools } from '../../shared/components/project-tools/project-tool
 import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Subscription, EMPTY, catchError, merge, switchMap, timer, fromEvent, map } from 'rxjs';
+import { Subscription, EMPTY, catchError, merge, switchMap, timer, fromEvent, map, filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CustomerService } from '../../core/customers/customer.service';
 import { ProjectService } from '../../core/projects/project.service';
@@ -57,9 +57,13 @@ export class ProjectDetail implements OnInit, OnDestroy {
     const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
-      // Poll contact data only: do not replace unsaved project/line edits. Focus
-      // and local edits refresh immediately; polling also covers other devices.
-      merge(timer(0, 15000), fromEvent(window, 'focus'), this.customers.changes).pipe(
+      // Refresh visible contact data once a minute to pick up other-device edits.
+      // Focus and local edits still refresh immediately; initial data comes from getProject.
+      merge(
+        timer(60_000, 60_000).pipe(filter(() => document.visibilityState === 'visible')),
+        fromEvent(window, 'focus'),
+        this.customers.changes,
+      ).pipe(
         switchMap(() => {
           const id = this.project()?.project.id;
           return id ? this.customers.projectContact(id).pipe(map(contact => ({ projectId: id, contact })), catchError(() => EMPTY)) : EMPTY;

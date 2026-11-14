@@ -1,16 +1,12 @@
-import { Injectable } from '@angular/core';
+import { SessionCache } from '../supabase/session-cache.service';
+import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 
 @Injectable({ providedIn: 'root' })
 export class CompanyMembershipService {
-  private readonly pending = new Map<string, Promise<string>>();
-
+  private readonly cache = inject(SessionCache);
   getCompanyId(userId: string): Promise<string> {
-    const existing = this.pending.get(userId);
-    if (existing) return existing;
-    const request = this.load(userId).finally(() => this.pending.delete(userId));
-    this.pending.set(userId, request);
-    return request;
+    return this.cache.get('membership:' + userId, () => this.load(userId));
   }
 
   private async load(userId: string): Promise<string> {

@@ -41,8 +41,8 @@ export class Projects implements OnInit {
 
   ngOnInit(): void {
     void this.loadProjects();
-    void this.companyService.getCurrentCompanyProfile().then(profile => {
-      this.firstName.set(profile?.contactName.trim().split(/\s+/)[0] ?? '');
+    void this.companyService.getCurrentContactName().then(name => {
+      this.firstName.set(name.trim().split(/\s+/)[0] ?? '');
     }).catch(() => {});
     void this.projectService.getCustomerCount().then(count => this.customerCount.set(count)).catch(() => {});
   }

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { SessionCache } from '../supabase/session-cache.service';
+import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
 
 export type AppUser = {
@@ -15,15 +16,19 @@ export type AppUser = {
 
 @Injectable({ providedIn: 'root' })
 export class AppAccessService {
-  async state(): Promise<'active' | 'pending' | 'blocked' | 'denied'> {
-    const { data, error } = await supabase.rpc('get_app_access_state');
-    if (error || !['active', 'pending', 'blocked', 'denied'].includes(data ?? ''))
-      throw new Error('Kunne ikke kontrollere din adgang. Prøv igen om lidt.');
-    return data as 'active' | 'pending' | 'blocked' | 'denied';
+  private readonly cache = inject(SessionCache);
+  state(): Promise<'active' | 'pending' | 'blocked' | 'denied'> {
+    return this.cache.get('access:state', async () => {
+      const { data, error } = await supabase.rpc('get_app_access_state');
+      if (error || !['active', 'pending', 'blocked', 'denied'].includes(data ?? ''))
+        throw new Error('Kunne ikke kontrollere din adgang. Prøv igen om lidt.');
+      return data as 'active' | 'pending' | 'blocked' | 'denied';
+    });
   }
   async approve(userId: string): Promise<void> {
     const { error } = await supabase.rpc('approve_app_user', { p_user_id: userId });
     if (error) throw new Error('Brugeren kunne ikke godkendes. Prøv igen.');
+    this.cache.clear('access:');
   }
   async allowed(): Promise<boolean> {
     const { data, error } = await supabase.rpc('can_access_app');
@@ -41,5 +46,6 @@ export class AppAccessService {
       p_blocked: blocked,
     });
     if (error) throw new Error('Adgangen kunne ikke ændres. Prøv igen.');
+    this.cache.clear('access:');
   }
 }

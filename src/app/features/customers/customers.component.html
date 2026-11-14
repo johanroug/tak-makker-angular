@@ -1,42 +1,70 @@
-<main class="customers-page">
+<main class="customers-page" [class.customer-detail]="!!customerId()">
   @if (customerId()) {
     <a class="back-link" routerLink="/customers">← Alle kunder</a>
     @if (customer(); as c) {
-      <header><div><span class="eyebrow">KUNDEKARTOTEK</span><h1>{{ c.name }}</h1></div><button class="primary" type="button" (click)="newProject()" [disabled]="saving()">＋ Nyt projekt til kunden</button></header>
-      <section class="customer-panel">
-        <h2>Kontaktoplysninger</h2><p class="muted">Gemmes, når du forlader feltet. Ændringer gælder alle tilknyttede projekter. Arbejdsadresser og færdiggjorte tilbud bevares.</p>
+      <header class="customer-header">
+        <div class="customer-heading">
+          <span class="customer-avatar" aria-hidden="true">{{ c.name.slice(0, 1).toLocaleUpperCase() }}</span>
+          <div><span class="eyebrow">KUNDEDETALJER</span><h1>{{ c.name }}</h1></div>
+        </div>
+        <button class="primary new-customer-project" type="button" (click)="newProject()" [disabled]="saving()"><span aria-hidden="true">＋</span> Nyt projekt til kunden</button>
+      </header>
+      <section class="customer-panel contact-panel" aria-labelledby="contact-heading">
+        <div class="panel-heading">
+          <div class="panel-title"><span class="section-icon" aria-hidden="true"><app-workspace-icon name="account" /></span><div><h2 id="contact-heading">Kontaktoplysninger</h2><p class="panel-caption">Kundens fælles kontaktoplysninger.</p></div></div>
+          <span class="save-indicator" role="status" [class.has-changes]="form.dirty || saving()">
+            <app-workspace-icon [name]="saving() ? 'clock' : form.dirty ? 'activity' : 'checkCircle'" />
+            {{ saving() ? 'Gemmer…' : form.dirty ? 'Ikke gemt' : 'Alle ændringer gemt' }}
+          </span>
+        </div>
         <form [formGroup]="form" (submit)="$event.preventDefault(); save()">
           <fieldset [disabled]="saving()" class="contact-fields">
-            <label>Navn<input formControlName="name" maxlength="200" (blur)="save()" /></label>
-            <label>Kontaktadresse<input formControlName="address" maxlength="1000" (blur)="save()" /></label>
-            <label>E-mail<input type="email" formControlName="email" maxlength="320" (blur)="save()" /></label>
-            <label>Telefon<input type="tel" formControlName="phone" maxlength="100" (blur)="save()" /></label>
+            <label>Navn<input formControlName="name" maxlength="200" autocomplete="name" (blur)="save()" /></label>
+            <label><span>E-mail <small>Valgfri</small></span><input type="email" formControlName="email" maxlength="320" autocomplete="email" placeholder="navn@eksempel.dk" (blur)="save()" /></label>
+            <label class="customer-street">Kontaktadresse<input formControlName="address" maxlength="1000" autocomplete="street-address" placeholder="Vejnavn og husnummer" (blur)="save()" /></label>
+            <div class="customer-location-row">
+              <label>Postnummer<input formControlName="postal_code" maxlength="20" autocomplete="postal-code" placeholder="Postnummer" (blur)="save()" /></label>
+              <label>By<input formControlName="city" maxlength="200" autocomplete="address-level2" placeholder="By" (blur)="save()" /></label>
+              <label><span>Telefon <small>Valgfrit</small></span><input type="tel" formControlName="phone" maxlength="100" autocomplete="tel" placeholder="Telefonnummer" (blur)="save()" /></label>
+            </div>
           </fieldset>
           @if (form.invalid) { <p role="alert">Angiv et navn og en gyldig e-mail, hvis e-mail er udfyldt.</p> }
-          <p role="status">{{ saving() ? 'Gemmer…' : saved() && !form.dirty ? 'Gemt' : form.dirty ? 'Ikke gemte ændringer' : '' }}</p>
           @if (form.dirty) { <button type="submit" [disabled]="saving() || form.invalid">Gem ændringer</button> }
         </form>
+        <div class="contact-note"><app-workspace-icon name="checkCircle" aria-hidden="true" /><p>Gemmes automatisk, når du forlader et felt. Gælder alle kundens projekter.<br /><span>Arbejdsadresser og færdiggjorte tilbud bevares.</span></p></div>
       </section>
       @if (duplicates().length || duplicateOffset() > 0) {
         <section class="customer-panel"><h2>Mulige dubletter</h2><p>Samme navn betyder ikke nødvendigvis samme kunde. Vælg selv.</p>
           @for (duplicate of duplicates(); track duplicate.id) {
-            <div class="duplicate-row"><div><a [routerLink]="['/customers',duplicate.id]">{{ duplicate.name }}</a><p>{{ duplicate.address || 'Ingen kontaktadresse' }} · {{ duplicate.project_count }} projekter</p></div>
+            <div class="duplicate-row"><div><a [routerLink]="['/customers',duplicate.id]">{{ duplicate.name }}</a><p>{{ customerAddress(duplicate) || 'Ingen kontaktadresse' }} · {{ duplicate.project_count }} projekter</p></div>
               <div class="actions"><button type="button" [disabled]="saving()" (click)="mergeTarget.set(duplicate)">Samme kunde</button><button type="button" [disabled]="saving()" (click)="resolve(duplicate,false)">Forskellige kunder</button></div>
             </div>
           }
           @if (mergeTarget(); as target) {
-            <div class="merge-confirm" role="group" aria-label="Bekræft sammenlægning"><p>Alle projekter fra denne kunde flyttes til <strong>{{ target.name }} · {{ target.address || 'Ingen kontaktadresse' }} · {{ target.email || 'Ingen e-mail' }} · {{ target.phone || 'Intet telefonnummer' }}</strong>. Den valgte kundes kontaktoplysninger bruges fremover; denne kundepost fjernes. Færdiggjorte tilbud og arbejdsadresser bevares.</p>
+            <div class="merge-confirm" role="group" aria-label="Bekræft sammenlægning"><p>Alle projekter fra denne kunde flyttes til <strong>{{ target.name }} · {{ customerAddress(target) || 'Ingen kontaktadresse' }} · {{ target.email || 'Ingen e-mail' }} · {{ target.phone || 'Intet telefonnummer' }}</strong>. Den valgte kundes kontaktoplysninger bruges fremover; denne kundepost fjernes. Færdiggjorte tilbud og arbejdsadresser bevares.</p>
               <button type="button" class="primary" [disabled]="saving() || form.dirty" (click)="resolve(target,true)">Bekræft sammenlægning</button> <button type="button" [disabled]="saving()" (click)="mergeTarget.set(null)">Annuller</button>
             </div>
           }
-          <div class="pagination"><button type="button" [disabled]="duplicateOffset() === 0" (click)="loadDuplicates(-1)">Forrige</button><button type="button" [disabled]="duplicates().length < 10" (click)="loadDuplicates(1)">Flere mulige dubletter</button></div>
+          <div class="pagination">@if (duplicateOffset() > 0) { <button type="button" (click)="loadDuplicates(-1)">Forrige</button> }<button type="button" [disabled]="duplicates().length < 10" (click)="loadDuplicates(1)">Flere mulige dubletter</button></div>
         </section>
       }
-      <section class="customer-panel"><h2>Projekter</h2>
+      <section class="customer-panel projects-panel" aria-labelledby="customer-projects-heading">
+        <div class="panel-heading">
+          <div class="panel-title"><span class="section-icon" aria-hidden="true"><app-workspace-icon name="projects" /></span><div><h2 id="customer-projects-heading">Kundens projekter</h2><p class="panel-caption">Åbn et projekt for at arbejde videre.</p></div></div>
+          @if (detailProjects().length) { <span class="project-total">{{ detailProjects()[0].total_count }} {{ detailProjects()[0].total_count === 1 ? 'projekt' : 'projekter' }}</span> }
+        </div>
+        @if (detailProjects().length) { <div class="project-columns" aria-hidden="true"><span>Projekt</span><span>Arbejdsadresse</span><span>Seneste tilbud</span><span></span></div> }
         @for (project of detailProjects(); track project.id) {
-          <a class="project-link" [routerLink]="['/projects',project.id]"><span>{{ project.project_number }}</span><strong>{{ project.title || 'Projekt uden titel' }}</strong><small>{{ project.work_address }}</small><span aria-hidden="true">→</span></a>
-        } @empty { @if (!projectsLoading() && !projectsError()) { <p>Der er ingen projekter til kunden endnu.</p> } }
-        <div class="pagination"><button type="button" [disabled]="projectOffset() === 0 || projectsLoading()" (click)="loadDetailProjects(-1)">Forrige</button><button type="button" [disabled]="detailProjects().length < 20 || projectsLoading()" (click)="loadDetailProjects(1)">Næste</button></div>
+          <a class="project-link" [routerLink]="['/projects',project.id]">
+            <span class="project-identity"><span class="project-number">{{ project.project_number }}</span><strong>{{ project.title || 'Projekt uden titel' }}</strong></span>
+            <small class="project-address">{{ project.work_address?.trim() || customerAddress(c) || 'Adresse ikke angivet' }}</small>
+            <span class="offer-status" [attr.data-status]="project.offer_status || 'none'" aria-label="Tilbudsstatus"><span class="status-dot" aria-hidden="true"></span>{{ project.offer_status ? offerStatusLabel(project.offer_status) : 'Intet tilbud' }}</span>
+            <span class="project-arrow" aria-hidden="true"><app-workspace-icon name="chevron" /></span>
+          </a>
+        } @empty { @if (!projectsLoading() && !projectsError()) { <div class="projects-empty"><app-workspace-icon name="projects" aria-hidden="true" /><h3>Klar til det første projekt</h3><p>Opret et projekt, så samler vi kundens arbejde og tilbud her.</p><button type="button" (click)="newProject()">＋ Opret projekt til kunden</button></div> } }
+        @if (projectOffset() > 0 || projectOffset() + detailProjects().length < (detailProjects()[0]?.total_count ?? 0)) {
+          <div class="pagination">@if (projectOffset() > 0) { <button type="button" [disabled]="projectsLoading()" (click)="loadDetailProjects(-1)">Forrige</button> } @if (projectOffset() + detailProjects().length < (detailProjects()[0]?.total_count ?? 0)) { <button type="button" [disabled]="projectsLoading()" (click)="loadDetailProjects(1)">Næste</button> }</div>
+        }
       </section>
     }
   } @else {
@@ -47,22 +75,26 @@
     <div class="customer-list">
       @for (row of rows(); track row.id) {
         <article class="customer-row">
-          <div class="row-heading"><button class="expand" type="button" [attr.aria-expanded]="expanded() === row.id" (click)="expand(row.id)"><span aria-hidden="true">{{ expanded() === row.id ? '−' : '＋' }}</span><span><strong>{{ row.name }}</strong><small>{{ row.address || 'Ingen kontaktadresse' }}</small></span><span class="project-count">{{ row.project_count }} projekter</span></button><a class="detail-link" [routerLink]="['/customers',row.id]">Kundedetaljer →</a></div>
+          <div class="row-heading"><button class="expand" type="button" [attr.aria-expanded]="expanded() === row.id" (click)="expand(row.id)"><span aria-hidden="true">{{ expanded() === row.id ? '−' : '＋' }}</span><span><strong>{{ row.name }}</strong><small>{{ customerAddress(row) || 'Ingen kontaktadresse' }}</small></span><span class="project-count">{{ row.project_count }} projekter</span></button><a class="detail-link" [routerLink]="['/customers',row.id]">Kundedetaljer →</a></div>
           @if (row.possible_duplicate) { <a class="duplicate-note" [routerLink]="['/customers',row.id]">Mulig dublet · gennemgå</a> }
           @if (expanded() === row.id) {
             <div class="expanded-projects">
               @for (project of expandedProjects(); track project.id) {
-                <a class="project-link" [class.search-match]="!!query.value && project.matches" [routerLink]="['/projects',project.id]"><span>{{ project.project_number }}</span><strong>{{ project.title || 'Projekt uden titel' }}</strong><small>{{ project.work_address }}</small><span aria-hidden="true">→</span></a>
+                <a class="project-link" [class.search-match]="!!query.value && project.matches" [routerLink]="['/projects',project.id]"><span>{{ project.project_number }}</span><strong>{{ project.title || 'Projekt uden titel' }}</strong><small>{{ project.work_address?.trim() || customerAddress(row) }}</small><span class="offer-status" aria-label="Tilbudsstatus">{{ project.offer_status ? offerStatusLabel(project.offer_status) : 'Intet tilbud' }}</span><span aria-hidden="true">→</span></a>
               } @empty { @if (!projectsLoading() && !projectsError()) { <p>Ingen projekter endnu.</p> } }
               @if (projectsLoading()) { <p role="status">Henter projekter…</p> }
               @if (projectsError()) { <p role="alert">{{ projectsError() }}</p><button type="button" (click)="loadExpanded()">Prøv igen</button> }
-              <div class="pagination"><button type="button" [disabled]="expandedOffset() === 0 || projectsLoading()" (click)="loadExpanded(-1)">Forrige</button><button type="button" [disabled]="expandedProjects().length < 20 || projectsLoading()" (click)="loadExpanded(1)">Næste</button></div>
+              @if (expandedOffset() > 0 || expandedOffset() + expandedProjects().length < (expandedProjects()[0]?.total_count ?? 0)) {
+                <div class="pagination">@if (expandedOffset() > 0) { <button type="button" [disabled]="projectsLoading()" (click)="loadExpanded(-1)">Forrige</button> } @if (expandedOffset() + expandedProjects().length < (expandedProjects()[0]?.total_count ?? 0)) { <button type="button" [disabled]="projectsLoading()" (click)="loadExpanded(1)">Næste</button> }</div>
+              }
             </div>
           }
         </article>
       } @empty { @if (!loading() && !error()) { <p class="empty-state">{{ query.value ? 'Ingen kunder matcher søgningen.' : 'Dit kundekartotek er tomt. Opret din første kunde.' }}</p> } }
     </div>
-    <div class="pagination"><button type="button" [disabled]="offset() === 0 || loading()" (click)="page(-1)">Forrige</button><span>Side {{ offset() / 25 + 1 }}</span><button type="button" [disabled]="rows().length < 25 || loading()" (click)="page(1)">Næste</button></div>
+    @if (offset() > 0 || hasNextPage()) {
+      <div class="pagination">@if (offset() > 0) { <button type="button" [disabled]="loading()" (click)="page(-1)">Forrige</button> }<span>Side {{ offset() / 25 + 1 }}</span>@if (hasNextPage()) { <button type="button" [disabled]="loading()" (click)="page(1)">Næste</button> }</div>
+    }
   }
   @if (loading()) { <p role="status">Henter kunder…</p> }
   @if (customerId() && projectsLoading()) { <p role="status">Henter projekter…</p> }

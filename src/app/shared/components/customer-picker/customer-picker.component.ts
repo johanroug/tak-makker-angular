@@ -1,3 +1,4 @@
+import { customerAddress } from '../../../core/customers/customer-address';
 import { Component, DestroyRef, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,7 +23,7 @@ export type { CustomerChoice } from '../../../core/customers/customer.service';
         @if (results().length) {
           <ul class="customer-suggestions" aria-label="Fundne kunder">
             @for (customer of results(); track customer.id) {
-              <li><button type="button" (click)="choose(customer)"><strong>{{ customer.name }}</strong><span>{{ customer.address || 'Ingen kontaktadresse' }} · {{ customer.project_count }} projekter</span></button></li>
+              <li><button type="button" (click)="choose(customer)"><strong>{{ customer.name }}</strong><span>{{ customerAddress(customer) || 'Ingen kontaktadresse' }} · {{ customer.project_count }} projekter</span></button></li>
             }
           </ul>
         } @else if (searched() && !error()) { <p>Ingen kunder matcher søgningen.</p> }
@@ -30,12 +31,18 @@ export type { CustomerChoice } from '../../../core/customers/customer.service';
       } @else {
         <div class="new-customer" [formGroup]="form" (keydown.enter)="submitNew($event)">
           <h3>Ny kunde</h3>
-          <label>Kundenavn <input formControlName="name" maxlength="200" autocomplete="name" placeholder="Kundens navn" /></label>
+          <div class="customer-name-row">
+            <label>Kundenavn <input formControlName="name" maxlength="200" autocomplete="name" placeholder="Kundens navn" /></label>
+            <label><span class="field-label">E-mail <small>Valgfri</small></span><input formControlName="email" type="email" maxlength="320" autocomplete="email" /></label>
+          </div>
           @if (form.controls.name.touched && form.controls.name.invalid) { <p role="alert">Angiv kundens navn på højst 200 tegn.</p> }
           <div class="customer-fields">
-            <label>Kontaktadresse<input formControlName="address" maxlength="1000" autocomplete="street-address" /></label>
-            <label>E-mail <small>Valgfri</small><input formControlName="email" type="email" maxlength="320" autocomplete="email" /></label>
-            <label>Telefon <small>Valgfrit</small><input formControlName="phone" type="tel" maxlength="100" autocomplete="tel" /></label>
+            <label class="customer-street">Kontaktadresse<input formControlName="address" maxlength="1000" autocomplete="street-address" /></label>
+            <div class="customer-location-row">
+              <label>Postnummer<input formControlName="postal_code" maxlength="20" autocomplete="postal-code" /></label>
+              <label>By<input formControlName="city" maxlength="200" autocomplete="address-level2" /></label>
+              <label><span class="field-label">Telefon <small>Valgfrit</small></span><input formControlName="phone" type="tel" maxlength="100" autocomplete="tel" /></label>
+            </div>
           </div>
           @if (form.controls.email.touched && form.controls.email.invalid) { <p role="alert">Angiv en gyldig e-mail, eller lad feltet være tomt.</p> }
           @if (!deferred()) { <div class="customer-actions">
@@ -49,6 +56,7 @@ export type { CustomerChoice } from '../../../core/customers/customer.service';
   styleUrl: './customer-picker.component.scss',
 })
 export class CustomerPicker {
+  readonly customerAddress = customerAddress;
   private readonly service = inject(CustomerService);
   private readonly destroy = inject(DestroyRef);
   private readonly requests = new Subject<{ query: string; automatic: boolean }>();
@@ -72,6 +80,8 @@ export class CustomerPicker {
   readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(200), Validators.pattern(/.*\S.*/)] }),
     address: new FormControl('', { nonNullable: true, validators: Validators.maxLength(1000) }),
+    postal_code: new FormControl('', { nonNullable: true, validators: Validators.maxLength(20) }),
+    city: new FormControl('', { nonNullable: true, validators: Validators.maxLength(200) }),
     email: new FormControl('', { nonNullable: true, validators: [Validators.email, Validators.maxLength(320)] }),
     phone: new FormControl('', { nonNullable: true, validators: Validators.maxLength(100) }),
   });
@@ -134,7 +144,7 @@ export class CustomerPicker {
   }
 
   choose(customer: CustomerSummary): void {
-    this.chosen.set(`Valgt: ${customer.name} · ${customer.address || 'Ingen kontaktadresse'}`);
+    this.chosen.set(`Valgt: ${customer.name} · ${customerAddress(customer) || 'Ingen kontaktadresse'}`);
     this.requests.next({ query: '', automatic: false });
     this.selected.emit({ id: customer.id, customer });
   }
@@ -151,7 +161,7 @@ export class CustomerPicker {
     this.form.markAllAsTouched();
     if (this.form.invalid) return null;
     const raw = this.form.getRawValue();
-    const values = { name: raw.name.trim(), address: raw.address.trim(), email: raw.email.trim(), phone: raw.phone.trim() };
+    const values = { name: raw.name.trim(), address: raw.address.trim(), postal_code: raw.postal_code.trim(), city: raw.city.trim(), email: raw.email.trim(), phone: raw.phone.trim() };
     return { id: this.id, values };
   }
 

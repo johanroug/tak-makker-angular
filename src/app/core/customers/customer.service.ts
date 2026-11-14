@@ -6,10 +6,10 @@ import { supabase } from '../supabase/supabase.client';
 import { Database } from '../supabase/database.types';
 
 export type Customer = Database['public']['Tables']['customers']['Row'];
-export type CustomerValues = Pick<Customer, 'name' | 'address' | 'email' | 'phone'>;
+export type CustomerValues = Pick<Customer, 'name' | 'address' | 'email' | 'phone'> & Partial<Pick<Customer, 'postal_code' | 'city'>>;
 export type CustomerSummary = Customer & { project_count: number; last_activity: string; possible_duplicate: boolean };
 export type CustomerChoice = { id: string; values?: CustomerValues; customer?: CustomerSummary };
-export type CustomerProject = { id: string; project_number: string; title: string | null; work_address: string | null; total_count: number; matches: boolean };
+export type CustomerProject = { id: string; project_number: string; title: string | null; work_address: string | null; total_count: number; matches: boolean; offer_status?: string | null };
 
 @Injectable({ providedIn: 'root' })
 export class CustomerService {
@@ -55,13 +55,24 @@ export class CustomerService {
     return defer(() => supabase.rpc('list_customer_projects', { p_customer_id: id, p_query: query.slice(0, 160), p_offset: offset })).pipe(map(({ data, error }) => {
       if (error) throw error;
       return data as unknown as CustomerProject[];
+    }), switchMap(projects => {
+      if (!projects.length) return from([projects]);
+      return from(supabase.from('projects').select('id, offers(status, finalized_at)')
+        .in('id', projects.map(project => project.id))
+        .order('finalized_at', { referencedTable: 'offers', ascending: false, nullsFirst: false })
+        .limit(1, { referencedTable: 'offers' })).pipe(map(({ data, error }) => {
+          if (error) throw error;
+          const statuses = new Map(data.map(project => [project.id, project.offers[0]?.status ?? null]));
+          return projects.map(project => ({ ...project, offer_status: statuses.get(project.id) ?? null }));
+        }));
     }));
   }
 
   save(id: string, values: CustomerValues, expected?: string): Observable<Customer> {
-    return this.company().pipe(switchMap(company => supabase.rpc('save_customer', {
+    return this.company().pipe(switchMap(company => supabase.rpc('save_customer_details', {
       p_id: id, p_company_id: company, p_name: values.name.trim(), p_address: values.address.trim(),
       p_email: values.email.trim(), p_phone: values.phone.trim(),
+      p_postal_code: values.postal_code?.trim() ?? '', p_city: values.city?.trim() ?? '',
       ...(expected ? { p_expected_updated_at: expected } : {}),
     })), map(({ data, error }) => {
       if (error) throw error;

@@ -145,6 +145,21 @@ try {
     assert.equal(await scalar('select work_address from public.projects where id=$1',[empty]),'Independent job address');
   });
   await db.exec('reset role');
+  await db.exec(readFileSync('supabase/migrations/202611140001_customer_postal_address.sql','utf8'));
+  await check('postal addresses sync to projects, preserve snapshots and save atomically', async () => {
+    await db.exec('set role authenticated');
+    const id=crypto.randomUUID();
+    const result=await call('select public.save_customer_details($1,$2,$3,$4,$5,$6,null,$7,$8)',[id,company,'Postal customer','Testvej 123','','','3460','Birkerød']);
+    await call('select public.link_project_customer($1,$2,$3)',[empty,id,newId]);
+    assert.equal(await scalar('select customer_address from public.projects where id=$1',[empty]),'Testvej 123\n3460 Birkerød');
+    const results=await scalar('select public.search_customers($1,$2)',[company,'3460']);
+    assert.ok(results.some(customer=>customer.id===id));
+    const fresh=crypto.randomUUID();
+    await call('select public.save_project_customer_details($1,$2,$3,$4,$5)',[empty,fresh,{},id,{name:'Atomic postal',address:'Vej 4',postal_code:'8000',city:'Aarhus'}]);
+    assert.equal(await scalar('select customer_address from public.projects where id=$1',[empty]),'Vej 4\n8000 Aarhus');
+    await db.exec('reset role');
+    assert.equal(await scalar('select customer_address from public.offers where id=1'),'Old address');
+  });
   await check('post-deployment read-only integrity SQL', async () => {
     await db.exec(readFileSync('supabase/tests/customer_register.sql','utf8'));
   });

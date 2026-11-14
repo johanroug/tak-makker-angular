@@ -1,3 +1,4 @@
+import { customerAddress } from '../../core/customers/customer-address';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -5,13 +6,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, catchError, finalize, of, switchMap, tap, timer } from 'rxjs';
 import { Customer, CustomerProject, CustomerService, CustomerSummary } from '../../core/customers/customer.service';
 import { WorkspaceState } from '../../shared/components/app-shell/workspace-state';
+import { offerStatusLabel } from '../../core/offers/offer-status';
 import { CustomerChoice, CustomerPicker } from '../../shared/components/customer-picker/customer-picker.component';
+import { WorkspaceIcon } from '../../shared/components/workspace-icon.component';
 
 @Component({
-  selector: 'app-customers', imports: [RouterLink, ReactiveFormsModule, CustomerPicker],
+  selector: 'app-customers', imports: [RouterLink, ReactiveFormsModule, CustomerPicker, WorkspaceIcon],
   templateUrl: './customers.component.html', styleUrl: './customers.component.scss',
 })
 export class CustomersComponent {
+  readonly customerAddress = customerAddress;
+  readonly offerStatusLabel = offerStatusLabel;
   private readonly service = inject(CustomerService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -21,6 +26,7 @@ export class CustomersComponent {
   private readonly details = new Subject<string>();
   readonly query = new FormControl('', { nonNullable: true });
   readonly rows = signal<CustomerSummary[]>([]);
+  readonly hasNextPage = signal(false);
   readonly customer = signal<Customer | null>(null);
   readonly customerId = signal<string | null>(null);
   readonly duplicates = signal<CustomerSummary[]>([]);
@@ -42,6 +48,8 @@ export class CustomersComponent {
   readonly form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/.*\S.*/), Validators.maxLength(200)] }),
     address: new FormControl('', { nonNullable: true }),
+    postal_code: new FormControl('', { nonNullable: true, validators: Validators.maxLength(20) }),
+    city: new FormControl('', { nonNullable: true, validators: Validators.maxLength(200) }),
     email: new FormControl('', { nonNullable: true, validators: Validators.email }),
     phone: new FormControl('', { nonNullable: true }),
   });
@@ -51,10 +59,10 @@ export class CustomersComponent {
     this.query.valueChanges.pipe(takeUntilDestroyed(this.destroy)).subscribe(() => { this.offset.set(0); this.reloadList(); });
     this.searches.pipe(
       tap(() => { this.loading.set(true); this.error.set(''); this.expanded.set(null); this.rows.set([]); }),
-      switchMap(() => timer(250).pipe(switchMap(() => this.service.search(this.query.value, this.offset())), catchError(() => {
+      switchMap(() => timer(250).pipe(switchMap(() => this.service.search(this.query.value, this.offset(), 26)), catchError(() => {
         this.error.set('Kunderne kunne ikke hentes. Prøv igen.'); return of([]);
       }))), takeUntilDestroyed(this.destroy),
-    ).subscribe(rows => { this.rows.set(rows); this.loading.set(false); });
+    ).subscribe(rows => { this.hasNextPage.set(rows.length > 25); this.rows.set(rows.slice(0, 25)); this.loading.set(false); });
     this.details.pipe(
       tap(() => { this.loading.set(true); this.saved.set(false); this.error.set(''); this.customer.set(null); this.mergeTarget.set(null); this.duplicates.set([]); this.detailProjects.set([]); }),
       switchMap(id => this.service.get(id).pipe(catchError(() => { this.error.set('Kunden kunne ikke hentes. Den kan være flyttet eller samlet med en anden kunde.'); return of(null); }))),
@@ -62,7 +70,7 @@ export class CustomersComponent {
     ).subscribe(customer => {
       this.customer.set(customer); this.loading.set(false);
       if (customer) {
-        this.form.reset({ name: customer.name, address: customer.address, email: customer.email, phone: customer.phone });
+        this.form.reset({ name: customer.name, address: customer.address, postal_code: customer.postal_code ?? '', city: customer.city ?? '', email: customer.email, phone: customer.phone });
         this.projectOffset.set(0); this.duplicateOffset.set(0); this.loadDetailProjects(); this.loadDuplicates();
       }
     });

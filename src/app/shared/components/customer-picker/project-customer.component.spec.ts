@@ -7,7 +7,7 @@ import { CustomerService, CustomerSummary } from '../../../core/customers/custom
 import { ProjectService } from '../../../core/projects/project.service';
 
 type Data = Awaited<ReturnType<ProjectService['getProject']>>;
-const customer:CustomerSummary={id:'customer-a',company_id:'company',name:'Otto',address:'Otto vej 1',email:'',phone:'',created_at:'',updated_at:'',project_count:1,last_activity:'',possible_duplicate:false};
+const customer:CustomerSummary={postal_code:"",city:"",id:'customer-a',company_id:'company',name:'Otto',address:'Otto vej 1',email:'',phone:'',created_at:'',updated_at:'',project_count:1,last_activity:'',possible_duplicate:false};
 const data={project:{id:'project-a',customer_id:null,customer_name:'Mette Hansen',customer_address:'Kontaktvej 2',work_address:'Arbejdsvej 8'},customer:null} as unknown as Data;
 
 describe('Draft customer selection in project details',()=>{

@@ -13,6 +13,7 @@ import { WorkspaceIcon } from '../workspace-icon.component';
 import { SpeechInput } from '../speech-input/speech-input.component';
 import { CustomerPicker, CustomerChoice } from '../customer-picker/customer-picker.component';
 import { Customer, CustomerService } from '../../../core/customers/customer.service';
+import { customerAddress } from '../../../core/customers/customer-address';
 import { firstValueFrom, of, switchMap } from 'rxjs';
 
 @Component({
@@ -22,6 +23,7 @@ import { firstValueFrom, of, switchMap } from 'rxjs';
   styleUrl: './new-project-dialog.component.scss',
 })
 export class NewProjectDialog implements OnDestroy {
+  readonly customerAddress = customerAddress;
   private readonly customers = inject(CustomerService);
   readonly customerChoice = signal<CustomerChoice | null>(null);
   readonly presetCustomer = signal<Customer | null>(null);

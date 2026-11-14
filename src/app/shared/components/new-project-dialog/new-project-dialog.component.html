@@ -42,7 +42,7 @@
     </div>
     <div class="dialog-content">
     @if (customerLoading()) { <p role="status">Henter kunde…</p> }
-    @else if (presetCustomer(); as customer) { <p><strong>Kunde: {{ customer.name }}</strong><br />{{ customer.address }}</p> }
+    @else if (presetCustomer(); as customer) { <p><strong>Kunde: {{ customer.name }}</strong><br />{{ customerAddress(customer) }}</p> }
     @else if (!projectId()) { <details><summary>Vælg eller opret kunde (valgfrit)</summary><app-customer-picker createLabel="Brug ny kunde" (selected)="customerChoice.set($event)" /></details> }
     @if (mode() === 'ai') {
     <form id="new-project-form" (submit)="$event.preventDefault(); continue()">

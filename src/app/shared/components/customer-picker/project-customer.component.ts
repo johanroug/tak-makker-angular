@@ -1,3 +1,4 @@
+import { customerAddress } from '../../../core/customers/customer-address';
 import { Component, computed, effect, input, output, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProjectService } from '../../../core/projects/project.service';
@@ -15,7 +16,7 @@ export type CustomerMode = 'new' | 'existing';
         }
       </div>
       @if (displayCustomer(); as customer) {
-        <dl class="customer-summary"><div><dt>Kundenavn</dt><dd>{{ customer.name }}</dd></div><div><dt>Kontaktadresse</dt><dd>{{ customer.address || 'Ingen kontaktadresse' }}</dd></div>
+        <dl class="customer-summary"><div><dt>Kundenavn</dt><dd>{{ customer.name }}</dd></div><div><dt>Kontaktadresse</dt><dd>{{ customerAddress(customer) || 'Ingen kontaktadresse' }}</dd></div>
           @if (customer.email) { <div><dt>E-mail</dt><dd>{{ customer.email }}</dd></div> }
           @if (customer.phone) { <div><dt>Telefon</dt><dd>{{ customer.phone }}</dd></div> }
         </dl>
@@ -45,6 +46,7 @@ export type CustomerMode = 'new' | 'existing';
   styleUrl: './project-customer.component.scss',
 })
 export class ProjectCustomer {
+  readonly customerAddress = customerAddress;
   readonly data = input.required<Awaited<ReturnType<ProjectService['getProject']>>>();
   readonly initialMode = input<CustomerMode | null>(null);
   readonly contactOpened = output<void>();

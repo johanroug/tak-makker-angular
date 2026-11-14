@@ -1,3 +1,4 @@
+import { customerAddress } from '../../core/customers/customer-address';
 import { PageLoading } from '../../shared/components/page-loading/page-loading.component';
 import { ProjectTools } from '../../shared/components/project-tools/project-tools.component';
 import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, Injector, OnInit, OnDestroy, signal, viewChild } from '@angular/core';
@@ -66,7 +67,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
       ).subscribe(({ projectId, contact }) => {
         this.project.update(data => data?.project.id === projectId ? {
           ...data, customer: contact.customer, project: { ...data.project, customer_id: contact.customer_id,
-            ...(contact.customer ? { customer_name: contact.customer.name, customer_address: contact.customer.address } : {}) },
+            ...(contact.customer ? { customer_name: contact.customer.name, customer_address: customerAddress(contact.customer) } : {}) },
         } : data);
       });
       const viewport = window.visualViewport;

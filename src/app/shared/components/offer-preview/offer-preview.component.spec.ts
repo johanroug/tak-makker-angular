@@ -10,7 +10,7 @@ import { ProjectService } from '../../../core/projects/project.service';
 import { OfferService } from '../../../core/offers/offer.service';
 import { OfferPdfService } from '../../../core/offers/offer-pdf.service';
 
-const customer:CustomerSummary={id:'customer-b',company_id:'company',name:'Ny valgt kunde',address:'Kontaktvej',email:'',phone:'',created_at:'',updated_at:'',project_count:1,last_activity:'',possible_duplicate:false};
+const customer:CustomerSummary={postal_code:"",city:"",id:'customer-b',company_id:'company',name:'Ny valgt kunde',address:'Kontaktvej',email:'',phone:'',created_at:'',updated_at:'',project_count:1,last_activity:'',possible_duplicate:false};
 const data={project:{id:'project-a',customer_id:'customer-a',customer_name:'Otto',customer_address:'Otto vej 1',title:'Projekt',hourly_rate:450,work_address:'Arbejdsvej',description:'Beskrivelse',offer_description:'Tilbud',validity_days:14,payment_terms:'',reservations:''},customer:{...customer,id:'customer-a',name:'Otto',address:'Otto vej 1'},company:{name:'Firma',cvr:'12345678',address:'Firmaadresse',phone:'12345678',email:'firma@example.test'},workItems:[],materials:[],messages:[]} as unknown as Awaited<ReturnType<ProjectService['getProject']>>;
 
 const dialogShow=Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype,'showModal');

@@ -7,7 +7,7 @@ import { CustomersComponent } from './customers.component';
 import { CustomerService, CustomerSummary } from '../../core/customers/customer.service';
 import { WorkspaceState } from '../../shared/components/app-shell/workspace-state';
 
-const customer: CustomerSummary = { id:'a', company_id:'company', name:'Mette Hansen', address:'Kontaktvej 2',email:'',phone:'12345678',created_at:'',updated_at:'version1', project_count:1,last_activity:'',possible_duplicate:false };
+const customer: CustomerSummary = { id:'a', company_id:'company', name:'Mette Hansen', address:'Kontaktvej 2',postal_code:'',city:'',email:'',phone:'12345678',created_at:'',updated_at:'version1', project_count:1,last_activity:'',possible_duplicate:false };
 const project={id:'project-a',project_number:'2026-0042',title:'Badeværelse',work_address:'Arbejdsvej 8',total_count:1,matches:true};
 
 describe('Customer register navigation and editing', () => {
@@ -42,9 +42,27 @@ describe('Customer register navigation and editing', () => {
     const harness=await RouterTestingHarness.create();
     const component=await harness.navigateByUrl('/customers',CustomersComponent);
     component.query.setValue('2026-0042');
-    await vi.waitFor(() => expect(service.search).toHaveBeenLastCalledWith('2026-0042',0));
+    await vi.waitFor(() => expect(service.search).toHaveBeenLastCalledWith('2026-0042',0,26));
     component.page(1);
-    await vi.waitFor(() => expect(service.search).toHaveBeenLastCalledWith('2026-0042',25));
+    await vi.waitFor(() => expect(service.search).toHaveBeenLastCalledWith('2026-0042',25,26));
+  });
+
+  it('shows next only when an additional customer exists and previous only after page one', async () => {
+    const customers = Array.from({length: 26}, (_, index) => ({...customer, id: `customer-${index}`}));
+    service.search.mockReturnValue(of(customers.slice(0, 25)));
+    const harness = await RouterTestingHarness.create();
+    const component = await harness.navigateByUrl('/customers', CustomersComponent);
+    await vi.waitFor(() => expect(component.loading()).toBe(false)); harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.pagination')).toBeNull();
+    service.search.mockReturnValue(of(customers)); component.reloadList();
+    await vi.waitFor(() => expect(component.hasNextPage()).toBe(true)); harness.detectChanges();
+    expect(component.rows()).toHaveLength(25);
+    expect(harness.routeNativeElement!.querySelector('.pagination')!.textContent).toContain('Næste');
+    expect(harness.routeNativeElement!.querySelector('.pagination')!.textContent).not.toContain('Forrige');
+    service.search.mockReturnValue(of([customers[25]])); component.page(1);
+    await vi.waitFor(() => expect(component.hasNextPage()).toBe(false)); harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('.pagination')!.textContent).toContain('Forrige');
+    expect(harness.routeNativeElement!.querySelector('.pagination')!.textContent).not.toContain('Næste');
   });
 
   it('saves contact changes with an optimistic version and starts projects for the selected customer', async () => {

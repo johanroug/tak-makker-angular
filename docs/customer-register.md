@@ -3,7 +3,7 @@
 ## Status og checkpoint
 
 Implementeringen er forberedt i kodebasen. Produktionsmigrationen er ikke kørt,
-og hverken webappen eller Edge Function er deployet som del af denne ændring.
+og hverken webappen eller Edge Function er deployet til produktion som del af denne ændring.
 Den eksisterende produktionsdatabases tabel-/kolonnenavne blev kontrolleret
 read-only: projekter har hidtil kundeoplysninger direkte; ingen customers-tabel.
 
@@ -20,7 +20,10 @@ Den separate staging-konfiguration erstatter kun Supabase URL/publishable key
 ved dette eksplicitte valg. Standard produktionsbuild er uændret.
 Efter login viser appen et testbanner. Brug login fra den gendannede database.
 `generate-offer` er efterfølgende deployet kun til testprojektet den 14. november.
-Live AI-test afventer `OPENAI_API_KEY`, som ikke var konfigureret ved kontrollen.
+`OPENAI_API_KEY` er nu konfigureret i test, og Johan har gennemført live AI-test
+uden AI-fejl. Arbejdsadresse og kontaktadresse holdes adskilt, kundeformularen
+forudfyldes korrekt, og AI kan ændre arbejdsadressen på et eksisterende projekt
+uden at ændre den tilknyttede kundes kontaktadresse.
 Talefunktionen er endnu ikke deployet eller aktiveret i testprojektet.
 `billing-session` er deployet i testprojektet med understøttelse af Stripe-test
 på port 4201; dens offentlige status melder fortsat checkoutReady=false.
@@ -44,6 +47,12 @@ Integritetskontrollen af kundekoblinger, kontaktsynkronisering og RLS består.
 Testdatabasen har ingen `supabase_migrations.schema_migrations`; installationen
 er derfor verificeret på databaseobjekterne, ikke via registreret migrationshistorik.
 
+Johan har også bekræftet den manuelle mobil-/desktopkontrol af kundebrugerfladen
+og hele tilbuds-/PDF-forløbet i test: færdiggjorte tilbud og deres PDF'er bevarer
+den oprindelige kontaktadresse efter ændring i kundekartoteket; nye tilbud og
+PDF'er bruger den opdaterede adresse. Automatisk kundematch er fortsat ikke
+tilsluttet brugerfladen og indgår ikke som et bestået live-testforløb.
+
 Checkpoint før ændringen: commit `cfed17f5e62773af4d63c7e36499c122d360fce8`.
 Kodearkiv og patch med de daværende lokale ændringer ligger i
 `tmp/before-customer-register-20261113/` (lokalt og git-ignoreret).
@@ -54,6 +63,17 @@ Gem en separat krypteret kopi inden 30-dages-oprydningen samt adgangskoden i
 passwordmanageren. Kodearkivet indeholder ikke database eller hemmelige nøgler.
 
 ## Datamodel og kompatibilitet
+
+Postnummer og by er tilføjet som separate, valgfrie felter i migration
+`202611140001_customer_postal_address.sql`, installeret kun i hovedet-test den
+14. november. Eksisterende adressetekst bevares uden automatisk opdeling.
+Kundeformularerne bruger den nye `save_customer_details`-RPC med versionskontrol;
+den tidligere `save_customer` bevares til kompatibilitet. Samlet kontaktadresse
+synkroniseres til projekternes kontaktkopi, så nye tilbud og PDF'er får gade,
+postnummer og by i det eksisterende adressesnapshot. Gamle tilbud ændres ikke.
+Kundesøgning omfatter også postnummer/by. Den særlige hosted rollback-test
+`supabase/tests/customer_postal_address_behavior.sql` og integritetskontrollen
+består i test. Lokalt består ni databasekontroller, 29 frontend-tests og build.
 
 Migrationer: `supabase/migrations/202611130001_customer_register.sql` og
 `supabase/migrations/202611130002_save_project_customer_details.sql`.
@@ -115,8 +135,9 @@ anvender firstValueFrom ved overgangen til den nye kundeservice.
 
 ## Udrulning
 
-1. Hosted database-/migrationstests er bestået i hovedet-test. Gennemgå nu
-   brugerfladen på mobil/desktop og afprøv AI med særskilt testopsætning før drift.
+1. Hosted database-/migrationstests samt de beskrevne manuelle kunde-, AI- og
+   tilbuds-/PDF-forløb er bestået i hovedet-test. Automatisk kundematch mangler
+   integration og skal afklares før en eventuel produktionsudrulning.
 2. Kør begge migrationsfiler i rækkefølge i Supabase SQL Editor for det valgte
    projekt, eller med et eksplicit, kontrolleret projekt-ID:
    `npx supabase db query --linked --project-ref <projekt-ref> --file supabase/migrations/202611130001_customer_register.sql`
@@ -178,8 +199,9 @@ CommonJS-moduler; ingen buildfejl.
 Den isolerede SQL-test bruger en lille fixtureskemamodel og en testudgave af
 Auth/adgangskontrollen. Den kontakter ikke produktion og beviser ikke i sig selv
 hele Supabase-opsætningen eller faktiske AI-svar. Den supplerende hosted
-databasekontrol er nu bestået; manuel visuel kontrol og live AI-test mangler
-fortsat før produktionsudrulning.
+databasekontrol er nu bestået. De beskrevne manuelle visuelle kontroller og live
+AI-tests er efterfølgende bekræftet af Johan i test; automatisk kundematch er
+fortsat ikke færdigintegreret.
 
 ## Ændrede områder
 

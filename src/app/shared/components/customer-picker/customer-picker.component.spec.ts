@@ -4,7 +4,7 @@ import { Subject, of, throwError } from 'rxjs';
 import { CustomerPicker } from './customer-picker.component';
 import { CustomerService, CustomerSummary } from '../../../core/customers/customer.service';
 
-const candidate: CustomerSummary = { id: 'customer-1', company_id: 'company-1', name: 'Mette Hansen', address: 'Kontaktvej 2', email: '', phone: '', created_at: '', updated_at: '', project_count: 3, last_activity: '', possible_duplicate: false };
+const candidate: CustomerSummary = {postal_code:"",city:"", id: 'customer-1', company_id: 'company-1', name: 'Mette Hansen', address: 'Kontaktvej 2', email: '', phone: '', created_at: '', updated_at: '', project_count: 3, last_activity: '', possible_duplicate: false };
 
 describe('Shared customer selection', () => {
   const search = vi.fn();
@@ -59,7 +59,7 @@ describe('Shared customer selection', () => {
     const button=fixture.nativeElement.querySelector('.primary');
     expect(button.disabled).toBe(false); button.click();
     expect(selected.mock.calls[0][0].id).not.toBe(candidate.id);
-    expect(selected.mock.calls[0][0].values).toEqual({name:'Mette Hansen',address:'testvej 2',email:'asdas@gma.com',phone:'99558167'});
+    expect(selected.mock.calls[0][0].values).toEqual({name:'Mette Hansen',address:'testvej 2',postal_code:'',city:'',email:'asdas@gma.com',phone:'99558167'});
   });
 
   it('lets a new customer be saved immediately while an earlier search is pending', async () => {

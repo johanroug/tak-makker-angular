@@ -9,7 +9,7 @@ begin
   end if;
   if exists(select 1 from public.projects p join public.customers c
     on c.id=p.customer_id and c.company_id=p.company_id
-    where p.customer_name is distinct from c.name or p.customer_address is distinct from c.address) then
+    where p.customer_name is distinct from c.name or p.customer_address is distinct from concat_ws(E'\n',nullif(c.address,''),nullif(concat_ws(' ',nullif(c.postal_code,''),nullif(c.city,'')),''))) then
     raise exception 'Legacy customer contact fields are out of sync';
   end if;
   if not exists(select 1 from pg_constraint where conrelid='public.projects'::regclass
@@ -29,6 +29,7 @@ begin
   if exists(select 1 from unnest(array[
     'public.search_customers(uuid,text,integer,integer,uuid)',
     'public.save_customer(uuid,uuid,text,text,text,text,timestamptz)',
+    'public.save_customer_details(uuid,uuid,text,text,text,text,timestamptz,text,text)',
     'public.link_project_customer(uuid,uuid,uuid)',
     'public.resolve_customer_duplicate(uuid,uuid,boolean)',
     'public.list_customer_projects(uuid,text,integer)',
@@ -38,7 +39,7 @@ begin
   end if;
   if exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
     where n.nspname='public' and p.proname in ('search_customers','save_customer','link_project_customer',
-      'resolve_customer_duplicate','list_customer_projects','save_project_customer_details')
+      'resolve_customer_duplicate','list_customer_projects','save_project_customer_details','save_customer_details')
     and (not p.prosecdef or has_function_privilege('anon',p.oid,'execute')
       or not has_function_privilege('authenticated',p.oid,'execute')
       or not ('search_path=""'=any(p.proconfig)))) then

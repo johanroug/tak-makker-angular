@@ -394,7 +394,11 @@
       @if (isEditing()) {
         <app-project-customer [data]="data()" [initialMode]="customerMode()" (contactOpened)="cancelEditing()" />
       }
-      <label>Projektets arbejdsadresse<input type="text" formControlName="workAddress" placeholder="Hvor udføres arbejdet?" /></label>
+      <label>
+        <span>Projektets arbejdsadresse <small>Valgfri</small></span>
+        <input type="text" formControlName="workAddress" placeholder="Hvor udføres arbejdet?" aria-describedby="work-address-hint" />
+        <small id="work-address-hint">Hvis feltet er tomt, bruges kundens kontaktadresse.</small>
+      </label>
 
       <label>
         Projektbeskrivelse <small>Påkrævet før færdiggørelse</small>

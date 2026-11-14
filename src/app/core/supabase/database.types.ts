@@ -49,9 +49,9 @@ export type Database = {
         ]
       }
       customers: {
-        Row: { id: string; company_id: string; name: string; address: string; email: string; phone: string; created_at: string; updated_at: string }
-        Insert: { id?: string; company_id: string; name: string; address?: string; email?: string; phone?: string; created_at?: string; updated_at?: string }
-        Update: { name?: string; address?: string; email?: string; phone?: string }
+        Row: { id: string; company_id: string; name: string; address: string; postal_code: string; city: string; email: string; phone: string; created_at: string; updated_at: string }
+        Insert: { id?: string; company_id: string; name: string; address?: string; postal_code?: string; city?: string; email?: string; phone?: string; created_at?: string; updated_at?: string }
+        Update: { name?: string; address?: string; postal_code?: string; city?: string; email?: string; phone?: string }
         Relationships: [{ foreignKeyName: "customers_company_id_fkey"; columns: ["company_id"]; isOneToOne: false; referencedRelation: "companies"; referencedColumns: ["id"] }]
       }
       companies: {
@@ -565,6 +565,7 @@ export type Database = {
       search_customers: { Args: { p_company_id: string; p_query?: string; p_offset?: number; p_limit?: number; p_duplicates_of?: string }; Returns: Json }
       save_project_customer_details: { Args: { p_project_id: string; p_customer_id: string; p_changes: Json; p_expected_customer_id?: string; p_new_customer?: Json }; Returns: undefined }
       list_customer_projects: { Args: { p_customer_id: string; p_query?: string; p_offset?: number }; Returns: Json }
+      save_customer_details: { Args: { p_id: string; p_company_id: string; p_name: string; p_address: string; p_email: string; p_phone: string; p_expected_updated_at?: string; p_postal_code?: string; p_city?: string }; Returns: Database['public']['Tables']['customers']['Row'] }
       save_customer: { Args: { p_id: string; p_company_id: string; p_name: string; p_address: string; p_email: string; p_phone: string; p_expected_updated_at?: string }; Returns: Database['public']['Tables']['customers']['Row'] }
       link_project_customer: { Args: { p_project_id: string; p_customer_id: string; p_expected_customer_id?: string }; Returns: undefined }
       resolve_customer_duplicate: { Args: { p_source: string; p_target: string; p_same_customer: boolean }; Returns: undefined }

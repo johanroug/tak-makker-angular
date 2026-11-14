@@ -226,3 +226,12 @@ Restore-actionen til produktion og de tidligere backupændringer er bevaret i de
 eksisterende staging-område. Kun test-restore-værktøjet er committet og pushet
 med `[skip ci]`; kundekartoteket og den lokale staging-konfiguration er ikke
 publiceret. Det hidtidige produktionsdeploy er stadig commit `cfed17f`.
+
+## Produktionsudrulning 14. november 2026
+
+Frisk krypteret backup verificeret i GitHub Actions run `43583459452`, forsøg 2.
+De tre migrationer blev anvendt samlet i én transaktion med før/efter-kontrol:
+19 projekter, 87 beskeder og 21 tilbud bevaret; syv kunder oprettet.
+Read-only integritetskontrol består. `generate-offer` er deployet til produktion.
+29 frontend-tests, ni isolerede databasekontroller, AI-kontrol og produktionsbuild
+med SEO-check består. Kundestyles er delt i to filer for at overholde buildbudget.

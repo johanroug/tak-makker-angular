@@ -35,7 +35,7 @@
       <div>
         <h2 id="walkthrough-title">Tilbudsprogram til håndværkere – fra opgavebeskrivelse til PDF</h2>
         <p class="walkthrough-intro">Lav tilbud til kunder i tre trin: Beskriv arbejdet, gennemgå AI-forslagene, og tilpas materialer, timer og priser. Du kontrollerer og godkender indholdet, før du henter tilbuddet som PDF og selv sender det til kunden.</p>
-        <p>Se et konkret regneeksempel i vores <a routerLink="/tilbudsberegner">tilbudsberegner til håndværkere</a>, eller læs hvordan en <a routerLink="/ai-tilbudsgenerator">AI tilbudsgenerator</a> hjælper fra opgavebeskrivelse til udkast.</p>
+        <p class="walkthrough-intro">Se et konkret regneeksempel i vores <strong><a routerLink="/tilbudsberegner">tilbudsberegner til håndværkere</a></strong>, eller læs hvordan en <a routerLink="/ai-tilbudsgenerator">AI tilbudsgenerator</a> hjælper fra opgavebeskrivelse til udkast.</p>
         <div class="steps">
           @for (item of steps; track item.title; let i = $index) {
             <button type="button" (click)="step.set(i); demoDialog.showModal()">

@@ -85,6 +85,7 @@ export class AppShell implements OnInit {
   private readonly newProjectDialog = viewChild.required(NewProjectDialog);
   readonly isLoggingOut = signal(false);
   readonly logoutError = signal('');
+  readonly signedInEmail = signal('');
   readonly isMenuOpen = signal(false);
   readonly navigationMatchOptions: IsActiveMatchOptions = {
     paths: 'subset', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'exact',
@@ -134,11 +135,21 @@ export class AppShell implements OnInit {
   }
 
   ngOnInit(): void {
+    void this.loadSignedInUser();
     void this.billing.load();
     void this.activity.checkAdmin();
     this.recordPageVisit();
     this.syncSelectedProject();
     void this.workspace.loadProjects();
+  }
+
+  private async loadSignedInUser(): Promise<void> {
+    try {
+      const { data } = await this.authService.getUser();
+      this.signedInEmail.set(data.user?.email ?? '');
+    } catch {
+      this.signedInEmail.set('');
+    }
   }
 
   private syncSelectedProject(): void {

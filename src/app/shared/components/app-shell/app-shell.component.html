@@ -154,6 +154,9 @@
     <ng-container [ngTemplateOutlet]="navigationContent" />
   </nav>
   <footer class="drawer-footer">
+    @if (signedInEmail()) {
+      <p class="signed-in-user"><span>Logget ind som</span><strong>{{ signedInEmail() }}</strong></p>
+    }
     <button type="button" class="logout-button" (click)="logout()" [disabled]="isLoggingOut()"><app-workspace-icon name="logout" />{{ isLoggingOut() ? 'Logger ud…' : 'Log ud' }}</button>
     <div class="drawer-payoff"><strong><app-workspace-icon name="sparkles" />Byg mere. Skriv mindre.</strong><p>Din AI-assistent til bedre tilbud.</p></div>
   </footer>

@@ -195,6 +195,11 @@
 .side-navigation a.nav-active > app-workspace-icon { color: #ff861e; }
 .side-navigation a.nav-active .navigation-chevron { visibility: visible; }
 .drawer-footer { flex: none; margin-top: 20px; padding-top: 16px; border-top: 1px solid #78988a4d; }
+.signed-in-user {
+  margin: 0; padding: 0 12px 8px; line-height: 1.5;
+  span { display: block; color: #a1b9af; font-size: 12px; }
+  strong { display: block; color: #f4f8f2; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+}
 .drawer-footer .logout-button {
   display: flex; align-items: center; gap: 12px; width: 100%; min-height: 50px; padding: 12px;
   border: 0; border-radius: 12px; background: transparent; color: #c0d2c8; font: inherit; font-size: 15px; text-align: left; cursor: pointer;

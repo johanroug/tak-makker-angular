@@ -78,7 +78,13 @@ try {
   });
   const file = { name: 'iphone.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(jpeg, 'base64') };
   await modal.locator('input[type=file]').setInputFiles([file, file, file]);
+  await page.waitForFunction(() => { const photos = window.ng.getComponent(document.querySelector('app-new-project-dialog')).photos(); return !photos.working() && photos.localCount() === 3; });
+  assert.equal(await modal.locator('.image-count').getAttribute('aria-expanded'), 'true', 'Uploading expands thumbnails automatically');
   await modal.getByText('AI-analyser: 0/3 brugt', { exact: false }).waitFor({ state: 'attached' });
+  if (await modal.locator('.image-count').getAttribute('aria-expanded') === 'false') {
+    assert.equal(await modal.locator('.image-open').first().isVisible(), false, 'Thumbnails start collapsed');
+    await modal.locator('.image-count').click();
+  }
   await modal.getByRole('button', { name: 'Slet billede', exact: true }).first().click();
   await page.waitForFunction(() => window.ng.getComponent(document.querySelector('app-new-project-dialog')).photos().working() === false);
   await modal.getByRole('button', { name: 'Slet billede', exact: true }).first().click();
@@ -101,8 +107,14 @@ try {
   const sidebar = page.locator('app-project-sidebar');
   const compose = async () => {
     const dialog = sidebar.locator('.composer-dialog');
-    if (!await dialog.isVisible()) await sidebar.getByRole('button', { name: 'Skriv ny besked', exact: true }).click();
+    if (!await dialog.isVisible()) {
+      await sidebar.getByRole('button', { name: 'Skriv ny besked', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('.composer-dialog .image-count')?.getAttribute('aria-expanded') === 'false');
+      assert.equal(await dialog.locator('.image-count').getAttribute('aria-expanded'), 'false', 'Opening the composer keeps existing thumbnails collapsed');
+    }
     await dialog.waitFor();
+    const images = dialog.locator('.image-count');
+    if (await images.getAttribute('aria-expanded') === 'false') await images.click();
   };
   const open = sidebar.getByRole('button', { name: 'Åbn samtale' });
   if (await open.isVisible()) await open.click();
@@ -169,7 +181,8 @@ try {
   await sidebar.getByRole('button', { name: 'Send besked' }).click();
   await sidebar.locator('.send-error').filter({ hasText: 'Projektet kan højst sende 3 billeder til AI' }).waitFor();
   assert.equal(requests.length, 4, 'Exhausted photo quota prevents another AI request');
-  await sidebar.getByRole('button', { name: 'Slet billede', exact: true }).last().click();
+  await compose();
+  await sidebar.locator('.composer-dialog').getByRole('button', { name: 'Slet billede', exact: true }).last().click();
   await sidebar.getByRole('button', { name: 'Luk beskedpanel' }).click();
   await sidebar.locator('.composer-dialog').waitFor({ state: 'hidden' });
   await page.setViewportSize({ width: 390, height: 844 });

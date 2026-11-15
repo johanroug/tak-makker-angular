@@ -11,10 +11,11 @@ import { ProjectImageSlide, ProjectImageViewerComponent } from './project-image-
     @if (!messageId()) {
       <input #files type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden (change)="selected($event)" />
       <div class="image-heading">
-        <span class="image-count">
+        <button type="button" class="image-count" [attr.aria-expanded]="imagesExpanded()" [attr.aria-controls]="imageRegionId" (click)="imagesExpanded.set(!imagesExpanded())">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="16" height="16" rx="2"/><path d="M7 2h13a2 2 0 0 1 2 2v13M3 17l5-6 8 10"/><circle cx="14" cy="10" r="2"/></svg>
           <strong>Projektbilleder</strong> <span>{{ localCount() }}/3</span>
-        </span>
+          <svg class="image-chevron" [class.expanded]="imagesExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+        </button>
         <button type="button" class="info-button" aria-label="Information om projektbilleder" (click)="openInfo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg></button>
       </div>
       <dialog #imageInfo class="image-info-dialog" aria-label="Om projektbilleder" (click)="infoBackdropClick($event)">
@@ -29,7 +30,7 @@ import { ProjectImageSlide, ProjectImageViewerComponent } from './project-image-
       </dialog>
       @if (pendingMessageId()) { <p class="note">Billeder afventer analyse. Send igen for at prøve den gemte besked; billederne bevares ved fejl.</p> }
     }
-    <div class="images" [class.composer-images]="!messageId()">
+    <div class="images" [id]="imageRegionId" [class.composer-images]="!messageId()" [class.images-collapsed]="!messageId() && !imagesExpanded()">
       @for (image of visible(); track image.id) {
         <figure>
           @if (image.url) { <button type="button" class="image-open" (click)="openGallery(image.id)" aria-label="Vis projektbillede"><img [src]="image.url" alt="Projektbillede" /></button> }
@@ -47,7 +48,10 @@ import { ProjectImageSlide, ProjectImageViewerComponent } from './project-image-
     :host { display: block; } .note { margin: 4px 0; font-size: 11px; color: #687664; }
     .image-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .image-heading { min-height: 44px; color: #687664; }
-    .image-count { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
+    .image-count { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
+    .image-count:focus-visible { outline: 2px solid #b98131; outline-offset: 2px; border-radius: 6px; }
+    .image-chevron.expanded { transform: rotate(180deg); }
+    .images.images-collapsed { display: none; }
     .image-count strong { color: #12372a; font-size: 14px; }
     .image-count svg, .info-button svg { width: 18px; height: 18px; flex: none; }
     .info-button { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #687664; font: inherit; font-size: 24px; cursor: pointer; }
@@ -74,6 +78,8 @@ import { ProjectImageSlide, ProjectImageViewerComponent } from './project-image-
   `,
 })
 export class ProjectImagesComponent implements OnDestroy {
+  readonly imageRegionId = `project-images-${crypto.randomUUID()}`;
+  readonly imagesExpanded = signal(false);
   readonly projectId = input.required<string>();
   readonly companyId = input<string>();
   readonly messageId = input<string>();
@@ -94,6 +100,7 @@ export class ProjectImagesComponent implements OnDestroy {
   private images: LocalProjectImage[] = [];
   private readonly userId = signal<string | null>(null);
   private activeProject = '';
+  private imageContext = '';
   private moved?: { from: string; to: string };
   private generation = 0;
   private readonly auth = supabase.auth.onAuthStateChange((_event, session) => this.userId.set(session?.user.id ?? null)).data.subscription;
@@ -103,6 +110,9 @@ export class ProjectImagesComponent implements OnDestroy {
       this.storage.revision();
       const user = this.userId(), source = this.projectId(), message = this.messageId();
       const project = this.moved?.from === source ? this.moved.to : source;
+      const context = `${user}:${project}`;
+      if (this.imageContext !== context) this.imagesExpanded.set(false);
+      this.imageContext = context;
       this.activeProject = project;
       const generation = ++this.generation;
       untracked(() => this.release()); this.images = []; this.submitted.set(0); this.localCount.set(0); this.pendingMessageId.set(undefined); this.error.set('');
@@ -135,7 +145,11 @@ export class ProjectImagesComponent implements OnDestroy {
     if (!files.length || !this.canChoose()) return;
     const user = this.userId()!, project = this.activeProject, generation = this.generation;
     this.busy.set(true); this.error.set('');
-    try { await this.storage.add(user, project, files); await this.reload(user, project, undefined, generation); }
+    try {
+      await this.storage.add(user, project, files);
+      if (user === this.userId() && project === this.activeProject) this.imagesExpanded.set(true);
+      await this.reload(user, project, undefined, generation);
+    }
     catch (error) { if (generation === this.generation) this.showError(error); }
     finally { this.busy.set(false); }
   }

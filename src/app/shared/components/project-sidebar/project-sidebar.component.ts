@@ -70,6 +70,7 @@ export class ProjectSidebar implements OnDestroy {
       dialog.style.setProperty('--composer-width', `${Math.max(240, bounds.width - 16)}px`);
       dialog.style.setProperty('--composer-bottom', `${Math.max(16, window.innerHeight - bounds.bottom + 8)}px`);
     }
+    this.photos()?.imagesExpanded.set(false);
     dialog.showModal();
     this.composerOpen.set(true);
     this.messageInput()?.nativeElement.focus({ preventScroll: true });

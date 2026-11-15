@@ -272,8 +272,9 @@ app-ai-feedback {
 
 // History fills the rail; the composer lives in the dialog top layer.
 .conversation-rail { position: relative; }
-.conversation-heading { flex-wrap: wrap; gap: 8px 14px; padding: 14px; }
-.conversation-usage { flex: 1 1 180px; min-width: 0; }
+:host .conversation-rail .conversation-heading { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 12px 14px; }
+:host .conversation-rail .conversation-heading h2 { margin: 0; font-size: 20px; line-height: 26px; }
+.conversation-usage { min-width: 0; width: 100%; }
 .conversation-body { position: relative; }
 .chat-messages { flex: 1 1 0; min-height: 0; max-height: none; padding-bottom: 90px; }
 .new-message-button { position: absolute; z-index: 2; right: 16px; bottom: 16px; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: 50%; background: #123f30; color: #fff; box-shadow: 0 4px 12px #12372a38; cursor: pointer; }

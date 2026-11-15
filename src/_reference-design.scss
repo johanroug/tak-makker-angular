@@ -212,7 +212,7 @@ app-new-project-dialog .start-dialog {
 @media (max-width: 900px) {
   .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft {
     .quotation-workspace { display: block; }
-    .quotation-editor { min-height: 0; padding-top: 0; }
+    .quotation-editor { min-height: 0; padding-top: 12px; }
     .quotation-tabs { display: none; }
     .quotation-summary { position: static; }
     .draft-section .draft-row { display: block; padding: 12px 39px 12px 44px; }

@@ -2,9 +2,11 @@ import { Component, ElementRef, OnDestroy, effect, inject, input, signal, untrac
 import { supabase } from '../../core/supabase/supabase.client';
 import { BillingService } from '../../core/billing/billing.service';
 import { ImageAnalysisInput, LocalProjectImage, ProjectImagesService } from '../../core/projects/project-images.service';
+import { ProjectImageSlide, ProjectImageViewerComponent } from './project-image-viewer.component';
 
 @Component({
   selector: 'app-project-images',
+  imports: [ProjectImageViewerComponent],
   template: `
     @if (!messageId()) {
       <input #files type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden (change)="selected($event)" />
@@ -26,13 +28,16 @@ import { ImageAnalysisInput, LocalProjectImage, ProjectImagesService } from '../
     <div class="images">
       @for (image of visible(); track image.id) {
         <figure>
-          @if (image.url) { <a [href]="image.url" target="_blank" rel="noopener"><img [src]="image.url" alt="Projektbillede" /></a> }
+          @if (image.url) { <button type="button" class="image-open" (click)="openGallery(image.id)" aria-label="Vis projektbillede"><img [src]="image.url" alt="Projektbillede" /></button> }
           @else { <span class="missing">Billede er fjernet eller ikke tilgængeligt</span> }
           @if (image.url) { <button type="button" [disabled]="disabled() || busy()" (click)="remove(image.id)" aria-label="Slet billede">×</button> }
         </figure>
       }
     </div>
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+    @if (gallery().length) {
+      <app-project-image-viewer [images]="gallery()" [initialIndex]="galleryIndex()" (closed)="closeGallery()" />
+    }
   `,
   styles: `
     :host { display: block; } .note { margin: 4px 0; font-size: 11px; color: #687664; }
@@ -46,6 +51,8 @@ import { ImageAnalysisInput, LocalProjectImage, ProjectImagesService } from '../
     .images { display: flex; gap: 8px; flex-wrap: wrap; } figure { position: relative; margin: 6px 0; }
     img { width: 76px; height: 76px; object-fit: cover; border-radius: 8px; }
     button { position: absolute; top: -4px; right: -4px; width: 25px; height: 25px; border: 1px solid #d9ded5; border-radius: 50%; background: #fff; color: #12372a; cursor: pointer; }
+    .image-open { position: static; display: block; width: 76px; height: 76px; padding: 0; border: 0; border-radius: 8px; overflow: hidden; }
+    .image-open:focus-visible { outline: 2px solid #b98131; outline-offset: 2px; }
     .error { color: #a13321; font-size: 12px; } .missing { font-size: 11px; color: #687664; }
   `,
 })
@@ -62,6 +69,8 @@ export class ProjectImagesComponent implements OnDestroy {
   readonly loading = signal(true);
   readonly error = signal('');
   readonly visible = signal<(LocalProjectImage & { url?: string })[]>([]);
+  readonly gallery = signal<ProjectImageSlide[]>([]);
+  readonly galleryIndex = signal(0);
   readonly pendingMessageId = signal<string | undefined>(undefined);
   private images: LocalProjectImage[] = [];
   private readonly userId = signal<string | null>(null);
@@ -151,7 +160,19 @@ export class ProjectImagesComponent implements OnDestroy {
     });
     await this.reload(user, project);
   }
-  private release(): void { for (const image of this.visible()) if (image.url) URL.revokeObjectURL(image.url); this.visible.set([]); }
+  openGallery(id: string): void {
+    this.closeGallery();
+    const images = this.images.filter(image => image.blob);
+    const index = images.findIndex(image => image.id === id);
+    if (index < 0) return;
+    this.galleryIndex.set(index);
+    this.gallery.set(images.map(image => ({ id: image.id, url: URL.createObjectURL(image.blob!) })));
+  }
+  closeGallery(): void {
+    for (const image of this.gallery()) URL.revokeObjectURL(image.url);
+    this.gallery.set([]);
+  }
+  private release(): void { this.closeGallery(); for (const image of this.visible()) if (image.url) URL.revokeObjectURL(image.url); this.visible.set([]); }
   discardDraft(): void {
     const user = this.userId(), project = this.activeProject;
     if (user && project.startsWith('draft-')) void this.storage.deleteProject(user, project).catch(error => this.showError(error));

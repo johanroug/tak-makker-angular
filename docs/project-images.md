@@ -1,6 +1,6 @@
 # Projektbilleder
 
-Billedfunktionen kræver eksisterende faktureringsstatus `active`, både i brugerfladen og i `generate-offer`. Status `trial`, `exhausted`, `free` og `internal` giver ikke billedadgang. Der ændres ingen tabeller, migrationsfiler, Stripe-regler eller betalingsgrænser.
+Billedfunktionen kræver eksisterende faktureringsstatus `active` eller `internal`, både i brugerfladen og i `generate-offer`. Status `trial`, `exhausted` og `free` giver ikke billedadgang. Der ændres ingen tabeller, migrationsfiler, Stripe-regler eller betalingsgrænser.
 
 ## Lagring og grænser
 
@@ -15,7 +15,7 @@ Billedfunktionen kræver eksisterende faktureringsstatus `active`, både i bruge
 
 Frontend sender `{ projectId, messageId, images: [{ id, dataUrl }] }` via det eksisterende autentificerede Supabase-kald. Data-URL er kun et midlertidigt transportformat; den gemmes ikke i Supabase, beskedhistorik eller localStorage.
 
-Edge Function begrænser den samlede request til 4.300.000 bytes under streaming og validerer antal (1–3), individuelle størrelser, ID'er, JPEG/WebP-signaturer og billeddimensioner. Eksterne billed-URL'er accepteres ikke. Før OpenAI kontrolleres bruger, appadgang, projekt, virksomhedsmedlemskab, aktivt abonnement og at besked-ID tilhører en brugerbesked i projektet. Serveren håndhæver antal pr. request; livstidstælleren ligger alene lokalt og er ikke en sikker serverkvote.
+Edge Function begrænser den samlede request til 4.300.000 bytes under streaming og validerer antal (1–3), individuelle størrelser, ID'er, JPEG/WebP-signaturer og billeddimensioner. Eksterne billed-URL'er accepteres ikke. Før OpenAI kontrolleres bruger, appadgang, projekt, virksomhedsmedlemskab, aktivt abonnement eller intern adgang og at besked-ID tilhører en brugerbesked i projektet. Serveren håndhæver antal pr. request; livstidstælleren ligger alene lokalt og er ikke en sikker serverkvote.
 
 Billeder indsættes kun i den udvalgte besked i det aktuelle Responses-kald. Historikindlæsning analyserer aldrig billeder. Fejl bevarer billederne og beskedreferencen til et nyt forsøg uden en ny brugerbesked. Et gennemført svar kvitterer med `analyzedImageIds`, så en ældre backend ikke stiltiende kan ignorere billedinput. Efter vellykket lagring markeres billederne analyseret og vedhæftes ikke ved almindelige efterfølgende kald.
 

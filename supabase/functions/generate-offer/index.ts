@@ -109,7 +109,7 @@ Deno.serve(async (request) => {
 
     if (imageInput) {
       const { data: usage, error: usageError } = await supabase.rpc('get_company_billing', { p_company_id: project.company_id });
-      if (usageError || usage?.status !== 'active' || usage?.companyId !== project.company_id) {
+      if (usageError || !['active', 'internal'].includes(usage?.status) || usage?.companyId !== project.company_id) {
         return Response.json({ code: 'IMAGE_SUBSCRIPTION_REQUIRED', error: 'Billedanalyse kræver aktivt abonnement.' }, { status: 403, headers: corsHeaders });
       }
     }

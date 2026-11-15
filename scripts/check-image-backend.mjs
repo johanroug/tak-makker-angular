@@ -53,9 +53,10 @@ runInNewContext(compiled, {
     : new Proxy({}, { get: () => () => '' }),
 });
 const call = (body = { projectId: 'project', messageId, images: [{ id: imageId, dataUrl }] }, authorization = 'Bearer test') => handler(new Request('https://woxioycjdjucxqiyqcyr.supabase.co/functions/v1/generate-offer', { method: 'POST', headers: { Authorization: authorization }, body: JSON.stringify(body) }));
-for (const status of ['trial', 'exhausted', 'free', 'internal']) {
+for (const status of ['trial', 'exhausted', 'free']) {
   reset({ status }); assert.equal((await call()).status, 403, `Reject ${status}`); assert.equal(providerCalls.length, 0);
 }
+reset({ status: 'internal' }); assert.equal((await call()).status, 200, 'Internal access includes images'); assert.equal(providerCalls.length, 1);
 reset({ authenticated: false }); assert.equal((await call()).status, 401); assert.equal(providerCalls.length, 0);
 reset({ membership: false }); assert.equal((await call()).status, 403); assert.equal(providerCalls.length, 0);
 reset({ exists: false }); assert.equal((await call()).status, 404); assert.equal(providerCalls.length, 0);

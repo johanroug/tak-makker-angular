@@ -84,7 +84,7 @@ export class ProjectImagesComponent implements OnDestroy {
   }
   allowed(): boolean {
     const usage = this.billing.usage();
-    return usage?.status === 'active' && (!this.companyId() || usage.companyId === this.companyId());
+    return !!usage && ['active', 'internal'].includes(usage.status) && (!this.companyId() || usage.companyId === this.companyId());
   }
   working(): boolean { return this.busy() || this.loading(); }
   canChoose(): boolean { return typeof indexedDB !== 'undefined' && this.allowed() && !!this.userId() && !this.disabled() && !this.working() && this.uploaded() < 3 && !this.pendingMessageId(); }

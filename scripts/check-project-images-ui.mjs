@@ -9,7 +9,7 @@ const root = path.resolve('dist/hovedet-paa-soemmet-angular/browser');
 const userId = '00000000-0000-4000-8000-000000000001';
 const companyId = '00000000-0000-4000-8000-000000000002';
 const projectId = '00000000-0000-4000-8000-000000000003';
-const usage = { companyId, status: 'active', trialLimit: 10, trialUsed: 0, trialPending: 0, trialRemaining: 10, canGenerate: true, paidLimit: 200, paidUsed: 0, paidPending: 0, paidRemaining: 200 };
+const usage = { companyId, status: process.env.IMAGE_TEST_STATUS || 'active', trialLimit: 10, trialUsed: 0, trialPending: 0, trialRemaining: 10, canGenerate: true, paidLimit: 200, paidUsed: 0, paidPending: 0, paidRemaining: 200 };
 const project = { id: projectId, company_id: companyId, project_number: '2026-0001', title: 'Badeværelse', title_source: 'user', hourly_rate: 450, customer_name: '', customer_address: '', description: '', created_at: new Date().toISOString(), company: { name: 'Testfirma', cvr: '12345678', address: 'Testvej', phone: '12345678', email: 'test@example.com' }, workItems: [], materials: [], messages: [] };
 const requests = [], errors = [], writes = [];
 let failNext = false;

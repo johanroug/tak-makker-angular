@@ -177,7 +177,7 @@ export class NewProjectDialog implements OnDestroy {
         const images = this.savedMessageId && this.photos()?.hasPending() ? await this.photos()?.attach(projectId, this.savedMessageId) : undefined;
         this.response ??= await this.aiService.generateOffer(projectId, images);
         if (this.destroyed) return;
-        await this.projectService.saveAiResponse(projectId, this.response, !!images);
+        await this.projectService.saveAiResponse(projectId, this.response);
         const questions = [
           ...(images ? (this.response.imageObservations ?? []).map(fact => `Synligt på billederne: ${fact}`) : []),
           ...this.response.questions.map((question, index) => `${index + 1}. ${question}`),

@@ -876,7 +876,7 @@ export class ProjectSidebar implements OnDestroy {
       if (!this.destroyed && this.data().project.id === projectId) this.closeComposer();
       const aiResponse = await this.aiService.generateOffer(projectId, images);
 
-      await this.projectService.saveAiResponse(projectId, aiResponse, !!images);
+      await this.projectService.saveAiResponse(projectId, aiResponse);
       await this.photos()?.analyzed(projectId, images);
 
       const assistantMessage = [

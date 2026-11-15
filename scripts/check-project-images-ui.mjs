@@ -121,7 +121,7 @@ try {
   await sidebar.locator('.chat-messages img').first().waitFor();
   assert.equal(requests.length, 1); assert.equal(requests[0].images.length, 1);
   assert.ok(project.messages.some(message => message.content.includes('Synligt på billederne')));
-  assert.equal(project.workItems[0].status, 'suggested', 'Images never auto-accept tasks');
+  assert.equal(project.workItems[0].status, 'accepted', 'Image tasks are auto-accepted like text tasks');
   await compose();
   failNext = true;
   await sidebar.locator('input[type=file]').setInputFiles([file, file]);
@@ -217,7 +217,7 @@ try {
   assert.ok(await sidebar.locator('.chat-messages img').count() > 0, 'Expired subscriber can still view existing images');
   assert.equal(requests.length, 4);
   assert.deepEqual(errors, []);
-  console.log('Passed: new/existing project upload, photo observations, suggested status, AI failure/retry without duplicate messages, no images on follow-ups/reload, persistent quota after deletion, mobile rendering. All Supabase calls mocked.');
+  console.log('Passed: new/existing project upload, photo observations, auto-accepted status, AI failure/retry without duplicate messages, no images on follow-ups/reload, persistent quota after deletion, mobile rendering. All Supabase calls mocked.');
 } catch (error) {
   const page = browser.contexts()[0]?.pages()[0];
   if (page) { console.error('State:', await page.evaluate(() => { const c = window.ng?.getComponent(document.querySelector('app-project-sidebar')); const p = c?.photos(); return { value: c?.messageControl.value, sending: c?.isSending(), speech: c?.speechBusy(), busy: p?.busy(), loading: p?.loading(), pending: p?.pendingMessageId(), usage: c?.billing.usage()?.status }; }).catch(() => null)); console.error('Failure:', error.message, 'Page:', page.url(), 'Errors:', errors); console.error((await page.locator('body').innerText({ timeout: 1000 }).catch(() => '')).slice(0, 1600)); await page.screenshot({ path: 'tmp/project-images-test-error.png' }); }

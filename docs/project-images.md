@@ -21,7 +21,7 @@ Edge Function begrænser den samlede request til 4.300.000 bytes under streaming
 
 Billeder indsættes kun i den udvalgte besked i det aktuelle Responses-kald. Historikindlæsning analyserer aldrig billeder. Fejl bevarer billederne og beskedreferencen til et nyt forsøg uden en ny brugerbesked. Et gennemført svar kvitterer med `analyzedImageIds`, så en ældre backend ikke stiltiende kan ignorere billedinput. Efter vellykket lagring markeres billederne analyseret og vedhæftes ikke ved almindelige efterfølgende kald.
 
-Synlige observationer returneres som `imageObservations` og gemmes som almindelig assistenttekst, så senere tekstkald kan bruge dem. Feltet er valgfrit i frontend for kompatibilitet med ældre svar. Billedbaserede nye opgaver og materialer gemmes med `suggested`, uanset AI'ens foreslåede status. Eksisterende accepterede/afviste statusser bevares. Billeder indgår ikke i tilbuds- eller PDF-data.
+Synlige observationer returneres som `imageObservations` og gemmes som almindelig assistenttekst, så senere tekstkald kan bruge dem. Feltet er valgfrit i frontend for kompatibilitet med ældre svar. Billedbaserede nye opgaver og materialer gemmes automatisk med `accepted`, ligesom ved tekstbeskeder, uanset AI'ens foreslåede status. Eksisterende accepterede/afviste statusser bevares. Billeder indgår ikke i tilbuds- eller PDF-data.
 
 Ingen billedpayloads skrives til applikationslogs; providerfejl logges uden fejlobjekt, da det kan indeholde request-data. Funktionen bruger ingen Storage- eller Files API og gemmer ikke billeder på serveren.
 

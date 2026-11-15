@@ -8,10 +8,19 @@ import { ImageAnalysisInput, LocalProjectImage, ProjectImagesService } from '../
   template: `
     @if (!messageId()) {
       <input #files type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden (change)="selected($event)" />
-      <p class="note">{{ uploaded() }} af 3 billeder brugt i projektets levetid. Sletning frigiver ikke uploads.</p>
-      <p class="note">Billeder gemmes kun i denne browser og synkroniseres ikke mellem enheder.</p>
-      <p class="note">Ved analyse sendes billeder via Supabase til OpenAI. Personer med adgang til browserprofilen kan få adgang til billederne.</p>
-      @if (!allowed()) { <p class="note">Billedupload og analyse kræver aktivt abonnement.</p> }
+      <details class="image-info">
+        <summary title="Information om projektbilleder">
+          <span class="image-count">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="15.5" cy="8.5" r="2"/><path d="m3 17 5-6 8 10"/></svg>
+            {{ uploaded() }}/3 billeder brugt
+          </span>
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" role="img" aria-label="Information om projektbilleder"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg>
+        </summary>
+        <p class="note">Maks. 3 billeder i projektets levetid i denne browser. Sletning frigiver ikke uploads.</p>
+        <p class="note">Billeder gemmes kun i denne browser og synkroniseres ikke mellem enheder.</p>
+        <p class="note">Ved analyse sendes billeder via Supabase til OpenAI. Personer med adgang til browserprofilen kan få adgang til billederne.</p>
+        <p class="note">Billedupload og analyse kræver aktivt abonnement.</p>
+      </details>
       @if (pendingMessageId()) { <p class="note">Billeder afventer analyse. Send igen for at prøve den gemte besked; billederne bevares ved fejl.</p> }
     }
     <div class="images">
@@ -27,6 +36,13 @@ import { ImageAnalysisInput, LocalProjectImage, ProjectImagesService } from '../
   `,
   styles: `
     :host { display: block; } .note { margin: 4px 0; font-size: 11px; color: #687664; }
+    .image-info { color: #687664; font-size: 12px; }
+    summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; cursor: pointer; list-style: none; border-radius: 6px; }
+    summary::-webkit-details-marker { display: none; }
+    summary:focus-visible { outline: 2px solid #b98131; outline-offset: 2px; }
+    .image-count { display: inline-flex; align-items: center; gap: 8px; }
+    summary svg { width: 18px; height: 18px; flex: none; }
+    .info-icon { margin-right: 4px; }
     .images { display: flex; gap: 8px; flex-wrap: wrap; } figure { position: relative; margin: 6px 0; }
     img { width: 76px; height: 76px; object-fit: cover; border-radius: 8px; }
     button { position: absolute; top: -4px; right: -4px; width: 25px; height: 25px; border: 1px solid #d9ded5; border-radius: 50%; background: #fff; color: #12372a; cursor: pointer; }

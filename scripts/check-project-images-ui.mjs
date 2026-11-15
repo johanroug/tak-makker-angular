@@ -78,7 +78,7 @@ try {
   });
   const file = { name: 'iphone.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(jpeg, 'base64') };
   await modal.locator('input[type=file]').setInputFiles(file);
-  await modal.getByText('1 af 3 billeder brugt', { exact: false }).waitFor();
+  await modal.getByText('1/3 billeder brugt', { exact: false }).waitFor();
   await modal.locator('textarea').fill('Renover dette badeværelse');
   await modal.getByRole('button', { name: 'Fortsæt', exact: false }).click();
   await page.waitForURL(`**/projects/${projectId}?editDetails=1`);
@@ -93,7 +93,7 @@ try {
   assert.equal(project.workItems[0].status, 'suggested', 'Images never auto-accept tasks');
   failNext = true;
   await sidebar.locator('input[type=file]').setInputFiles([file, file]);
-  await sidebar.getByText('3 af 3 billeder brugt', { exact: false }).waitFor();
+  await sidebar.getByText('3/3 billeder brugt', { exact: false }).waitFor();
   await sidebar.locator('textarea').fill('Se også disse vinkler');
   await sidebar.getByRole('button', { name: 'Send besked' }).click();
   await sidebar.locator('.send-error').waitFor();
@@ -112,7 +112,7 @@ try {
   assert.equal(requests.length, 4, 'Reload never analyzes');
   await sidebar.getByRole('button', { name: 'Slet billede' }).first().click();
   await sidebar.getByText('Billede er fjernet eller ikke tilgængeligt').first().waitFor();
-  await sidebar.getByText('3 af 3 billeder brugt', { exact: false }).waitFor();
+  await sidebar.getByText('3/3 billeder brugt', { exact: false }).waitFor();
   assert.equal(await sidebar.getByRole('button', { name: 'Tilføj projektbilleder' }).isDisabled(), true);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole('button', { name: 'Samtale', exact: true }).click();

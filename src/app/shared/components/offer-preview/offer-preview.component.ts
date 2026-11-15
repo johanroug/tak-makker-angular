@@ -247,7 +247,8 @@ export class OfferPreview {
   }
 
   get unreviewedCount(): number {
-    return [...this.data().workItems, ...this.data().materials].filter(item => !item.status || item.status === 'suggested').length;
+    const items = this.selectedTab() === 'materials' ? this.data().materials : this.data().workItems;
+    return items.filter(item => !item.status || item.status === 'suggested').length;
   }
 
   get laborTotal(): number {

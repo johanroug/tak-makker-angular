@@ -6,6 +6,11 @@
       <button id="materials-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() === 'materials'" aria-controls="materials-panel" [attr.tabindex]="selectedTab() === 'materials' ? 0 : -1" (click)="selectSection('materials')" (keydown.arrowleft)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" (keydown.arrowright)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" #materialsTab><app-workspace-icon name="materials" />Materialer ({{ data().materials.length }})</button>
     </div>
   <div class="draft-columns" (click)="selectInputValue($event)">
+    @if (unreviewedCount) {
+      <p class="draft-pending-note" role="status">
+        {{ unreviewedCount }} forslag er hverken godkendt eller afvist og er ikke med i prisen.
+      </p>
+    }
     <section
       class="draft-section tasks-column"
       id="tasks-panel" role="tabpanel" aria-labelledby="tasks-tab"
@@ -73,7 +78,7 @@
                     textSaveLabel('work', item.id, 'hours')
                   }}</span></label
                 >
-                <button type="button" class="draft-rate desktop-work-rate" aria-label="Ret projektets timepris" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')"
+                <button type="button" class="draft-rate desktop-work-rate" [attr.aria-label]="data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')"
                   ><span class="field-caption">Kr./time</span
                   >{{
                     data().project.hourly_rate === null
@@ -81,7 +86,7 @@
                       : (data().project.hourly_rate | number: '1.0-2' : 'da')
                   }}</button
                 >
-                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" aria-label="Ret projektets timepris" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? 'Angiv pris' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}</button></div>
+                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" [attr.aria-label]="data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? '—' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}</button></div>
                 </div>
                 <strong class="draft-line-total"
                   ><span class="field-caption"><span class="desktop-work-caption">Beløb</span><span class="mobile-work-caption">Samlet pris</span></span>
@@ -90,6 +95,9 @@
                   <span class="mobile-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
+              @if (data().project.hourly_rate === null) {
+                <button type="button" class="missing-hourly-rate-link" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">Timepris mangler · Angiv her</button>
+              }
             </article>
           }
         </section>
@@ -229,11 +237,6 @@
       </div>
     </section>
   </div>
-  @if (unreviewedCount) {
-    <p class="draft-pending-note" role="status">
-      {{ unreviewedCount }} forslag afventer godkendelse og er ikke med i prisen.
-    </p>
-  }
   </div>
   <aside class="quotation-summary" aria-label="Tilbudsoverblik" tabindex="-1">
     <header class="quotation-summary-heading"><h2><app-workspace-icon name="offers" />Tilbud</h2><span>{{ missingRequirements.length ? 'Udkast' : 'Klar' }}</span></header>

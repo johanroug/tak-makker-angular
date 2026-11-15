@@ -55,6 +55,9 @@ export class ProjectSidebar implements OnDestroy {
     const host = this.host.nativeElement;
     const viewport = window.visualViewport;
     const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+    // Mobile keyboards resize/pan the visual viewport without changing the layout viewport.
+    host.style.setProperty('--composer-viewport-height', `${viewport?.height ?? window.innerHeight}px`);
+    host.style.setProperty('--composer-keyboard-bottom', `${Math.max(0, window.innerHeight - bottom)}px`);
     const top = Math.max(20, (host.querySelector('.conversation-rail') ?? host).getBoundingClientRect().top);
     const navigation = window.matchMedia('(max-width: 900px)').matches
       ? document.querySelector('.mobile-workspace-nav')?.getBoundingClientRect().height ?? 0 : 0;
@@ -71,6 +74,7 @@ export class ProjectSidebar implements OnDestroy {
       dialog.style.setProperty('--composer-bottom', `${Math.max(16, window.innerHeight - bounds.bottom + 8)}px`);
     }
     this.photos()?.imagesExpanded.set(false);
+    this.fitConversationRail();
     dialog.showModal();
     this.composerOpen.set(true);
     this.messageInput()?.nativeElement.focus({ preventScroll: true });
@@ -309,6 +313,7 @@ export class ProjectSidebar implements OnDestroy {
       window.addEventListener('scroll', schedule, { passive: true });
       window.addEventListener('resize', schedule);
       window.visualViewport?.addEventListener('resize', schedule);
+      window.visualViewport?.addEventListener('scroll', schedule);
       measure();
       destroyRef.onDestroy(() => {
         observer.disconnect();
@@ -316,6 +321,7 @@ export class ProjectSidebar implements OnDestroy {
         window.removeEventListener('scroll', schedule);
         window.removeEventListener('resize', schedule);
         window.visualViewport?.removeEventListener('resize', schedule);
+        window.visualViewport?.removeEventListener('scroll', schedule);
       });
     });
     effect(() => {

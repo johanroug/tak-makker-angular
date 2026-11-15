@@ -84,6 +84,9 @@ export class ProjectDetail implements OnInit, OnDestroy {
       const revealField = () => {
         frame = 0;
         const field = document.activeElement;
+        // The message dialog follows the visual viewport itself; scrolling its textarea
+        // would hide the image controls and send button below it.
+        if (field instanceof HTMLElement && field.closest('.composer-dialog')) return;
         if (!mobileLayout.matches || viewport.scale !== 1 || !(field instanceof HTMLElement) ||
           !host.contains(field) || !field.matches('input:not([readonly]), textarea:not([readonly])')) {
           viewportWidth = viewport.width;

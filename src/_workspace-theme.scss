@@ -699,7 +699,7 @@ body {
     border-radius: 9px;
   }
   .draft-pending-note {
-    margin: 0;
+    margin: 0 0 12px;
     padding: 10px 14px;
     background: #fff6e7;
     border: 1px solid #ecdfc7;
@@ -1381,4 +1381,24 @@ app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy t
     .offer-footer { position: static; }
     .finalize-actions { grid-template-columns: minmax(0, 1fr) auto; }
   }
+}
+
+.project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .draft-row button.missing-hourly-rate-link {
+  color: #9a3412;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: normal;
+  display: block;
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }

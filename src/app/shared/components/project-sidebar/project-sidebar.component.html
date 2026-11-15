@@ -4,15 +4,7 @@
       <span class="conversation-eyebrow">TILBUDSASSISTENT</span>
       <h2>Samtale</h2>
     </div>
-    <button
-      type="button"
-      class="conversation-toggle"
-      aria-controls="conversation-body"
-      [attr.aria-expanded]="chatOpen()"
-      (click)="chatOpen.set(!chatOpen())"
-    >
-      {{ chatOpen() ? 'Skjul' : 'Åbn samtale' }}
-    </button>
+    <app-billing-panel class="conversation-usage" [compact]="true" [composerLayout]="true" [companyId]="data().project.company_id" />
   </header>
   <div id="conversation-body" class="conversation-body" [class.is-open]="chatOpen()">
     <div #chatMessages class="chat-messages" aria-label="Beskeder">
@@ -39,11 +31,15 @@
     <app-ai-feedback
       [isWorking]="isSending()"
     />
+    <button type="button" class="new-message-button" aria-label="Skriv ny besked" aria-haspopup="dialog" [attr.aria-expanded]="composerOpen()" (click)="openComposer()">
+      <app-workspace-icon name="chat" />
+    </button>
+    <dialog #composerDialog class="composer-dialog" aria-labelledby="composer-title" (cancel)="$event.preventDefault(); closeComposer()" (click)="composerBackdropClick($event)">
+      <header class="composer-heading"><h2 id="composer-title">Ny besked</h2><button type="button" class="composer-close" aria-label="Luk beskedpanel" (click)="closeComposer()">×</button></header>
     <form class="chat-form" (submit)="$event.preventDefault(); sendMessage()">
-      <app-billing-panel [compact]="true" [companyId]="data().project.company_id" />
       <label class="sr-only" for="project-message">Din besked</label>
-      <app-speech-input [showCamera]="true" [cameraDisabled]="!photos()?.canChoose()" [cameraSubscriber]="photos()?.allowed() ?? false" (imagesRequested)="photos()?.choose()" [disabled]="isSending() || billing.transcriptionLimitReached(data().project.company_id)" [context]="data().project.id" [companyId]="data().project.company_id" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
-        id="project-message"
+      <app-speech-input [minimalControls]="true" [showCamera]="true" [cameraDisabled]="!photos()?.canChoose()" [cameraSubscriber]="photos()?.allowed() ?? false" (imagesRequested)="photos()?.choose()" [disabled]="isSending() || billing.transcriptionLimitReached(data().project.company_id)" [context]="data().project.id" [companyId]="data().project.company_id" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
+        #messageInput id="project-message"
         [formControl]="messageControl"
         [readOnly]="isSending()"
         [placeholder]="data().messages.length ? 'Kom med flere input…' : 'Beskriv dit projekt…'"
@@ -57,6 +53,7 @@
         {{ isSending() ? 'Arbejder på dit tilbud…' : 'Send besked' }} <span aria-hidden="true">↗</span>
       </button>
     </form>
+    </dialog>
   </div>
 </aside>
 <dialog #historyDialog class="history-dialog" aria-label="Tilbudshistorik">

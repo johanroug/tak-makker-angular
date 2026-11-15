@@ -10,20 +10,32 @@ export interface LocalProjectImage {
   blob?: Blob;
   messageId?: string;
   analyzed: boolean;
+  sentToAi?: boolean;
 }
 export interface ProjectImages {
   key: string;
   userId: string;
   projectId: string;
-  uploaded: number;
+  submitted: number;
+  quotaVersion: 2;
   images: LocalProjectImage[];
 }
 
-// One atomic record per user/project keeps the lifetime counter across image deletions.
+// One atomic record keeps local capacity and the lifetime AI quota separate.
 @Injectable({ providedIn: 'root' })
 export class ProjectImagesService {
   readonly revision = signal(0);
   private database?: Promise<IDBDatabase>;
+  private normalize(value: ProjectImages | undefined, userId: string, projectId: string): ProjectImages {
+    const record: ProjectImages = value ?? { key: `${userId}:${projectId}`, userId, projectId, submitted: 0, quotaVersion: 2, images: [] };
+    if (record.quotaVersion !== 2) {
+      // Older uploads only consumed AI quota if they were attached to a message.
+      for (const image of record.images) image.sentToAi = !!image.messageId;
+      record.submitted = record.images.filter(image => image.sentToAi).length;
+      record.quotaVersion = 2;
+    }
+    return record;
+  }
   private open(): Promise<IDBDatabase> {
     return this.database ??= new Promise((resolve, reject) => {
       const request = indexedDB.open('hps-project-images', 1);
@@ -37,7 +49,7 @@ export class ProjectImagesService {
     const db = await this.open();
     return new Promise((resolve, reject) => {
       const request = db.transaction('projects').objectStore('projects').get(`${userId}:${projectId}`);
-      request.onsuccess = () => resolve(request.result ?? { key: `${userId}:${projectId}`, userId, projectId, uploaded: 0, images: [] });
+      request.onsuccess = () => resolve(this.normalize(request.result, userId, projectId));
       request.onerror = () => reject(request.error);
     });
   }
@@ -50,7 +62,7 @@ export class ProjectImagesService {
       let failure: unknown;
       request.onsuccess = () => {
         try {
-          const record: ProjectImages = request.result ?? { key: `${userId}:${projectId}`, userId, projectId, uploaded: 0, images: [] };
+          const record = this.normalize(request.result, userId, projectId);
           change(record);
           store.put(record);
         } catch (error) { failure = error; tx.abort(); }
@@ -63,15 +75,26 @@ export class ProjectImagesService {
     if (!files.length || files.length > 3) throw new Error('Vælg højst 3 billeder i alt.');
     const images = await Promise.all(files.map(file => this.optimize(file)));
     await this.update(userId, projectId, record => {
-      if (record.uploaded + images.length > 3) throw new Error('Projektet kan højst få 3 billeder i hele sin levetid. Sletning frigiver ikke nye uploads.');
-      record.uploaded += images.length;
+      if (record.images.filter(image => image.blob).length + images.length > 3) throw new Error('Projektet kan højst have 3 lokale billeder ad gangen. Slet et billede, før du vælger et nyt.');
       record.images.push(...images);
     });
   }
   async remove(userId: string, projectId: string, id: string): Promise<void> {
     await this.update(userId, projectId, record => {
       const image = record.images.find(image => image.id === id);
-      if (image) { delete image.blob; image.analyzed = true; }
+      if (image && !image.messageId && !image.sentToAi) record.images = record.images.filter(item => item.id !== id);
+      else if (image) { delete image.blob; image.analyzed = true; }
+    });
+  }
+  async reserveAnalysis(userId: string, projectId: string, messageId: string, ids: string[]): Promise<void> {
+    await this.update(userId, projectId, record => {
+      if (!ids.length || ids.length > 3 || new Set(ids).size !== ids.length) throw new Error('Vælg højst 3 billeder til analyse.');
+      const images = ids.map(id => record.images.find(image => image.id === id));
+      if (images.some(image => !image?.blob || image.messageId !== messageId || image.analyzed)) throw new Error('Billederne er ændret. Kontrollér beskeden og prøv igen.');
+      const fresh = images.filter(image => !image!.sentToAi);
+      if (record.submitted + fresh.length > 3) throw new Error(`Projektet kan højst sende 3 billeder til AI i alt. Der er ${3 - record.submitted} tilbage. Fjern de nye billeder for at fortsætte uden billedanalyse.`);
+      record.submitted += fresh.length;
+      for (const image of fresh) image!.sentToAi = true;
     });
   }
   async deleteProject(userId: string, projectId: string): Promise<void> {

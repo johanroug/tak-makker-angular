@@ -29,25 +29,60 @@ try {
     const file = await photo();
     await service.add('alice', 'one', [file, file]);
     let record = await service.read('alice', 'one');
-    check(record.uploaded === 2 && record.images[0].blob instanceof Blob, 'Blob storage/count');
+    check(record.submitted === 0 && record.images.length === 2 && record.images[0].blob instanceof Blob, 'Local selection consumes no AI quota');
     const bitmap = await createImageBitmap(record.images[0].blob);
     check(bitmap.width === 1600 && bitmap.height === 1200, 'Aspect ratio and dimension limit'); bitmap.close();
     check(record.images[0].type === 'image/webp', 'WebP encoding');
-    check((await service.read('bob', 'one')).uploaded === 0, 'Account isolation');
+    check((await service.read('bob', 'one')).submitted === 0, 'Account isolation');
     check((await service.read('alice', 'two')).images.length === 0, 'Project isolation');
     await service.remove('alice', 'one', record.images[0].id);
     record = await service.read('alice', 'one');
-    check(record.uploaded === 2 && !record.images[0].blob, 'Deletion must retain lifetime quota, remove binary');
-    const concurrent = await Promise.allSettled([service.add('alice', 'one', [file]), service.add('alice', 'one', [file])]);
+    check(record.submitted === 0 && record.images.length === 1, 'Unsent deletion removes data without consuming quota');
+    for (let index = 0; index < 5; index++) {
+      await service.add('alice', 'one', [file]);
+      await service.remove('alice', 'one', (await service.read('alice', 'one')).images.at(-1).id);
+    }
+    check((await service.read('alice', 'one')).submitted === 0, 'Unlimited local replacements');
+    const concurrent = await Promise.allSettled([service.add('alice', 'one', [file, file]), service.add('alice', 'one', [file, file])]);
     check(concurrent.filter(item => item.status === 'fulfilled').length === 1, 'Concurrent uploads cannot exceed quota');
-    check((await service.read('alice', 'one')).uploaded === 3, 'Lifetime limit');
+    check((await service.read('alice', 'one')).images.filter(image => image.blob).length === 3, 'At most three local images');
+    await service.update('alice', 'one', record => { for (const image of record.images) image.messageId = 'message-one'; });
+    let ids = (await service.read('alice', 'one')).images.map(image => image.id);
+    check((await service.read('alice', 'one')).submitted === 0, 'Preparing a message does not consume AI quota');
+    await service.reserveAnalysis('alice', 'one', 'message-one', ids.slice(0, 1));
+    check((await service.read('alice', 'one')).submitted === 1, 'Only submitted images count');
+    await service.reserveAnalysis('alice', 'one', 'message-one', ids.slice(0, 1));
+    check((await service.read('alice', 'one')).submitted === 1, 'Failed-call retry is idempotent');
+    await service.reserveAnalysis('alice', 'one', 'message-one', ids);
+    check((await service.read('alice', 'one')).submitted === 3, 'Sending two more consumes remaining quota');
+    await service.remove('alice', 'one', ids[0]);
+    await service.add('alice', 'one', [file]);
+    await service.update('alice', 'one', record => { record.images.at(-1).messageId = 'message-two'; });
+    ids = (await service.read('alice', 'one')).images.map(image => image.id);
+    const rejected = await Promise.allSettled([service.reserveAnalysis('alice', 'one', 'message-two', ids.slice(-1))]);
+    check(rejected[0].status === 'rejected' && (await service.read('alice', 'one')).submitted === 3, 'Deleted sent images do not release AI quota; new local images remain allowed');
+    await service.add('alice', 'race', [file, file, file]);
+    await service.update('alice', 'race', record => { for (const image of record.images) image.messageId = 'race-message'; });
+    const raceIds = (await service.read('alice', 'race')).images.map(image => image.id);
+    await Promise.all([service.reserveAnalysis('alice', 'race', 'race-message', raceIds), service.reserveAnalysis('alice', 'race', 'race-message', raceIds)]);
+    check((await service.read('alice', 'race')).submitted === 3, 'Concurrent retries never double count');
     await service.add('alice', 'draft', [file]);
     await service.move('alice', 'draft', 'created');
-    check((await service.read('alice', 'created')).uploaded === 1 && (await service.read('alice', 'draft')).uploaded === 0, 'Draft transfer');
+    check((await service.read('alice', 'created')).images.length === 1 && (await service.read('alice', 'draft')).images.length === 0, 'Draft transfer');
     await service.update('alice', 'created', record => record.images[0].messageId = 'message-one');
     check((await service.read('alice', 'created')).images[0].messageId === 'message-one', 'Message association');
     const invalid = await Promise.allSettled([service.add('alice', 'bad', [new File(['not an image'], 'bad.jpg', { type: 'image/jpeg' })])]);
-    check(invalid[0].status === 'rejected' && (await service.read('alice', 'bad')).uploaded === 0, 'Invalid files do not consume quota');
+    check(invalid[0].status === 'rejected' && (await service.read('alice', 'bad')).submitted === 0, 'Invalid files do not consume quota');
+    await service.update('alice', 'legacy', record => {
+      delete record.quotaVersion; record.uploaded = 3;
+      record.images = [
+        { id: 'unsent', analyzed: false, blob: file },
+        { id: 'deleted-unsent', analyzed: true },
+        { id: 'previously-sent', analyzed: true, messageId: 'old-message' },
+      ];
+    });
+    const legacy = await service.read('alice', 'legacy');
+    check(legacy.submitted === 1 && !legacy.images[0].sentToAi && legacy.images[2].sentToAi, 'Legacy records only charge message-associated images');
     await service.deleteProject('alice', 'created');
     check((await service.read('alice', 'created')).images.length === 0, 'Project cleanup');
     const blob = (await service.read('alice', 'one')).images.find(image => image.blob).blob;
@@ -55,7 +90,7 @@ try {
   });
   await page.reload();
   await page.addScriptTag({ content: `${compiled}\nwindow.imageService = new ProjectImagesService();` });
-  assert.equal(await page.evaluate(async () => (await window.imageService.read('alice', 'one')).uploaded), 3, 'Persistence after reload');
+  assert.equal(await page.evaluate(async () => (await window.imageService.read('alice', 'one')).submitted), 3, 'Persistence after reload');
 
   const messageId = '11111111-1111-4111-8111-111111111111';
   const image = { id: '22222222-2222-4222-8222-222222222222', dataUrl: result.dataUrl };

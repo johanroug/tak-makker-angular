@@ -3,7 +3,7 @@ import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
 import { WorkspaceIcon } from '../workspace-icon.component';
 import { SpeechInput } from '../speech-input/speech-input.component';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { afterNextRender, Component, computed, DestroyRef, effect, ElementRef, inject, Injector, input, output, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, ElementRef, inject, Injector, input, output, signal, untracked, viewChild } from '@angular/core';
 import type { WritableSignal } from '@angular/core';
 import type { OnDestroy } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -45,6 +45,46 @@ export class ProjectSidebar implements OnDestroy {
   readonly messageAdded = output<void>();
   readonly sectionRequested = output<'tasks' | 'materials'>();
   readonly chatOpen = signal(false);
+  readonly composerOpen = signal(false);
+  private readonly composerDialog = viewChild<ElementRef<HTMLDialogElement>>('composerDialog');
+  private readonly messageInput = viewChild<ElementRef<HTMLTextAreaElement>>('messageInput');
+  private readonly speechInput = viewChild(SpeechInput);
+  private composerProject?: string;
+
+  private fitConversationRail(): void {
+    const host = this.host.nativeElement;
+    const viewport = window.visualViewport;
+    const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+    const top = Math.max(20, (host.querySelector('.conversation-rail') ?? host).getBoundingClientRect().top);
+    const navigation = window.matchMedia('(max-width: 900px)').matches
+      ? document.querySelector('.mobile-workspace-nav')?.getBoundingClientRect().height ?? 0 : 0;
+    host.style.setProperty('--conversation-height', `${Math.max(0, bottom - top - navigation - 20)}px`);
+  }
+
+  openComposer(): void {
+    const dialog = this.composerDialog()?.nativeElement;
+    if (!dialog || dialog.open) return;
+    const bounds = this.host.nativeElement.querySelector('.conversation-rail')?.getBoundingClientRect();
+    if (bounds) {
+      dialog.style.setProperty('--composer-left', `${bounds.left + 8}px`);
+      dialog.style.setProperty('--composer-width', `${Math.max(240, bounds.width - 16)}px`);
+      dialog.style.setProperty('--composer-bottom', `${Math.max(16, window.innerHeight - bounds.bottom + 8)}px`);
+    }
+    dialog.showModal();
+    this.composerOpen.set(true);
+    this.messageInput()?.nativeElement.focus({ preventScroll: true });
+  }
+  closeComposer(): void {
+    this.speechInput()?.cancel();
+    this.composerDialog()?.nativeElement.close();
+    this.composerOpen.set(false);
+  }
+  composerBackdropClick(event: MouseEvent): void {
+    const dialog = this.composerDialog()?.nativeElement;
+    if (!dialog || event.target !== dialog) return;
+    const bounds = dialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) this.closeComposer();
+  }
   readonly mobileChatActive = input(false);
   private readonly historyDialog = viewChild.required<ElementRef<HTMLDialogElement>>('historyDialog');
   private readonly chatMessages = viewChild<ElementRef<HTMLElement>>('chatMessages');
@@ -75,6 +115,7 @@ export class ProjectSidebar implements OnDestroy {
   private destroyed = false;
 
   ngOnDestroy(): void {
+    this.closeComposer();
     this.destroyed = true;
     for (const timer of this.fieldTimers.values()) clearTimeout(timer);
     this.fieldTimers.clear();
@@ -241,16 +282,22 @@ export class ProjectSidebar implements OnDestroy {
   });
 
   constructor() {
+    effect(() => {
+      this.mobileChatActive();
+      afterNextRender(() => this.fitConversationRail(), { injector: this.injector });
+    });
+    effect(() => {
+      const project = this.data().project.id;
+      if (this.composerProject && this.composerProject !== project) untracked(() => this.closeComposer());
+      this.composerProject = project;
+    });
     const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       const host = this.host.nativeElement;
       let frame = 0;
       const measure = () => {
         frame = 0;
-        const viewport = window.visualViewport;
-        const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
-        const top = Math.max(20, host.getBoundingClientRect().top);
-        host.style.setProperty('--conversation-height', `${Math.max(0, bottom - top - 20)}px`);
+        this.fitConversationRail();
       };
       const schedule = () => {
         if (!frame) frame = requestAnimationFrame(measure);
@@ -825,6 +872,7 @@ export class ProjectSidebar implements OnDestroy {
         });
       }
 
+      if (!this.destroyed && this.data().project.id === projectId) this.closeComposer();
       const aiResponse = await this.aiService.generateOffer(projectId, images);
 
       await this.projectService.saveAiResponse(projectId, aiResponse, !!images);
@@ -878,6 +926,7 @@ export class ProjectSidebar implements OnDestroy {
     } catch (error) {
       console.error(error);
 
+      if (!this.destroyed && this.data().project.id === projectId) this.openComposer();
       if (!this.destroyed) this.sendError.set(error instanceof TrialError ? error.message : messageSaved
         ? 'Din besked er gemt, men AI-svaret kunne ikke færdigbehandles. Genindlæs projektet, og kontrollér samtalen, før du prøver igen.'
         : 'Din besked kunne ikke gemmes. Prøv igen.');

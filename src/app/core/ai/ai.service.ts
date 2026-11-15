@@ -1,4 +1,5 @@
 import type { ImageAnalysisInput } from '../projects/project-images.service';
+import { ProjectImagesService } from '../projects/project-images.service';
 import { ActivityService } from '../activity/activity.service';
 import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
@@ -9,6 +10,7 @@ import { BillingService, TrialError } from '../billing/billing.service';
   providedIn: 'root',
 })
 export class AiService {
+  private readonly images = inject(ProjectImagesService);
   private readonly activity = inject(ActivityService);
   private readonly billing = inject(BillingService);
   async generateOffer(projectId: string, imageInput?: ImageAnalysisInput): Promise<ProjectResponse> {
@@ -21,6 +23,8 @@ export class AiService {
           if (imageInput) {
             const { data } = await supabase.auth.getSession();
             if (data.session?.user.id !== imageInput.ownerId) throw new TrialError('Brugerkontoen er ændret. Send igen.');
+            try { await this.images.reserveAnalysis(imageInput.ownerId, projectId, imageInput.messageId, imageInput.images.map(image => image.id)); }
+            catch (error) { throw new TrialError(error instanceof Error ? error.message : 'Billedkvoten kunne ikke kontrolleres. Prøv igen.'); }
           }
           const { data, error } = await supabase.functions.invoke('generate-offer', {
             body: { projectId, ...(imageInput ? { messageId: imageInput.messageId, images: imageInput.images } : {}) },

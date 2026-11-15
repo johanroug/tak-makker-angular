@@ -127,3 +127,8 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .compact.usage-alert button { order: 1; padding: 7px 10px; min-height: 36px; border: 1px solid #c8ab72; border-radius: 6px; color: #624817; background: #fffdf7; font-size: 13px; font-weight: 600; text-decoration: none; }
 .compact.usage-alert button:hover { background: #f3e6ca; }
 .compact.usage-alert p { order: 2; margin: 0; font-size: 13px; line-height: 1.5; }
+
+.composer-status { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 4px 8px; padding: 0 0 8px; border: 0; border-radius: 0; background: transparent; }
+.composer-status .usage-label { display: inline-flex; align-items: center; gap: 6px; color: #344b3c; font-size: 10.5px; line-height: 1.4; }
+.composer-status svg { width: 16px; height: 16px; flex: none; }
+.composer-status .subscription-link { min-height: 32px; padding: 4px 0; margin-left: auto; border-radius: 0; background: transparent; color: #365b44; font-size: 11px; text-decoration: underline; white-space: nowrap; }

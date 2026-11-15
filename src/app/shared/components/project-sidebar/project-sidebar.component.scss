@@ -264,3 +264,32 @@ app-ai-feedback {
   .mobile-chat-active .conversation-body { display: flex; }
   .chat-form textarea { font-size: 16px; }
 }
+
+.chat-form { padding: 14px; border-radius: 18px; background: #fff; }
+.chat-form > button { position: relative; justify-content: center; min-height: 52px; border-radius: 14px; background: #12372a; font-size: 15px; font-weight: 600; }
+.chat-form > button > span { display: none; }
+.chat-form > button:disabled { background: #f1f2f0; color: #6b716c; opacity: 1; }
+
+// History fills the rail; the composer lives in the dialog top layer.
+.conversation-rail { position: relative; }
+.conversation-heading { flex-wrap: wrap; gap: 8px 14px; padding: 14px; }
+.conversation-usage { flex: 1 1 180px; min-width: 0; }
+.conversation-body { position: relative; }
+.chat-messages { flex: 1 1 0; min-height: 0; max-height: none; padding-bottom: 90px; }
+.new-message-button { position: absolute; z-index: 2; right: 16px; bottom: 16px; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 0; border-radius: 50%; background: #123f30; color: #fff; box-shadow: 0 4px 12px #12372a38; cursor: pointer; }
+.new-message-button app-workspace-icon { width: 27px; height: 27px; }
+.new-message-button:hover { background: #1c523e; }
+.composer-dialog { box-sizing: border-box; position: fixed; inset: auto auto var(--composer-bottom, 20px) var(--composer-left, 20px); width: min(var(--composer-width, 340px), 420px); max-width: calc(100vw - 16px); max-height: min(80dvh, 680px); margin: 0; padding: 0; border: 1px solid #deded5; border-radius: 18px; background: #fffcf6; color: #12372a; box-shadow: 0 12px 40px #142d2430; overflow-y: auto; overscroll-behavior: contain; }
+.composer-dialog::backdrop { background: #14261d24; }
+.composer-heading { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 0 16px; }
+.composer-heading h2 { margin: 0; font-size: 19px; }
+.composer-close { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #12372a; font-size: 26px; cursor: pointer; }
+.composer-dialog .chat-form { margin: 0; padding: 0 14px 14px; border: 0; border-radius: 0; background: transparent; }
+.composer-dialog .chat-form textarea { max-height: 28dvh; }
+@media (max-width: 900px) {
+  .mobile-chat-active { height: var(--conversation-height, calc(100dvh - 300px)); }
+  .mobile-chat-active .conversation-heading { display: flex; padding: 8px 14px; }
+  .mobile-chat-active .conversation-heading > div { display: none; }
+  .composer-dialog { inset: auto 0 0; width: 100%; max-width: none; max-height: calc(100dvh - 16px); border-radius: 20px 20px 0 0; padding-bottom: env(safe-area-inset-bottom); }
+  .composer-dialog::before { content: ''; display: block; width: 42px; height: 4px; margin: 10px auto 0; border-radius: 4px; background: #b7bcb5; }
+}

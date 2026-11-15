@@ -1,3 +1,10 @@
+@if (compact() && composerLayout()) {
+  <section class="composer-status" aria-label="Dit abonnement">
+    <span class="usage-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a9 9 0 0 1-9 9 10 10 0 0 1-4-.8L3 21l1.3-5A9 9 0 1 1 21 11.5Z"/></svg>{{ composerUsageLabel() }}</span>
+    <button type="button" class="subscription-link" (click)="openSubscription()">Abonnement</button>
+    @if (billing.error()) { <p role="status">{{ billing.error() }} <button type="button" (click)="reload()">Prøv igen</button></p> }
+  </section>
+} @else {
 <section
   [attr.id]="compact() ? null : 'subscription'"
   [class.compact]="compact()"
@@ -130,3 +137,5 @@
     <p role="status">Henter abonnement og forbrug…</p>
   }
 </section>
+
+}

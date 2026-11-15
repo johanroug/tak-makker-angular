@@ -17,8 +17,18 @@ export class BillingPanelComponent {
   readonly checkoutResult = this.route.snapshot.queryParamMap.get('checkout');
   readonly companyId = input<string>();
   readonly compact = input(false);
+  readonly composerLayout = input(false);
   readonly prominent = input(false);
   readonly subscriptionRequested = output<void>();
+  composerUsageLabel(): string {
+    const usage = this.billing.usage();
+    if (!usage) return 'Henter abonnement…';
+    if (usage.status === 'internal') return 'Intern adgang';
+    if (usage.status === 'free') return 'Fri adgang';
+    if (usage.subscriptionState === 'past_due') return 'Betaling mangler';
+    if (usage.status === 'active') return `${usage.paidRemaining ?? 0}/${usage.paidLimit ?? 200} samtaler tilbage`;
+    return `${usage.trialRemaining} gratis forespørgsler tilbage`;
+  }
   constructor() {
     void this.billing.loadCheckoutConfiguration();
     effect(() => {

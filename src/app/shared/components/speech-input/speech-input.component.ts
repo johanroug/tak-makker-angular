@@ -11,6 +11,7 @@ export class SpeechInput implements OnDestroy {
   readonly billing = inject(BillingService);
   readonly disabled = input(false);
   readonly showCamera = input(false);
+  readonly minimalControls = input(false);
   readonly cameraDisabled = input(false);
   readonly cameraSubscriber = input(false);
   readonly imagesRequested = output<void>();

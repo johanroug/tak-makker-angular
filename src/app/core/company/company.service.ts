@@ -4,6 +4,7 @@ import { CompanyMembershipService } from './company-membership.service';
 import { AuthService } from '../auth/auth.service';
 import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
+import { COMPANY_TRADES } from './company-trades';
 
 export type CompanyProfile = {
   companyName: string;
@@ -100,7 +101,8 @@ export class CompanyService {
       logoSvgSource: company.logo_svg_source,
       logoColor: company.logo_color,
       cvr: company.cvr ?? '',
-      trades: company.trades ?? (company.trade ? [company.trade] : []),
+      trades: (company.trades ?? (company.trade ? [company.trade] : []))
+        .filter((trade: string) => COMPANY_TRADES.some(option => option === trade)),
       contactName: company.contact_name ?? '',
       phone: company.phone ?? '',
       email: company.email ?? '',

@@ -46,7 +46,6 @@ export class ProjectTools {
   readonly templateId = new FormControl('', { nonNullable: true });
   readonly name = new FormControl('', { nonNullable: true });
   readonly trades = COMPANY_TRADES;
-  readonly customTrade = new FormControl('', { nonNullable: true });
   readonly line = new FormGroup({
     description: new FormControl('', { nonNullable: true }), trade: new FormControl('', { nonNullable: true }),
     hours: new FormControl<number | null>(null), name: new FormControl('', { nonNullable: true }),
@@ -61,7 +60,7 @@ export class ProjectTools {
     if (!this.billing.subscriberAccess(this.data().project.company_id)) { this.notice.set('Disse funktioner kræver abonnement. Se abonnement under virksomhedsprofilen.'); this.menu().nativeElement.open = false; return; }
     this.mode.set(mode); this.error.set(''); this.notice.set('');
     this.requestId = crypto.randomUUID(); this.requestTemplateId = ''; this.requestProjectId = this.data().project.id;
-    this.name.reset(); this.line.reset(); this.customTrade.reset(); this.templateId.reset();
+    this.name.reset(); this.line.reset(); this.templateId.reset();
     this.workIds.set(this.data().workItems.filter(row => row.status === 'accepted').map(row => row.id));
     this.materialIds.set(this.data().materials.filter(row => row.status === 'accepted').map(row => row.id));
     this.menu().nativeElement.open = false;
@@ -100,7 +99,7 @@ export class ProjectTools {
         this.changed.emit();
       } else if (mode === 'work' || mode === 'material') {
         const values = this.line.getRawValue();
-        const trade = values.trade === 'Andet' ? this.customTrade.value.trim() : values.trade;
+        const trade = values.trade;
         if (mode === 'work' && !trade) throw new Error('Angiv et fag.');
         await this.projects.addManualLine(projectId, mode, { ...values, trade, id: this.requestId });
         this.notice.set('Linjen er tilføjet.');

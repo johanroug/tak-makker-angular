@@ -1196,7 +1196,7 @@ app-new-project-dialog .start-dialog app-speech-input .speech-composer.is-busy t
   .project-workspace .project-layout[data-mobile-section='materials'] .board-draft .draft-section.tasks-column,
   .project-workspace .project-layout[data-mobile-section='offer'] .offer-preview.compact-draft.board-draft .draft-columns,
   .project-workspace .project-layout:is([data-mobile-section='tasks'], [data-mobile-section='materials'])
-    .offer-preview.compact-draft.board-draft :is(.draft-terms, .draft-price-details, .offer-footer, .draft-pending-note) {
+    .offer-preview.compact-draft.board-draft :is(.draft-terms, .draft-price-details, .offer-footer) {
     display: none;
   }
 

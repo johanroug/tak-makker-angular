@@ -424,13 +424,17 @@ export class OfferPreview {
     this.saveError.set('');
     this.isEditing.set(true);
     this.detailsDialog().nativeElement.showModal();
-    if (focusField === 'hourlyRate') {
-      const field = this.hourlyRateInput().nativeElement;
-      field.focus();
-      field.select();
-      field.scrollIntoView({ block: 'center' });
-    }
     this.detailsOpened.emit();
+    if (focusField === 'hourlyRate') {
+      // Wait for the dialog and its conditional content to finish rendering.
+      requestAnimationFrame(() => {
+        if (!this.detailsDialog().nativeElement.open) return;
+        const field = this.hourlyRateInput().nativeElement;
+        field.focus({ preventScroll: true });
+        field.select();
+        field.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'nearest' });
+      });
+    }
   }
 
   cancelEditing(): void {

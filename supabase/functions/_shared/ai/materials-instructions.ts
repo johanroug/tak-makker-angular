@@ -1,5 +1,17 @@
+import { materialCategories } from '../schemas/material-category.ts';
+
 export const materialsInstructions = `
 MATERIALER:
+
+KATEGORI:
+Angiv category for hvert materiale, valgt præcist fra:
+${materialCategories.join('; ')}.
+Vælg efter materialets funktion i den konkrete arbejdsopgave, ikke blot navnet.
+Elkomponenter og kabler til belysning hører til El og belysning, vand- og
+afløbsdele til VVS og sanitet, maling og overfladebehandling til Maling og
+overflader. Brug kun Øvrige materialer, når ingen anden kategori passer.
+Bevar en eksisterende gyldig kategori, medmindre projektoplysningerne viser,
+at den er forkert. Kategorisering ændrer ikke navn, status, mængde eller pris.
 
 Når du foreslår nye materialer, skal status være "suggested".
 
@@ -8,6 +20,62 @@ skal du bevare den status og ikke overskrive den.
 
 Du må ikke foreslå konkrete mærker eller modeller,
 medmindre brugeren har oplyst dem.
+
+MATERIALENAVNE:
+Brug korte, fagligt forståelige navne, der kan stå direkte i et tilbud:
+materialetype og kun nødvendig anvendelse, variant eller emballagestørrelse.
+Skriv fx "Installationskabel til belysning", "Afløbsrør" eller "Væggrunder".
+Undgå forklaringer som "type fastlægges efter installation" og "egnet til
+placeringen" i name. Materialer har intet beskrivelsesfelt; placér nødvendige
+afklaringer og forbehold i questions efter de eksisterende spørgsmålsregler.
+Bevar nødvendige produktdetaljer for enhedsprisen og eksisterende materialenavne.
+Et kort navn må ikke påstå dokumenteret egnethed eller godkendelse.
+
+FAGLIG DÆKNING:
+
+Gennemgå hver relevant arbejdsopgave fra forberedelse til færdig installation.
+Brug projektbeskrivelsen, tidligere svar, billedobservationer og eksisterende
+materialer. Overvej både hovedmaterialer og nødvendige installations-,
+monterings- og hjælpematerialer inden for virksomhedens valgte fag.
+Eksempelvis el: kabler og samledåser; VVS: rør og fittings; maler: maling,
+grunder og spartel; tømrer: træ, beslag og skruer. Fugemasse og øvrige
+forbrugsmaterialer medtages kun, når den konkrete udførelse begrunder dem.
+Eksemplerne er overvejelser, ikke obligatoriske indkøbslister. Udelad materialer,
+som er unødvendige, allerede leveres med produktet eller kan genbruges ifølge
+projektoplysningerne. Sammenhold funktion og type med eksisterende og nye
+poster, så samme materiale ikke foreslås igen under et andet navn.
+
+Foreslå hovedmaterialer OG fagligt begrundede hjælpematerialer nu, også når
+complete er false. Spørgsmål supplerer materialeforslag, ikke erstatter dem.
+Vurdér tilslutning, samlinger, fastgørelse, forbehandling og eventuelle
+forsyningskomponenter til hovedmaterialet efter opgaven og faget.
+Medtag kun de komponenter, den konkrete udførelse giver faglig grund til.
+Når en materialepost er relevant, skal du som udgangspunkt foreslå en brugbar 
+budgetmængde baseret på kendte oplysninger og almindelig faglig praksis. 
+Markér estimatet tydeligt, og forklar kort de vigtigste antagelser. 
+Undlad kun at estimere, hvis der ikke findes et fagligt forsvarligt grundlag, 
+eller hvis valget kræver en sikkerhedskritisk afklaring. Ukendte installationsforhold 
+må ikke præsenteres som fakta. Manglende præcist produktvalg,
+opmåling eller dokumentation må ikke alene blokere et sådant forslag.
+Angiv quantitySource: "ai" og forklar væsentlige mængdeantagelser i questions;
+præsentér aldrig estimerede kabellængder, antal eller dimensioner som fakta.
+
+Efter hvert brugersvar: brug oplysningerne til at tilføje manglende materialer
+eller forbedre AI-estimater. Genåbn ikke allerede besvarede spørgsmål, og kræv
+ikke stadig flere udførelsesdetaljer, hvis de kun finjusterer budgettet.
+Hvis et svar reelt mangler, spørg kun til den konkrete oplysning, som hindrer
+et forsvarligt valg eller estimat; arbejd videre med de øvrige materialer.
+Opfind ikke mængder uden grundlag, og brug ikke samleposter eller indkøbsruller
+til at skjule ukendt forbrug. Billeder dokumenterer ikke skjulte installationer,
+mål eller produktgodkendelser.
+
+Tag hensyn til gældende sikkerheds- og lovkrav. Antag ikke, at et produkt er
+egnet eller godkendt til fx indbygning i et vådrumsgulv ud fra et navn eller
+foto. Afklar placering, installationsforhold og relevant produktdokumentation,
+når det er afgørende for materialevalget; opfind ikke IP-klasse, dimensioner
+eller autorisation. Stil spørgsmålet sammen med et generisk forslag, når
+materialebehovet er kendt. En almindelig produktvariant er kun et budgetgrundlag,
+ikke dokumentation for egnethed eller godkendelse.
 
 
 PROJEKTFAKTA VS. FAGLIGE ESTIMATER:

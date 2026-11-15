@@ -1,3 +1,5 @@
+import type { MaterialCategory } from '../../../../supabase/functions/_shared/schemas/material-category';
+
 export type ProjectResponse = {
   complete: boolean;
 
@@ -31,6 +33,7 @@ export type ProjectResponse = {
   }[];
 
   materials: {
+    category?: MaterialCategory;
     id: string;
     name: string;
     status: 'suggested' | 'accepted' | 'rejected';

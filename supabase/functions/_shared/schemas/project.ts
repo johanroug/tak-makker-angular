@@ -1,4 +1,5 @@
 import { z } from "npm:zod";
+import { materialCategories } from './material-category.ts';
 
 export const WorkItemSchema = z.object({
   id: z.string(),
@@ -13,6 +14,7 @@ export const WorkItemSchema = z.object({
 export type WorkItem = z.infer<typeof WorkItemSchema>;
 
 export const MaterialSchema = z.object({
+  category: z.enum(materialCategories).nullable().optional(),
   id: z.string(),
   name: z.string(),
   status: z.enum(["suggested", "accepted", "rejected"]),
@@ -39,6 +41,7 @@ export const ProjectDetailsSchema = z.object({
 });
 
 const AiMaterialSchema = MaterialSchema.extend({
+  category: z.enum(materialCategories),
   quantity: z.number().nonnegative(),
   unit: z.string().min(1),
   quantitySource: z.literal("ai").nullable(),

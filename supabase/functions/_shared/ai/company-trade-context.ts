@@ -22,8 +22,12 @@ hvilken entreprise brugeren vil beregne, hvis opgaven kan omfatte flere fag.
 Foreslå indtil da kun de delarbejder og materialer, brugeren udtrykkeligt har bedt om.
 Brug scopeWarnings: [], da der endnu ikke er valgt konkrete fag at afgrænse efter.`;
   if (trades.some((trade) => !Object.hasOwn(tradeScopes, trade))) throw new Error('Unknown company trade');
+  const generalTrades = new Set(['Entreprenør', 'Multiservice', 'Andet']);
+  const hasSpecificTrades = trades.some(trade => !generalTrades.has(trade));
   return `VIRKSOMHEDENS FAG OG BINDENDE ENTREPRISEGRÆNSE: ${trades.join(', ')}
-${trades.map((trade) => `${trade}: ${tradeScopes[trade]}`).join('\n')}
+${trades.map((trade) => `${trade}: ${hasSpecificTrades && generalTrades.has(trade)
+    ? 'Supplerende fagvalg. Kræv kun afklaring for arbejde, som ikke allerede er dækket af de konkret valgte fag.'
+    : tradeScopes[trade]}`).join('\n')}
 
 Alle de valgte fag er tilladte arbejdsområder. En udelukkelse i beskrivelsen af
 ét fag udelukker IKKE et andet fag, som virksomheden også har valgt. Har
@@ -31,7 +35,12 @@ virksomheden fx valgt både VVS og Murer, må du foreslå både VVS- og murerarb
 med tilhørende materialer, men stadig ikke el- eller malerarbejde.
 Tag kun de valgte fag med, som er relevante for den konkrete opgave. Et ekstra
 fagvalg er ikke i sig selv en bestilling på flere delarbejder. Entreprenør,
-Multiservice og Andet ophæver ikke faggrænser; afklar deres konkrete arbejdsområde.
+Multiservice og Andet ophæver ikke faggrænser. Afklar kun deres arbejdsområde,
+hvis den beskrevne opgave ikke allerede er dækket af et konkret valgt fag.
+De valgte fag ovenfor er kendte oplysninger: spørg ikke igen, hvilke fag
+virksomheden udfører, eller om den udfører den beskrevne opgave, når opgaven
+klart ligger inden for et valgt konkret fag. Brug i stedet spørgsmålene på
+reelt manglende projektoplysninger, og foreslå relevante opgaver og materialer.
 
 Denne faggrænse gælder for hele svaret, også ved brede projektbeskrivelser og
 tidligere samtaler med flere fag. Generelle eksempler i andre instruktioner

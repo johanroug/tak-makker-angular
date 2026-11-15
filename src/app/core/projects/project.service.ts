@@ -6,6 +6,7 @@ import { supabase } from '../supabase/supabase.client';
 import type { ProjectResponse } from '../ai/project-response';
 import { Database } from '../supabase/database.types';
 import type { CustomerChoice } from '../customers/customer.service';
+import { isMaterialCategory } from '../../../../supabase/functions/_shared/schemas/material-category';
 
 @Injectable({
   providedIn: 'root',
@@ -319,6 +320,9 @@ export class ProjectService {
       const existing = existingById.get(material.id);
       if (existing) {
         const updates: Database['public']['Tables']['project_materials']['Update'] = {};
+        if (isMaterialCategory(material.category) && material.category !== existing.category && existing.status !== 'rejected') {
+          updates.category = material.category;
+        }
         // Replace an existing price only on an explicit price update request.
         if (
           (existing.unit_price === null || material.priceUpdateRequested === true) &&
@@ -369,6 +373,7 @@ export class ProjectService {
         project_id: projectId,
         id: material.id,
         name: material.name,
+        category: isMaterialCategory(material.category) ? material.category : null,
         status: requireReview ? 'suggested' : 'accepted',
         quantity: material.quantity,
         quantity_source: 'ai',

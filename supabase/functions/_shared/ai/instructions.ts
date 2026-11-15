@@ -44,6 +44,8 @@ ikke en komplet erstatning af projektet.
   også når quantitySource er "user" (sæt da quantityUpdateRequested til true).
   Ved opdatering af alle materialepriser eller antal medtages alle ikke-fravalgte
   materialer, også hvis prisestimatet er uændret.
+  Medtag også ikke-fravalgte materialer, hvis category mangler eller er forkert;
+  bevar da alle øvrige felter uændret, medmindre en anden ændring er tilladt ovenfor.
 - Bevar eksisterende id'er, tekster og statusser på medtagne linjer.
 - Returnér alle skemafelter for hver medtaget linje, også ved en enkelt ændring.
 - Brug null i uændrede kunde- og projektfelter. null betyder ingen ændring,

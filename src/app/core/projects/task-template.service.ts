@@ -6,7 +6,7 @@ import { CompanyMembershipService } from '../company/company-membership.service'
 export type TaskTemplate = {
   id: string; name: string;
   work_items: { trade: string; description: string; estimated_hours: number | null }[];
-  materials: { name: string; quantity: number | null; unit: string | null; unit_price: number | null }[];
+  materials: { name: string; category?: string | null; quantity: number | null; unit: string | null; unit_price: number | null }[];
 };
 
 @Injectable({ providedIn: 'root' })

@@ -238,7 +238,7 @@ export class OfferPreview {
   get materialGroups() {
     const groups = new Map<string, ProjectData['materials']>();
     for (const item of this.data().materials) {
-      const title = materialCategory(this.editingMaterialNames.get(item.id) ?? item.name);
+      const title = materialCategory(this.editingMaterialNames.get(item.id) ?? item.name, item.category);
       const group = groups.get(title);
       if (group) group.push(item);
       else groups.set(title, [item]);

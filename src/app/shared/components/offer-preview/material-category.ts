@@ -1,12 +1,14 @@
-// Presentation categories only: individual material lines remain unchanged.
+import { isMaterialCategory } from '../../../../../supabase/functions/_shared/schemas/material-category';
+
+// Names are only a fallback for legacy and manually created materials.
 const categories: ReadonlyArray<readonly [string, RegExp]> = [
   [
     'El og belysning',
-    /\b(?:el\b|elkabel|eldase|elinstallation|kabel|ledning|stikkontakt|afbryder|lampe|belysning|spot|led\b|sikring|kabelbakke)/,
+    /\b(?:el\b|(?:el|installations|forsynings|strom|lampe)?kab(?:el|ler)|(?:el|samle|forgrenings|installations)dase|elinstallation|(?:el|til)?ledning|stikkontakt|kontakt(?:er)?\b|afbryder|(?:gulv|vaeg|loft)?lampe|(?:belysnings|lys|gulv|loft)armatur|indbygningsarmatur(?:er)?\b(?=.*\b(?:gulv|loft|belysning)\b)|belysning|(?:gulv|loft|indbygnings)?spot|led\b|sikring|kabelbakke|stromforsyning|(?:led[- ]?)?driver\b)/,
   ],
   [
     'VVS og sanitet',
-    /\b(?:vvs\b|handvask|vask\b|toilet|wc\b|blandingsbatteri|armatur|(?:gulv)?aflob|(?:vand|pex|kobber|staal|plast)?ror(?:\b|fitting|bojning)|vandlas|brus|ventil|gulvvarme|radiator|sanitet|kobling)/,
+    /\b(?:vvs\b|handvask|vask\b|toilet|wc\b|blandingsbatteri|armatur|(?:gulv)?aflob|(?:vand|pex|kobber|staal|plast)?ror(?:\b|fitting|bojning)|(?:ror)?fitting|vandlas|brus|ventil|gulvvarme|radiator|sanitet|kobling)/,
   ],
   [
     'Fliser, mørtel og vådrum',
@@ -18,7 +20,7 @@ const categories: ReadonlyArray<readonly [string, RegExp]> = [
   ],
   [
     'Maling og overflader',
-    /\b(?:(?:vaeg|loft|gulv)?maling|grunder|primer|lak\b|olie\b|tapet|pensel|malerrulle|spartel)/,
+    /\b(?:(?:vaeg|loft|gulv)?maling|(?:vaeg|loft)?grunder|primer|lak\b|olie\b|tapet|pensel|malerrulle|(?:vaeg|loft|sand)?spartel)/,
   ],
   [
     'Fastgørelse og forbrug',
@@ -26,7 +28,8 @@ const categories: ReadonlyArray<readonly [string, RegExp]> = [
   ],
 ];
 
-export function materialCategory(name: string | null): string {
+export function materialCategory(name: string | null, category?: string | null): string {
+  if (isMaterialCategory(category)) return category;
   const normalized = (name ?? '')
     .toLocaleLowerCase('da-DK')
     .normalize('NFKD')

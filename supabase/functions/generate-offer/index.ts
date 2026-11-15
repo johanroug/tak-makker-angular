@@ -155,6 +155,7 @@ Deno.serve(async (request) => {
     }));
 
     const materials = (materialsResult.data ?? []).map((item) => ({
+      category: item.category ?? null,
       id: item.id,
       name: item.name,
       status: item.status,
@@ -221,7 +222,7 @@ Deno.serve(async (request) => {
 
     const response = await measure('aiMs', () =>
       openai.responses.parse({
-        model: 'gpt-5.6-luna',
+        model: 'gpt-6-luna',
         // Conversation history lives in Supabase and is supplied on every call.
         // Opt out of Responses application-state storage (not abuse monitoring).
         store: false,
@@ -252,14 +253,26 @@ Deno.serve(async (request) => {
       }),
     );
 
+    // Log only API usage counters and request metadata, never prompt/image content.
+    // This call is non-streaming; usage is available on the completed response.
+    console.info('GENERATE OFFER OPENAI USAGE', {
+      model: response.model,
+      input_tokens: response.usage?.input_tokens ?? null,
+      output_tokens: response.usage?.output_tokens ?? null,
+      total_tokens: response.usage?.total_tokens ?? null,
+      cached_tokens: response.usage?.input_tokens_details?.cached_tokens ?? null,
+      image_count: messages.reduce((count, message) => count + (
+        Array.isArray(message.content)
+          ? message.content.filter(part => part.type === 'input_image').length
+          : 0
+      ), 0),
+    });
+
     if (!response.output_parsed) {
       throw new Error('OpenAI returned no structured response');
     }
 
     console.info('GENERATE OFFER SIZE', {
-      inputTokens: response.usage?.input_tokens ?? null,
-      outputTokens: response.usage?.output_tokens ?? null,
-      cachedInputTokens: response.usage?.input_tokens_details?.cached_tokens ?? null,
       reasoningTokens: response.usage?.output_tokens_details?.reasoning_tokens ?? null,
       existingWorkItems: workItems.length,
       existingMaterials: materials.length,

@@ -145,6 +145,7 @@ export type Database = {
       }
       offer_materials: {
         Row: {
+          category: string | null
           id: string
           name: string
           offer_id: string
@@ -154,6 +155,7 @@ export type Database = {
           unit_price: number
         }
         Insert: {
+          category?: string | null
           id: string
           name: string
           offer_id: string
@@ -163,6 +165,7 @@ export type Database = {
           unit_price: number
         }
         Update: {
+          category?: string | null
           id?: string
           name?: string
           offer_id?: string
@@ -334,6 +337,7 @@ export type Database = {
       }
       project_materials: {
         Row: {
+          category: string | null
           created_at: string
           id: string
           name: string | null
@@ -347,6 +351,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          category?: string | null
           created_at?: string
           id: string
           name?: string | null
@@ -360,6 +365,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          category?: string | null
           created_at?: string
           id?: string
           name?: string | null

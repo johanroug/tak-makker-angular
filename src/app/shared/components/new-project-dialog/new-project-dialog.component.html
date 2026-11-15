@@ -24,8 +24,8 @@
       </div>
     </div>
     }
-  } @else {
-    <div class="dialog-layout">
+  }
+    <div class="dialog-layout" [style.display]="isWorking() ? 'none' : null">
     <div class="dialog-header">
       <img class="project-start-symbol" src="/brand-preview/reference-symbol.svg" alt="" width="64" height="64" />
       <div class="dialog-heading"><span class="eyebrow">ET NYT PROJEKT STARTER HER</span><h2 id="new-project-title">Start dit tilbud</h2></div>
@@ -51,13 +51,14 @@
         <app-billing-panel [compact]="true" [prominent]="true" (subscriptionRequested)="close()" />
       }
       @if (billing.usage()?.status !== 'exhausted') {
-        <app-speech-input [disabled]="isWorking() || hasSavedMessage() || billing.transcriptionLimitReached()" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
+        <app-speech-input [showCamera]="true" [cameraDisabled]="!photos()?.canChoose() || hasSavedMessage()" [cameraSubscriber]="photos()?.allowed() ?? false" (imagesRequested)="photos()?.choose()" [disabled]="isWorking() || hasSavedMessage() || billing.transcriptionLimitReached()" (textReady)="appendSpeech($event)" (busyChange)="speechBusy.set($event)"><textarea
           id="new-project-description"
           [formControl]="prompt"
           [readOnly]="hasSavedMessage()"
           rows="6"
           placeholder="Fx: Jeg skal renovere et badeværelse på 6 m² hos Mette på Skovvej 12. Der skal nye fliser på gulv og vægge…"
         ></textarea></app-speech-input>
+        <app-project-images [projectId]="imageDraftId()" [disabled]="isWorking() || hasSavedMessage()" />
         <p class="hint"><span class="hint-icon" aria-hidden="true">i</span><span>
           Skriv gerne kundens navn, adresse, mål og ønsker. Du kan altid rette og tilføje oplysninger senere.</span>
         </p>
@@ -99,9 +100,8 @@
       @if (projectId() && error()) { <button type="button" (click)="openDraft()">Åbn kladden</button> }
       <button [type]="mode() === 'ai' ? 'submit' : 'button'" [attr.form]="mode() === 'ai' ? 'new-project-form' : null"
         class="continue-button"
-        [disabled]="speechBusy() || (mode() === 'ai' ? !prompt.value.trim() : !billing.subscriberAccess() || mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError()))"
+        [disabled]="speechBusy() || photos()?.working() || (mode() === 'ai' ? !prompt.value.trim() : !billing.subscriberAccess() || mode() === 'template' && (!templateId.value || templatesLoading() || !!templatesError()))"
         (click)="mode() !== 'ai' ? continue() : null">{{ mode() === 'ai' ? (error() ? 'Prøv igen' : 'Fortsæt') : 'Opret projekt' }}<span aria-hidden="true">→</span></button>
     </div>
     </div>
-  }
 </dialog>

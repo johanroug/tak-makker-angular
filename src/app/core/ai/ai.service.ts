@@ -1,3 +1,4 @@
+import type { ImageAnalysisInput } from '../projects/project-images.service';
 import { ActivityService } from '../activity/activity.service';
 import { Injectable, inject } from '@angular/core';
 import { supabase } from '../supabase/supabase.client';
@@ -10,30 +11,38 @@ import { BillingService, TrialError } from '../billing/billing.service';
 export class AiService {
   private readonly activity = inject(ActivityService);
   private readonly billing = inject(BillingService);
-  async generateOffer(projectId: string): Promise<ProjectResponse> {
+  async generateOffer(projectId: string, imageInput?: ImageAnalysisInput): Promise<ProjectResponse> {
     return this.activity.measure(
       'ai_request',
       async () => {
         const started = performance.now();
         const billingVersion = this.billing.version;
         try {
+          if (imageInput) {
+            const { data } = await supabase.auth.getSession();
+            if (data.session?.user.id !== imageInput.ownerId) throw new TrialError('Brugerkontoen er ændret. Send igen.');
+          }
           const { data, error } = await supabase.functions.invoke('generate-offer', {
-            body: { projectId },
+            body: { projectId, ...(imageInput ? { messageId: imageInput.messageId, images: imageInput.images } : {}) },
           });
 
           if (error) {
             if (error.context instanceof Response) {
               const body = await error.context.clone().json().catch(() => null);
               if (billingVersion === this.billing.version) this.billing.accept(body?.usage, true);
+              if (body?.code === 'IMAGE_INPUT_INVALID' || body?.code === 'IMAGE_SUBSCRIPTION_REQUIRED') throw new TrialError(body.error);
               if (body?.code === 'TRIAL_EXHAUSTED') throw new TrialError('Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
               if (body?.code === 'TRIAL_BUSY') throw new TrialError('Dine resterende gratis forespørgsler er i gang. Vent på svar, og prøv igen.');
               if (body?.code === 'MONTHLY_LIMIT_REACHED') throw new TrialError('Virksomhedens 200 forespørgsler for denne abonnementsperiode er brugt. Se næste periode under Dit abonnement.');
               if (body?.code === 'MONTHLY_BUSY') throw new TrialError('De resterende forespørgsler er i gang. Vent på svar, og prøv igen.');
             }
-            console.error('AI ERROR:', error);
-            throw new Error('Kunne ikke hente svar fra Hovedet på sømmet', { cause: error });
+            console.error('AI request failed');
+            throw new Error('Kunne ikke hente svar fra Hovedet på sømmet');
           }
 
+          if (imageInput && (!Array.isArray(data?.analyzedImageIds) || imageInput.images.some(image => !data.analyzedImageIds.includes(image.id)))) {
+            throw new TrialError('Billedanalysen er ikke klar på serveren. Dine billeder er gemt lokalt. Prøv igen senere.');
+          }
           if (billingVersion === this.billing.version) this.billing.accept(data?.usage, true);
           return data as ProjectResponse;
         } finally {

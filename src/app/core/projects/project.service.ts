@@ -40,12 +40,12 @@ export class ProjectService {
   private readonly activity = inject(ActivityService);
   private readonly authService = inject(AuthService);
   private readonly membershipService = inject(CompanyMembershipService);
-  async saveAiResponse(projectId: string, response: ProjectResponse): Promise<void> {
+  async saveAiResponse(projectId: string, response: ProjectResponse, requireReview = false): Promise<void> {
     const started = performance.now();
     try {
       const results = await Promise.allSettled([
-        this.saveAiWorkItems(projectId, response.workItems),
-        this.saveAiMaterials(projectId, response.materials),
+        this.saveAiWorkItems(projectId, response.workItems, requireReview),
+        this.saveAiMaterials(projectId, response.materials, requireReview),
         this.saveAiProjectDetails(projectId, response),
       ]);
       const failure = results.find((result) => result.status === 'rejected');
@@ -230,7 +230,7 @@ export class ProjectService {
     return data;
   }
 
-  async saveAiWorkItems(projectId: string, workItems: ProjectResponse['workItems']): Promise<void> {
+  async saveAiWorkItems(projectId: string, workItems: ProjectResponse['workItems'], requireReview = false): Promise<void> {
     if (!workItems.length) return;
     const { data: existingItems, error: fetchError } = await supabase
       .from('project_work_items')
@@ -284,7 +284,7 @@ export class ProjectService {
         trade: item.trade,
         description: item.description,
         estimate_basis: item.estimateBasis ?? null,
-        status: 'accepted',
+        status: requireReview ? 'suggested' : 'accepted',
         estimated_hours: item.estimatedHours,
         estimated_hours_source: 'ai',
       });
@@ -300,7 +300,7 @@ export class ProjectService {
     await this.runAiWrites(writes);
   }
 
-  async saveAiMaterials(projectId: string, materials: ProjectResponse['materials']): Promise<void> {
+  async saveAiMaterials(projectId: string, materials: ProjectResponse['materials'], requireReview = false): Promise<void> {
     if (!materials.length) return;
     const { data: existingMaterials, error: fetchError } = await supabase
       .from('project_materials')
@@ -369,7 +369,7 @@ export class ProjectService {
         project_id: projectId,
         id: material.id,
         name: material.name,
-        status: 'accepted',
+        status: requireReview ? 'suggested' : 'accepted',
         quantity: material.quantity,
         quantity_source: 'ai',
         unit: material.unit,

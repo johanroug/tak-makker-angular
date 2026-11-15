@@ -10,6 +10,10 @@ import { BillingService } from '../../../core/billing/billing.service';
 export class SpeechInput implements OnDestroy {
   readonly billing = inject(BillingService);
   readonly disabled = input(false);
+  readonly showCamera = input(false);
+  readonly cameraDisabled = input(false);
+  readonly cameraSubscriber = input(false);
+  readonly imagesRequested = output<void>();
   readonly companyId = input<string | undefined>();
   readonly context = input('');
   readonly textReady = output<string>();

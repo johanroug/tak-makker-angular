@@ -56,6 +56,7 @@ export const ProjectResponseSchema = z.object({
   project: ProjectDetailsSchema,
 
   questions: z.array(z.string()).max(3),
+  imageObservations: z.array(z.string().min(1).max(400)).max(5).default([]),
   scopeWarnings: z.array(z.string().min(1).max(320)).max(3),
 
   workItems: z.array(WorkItemSchema),

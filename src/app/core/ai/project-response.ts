@@ -16,6 +16,7 @@ export type ProjectResponse = {
   };
 
   questions: string[];
+  imageObservations?: string[];
   scopeWarnings?: string[];
 
   workItems: {

@@ -1,3 +1,4 @@
+import { ProjectImagesComponent } from '../project-images.component';
 import { Component, ElementRef, inject, OnDestroy, output, signal, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -18,7 +19,7 @@ import { firstValueFrom, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-new-project-dialog',
-  imports: [CustomerPicker, ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon, SpeechInput],
+  imports: [ProjectImagesComponent, CustomerPicker, ReactiveFormsModule, BillingPanelComponent, WorkspaceIcon, SpeechInput],
   templateUrl: './new-project-dialog.component.html',
   styleUrl: './new-project-dialog.component.scss',
 })
@@ -57,6 +58,9 @@ export class NewProjectDialog implements OnDestroy {
   private readonly router = inject(Router);
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('startDialog');
 
+  readonly imageDraftId = signal(`draft-${crypto.randomUUID()}`);
+  readonly photos = viewChild(ProjectImagesComponent);
+  private savedMessageId?: string;
   readonly projectCreated = output<void>();
   readonly prompt = new FormControl('', { nonNullable: true });
   readonly speechBusy = signal(false);
@@ -105,6 +109,8 @@ export class NewProjectDialog implements OnDestroy {
   open(customerId?: string): void {
     if (this.isWorking() || this.dialog().nativeElement.open) return;
     this.prompt.reset();
+    this.imageDraftId.set(`draft-${crypto.randomUUID()}`);
+    this.savedMessageId = undefined;
     this.presetCustomerId = customerId;
     this.customerChoice.set(null); this.presetCustomer.set(null); this.customerLinked = false;
     this.customerLoading.set(!!customerId);
@@ -126,7 +132,7 @@ export class NewProjectDialog implements OnDestroy {
 
   close(): void {
     this.speechInput()?.cancel();
-    if (!this.isWorking()) this.dialog().nativeElement.close();
+    if (!this.isWorking() && !this.photos()?.working()) { this.photos()?.discardDraft(); this.dialog().nativeElement.close(); }
   }
 
   openSubscription(): void {
@@ -136,7 +142,7 @@ export class NewProjectDialog implements OnDestroy {
 
   async continue(): Promise<void> {
     if (this.customerLoading() || this.presetCustomerId && !this.customerChoice()) return;
-    if (this.speechBusy()) return;
+    if (this.speechBusy() || this.photos()?.working()) return;
     if (this.mode() !== 'ai') { await this.createWithoutAi(); return; }
     const description = this.prompt.value.trim();
     if (!description || this.isWorking()) return;
@@ -160,20 +166,24 @@ export class NewProjectDialog implements OnDestroy {
       this.customerLinked = true;
 
       if (!this.hasSavedMessage()) {
-        await this.projectService.addMessage(projectId, description);
+        const message = await this.projectService.addMessage(projectId, description);
+        this.savedMessageId = message.id;
         if (this.destroyed) return;
         this.hasSavedMessage.set(true);
       }
       if (this.destroyed) return;
 
       if (!this.isPrepared) {
-        this.response ??= await this.aiService.generateOffer(projectId);
+        const images = this.savedMessageId && this.photos()?.hasPending() ? await this.photos()?.attach(projectId, this.savedMessageId) : undefined;
+        this.response ??= await this.aiService.generateOffer(projectId, images);
         if (this.destroyed) return;
-        await this.projectService.saveAiResponse(projectId, this.response);
-        const questions = this.response.questions
-          .map((question, index) => `${index + 1}. ${question}`)
-          .join('\n\n');
+        await this.projectService.saveAiResponse(projectId, this.response, !!images);
+        const questions = [
+          ...(images ? (this.response.imageObservations ?? []).map(fact => `Synligt på billederne: ${fact}`) : []),
+          ...this.response.questions.map((question, index) => `${index + 1}. ${question}`),
+        ].join('\n\n');
         if (questions) await this.projectService.addAssistantMessage(projectId, questions);
+        await this.photos()?.analyzed(projectId, images);
         this.isPrepared = true;
       }
       if (this.destroyed) return;

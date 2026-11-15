@@ -18,6 +18,13 @@
       @else { Skriv eller indtal }
     </span>
     <div class="speech-controls">
+      @if (showCamera()) {
+        <button type="button" [disabled]="cameraDisabled() || state() !== 'idle'" (click)="imagesRequested.emit()"
+          [attr.aria-label]="cameraSubscriber() ? 'Tilføj projektbilleder' : 'Billeder kræver abonnement'"
+          [title]="cameraSubscriber() ? 'Højst 3 billeder i projektets levetid' : 'Kræver abonnement'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4v14H4z"/><circle cx="12" cy="12" r="4"/></svg>
+        </button>
+      }
       @if (state() !== 'idle') {
         <button type="button" class="cancel" (click)="cancel()" aria-label="Annuller optagelse" title="Annuller">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>

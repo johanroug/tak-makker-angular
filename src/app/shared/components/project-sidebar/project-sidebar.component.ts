@@ -1,3 +1,4 @@
+import { ProjectImagesComponent } from '../project-images.component';
 import type { DraftTextEdit } from '../offer-preview/draft-text-edit';
 import { WorkspaceIcon } from '../workspace-icon.component';
 import { SpeechInput } from '../speech-input/speech-input.component';
@@ -21,7 +22,7 @@ type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 @Component({
   selector: 'app-project-sidebar',
-  imports: [ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon, BillingPanelComponent, SpeechInput],
+  imports: [ProjectImagesComponent, ReactiveFormsModule, DecimalPipe, DatePipe, AiFeedback, WorkspaceIcon, BillingPanelComponent, SpeechInput],
   templateUrl: './project-sidebar.component.html',
   styleUrl: './project-sidebar.component.scss',
 })
@@ -60,6 +61,7 @@ export class ProjectSidebar implements OnDestroy {
   readonly isLoadingOffers = signal(false);
   readonly offersError = signal('');
 
+  readonly photos = viewChild<ProjectImagesComponent>('projectPhotos');
   readonly isSending = signal(false);
   readonly speechBusy = signal(false);
   appendSpeech(text: string): void {
@@ -783,12 +785,12 @@ export class ProjectSidebar implements OnDestroy {
   }
 
   async sendMessage(): Promise<void> {
-    if (this.speechBusy()) return;
+    if (this.speechBusy() || this.photos()?.working()) return;
     const message = this.messageControl.value.trim();
 
     const projectId = this.data().project.id;
 
-    if (!message || this.isSending()) {
+    if ((!message && !this.photos()?.pendingMessageId()) || this.isSending()) {
       return;
     }
     if (this.billing.limitReached(this.data().project.company_id)) {
@@ -809,24 +811,29 @@ export class ProjectSidebar implements OnDestroy {
     this.dismissAiResult();
 
     try {
-      const savedMessage = await this.projectService.addMessage(projectId, message);
+      const retryId = this.photos()?.pendingMessageId();
+      const savedMessage = retryId ? this.data().messages.find(item => item.id === retryId) : await this.projectService.addMessage(projectId, message);
+      if (!savedMessage) throw new Error('Den tilknyttede besked kunne ikke findes.');
+      const images = this.photos()?.hasPending() ? await this.photos()?.attach(projectId, savedMessage.id) : undefined;
       messageSaved = true;
 
       if (!this.destroyed && this.data().project.id === projectId) {
         this.messageControl.reset();
         this.aiCompleted.emit({
           ...this.data(),
-          messages: [...this.data().messages, savedMessage],
+          messages: retryId ? this.data().messages : [...this.data().messages, savedMessage],
         });
       }
 
-      const aiResponse = await this.aiService.generateOffer(projectId);
+      const aiResponse = await this.aiService.generateOffer(projectId, images);
 
-      await this.projectService.saveAiResponse(projectId, aiResponse);
+      await this.projectService.saveAiResponse(projectId, aiResponse, !!images);
+      await this.photos()?.analyzed(projectId, images);
 
-      const assistantMessage = aiResponse.questions
-        .map((question, index) => `${index + 1}. ${question}`)
-        .join('\n\n');
+      const assistantMessage = [
+          ...(images ? (aiResponse.imageObservations ?? []).map(fact => `Synligt på billederne: ${fact}`) : []),
+          ...aiResponse.questions.map((question, index) => `${index + 1}. ${question}`),
+        ].join('\n\n');
 
       if (assistantMessage) {
         await this.projectService.addAssistantMessage(projectId, assistantMessage);

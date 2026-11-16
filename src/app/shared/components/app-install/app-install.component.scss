@@ -1,0 +1,27 @@
+:host { display: block; }
+.install-footer { padding: 12px 16px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; }
+.install-footer button { border: 0; padding: 8px; background: transparent; color: #526459; font: inherit; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+dialog { width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); overflow: auto; box-sizing: border-box; padding: 26px 20px 20px; border: 1px solid #e0e5dc; border-radius: 24px; background: #fff; color: #12372a; box-shadow: 0 16px 48px #082f2630; }
+dialog::backdrop { background: #082f2673; backdrop-filter: blur(3px); }
+.dismiss { position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border: 0; background: transparent; color: #67766d; font-size: 30px; cursor: pointer; }
+.eyebrow { display: block; padding-right: 28px; margin-bottom: 10px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #64786a; }
+h2 { margin: 0; font-size: 25px; line-height: 1.2; letter-spacing: -.025em; padding-right: 26px; }
+h2 span { display: block; margin-top: 4px; font-size: 17px; font-weight: 500; letter-spacing: 0; }
+#install-intro { margin: 14px 0 18px; font-size: 15px; line-height: 1.5; }
+.steps { list-style: none; display: grid; gap: 8px; padding: 0; margin: 0; }
+.steps li { display: grid; grid-template-columns: 26px minmax(0, 1fr) 38px; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; background: #eef3f0; font-size: 14px; line-height: 1.4; }
+.step-number { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #003b2d; color: #fff; font-size: 13px; font-weight: 650; }
+small { display: block; margin-top: 4px; font-size: 12px; line-height: 1.45; color: #526459; }
+.step-icon { display: grid; place-items: center; width: 38px; height: 40px; border-radius: 10px; background: white; color: #12372a; font-size: 26px; box-shadow: 0 2px 5px #12372a12; }
+.step-icon svg { width: 27px; height: 27px; }
+.share { color: #087afa; }
+.homescreen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: start; margin-top: 18px; padding: 20px 16px 14px; border-radius: 18px; background: radial-gradient(ellipse at 5% 100%, #ffbc68, transparent 65%), linear-gradient(125deg, #865781, #497db8 70%, #8db7c0); }
+.app-tile { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.app-tile img { display: block; border-radius: 15px; box-shadow: 0 3px 8px #12372a30; }
+.app-tile span { color: white; font-size: 11px; font-weight: 600; line-height: 1.25; text-shadow: 0 1px 3px #0005; }
+.placeholder { width: 100%; max-width: 64px; aspect-ratio: 1; justify-self: center; border-radius: 15px; background: #ffffff30; }
+.help { margin: 14px 0; font-size: 12px; line-height: 1.5; color: #637169; }
+.confirm { width: 100%; min-height: 46px; padding: 10px 18px; border: 0; border-radius: 11px; background: #003b2d; color: white; font: inherit; font-size: 15px; font-weight: 650; cursor: pointer; }
+button:focus-visible { outline: 2px solid #b98131; outline-offset: 3px; }
+@media (display-mode: standalone), (display-mode: fullscreen) { .install-footer { display: none; } }
+@media (max-width: 900px) { :host-context(app-root:has(.mobile-workspace-nav)) .install-footer { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); } }

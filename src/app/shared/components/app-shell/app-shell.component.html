@@ -97,9 +97,7 @@
 
 <ng-template #navigationContent>
   <span class="navigation-label">Arbejdsområde</span>
-  @if (appInstall.visible()) {
-    <button type="button" [disabled]="appInstall.busy()" (click)="closeMenu(); appInstall.install()"><app-workspace-icon name="install" /><span>Installer som app</span></button>
-  }
+
   <a routerLink="/customers" routerLinkActive="nav-active" ariaCurrentWhenActive="page" (click)="closeMenu()"><app-workspace-icon name="users" /><span>Kunder</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a>
   <a
     routerLink="/projects"
@@ -118,6 +116,9 @@
     ><app-workspace-icon name="company" /><span>Virksomhedsprofil</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a
   >
   <a routerLink="/company-profile" fragment="subscription" routerLinkActive="nav-active" [routerLinkActiveOptions]="navigationMatchOptions" ariaCurrentWhenActive="page" (click)="closeMenu()"><app-workspace-icon name="subscription" /><span>Abonnement</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a>
+  @if (appInstall.visible()) {
+    <button type="button" [disabled]="appInstall.busy()" (click)="closeMenu(); appInstall.install()"><app-workspace-icon name="install" /><span>Installer som app</span></button>
+  }
   @if (activity.isAdmin()) {
     <span class="navigation-label administration-label">Administration</span>
     <a

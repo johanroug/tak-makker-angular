@@ -2,12 +2,6 @@ app-offer-preview :is(.mobile-work-description, .mobile-work-caption, .mobile-wo
 app-offer-preview .work-edit-fields { display: contents; }
 
 @media (max-width: 900px) {
-  .project-workspace:has(.project-layout[data-mobile-section='tasks']) .project-shell {
-    padding-inline: 12px;
-  }
-  .project-workspace .project-layout[data-mobile-section='tasks'] app-offer-preview .offer-preview.compact-draft.board-draft .quotation-editor {
-    padding: 10px;
-  }
   .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .tasks-column {
     .draft-trade-group { margin-top: 12px; }
     .draft-trade-heading { padding: 8px 10px; }

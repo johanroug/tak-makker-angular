@@ -1,0 +1,18 @@
+@if (install.visible()) {
+  <div class="install-footer"><button type="button" [disabled]="install.busy()" (click)="install.install()">Brug Hovedet på Sømmet som app</button></div>
+}
+<dialog #dialog aria-labelledby="install-title" aria-describedby="install-intro" (close)="install.guide.set(null)" (cancel)="install.guide.set(null)" (click)="$event.target === dialog && dialog.close()">
+  <button class="dismiss" type="button" aria-label="Luk installationsvejledning" (click)="dialog.close()">×</button>
+  <h2 id="install-title"><strong>Installer som app</strong></h2>
+  <p id="install-intro">Få Hovedet på Sømmet direkte på din hjemmeskærm.</p>
+  <ol class="steps">
+    <li><span class="step-number">1</span><div>Tryk på <strong>Del-ikonet</strong>.</div><span class="step-icon share" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21V3m-6 6 6-6 6 6M10 13H6v16h20V13h-4" /></svg></span></li>
+    <li><span class="step-number">2</span><div>Vælg <strong>Føj til hjemmeskærm</strong>.</div><span class="step-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="5" width="22" height="22" rx="5"/><path d="M16 10v12m-6-6h12"/></svg></span></li> 
+  </ol>
+  <div class="homescreen" role="img" aria-label="Eksempel: Hovedet på Sømmet på din hjemmeskærm">
+    <div class="app-tile"><img src="/apple-touch-icon.png?v=4" width="64" height="64" alt="" /><span>Hovedet på<br />Sømmet</span></div>
+    <div class="placeholder" aria-hidden="true"></div><div class="placeholder" aria-hidden="true"></div>
+  </div>
+  <p class="help">Mangler valget? Åbn siden direkte i din browser frem for inde i fx Facebook eller en mailapp. Menunavne kan variere med din browserversion.</p>
+  <button type="button" class="confirm" (click)="dialog.close()" autofocus>Ok, jeg forstår</button>
+</dialog>

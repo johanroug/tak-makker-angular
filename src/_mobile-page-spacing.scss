@@ -1,0 +1,22 @@
+@media (max-width: 900px) {
+  // Keep the same usable page width throughout the signed-in workspace.
+  .workspace-shell .route-content :is(
+    .projects-dashboard,
+    .customers-page,
+    .customer-detail,
+    .company-profile,
+    .activity-page,
+    .users-page,
+    .offer-page
+  ),
+  .workspace-shell .route-content .project-workspace .project-shell {
+    padding-inline: 12px;
+  }
+
+  // Tasks, materials and the offer share the same editor container.
+  .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .quotation-editor {
+    padding-inline: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}

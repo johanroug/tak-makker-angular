@@ -2,13 +2,22 @@ app-offer-preview :is(.mobile-work-description, .mobile-work-caption, .mobile-wo
 app-offer-preview .work-edit-fields { display: contents; }
 
 @media (max-width: 900px) {
+  .project-workspace:has(.project-layout[data-mobile-section='tasks']) .project-shell {
+    padding-inline: 12px;
+  }
+  .project-workspace .project-layout[data-mobile-section='tasks'] app-offer-preview .offer-preview.compact-draft.board-draft .quotation-editor {
+    padding: 10px;
+  }
   .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .tasks-column {
+    .draft-trade-group { margin-top: 12px; }
+    .draft-trade-heading { padding: 8px 10px; }
+    .draft-row:last-child { margin-bottom: 0; }
     .draft-row {
-      position: relative; display: grid; grid-template-columns: minmax(72px, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-      align-items: start; gap: 8px; margin: 8px 0; padding: 12px; min-width: 0;
+      position: relative; display: grid; grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start; gap: 4px 8px; margin: 8px 0; padding: 12px; min-width: 0;
     }
     .line-check {
-      position: absolute; top: 12px; left: 12px; width: 32px; height: 48px; padding: 0;
+      position: absolute; top: 6px; left: 12px; width: 32px; height: 44px; padding: 0;
       border: 0; background: transparent;
       > span { display: grid; place-items: center; width: 26px; height: 26px; border: 2px solid #a9aca4; border-radius: 5px; background: #fffefb; }
       &.checked { border: 0; background: transparent; }
@@ -24,12 +33,12 @@ app-offer-preview .work-edit-fields { display: contents; }
     }
     .draft-fields.work-columns {
       display: contents;
-      > .draft-name { display: grid; grid-area: 1 / 1 / auto / -1; gap: 4px; min-width: 0; margin: 0 0 8px; padding: 0 0 12px 36px; border-bottom: 1px solid #e9e1d6; }
+      > .draft-name { display: grid; grid-area: 1 / 1 / auto / -1; gap: 0; min-width: 0; margin: 0; padding: 0 0 0 36px; border: 0; }
       .desktop-work-name, .desktop-work-rate, .desktop-work-caption, .draft-name > .field-caption { display: none; }
       .mobile-work-caption { display: inline; }
       .mobile-work-description {
-        display: block; box-sizing: border-box; width: 100%; min-width: 0; min-height: 48px;
-        margin: 0; padding: 8px 4px; border: 1px solid transparent; border-radius: 8px;
+        display: block; box-sizing: border-box; width: 100%; min-width: 0; min-height: 34px;
+        margin: 0; padding: 4px; border: 1px solid transparent; border-radius: 8px;
         background: transparent; color: inherit; font: inherit; font-size: 16px; font-weight: 650; line-height: 1.4;
         field-sizing: content; resize: none; overflow-wrap: break-word; word-break: normal;
         &:focus { border-color: #aabaae; outline: 2px solid #b98131; outline-offset: 1px; }
@@ -45,14 +54,14 @@ app-offer-preview .work-edit-fields { display: contents; }
       .draft-hours { grid-area: 2 / 1; }
       .mobile-work-rate { grid-area: 2 / 2; }
       .draft-hours > .draft-hours-input {
-        box-sizing: border-box; width: 84px; max-width: 100%; min-width: 0; min-height: 48px; height: 48px;
+        box-sizing: border-box; width: 72px; max-width: 100%; min-width: 0; min-height: 48px; height: 48px;
         margin: 0; padding: 8px; font: inherit; font-size: 16px; text-align: left;
         border: 1px solid #ddd6ca; border-radius: 9px; background: #fffcf8; color: inherit;
       }
       .mobile-work-rate > button { display: inline-flex; align-items: center; gap: 5px; width: fit-content; height: 48px; min-height: 48px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; font-size: 16px; font-weight: 650; text-align: left; cursor: pointer; app-workspace-icon { width: 14px; height: 14px; flex: 0 0 14px; opacity: .65; } &:focus-visible { outline: 2px solid #b98131; outline-offset: 3px; } &:disabled { opacity: .45; cursor: not-allowed; } }
       .draft-save-status { position: static; max-width: none; margin: 0; padding: 0; box-shadow: none; background: transparent; font-size: 11px; white-space: normal; }
       .draft-line-total {
-        display: flex; grid-area: 2 / 3; flex-direction: column; align-items: flex-end; justify-content: flex-start;
+        display: flex; grid-area: 2 / 3; flex-direction: column; align-items: flex-end; justify-content: flex-start; align-self: start;
         gap: 6px; min-width: 0; width: 100%; min-height: 40px; margin: 0; padding: 0;
         border-top: 0; border-radius: 0; background: transparent;
         .field-caption { display: block; margin: 0; padding: 0; font-size: 12px; font-weight: 650; line-height: 18px; min-height: 18px; white-space: nowrap; }

@@ -57,7 +57,7 @@
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
                   />
-                  <textarea class="mobile-work-description" rows="2" aria-label="Arbejdsbeskrivelse på mobil" [value]="item.description || ''" (input)="editField('work', item.id, 'description', $event, false)" (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
+                  <textarea class="mobile-work-description" rows="1" aria-label="Arbejdsbeskrivelse på mobil" [value]="item.description || ''" (input)="editField('work', item.id, 'description', $event, false)" (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
                   }}</span>
@@ -490,4 +490,3 @@
     isDownloadingPdf() ? 'PDF bliver genereret. Vent et øjeblik…' : ''
   }}</span>
 </dialog>
-

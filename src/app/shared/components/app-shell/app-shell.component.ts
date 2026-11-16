@@ -1,4 +1,5 @@
 import { AppAccessService } from '../../../core/auth/app-access.service';
+import { AppInstallService } from '../../../core/pwa/app-install.service';
 import { environment } from '../../../../environments/environment';
 import { interval } from 'rxjs';
 import { ActivityService } from '../../../core/activity/activity.service';
@@ -43,6 +44,7 @@ import { BillingService } from '../../../core/billing/billing.service';
   styleUrl: './app-shell.component.scss',
 })
 export class AppShell implements OnInit {
+  readonly appInstall = inject(AppInstallService);
   readonly isTestEnvironment = environment.supabaseUrl === 'https://woxioycjdjucxqiyqcyr.supabase.co';
   readonly billing = inject(BillingService);
   readonly activity = inject(ActivityService);

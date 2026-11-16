@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AppInstallComponent } from './shared/components/app-install/app-install.component';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, AppInstallComponent],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',

@@ -97,6 +97,9 @@
 
 <ng-template #navigationContent>
   <span class="navigation-label">Arbejdsområde</span>
+  @if (appInstall.visible()) {
+    <button type="button" [disabled]="appInstall.busy()" (click)="closeMenu(); appInstall.install()"><app-workspace-icon name="install" /><span>Installer som app</span></button>
+  }
   <a routerLink="/customers" routerLinkActive="nav-active" ariaCurrentWhenActive="page" (click)="closeMenu()"><app-workspace-icon name="users" /><span>Kunder</span><app-workspace-icon class="navigation-chevron" name="chevron" /></a>
   <a
     routerLink="/projects"

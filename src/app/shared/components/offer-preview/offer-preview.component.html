@@ -86,7 +86,7 @@
                       : (data().project.hourly_rate | number: '1.0-2' : 'da')
                   }}</button
                 >
-                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" [attr.aria-label]="data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? '—' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}</button></div>
+                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" [attr.aria-label]="data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? '—' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}<app-workspace-icon name="adjustments" /></button></div>
                 </div>
                 <strong class="draft-line-total"
                   ><span class="field-caption"><span class="desktop-work-caption">Beløb</span><span class="mobile-work-caption">Samlet pris</span></span>
@@ -490,3 +490,4 @@
     isDownloadingPdf() ? 'PDF bliver genereret. Vent et øjeblik…' : ''
   }}</span>
 </dialog>
+

@@ -4,11 +4,11 @@ app-offer-preview .work-edit-fields { display: contents; }
 @media (max-width: 900px) {
   .project-workspace app-offer-preview .offer-preview.compact-draft.board-draft .tasks-column {
     .draft-row {
-      display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px;
+      position: relative; display: grid; grid-template-columns: minmax(72px, 1fr) minmax(0, 1fr) minmax(0, 1fr);
       align-items: start; gap: 8px; margin: 8px 0; padding: 12px; min-width: 0;
     }
     .line-check {
-      position: static; grid-area: 1 / 1; width: 48px; height: 48px; padding: 0;
+      position: absolute; top: 12px; left: 12px; width: 32px; height: 48px; padding: 0;
       border: 0; background: transparent;
       > span { display: grid; place-items: center; width: 26px; height: 26px; border: 2px solid #a9aca4; border-radius: 5px; background: #fffefb; }
       &.checked { border: 0; background: transparent; }
@@ -16,7 +16,7 @@ app-offer-preview .work-edit-fields { display: contents; }
     }
     .line-actions-menu { display: none; }
     .mobile-work-reject {
-      display: inline-flex; align-items: center; justify-content: center; grid-area: 1 / 3;
+      display: inline-flex; align-items: center; justify-content: center; position: absolute; top: 12px; right: 12px;
       width: 48px; min-height: 48px; margin: 0; padding: 0; border: 0; border-radius: 8px;
       background: transparent; color: #a54940; font: inherit; font-size: 12px; cursor: pointer;
       &:hover:not(:disabled) { background: #fff4ed; }
@@ -24,7 +24,7 @@ app-offer-preview .work-edit-fields { display: contents; }
     }
     .draft-fields.work-columns {
       display: contents;
-      > .draft-name { display: grid; grid-area: 1 / 2 / auto / -1; gap: 4px; min-width: 0; margin: 0; }
+      > .draft-name { display: grid; grid-area: 1 / 1 / auto / -1; gap: 4px; min-width: 0; margin: 0 0 8px; padding: 0 0 12px 36px; border-bottom: 1px solid #e9e1d6; }
       .desktop-work-name, .desktop-work-rate, .desktop-work-caption, .draft-name > .field-caption { display: none; }
       .mobile-work-caption { display: inline; }
       .mobile-work-description {
@@ -34,30 +34,34 @@ app-offer-preview .work-edit-fields { display: contents; }
         field-sizing: content; resize: none; overflow-wrap: break-word; word-break: normal;
         &:focus { border-color: #aabaae; outline: 2px solid #b98131; outline-offset: 1px; }
       }
-      .work-edit-fields { display: grid; grid-area: 2 / 1 / auto / -1; grid-template-columns: repeat(auto-fit, minmax(min(100%, 100px), 1fr)); gap: 10px; min-width: 0; }
+      .work-edit-fields { display: contents; }
       :is(.draft-hours, .mobile-work-rate) {
         display: grid; align-items: start; align-content: start; gap: 6px;
         position: static; grid-area: auto; min-width: 0; width: auto; margin: 0; padding: 0;
         &::before { content: none; }
-        > .field-caption { display: block; order: initial; margin: 0; font-size: 12px; font-weight: 650; line-height: 1.4; text-align: left; white-space: nowrap; word-break: normal; overflow-wrap: normal; }
+        > .field-caption { display: block; order: initial; margin: 0; font-size: 12px; font-weight: 650; line-height: 18px; min-height: 18px; text-align: left; white-space: nowrap; word-break: normal; overflow-wrap: normal; }
       }
       .draft-hours > :is(.mobile-price, .mobile-detail-icon) { display: none; }
-      .draft-hours > .draft-hours-input, .mobile-work-rate > button {
-        box-sizing: border-box; width: 100%; min-width: 0; min-height: 48px; height: 48px;
+      .draft-hours { grid-area: 2 / 1; }
+      .mobile-work-rate { grid-area: 2 / 2; }
+      .draft-hours > .draft-hours-input {
+        box-sizing: border-box; width: 84px; max-width: 100%; min-width: 0; min-height: 48px; height: 48px;
         margin: 0; padding: 8px; font: inherit; font-size: 16px; text-align: left;
         border: 1px solid #ddd6ca; border-radius: 9px; background: #fffcf8; color: inherit;
       }
-      .mobile-work-rate > button { cursor: pointer; &:disabled { opacity: .45; cursor: not-allowed; } }
+      .mobile-work-rate > button { display: inline-flex; align-items: center; gap: 5px; width: fit-content; height: 48px; min-height: 48px; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; font-size: 16px; font-weight: 650; text-align: left; cursor: pointer; app-workspace-icon { width: 14px; height: 14px; flex: 0 0 14px; opacity: .65; } &:focus-visible { outline: 2px solid #b98131; outline-offset: 3px; } &:disabled { opacity: .45; cursor: not-allowed; } }
       .draft-save-status { position: static; max-width: none; margin: 0; padding: 0; box-shadow: none; background: transparent; font-size: 11px; white-space: normal; }
       .draft-line-total {
-        display: flex; grid-area: 3 / 1 / auto / -1; align-items: center; justify-content: space-between;
-        flex-wrap: wrap; gap: 6px 12px; min-width: 0; width: 100%; min-height: 40px; margin: 0; padding: 10px 0 0;
-        border-top: 1px solid #e9e1d6; border-radius: 0; background: transparent;
-        .field-caption { display: block; margin: 0; font-size: 13px; font-weight: 500; white-space: nowrap; }
+        display: flex; grid-area: 2 / 3; flex-direction: column; align-items: flex-end; justify-content: flex-start;
+        gap: 6px; min-width: 0; width: 100%; min-height: 40px; margin: 0; padding: 0;
+        border-top: 0; border-radius: 0; background: transparent;
+        .field-caption { display: block; margin: 0; padding: 0; font-size: 12px; font-weight: 650; line-height: 18px; min-height: 18px; white-space: nowrap; }
         .mobile-detail-icon { display: none; }
-        .mobile-price { margin-left: auto; font-size: 18px; font-weight: 750; white-space: nowrap; }
+        .mobile-price { display: flex; align-items: center; height: 48px; min-height: 48px; margin: 0 0 0 auto; line-height: normal; font-size: 18px; font-weight: 750; white-space: nowrap; }
       }
     }
-    .draft-row:has(.mobile-work-reject) .draft-fields > .draft-name { grid-column-end: 3; }
+    .draft-row:has(.mobile-work-reject) .draft-fields > .draft-name { padding-right: 52px; }
   }
 }
+
+

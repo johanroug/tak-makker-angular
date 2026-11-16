@@ -13,7 +13,7 @@ import { WorkspaceIcon } from '../components/workspace-icon.component';
       <div class="phone-project"><app-workspace-icon name="projects" />2026-0026 · Renovering af badeværelse</div>
       <div class="phone-tabs"><span><app-workspace-icon name="chat" />Samtale</span><span class="selected"><app-workspace-icon name="tasks" />Opgaver</span><span><app-workspace-icon name="materials" />Materialer</span><span><app-workspace-icon name="offers" />Tilbud</span></div>
       <h3>Arbejdsopgaver <small>✓ 3 af 5</small></h3>
-      <div class="phone-trade"><app-workspace-icon name="wrench" />VVS <small>3 opgaver</small></div>
+      <div class="phone-trade"><app-workspace-icon name="wrench" />Badeværelse <small>5 opgaver</small></div>
       @for (item of items; track item.title) {
         <article><span class="phone-approved">✓ Godkendt</span><h4>{{ item.title }}</h4><div class="phone-amount"><span>Din tid</span><b>Din pris</b><span class="phone-reject">Afvis</span></div></article>
       }
@@ -44,8 +44,8 @@ import { WorkspaceIcon } from '../components/workspace-icon.component';
 })
 export class MarketingPhone {
   readonly items = [
-    { title: 'Montering og tilslutning af 3 nye radiatorer' },
-    { title: 'Afmontering og bortskaffelse af 3 eksisterende radiatorer' },
+    { title: 'Nedtagning af eksisterende sanitet' },
+    { title: 'Montering af bruseniche' },
     { title: 'Tilpasning af rør og installationer' },
   ];
 }

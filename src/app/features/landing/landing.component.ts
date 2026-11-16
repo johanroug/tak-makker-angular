@@ -6,6 +6,7 @@ import { PublicBrandComponent } from '../../shared/components/public-brand/publi
 import { resetPublicPageScroll } from '../../shared/public-page-scroll';
 import { MarketingHeader } from '../../shared/marketing/marketing-header.component';
 import { MarketingPhone } from '../../shared/marketing/marketing-phone.component';
+import { MarketingImageAi } from '../../shared/marketing/marketing-image-ai.component';
 import { MarketingCustomers } from '../../shared/marketing/marketing-customers.component';
 import { WorkspaceIcon } from '../../shared/components/workspace-icon.component';
 
@@ -18,6 +19,7 @@ import { WorkspaceIcon } from '../../shared/components/workspace-icon.component'
     PublicBrandComponent,
     MarketingHeader,
     MarketingPhone,
+    MarketingImageAi,
     MarketingCustomers,
     WorkspaceIcon,
   ],
@@ -32,7 +34,7 @@ export class LandingComponent {
   readonly steps = [
     {
       title: 'Beskriv projektet',
-      text: 'Fortæl kort, hvad der skal laves – med tekst eller tale.',
+      text: 'Fortæl kort, hvad der skal laves – med tekst eller tale. Tilføj billeder, så AI får mere kontekst om arbejdet.',
       image: '/marketing/trin-1-beskriv-opgaven-flexible.jpg',
       alt: 'Opret et projekt ved at beskrive opgaven i tekstfeltet eller med mikrofonen.',
       width: 1747, height: 889,

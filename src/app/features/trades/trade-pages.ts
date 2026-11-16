@@ -22,7 +22,7 @@ export const TRADE_PAGES: TradePage[] = [
     slug: 'tilbudsprogram-til-vvs',
     trade: 'VVS',
     title: 'Tilbudsprogram til VVS | Hovedet på sømmet',
-    description: 'Lav VVS-tilbud med overblik over arbejdsopgaver, materialer og timer. Tilpas dine priser, og hent en PDF med dit logo. Prøv 10 gratis forespørgsler.',
+    description: 'Lav VVS-tilbud med overblik over arbejdsopgaver, materialer og timer. Tilpas dine priser, og hent en PDF med dit logo. Kom gratis i gang.',
     heading: 'Styr på rørene.',
     accent: 'Og på tilbuddet.',
     image: '/marketing/craft-still-life.jpg',
@@ -62,7 +62,7 @@ export const TRADE_PAGES: TradePage[] = [
     trade: 'Tømrere',
     title: 'Tilbudsprogram til tømrere | Hovedet på sømmet',
     description:
-      'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Prøv 10 gratis forespørgsler uden betalingskort.',
+      'Fra terrasse til tagarbejde: Få hjælp til tilbud som tømrer. Tilpas opgaver, materialer og timer, og hent en PDF med dit logo. Kom gratis i gang uden betalingskort.',
     heading: 'Godt håndværk.',
     accent: 'Også på papiret.',
     image: '/marketing/carpentry.jpg',
@@ -118,7 +118,7 @@ export const TRADE_PAGES: TradePage[] = [
     trade: 'Murere',
     title: 'Tilbudsprogram til murere | Hovedet på sømmet',
     description:
-      'Lav tilbud på murer- og flisearbejde med hjælp fra Hovedet på sømmet. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Prøv 10 gratis forespørgsler.',
+      'Lav tilbud på murer- og flisearbejde med hjælp fra Hovedet på sømmet. Gennemgå materialer, timer og omfang, og hent dit tilbud som PDF. Kom gratis i gang.',
     heading: 'Styr på tilbuddet.',
     accent: 'Helt ned i fugen.',
     image: '/marketing/craft-still-life.jpg',
@@ -174,7 +174,7 @@ export const TRADE_PAGES: TradePage[] = [
     trade: 'Malere',
     title: 'Tilbudsprogram til malere | Hovedet på sømmet',
     description:
-      'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Hovedet på sømmet og hent en PDF. Prøv 10 gratis forespørgsler.',
+      'Tilbud på malerarbejde med overblik over afdækning, forarbejde, materialer og timer. Tilpas udkastet i Hovedet på sømmet og hent en PDF. Kom gratis i gang.',
     heading: 'Et godt tilbud.',
     accent: 'Med den rette finish.',
     image: '/marketing/painting.jpg',

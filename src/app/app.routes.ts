@@ -14,7 +14,7 @@ export const routes: Routes = [
       seo: {
         path: '/',
         description:
-          'Tilbudsprogram til håndværkere: Lav professionelle tilbud med AI, tilpas opgaver, materialer og priser, og hent som PDF. Prøv 10 gratis forespørgsler.',
+          'Tilbudsprogram til håndværkere: Lav professionelle tilbud med AI, tilpas opgaver, materialer og priser, og hent som PDF. Kom gratis i gang.',
       },
     },
     loadComponent: () =>

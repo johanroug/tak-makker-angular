@@ -120,11 +120,11 @@ export class Login {
         if (data.session) {
           await this.authService.signOut();
           this.notice.set(
-            'Din bruger er oprettet. Log ind og prøv de 10 gratis forespørgsler.',
+            'Din bruger er oprettet. Log ind og kom gratis i gang.',
           );
         } else
           this.notice.set(
-            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Bekræft din e-mail og log ind for at prøve de 10 gratis forespørgsler.',
+            'Tjek din indbakke. Hvis adressen kan registreres, får du en bekræftelsesmail. Bekræft din e-mail og log ind for at komme gratis i gang.',
           );
         this.registrationComplete.set(true);
         return;

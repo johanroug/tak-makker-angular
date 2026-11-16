@@ -34,12 +34,12 @@ export class SpeechInput implements OnDestroy {
   private generation = 0;
 
   constructor() {
-    effect(() => { if (this.disabled()) this.cancel(); });
+    effect(() => { if (this.disabled() || !this.billing.speechAccess(this.companyId())) this.cancel(); });
     effect(() => { this.context(); this.cancel(); });
   }
 
   async start(): Promise<void> {
-    if (this.disabled() || this.state() !== 'idle') return;
+    if (this.disabled() || !this.billing.speechAccess(this.companyId()) || this.state() !== 'idle') return;
     this.error.set('');
     this.permissionDenied.set(false);
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {

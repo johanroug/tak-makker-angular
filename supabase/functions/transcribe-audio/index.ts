@@ -29,6 +29,7 @@ Deno.serve(async request => {
       p_company_id: typeof companyId === 'string' ? companyId : null,
     });
     if (usageError || !usage?.companyId) return reply('Ingen adgang til virksomhedens taleinput.', 403);
+    if (!['active', 'internal'].includes(usage.status)) return Response.json({ error: 'Taleinput kræver aktivt abonnement.', usage }, { status: 403, headers });
     if (!usage.canTranscribe) return Response.json({ error: 'Virksomhedens transskriptioner er brugt eller i gang. Se dit abonnement.', usage }, { status: 403, headers });
     const file = form.get('file');
     if (!(file instanceof File) || !file.size || file.size > 8 * 1024 * 1024) return reply('Vælg en kortere optagelse på højst 8 MB.', 400);

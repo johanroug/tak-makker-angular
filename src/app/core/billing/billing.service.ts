@@ -67,6 +67,11 @@ export class BillingService implements OnDestroy {
     return usage.canTranscribe === false;
   }
 
+  speechAccess(companyId?: string): boolean {
+    const usage = this.usage();
+    return !!usage && (!companyId || usage.companyId === companyId) && ['active', 'internal'].includes(usage.status);
+  }
+
   loadCheckoutConfiguration(force = false): Promise<void> {
     if (!force && this.configurationLoaded && Date.now() < this.configurationValidUntil) return Promise.resolve();
     if (this.configurationPending) return this.configurationPending;

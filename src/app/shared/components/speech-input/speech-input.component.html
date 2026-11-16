@@ -15,7 +15,7 @@
       @if (state() === 'recording') { <span class="recording-dot" aria-hidden="true"></span> Optager · højst 90 sek. }
       @else if (state() === 'starting') { Åbner mikrofon… }
       @else if (state() === 'transcribing') { Omsætter til tekst… }
-      @else { Skriv eller indtal }
+      @else { {{ billing.speechAccess(companyId()) ? 'Skriv eller indtal' : 'Skriv din besked' }} }
     </span>
     <div class="speech-controls">
       @if (showCamera()) {
@@ -30,9 +30,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
         </button>
       }
-      <button type="button" [disabled]="disabled() || state() === 'starting' || state() === 'transcribing'" (click)="state() === 'recording' ? stop() : start()" [class.recording]="state() === 'recording'"
-        [attr.aria-label]="state() === 'recording' ? 'Stop optagelsen og indsæt teksten' : 'Indtal besked'"
-        [title]="state() === 'recording' ? 'Stop og indsæt tekst' : 'Indtal besked. Lyd omsættes til tekst af OpenAI.'">
+      <button type="button" [disabled]="disabled() || !billing.speechAccess(companyId()) || state() === 'starting' || state() === 'transcribing'" (click)="state() === 'recording' ? stop() : start()" [class.recording]="state() === 'recording'"
+        [attr.aria-label]="!billing.speechAccess(companyId()) ? 'Taleinput kræver aktivt abonnement' : state() === 'recording' ? 'Stop optagelsen og indsæt teksten' : 'Indtal besked'"
+        [title]="!billing.speechAccess(companyId()) ? 'Taleinput kræver aktivt abonnement' : state() === 'recording' ? 'Stop og indsæt tekst' : 'Indtal besked. Lyd omsættes til tekst af OpenAI.'">
         @if (state() === 'recording') {
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
         } @else if (state() === 'starting' || state() === 'transcribing') {

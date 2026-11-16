@@ -95,9 +95,7 @@
           aria-label="Gratis forespørgsler brugt"
         ></progress>
         <p>De 10 gratis forespørgsler deles af hele virksomheden. Kun gennemførte svar tæller.</p>
-        @if (usage.transcriptionLimit !== undefined) {
-          <p>{{ usage.transcriptionRemaining }} af {{ usage.transcriptionLimit }} tale til tekst tilbage i prøveperioden.</p>
-        }
+        <p>Taleinput og billedanalyse kræver aktivt abonnement.</p>
       }
       @if (usage.trialPending && !usage.canGenerate) {
         <p>Vent på de igangværende forespørgsler.</p>

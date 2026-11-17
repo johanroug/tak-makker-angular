@@ -1,4 +1,5 @@
 import { ImageInputError, readImageRequest, validateImageInput } from '../_shared/ai/image-input.ts';
+import { AiBudget, AiBudgetError, BUDGET_MESSAGE, OFFER_MODEL } from '../_shared/ai/budget.ts';
 import OpenAI from 'npm:openai';
 import { zodTextFormat } from 'npm:openai/helpers/zod';
 import { createClient } from 'npm:@supabase/supabase-js';
@@ -35,6 +36,7 @@ Deno.serve(async (request) => {
   const timings: Record<string, number> = {};
   let requestId: string | undefined;
   const billing = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const budget = new AiBudget(billing);
   const measure = async <T>(name: string, action: () => PromiseLike<T>): Promise<T> => {
     const phaseStarted = performance.now();
     try {
@@ -219,10 +221,13 @@ Deno.serve(async (request) => {
       usage: reservation.usage,
     }, { status: 402, headers: corsHeaders });
     requestId = reservation.requestId;
+    await budget.reserve('offer');
+    budget.start();
 
     const response = await measure('aiMs', () =>
       openai.responses.parse({
-        model: 'gpt-6-luna',
+        model: OFFER_MODEL,
+        service_tier: 'default',
         // Conversation history lives in Supabase and is supplied on every call.
         // Opt out of Responses application-state storage (not abuse monitoring).
         store: false,
@@ -252,6 +257,7 @@ Deno.serve(async (request) => {
         },
       }),
     );
+    await budget.record('offer', response.usage);
 
     // Log only API usage counters and request metadata, never prompt/image content.
     // This call is non-streaming; usage is available on the completed response.
@@ -298,6 +304,7 @@ Deno.serve(async (request) => {
         if (releaseError) console.error('Could not release request reservation');
       } catch { console.error('Could not release request reservation'); }
     }
+    if (error instanceof AiBudgetError) return Response.json({ code: 'AI_BUDGET_REACHED', error: BUDGET_MESSAGE }, { status: 503, headers: corsHeaders });
     if (error instanceof ImageInputError) return Response.json({ code: 'IMAGE_INPUT_INVALID', error: error.message }, { status: 400, headers: corsHeaders });
     // Provider errors can contain request bodies. Never log image payloads.
     console.error('GENERATE OFFER ERROR');
@@ -307,6 +314,7 @@ Deno.serve(async (request) => {
       { status: 500, headers: corsHeaders },
     );
   } finally {
+    await budget.releaseUnsent();
     console.info('GENERATE OFFER TIMING', {
       ...timings,
       totalMs: Math.round(performance.now() - started),

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import * as imageHelpers from '../supabase/functions/_shared/ai/image-input.ts';
+import * as budgetHelpers from '../supabase/functions/_shared/ai/budget.ts';
 
 const messageId = '11111111-1111-4111-8111-111111111111';
 const imageId = '22222222-2222-4222-8222-222222222222';
@@ -28,6 +29,7 @@ const client = {
   rpc: async name => ({ data: name === 'can_access_app' ? true
     : name === 'get_company_billing' ? { companyId: 'company', status: state.status }
     : name === 'reserve_company_ai_request' ? { allowed: true, requestId: 'reservation' }
+    : name === 'reserve_global_ai_budget' ? state.budgetUnavailable ? null : { allowed: !state.budgetDenied, requestId: 'budget' }
     : { status: state.status } }),
   from: table => {
     const query = { select: () => query, eq: () => query, order: () => query, single: () => query, maybeSingle: () => query,
@@ -48,6 +50,7 @@ runInNewContext(compiled, {
     : name === 'npm:openai/helpers/zod' ? { zodTextFormat: () => ({}) }
     : name === 'npm:@supabase/supabase-js' ? { createClient: () => client }
     : name.includes('image-input') ? imageHelpers
+    : name.includes('/ai/budget') ? budgetHelpers
     : name.includes('schemas/project') ? { ProjectResponseSchema: {} }
     : name.endsWith('instructions.ts') ? { aiInstructions: 'Existing accepted/rejected rules' }
     : new Proxy({}, { get: () => () => '' }),
@@ -69,4 +72,13 @@ reset({ status: 'trial' }); assert.equal((await call({ projectId: 'project' })).
 assert.equal(typeof providerCalls[0].input.at(-1).content, 'string');
 reset({ providerFailure: true }); assert.equal((await call()).status, 500);
 assert.ok(!logs.join(' ').includes(dataUrl), 'Never log provider errors containing images');
+for (const status of ['active', 'internal', 'trial']) {
+  for (const failure of [{ budgetDenied: true }, { budgetUnavailable: true }]) {
+    reset({ status, ...failure });
+    const response = await call({ projectId: 'project' });
+    assert.equal(response.status, 503);
+    assert.equal((await response.json()).code, 'AI_BUDGET_REACHED');
+    assert.equal(providerCalls.length, 0, 'Global stop must prevent OpenAI for every account type');
+  }
+}
 console.log('Passed: actual endpoint with mocked dependencies — auth, project membership, paid-only gating, message ownership, inline image forwarding, store:false, text-only compatibility and provider error redaction. No remote calls.');

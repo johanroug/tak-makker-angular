@@ -34,6 +34,7 @@ export class AiService {
             if (error.context instanceof Response) {
               const body = await error.context.clone().json().catch(() => null);
               if (billingVersion === this.billing.version) this.billing.accept(body?.usage, true);
+              if (body?.code === 'AI_BUDGET_REACHED') throw new TrialError('AI er midlertidigt sat på pause. Prøv igen senere.');
               if (body?.code === 'IMAGE_INPUT_INVALID' || body?.code === 'IMAGE_SUBSCRIPTION_REQUIRED') throw new TrialError(body.error);
               if (body?.code === 'TRIAL_EXHAUSTED') throw new TrialError('Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
               if (body?.code === 'TRIAL_BUSY') throw new TrialError('Dine resterende gratis forespørgsler er i gang. Vent på svar, og prøv igen.');

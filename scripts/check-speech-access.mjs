@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import assert from 'node:assert/strict';
+import * as budgetHelpers from '../supabase/functions/_shared/ai/budget.ts';
 
 let handler;
 let status;
@@ -34,6 +35,7 @@ const client = {
 };
 const source = readFileSync('supabase/functions/transcribe-audio/index.ts', 'utf8').replace(/^import .*;\r?\n/gm, '');
 runInNewContext(stripTypeScriptTypes(source), {
+  ...budgetHelpers,
   createClient: () => client,
   Deno: { env: { get: () => 'test' }, serve: callback => { handler = callback; } },
   Response, File, FormData, AbortSignal, console,

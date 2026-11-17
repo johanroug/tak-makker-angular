@@ -7,7 +7,7 @@ Bruges af samtalen og oprettelse af projekter. Browseren optager højst 90 sekun
 1. Anvend migrationen `202611090001_speech_upload_limit.sql`.
 2. Deploy funktionen: `npx supabase functions deploy transcribe-audio`.
 3. Funktionen bruger den eksisterende `OPENAI_API_KEY` i Supabase Secrets. Nøglen skal aldrig ligge i klienten.
-4. Valgfri secret `OPENAI_TRANSCRIPTION_MODEL` ændrer standardmodellen `gpt-4o-mini-transcribe`.
+4. Modellen er `gpt-4o-mini-transcribe`. Secret `OPENAI_TRANSCRIPTION_MODEL` må kun være tom eller have dette modelnavn; andre modeller kræver gennemgang af det globale budget først.
 
 Modellen og multipart-endpointet følger https://developers.openai.com/api/docs/guides/speech-to-text.
 

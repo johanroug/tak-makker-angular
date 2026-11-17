@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js';
+import { AiBudget, AiBudgetError, BUDGET_MESSAGE, TRANSCRIPTION_MODEL } from '../_shared/ai/budget.ts';
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +14,7 @@ Deno.serve(async request => {
   const authorization = request.headers.get('Authorization');
   if (!authorization?.startsWith('Bearer ')) return reply('Log ind for at bruge taleinput.', 401);
   const billing = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const budget = new AiBudget(billing);
   let requestId: string | undefined;
   try {
     const user = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
@@ -40,15 +42,20 @@ Deno.serve(async request => {
     if (!allowed) return reply('Du har lavet mange optagelser. Prøv igen om lidt.', 429);
     const key = Deno.env.get('OPENAI_API_KEY');
     if (!key) return reply('Taleinput er ikke konfigureret endnu.', 503);
+    // A model override without reviewed pricing must not bypass the cost envelope.
+    const model = Deno.env.get('OPENAI_TRANSCRIPTION_MODEL') || TRANSCRIPTION_MODEL;
+    if (model !== TRANSCRIPTION_MODEL) return reply('Taleinput er midlertidigt utilgængeligt.', 503);
     const { data: reservation, error: reserveError } = await billing.rpc('reserve_company_transcription', {
       p_company_id: usage.companyId, p_user_id: auth.user.id,
     });
     if (reserveError) return reply('Forbruget kunne ikke kontrolleres. Prøv igen.', 503);
     if (!reservation?.allowed) return Response.json({ error: 'Virksomhedens transskriptioner er brugt eller i gang. Se dit abonnement.', usage: reservation?.usage }, { status: 403, headers });
     requestId = reservation.requestId;
+    await budget.reserve('transcription');
     const upload = new FormData();
     upload.append('file', file);
-    upload.append('model', Deno.env.get('OPENAI_TRANSCRIPTION_MODEL') || 'gpt-4o-mini-transcribe');
+    upload.append('model', model);
+    budget.start();
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST', headers: { Authorization: `Bearer ${key}` }, body: upload,
       signal: AbortSignal.timeout(60_000),
@@ -58,15 +65,18 @@ Deno.serve(async request => {
       return reply('Lydoptagelsen kunne ikke behandles. Prøv igen om lidt.', 502);
     }
     const result = await response.json();
+    await budget.record('transcription', result.usage);
     const text = typeof result.text === 'string' ? result.text.trim() : '';
     if (!text) return reply('Vi kunne ikke høre nogen tale. Prøv igen.', 422);
     const { data: updatedUsage, error: finishError } = await billing.rpc('finish_company_transcription', { p_request_id: requestId, p_succeeded: true });
     if (finishError) return reply('Teksten kunne ikke færdigbehandles. Prøv igen.', 503);
     requestId = undefined;
     return Response.json({ text, usage: updatedUsage }, { headers });
-  } catch {
+  } catch (error) {
+    if (error instanceof AiBudgetError) return Response.json({ code: 'AI_BUDGET_REACHED', error: BUDGET_MESSAGE }, { status: 503, headers });
     return reply('Lydoptagelsen kunne ikke behandles. Prøv igen.', 500);
   } finally {
+    await budget.releaseUnsent();
     if (requestId) {
       const { error } = await billing.rpc('finish_company_transcription', { p_request_id: requestId, p_succeeded: false });
       if (error) console.error('Could not release transcription reservation');

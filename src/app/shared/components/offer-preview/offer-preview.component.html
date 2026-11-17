@@ -240,28 +240,6 @@
   </div>
   <aside class="quotation-summary" aria-label="Tilbudsoverblik" tabindex="-1">
     <header class="quotation-summary-heading"><h2><app-workspace-icon name="offers" />Tilbud</h2><span>{{ missingRequirements.length ? 'Udkast' : 'Klar' }}</span></header>
-    <div class="quotation-paper" aria-label="Tilbudsudkast">
-      <span>{{ data().company?.name || 'Hovedet på Sømmet' }}</span>
-      <strong>Tilbud</strong>
-      <p>{{ data().project.title || 'Dit næste tilbud' }}</p>
-      <div class="paper-rule"></div><div class="paper-rule"></div><div class="paper-rule short"></div>
-      <b>{{ subtotal | number: '1.0-2' : 'da' }} kr. ekskl. moms</b>
-    </div>
-  <details class="draft-details draft-terms">
-    <summary>Tilbudsbetingelser</summary>
-    <h3>Gyldighed</h3>
-    <p>
-      {{
-        data().project.validity_days === null
-          ? 'Ikke angivet'
-          : data().project.validity_days + ' dage fra tilbudsdato'
-      }}
-    </p>
-    <h3>Betalingsbetingelser</h3>
-    <p>{{ data().project.payment_terms || 'Ikke angivet' }}</p>
-    <h3>Forbehold</h3>
-    <p>{{ data().project.reservations || 'Ingen angivet' }}</p>
-  </details>
   <section class="draft-details draft-price-details" aria-label="Prisoversigt og moms">
     <div class="pricing-row">
       <span>Arbejde</span><strong>{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
@@ -310,6 +288,21 @@
     </details>
     </div>
   }
+  <details class="draft-details draft-terms">
+    <summary>Tilbudsbetingelser</summary>
+    <h3>Gyldighed</h3>
+    <p>
+      {{
+        data().project.validity_days === null
+          ? 'Ikke angivet'
+          : data().project.validity_days + ' dage fra tilbudsdato'
+      }}
+    </p>
+    <h3>Betalingsbetingelser</h3>
+    <p>{{ data().project.payment_terms || 'Ikke angivet' }}</p>
+    <h3>Forbehold</h3>
+    <p>{{ data().project.reservations || 'Ingen angivet' }}</p>
+  </details>
     @if (finalizedOfferNumber(); as offerNumber) {
       <div class="finalized-message">
         <div>

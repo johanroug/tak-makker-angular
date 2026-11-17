@@ -167,12 +167,6 @@ app-new-project-dialog .start-dialog {
   .quotation-summary-heading { display: flex; align-items: center; justify-content: space-between; padding: 19px 0; border-bottom: 1px solid #e9e1d6; }
   .quotation-summary-heading h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 22px; font-weight: 800; }
   .quotation-summary-heading > span { background: #07532b; border-radius: 9px; padding: 5px 10px; color: #fff; font-size: 12px; font-weight: 700; }
-  .quotation-paper { position: relative; display: grid; gap: 14px; margin: 24px 12px 28px; padding: 23px 18px; border-radius: 8px 24px 8px 8px; background: #fffefb; box-shadow: 0 10px 24px #3f321a20; transform: rotate(4deg); border-top: 5px solid #ff7a13; }
-  .quotation-paper > span { font-size: 12px; font-weight: 800; }
-  .quotation-paper em { color: #ef650e; font-style: normal; }
-  .quotation-paper > strong { font-size: 26px; font-style: italic; }
-  .quotation-paper p { margin: 0; font-size: 12px; }
-  .quotation-paper b { font-size: 12px; }
   .paper-rule { height: 6px; background: #dedbd5; border-radius: 4px; }
   .paper-rule.short { width: 65%; }
   .draft-terms { margin-top: 8px; border: 0; box-shadow: none; font-size: 12px; }

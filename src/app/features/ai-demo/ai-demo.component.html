@@ -1,0 +1,217 @@
+<header class="demo-header">
+  <div class="demo-identity">
+    <app-public-brand [tagline]="false" [header]="true" [inverse]="true" />
+    <span class="demo-badge"><span aria-hidden="true">✦</span> Interaktiv demo</span>
+  </div>
+  <a routerLink="/">‹ Forsiden</a>
+  <details
+    #offerPicker
+    class="project-picker demo-picker"
+    (toggle)="onOfferPickerToggle()"
+    (keydown.escape)="closeOfferPicker(true); $event.stopPropagation()"
+  >
+    <summary class="project-selector" aria-label="Vælg tilbud">
+      <app-workspace-icon name="offers" />
+      <span>{{ selected()?.title ?? 'Vælg tilbud' }}</span>
+    </summary>
+    <div class="project-dropdown">
+      <label class="sr-only" for="demo-offer-search">Søg efter tilbud</label>
+      <input
+        #offerSearchInput
+        id="demo-offer-search"
+        type="search"
+        autocomplete="off"
+        placeholder="Søg på fag eller titel…"
+        [value]="offerSearch()"
+        (input)="offerSearch.set(offerSearchInput.value)"
+        (keydown.arrowdown)="focusFirstOffer(); $event.preventDefault()"
+      />
+      <div class="project-results" aria-label="Tilbud">
+        @for (example of matchingOffers(); track example.trade) {
+          <button
+            class="project-result"
+            type="button"
+            [attr.aria-current]="selected() === example ? 'true' : null"
+            (click)="selectOffer(example)"
+          >
+            <span class="project-number">{{ example.trade }}</span>
+            <span>{{ example.title }}</span>
+          </button>
+        } @empty {
+          <p class="project-empty" role="status">Ingen tilbud matcher din søgning.</p>
+        }
+      </div>
+    </div>
+  </details>
+</header>
+<div class="project-workspace">
+  <div class="workspace-accent" aria-hidden="true"></div>
+  <div class="project-shell">
+    <section class="demo-guide" aria-labelledby="demo-guide-title">
+      <div>
+        <h2 id="demo-guide-title">Prøv AI’en i praksis</h2>
+        <p>
+          Se, hvordan en kort opgavebeskrivelse bliver til arbejdsopgaver, materialer og et tilbud.
+        </p>
+      </div>
+      <div class="demo-guide-flow">
+        <span class="example-badge">Eksempeldata</span>
+        <ol aria-label="Demoens trin">
+          <li><span aria-hidden="true">1</span> Vælg en opgave</li>
+          <li><span aria-hidden="true">2</span> AI foreslår</li>
+          <li><span aria-hidden="true">3</span> Se tilbuddet</li>
+        </ol>
+      </div>
+    </section>
+    <main class="project-layout" [attr.data-mobile-section]="section()">
+      <aside
+        class="conversation-rail demo-conversation"
+        [class.demo-conversation-start]="!stage()"
+        [class.mobile-chat-active]="section() === 'chat'"
+        aria-label="Samtale om dit tilbud"
+      >
+        <header class="conversation-heading"><h2>AI-samtale</h2></header>
+        <div class="conversation-body is-open">
+          @if (!stage()) {
+            <div class="demo-welcome">
+              <span class="demo-welcome-icon" aria-hidden="true">
+                <app-workspace-icon name="chat" />
+                <app-workspace-icon name="sparkles" />
+              </span>
+              <h3>Hvad skal vi bygge?</h3>
+              <p>Vælg et eksempel, og se forslagene blive til et tilbud.</p>
+            </div>
+            <form class="example-form" (submit)="$event.preventDefault(); start()">
+              <fieldset #composer tabindex="-1">
+                <legend>Vælg et eksempel</legend>
+                @for (example of examples; track example.trade) {
+                  <button
+                    class="example-option"
+                    type="button"
+                    [attr.aria-pressed]="selected() === example"
+                    (click)="selected.set(example)"
+                  >
+                    <span class="example-icon" aria-hidden="true">
+                      <app-workspace-icon [name]="example.icon" />
+                    </span>
+                    <span class="example-label">
+                      <span>{{ example.trade }}</span>
+                      <strong>{{ example.title }}</strong>
+                    </span>
+                    <span class="example-check" aria-hidden="true">
+                      @if (selected() === example) {
+                        ✓
+                      }
+                    </span>
+                  </button>
+                }
+              </fieldset>
+              @if (selected(); as example) {
+                <details class="example-description">
+                  <summary>Se opgavebeskrivelsen</summary>
+                  <p>{{ example.description }}</p>
+                </details>
+              }
+              <button class="example-start" type="submit" [disabled]="!selected()">
+                <app-workspace-icon name="sparkles" aria-hidden="true" />
+                <span>Se hvordan AI hjælper</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </form>
+          } @else {
+            <div class="chat-messages" aria-label="Beskeder">
+              <article class="chat-message chat-message-user">
+                <strong>Dig</strong>
+                <p>{{ selected()?.description }}</p>
+              </article>
+              @if (complete()) {
+                <article class="chat-message">
+                  <strong>AI · Hovedet på Sømmet</strong>
+                  <p role="status">Tilbuddet er klar til gennemgang.</p>
+                  <ul class="demo-recap" aria-label="Tilbuddets indhold">
+                    <li>Foreslåede arbejdsopgaver</li>
+                    <li>Relevante materialer</li>
+                    <li>Estimeret tidsforbrug og pris</li>
+                  </ul>
+                  <div class="review-actions">
+                    <button
+                      class="text-action"
+                      type="button"
+                      #reviewButton
+                      (click)="showLines('tasks')"
+                    >
+                      Se arbejdsopgaver
+                    </button>
+                    <button class="text-action" type="button" (click)="showLines('materials')">
+                      Se materialer
+                    </button>
+                    <button class="text-action" type="button" (click)="showOffer()">
+                      Se tilbud
+                    </button>
+                  </div>
+                </article>
+              }
+            </div>
+            @if (!complete()) {
+              <app-ai-feedback [isWorking]="true" />
+              <button class="text-action" type="button" #skipButton (click)="finish(true)">
+                Spring til resultat
+              </button>
+            }
+          }
+        </div>
+      </aside>
+      <div class="project-main">
+        <header class="workspace-heading">
+          <div>
+            <p>Dit arbejdsrum</p>
+            <h1 class="desktop-heading">{{ draft().project.title || 'Nyt projekt' }}</h1>
+            <h1 class="mobile-heading">{{ mobileTitle() }}</h1>
+          </div>
+          @if (section() === 'tasks' || section() === 'materials') {
+            <span
+              class="mobile-progress"
+              [attr.aria-label]="lineCounts().accepted + ' af ' + lineCounts().total + ' godkendt'"
+            >
+              <app-workspace-icon name="checkCircle" />{{ lineCounts().accepted }} af
+              {{ lineCounts().total }}
+            </span>
+          }
+        </header>
+        <app-offer-preview
+          [demo]="true"
+          [data]="draft()"
+          [activeSection]="section() === 'chat' ? 'tasks' : section()"
+          [hasPendingChanges]="stage() > 0 && !complete()"
+          (sectionChanged)="section.set($event)"
+          (statusChanged)="review($event.id, $event.status)"
+        >
+          <div demo-actions>
+            @if (complete()) {
+              <p class="demo-estimate-note">Vejledende priser og timer</p>
+              <div class="demo-next">
+                <h3>Vil du prøve med din egen opgave?</h3>
+                <p>Opret en gratis konto, og lad AI hjælpe dig med dit næste tilbud.</p>
+                <a class="register-action" routerLink="/register">Opret gratis konto</a>
+                <button class="text-action" type="button" (click)="reset()">
+                  Prøv en anden opgave
+                </button>
+              </div>
+            }
+          </div>
+        </app-offer-preview>
+      </div>
+    </main>
+    <nav class="mobile-workspace-nav" aria-label="Arbejdsrum">
+      @for (item of sections; track item.id) {
+        <button
+          type="button"
+          [attr.aria-pressed]="section() === item.id"
+          (click)="section.set(item.id)"
+        >
+          <app-workspace-icon [name]="item.icon" />{{ item.label }}
+        </button>
+      }
+    </nav>
+  </div>
+</div>

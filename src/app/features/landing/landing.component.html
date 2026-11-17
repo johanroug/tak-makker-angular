@@ -10,13 +10,17 @@
           Beskriv opgaven med dine egne ord, og tilføj billeder af arbejdet. AI bruger din beskrivelse og billederne til at foreslå arbejdsopgaver og materialer, så du hurtigt kan lave et professionelt tilbud med dine egne priser.
         </p>
         <div class="hero-actions">
-          <a class="marketing-button" routerLink="/register"
-            >Prøv gratis i dag <span aria-hidden="true">→</span></a
-          ><button class="demo-link" type="button" (click)="demoDialog.showModal()">
-            <span class="play" aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z" /></svg></span> Se hvordan det virker
-          </button>
+          <a class="marketing-button demo-link" routerLink="/demo">
+            <span class="play" aria-hidden="true"><svg class="marketing-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="m8 5 11 7-11 7Z" /></svg></span>
+            <span>Prøv AI-demoen</span>
+            <app-workspace-icon class="hero-action-arrow" name="arrowRight" aria-hidden="true" />
+          </a>
+          <a class="marketing-button hero-register" routerLink="/register">
+            <app-workspace-icon name="accountAdd" aria-hidden="true" />
+            <span>Opret gratis konto</span>
+          </a>
         </div>
-        <p class="access-note">Kom gratis i gang. Intet betalingskort kræves.</p>
+        <p class="access-note">Prøv demoen uden registrering. Intet betalingskort kræves.</p>
         <ul class="hero-benefits"><li>Spar tid</li><li>AI forstår dine billeder</li><li>Nem at bruge</li></ul>
         <p class="product-control-note">Dine timepriser. Dine materialer. Dine tilbud.</p>
       </div>

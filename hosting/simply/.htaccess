@@ -28,6 +28,11 @@ RewriteRule ^(tilbudsprogram-til-toemrer|tilbudsprogram-til-murer|tilbudsprogram
 RewriteCond %{THE_REQUEST} \s/+(handelsbetingelser|privatlivspolitik|kontakt)/(?:[?\s]) [NC]
 RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)/$ /$1 [R=301,L]
 RewriteRule ^(handelsbetingelser|privatlivspolitik|kontakt)$ $1/index.html [END]
+
+# Public interactive demo.
+RewriteCond %{THE_REQUEST} \s/+demo/(?:[?\s]) [NC]
+RewriteRule ^demo/$ /demo [R=301,L]
+RewriteRule ^demo$ demo/index.html [END]
 # END Angular public routes
 
 # Private app routes use the CSR shell, never the prerendered landing page.

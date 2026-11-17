@@ -5,6 +5,7 @@ import { LEGAL_PAGES } from './features/legal/legal-pages';
 
 export const serverRoutes: ServerRoute[] = [
   { path: '', renderMode: RenderMode.Prerender },
+  { path: 'demo', renderMode: RenderMode.Prerender },
   ...LEGAL_PAGES.map<ServerRoute>((page) => ({ path: page.slug, renderMode: RenderMode.Prerender })),
   ...PRODUCT_PAGES.map<ServerRoute>((page) => ({ path: page.slug, renderMode: RenderMode.Prerender })),
   ...TRADE_PAGES.map<ServerRoute>((page) => ({

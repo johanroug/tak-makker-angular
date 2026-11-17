@@ -20,6 +20,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/landing/landing.component').then((m) => m.LandingComponent),
   },
+  {
+    path: 'demo',
+    title: 'Prøv AI-demo | Hovedet på sømmet',
+    loadComponent: () => import('./features/ai-demo/ai-demo.component').then((m) => m.AiDemo),
+  },
   ...PRODUCT_PAGES.map((page) => ({
     path: page.slug, title: page.title,
     data: { product: page, seo: { path: '/' + page.slug, description: page.description } },

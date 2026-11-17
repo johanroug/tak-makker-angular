@@ -7,6 +7,7 @@ import {
   ElementRef,
   effect,
   inject,
+  Injector,
   input,
   output,
   signal,
@@ -26,7 +27,7 @@ import { WorkspaceIcon } from '../workspace-icon.component';
 
 registerLocaleData(localeDa);
 
-type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
+export type ProjectData = Awaited<ReturnType<ProjectService['getProject']>>;
 
 type EditableDetails = {
   hourlyRate: number | null;
@@ -46,16 +47,15 @@ type EditableDetails = {
   styleUrl: './offer-preview.component.scss',
 })
 export class OfferPreview {
-  private readonly projectService = inject(ProjectService);
+  private readonly injector = inject(Injector);
   private readonly router = inject(Router);
-  private readonly offerService = inject(OfferService);
-  private readonly pdfService = inject(OfferPdfService);
   readonly successDialog = viewChild.required<ElementRef<HTMLDialogElement>>('successDialog');
   readonly finalizedTotal = signal<number | null>(null);
   readonly isDownloadingPdf = signal(false);
   readonly pdfError = signal('');
 
   readonly data = input.required<ProjectData>();
+  readonly demo = input(false);
   readonly canAddLine = input(false);
   readonly addLineBusy = input(false);
   readonly addLine = output<'work' | 'material'>();
@@ -106,6 +106,7 @@ export class OfferPreview {
   }
 
   editField(kind: 'work' | 'material', id: string, field: string, event: Event, save: boolean): void {
+    if (this.demo()) return;
     const value = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
     if (kind === 'material' && field === 'name') {
       if (save) this.editingMaterialNames.delete(id);
@@ -299,6 +300,7 @@ export class OfferPreview {
 
   get canFinalizeOffer(): boolean {
     return (
+      !this.demo() &&
       !this.isFinalizing() &&
       !this.isEditing() &&
       !this.isSaving() &&
@@ -315,6 +317,7 @@ export class OfferPreview {
   }
 
   fixRequirement(issue: OfferRequirement): void {
+    if (this.demo()) return;
     if (issue.action === 'company') {
       void this.router.navigate(['/company-profile']);
     } else if (issue.action === 'details') {
@@ -362,7 +365,7 @@ export class OfferPreview {
     this.finalizeError.set('');
 
     try {
-      const offer = await this.projectService.finalizeOffer(this.data().project.id);
+      const offer = await this.injector.get(ProjectService).finalizeOffer(this.data().project.id);
 
       this.finalizedOfferId.set(offer.id);
       this.finalizedOfferNumber.set(offer.offer_number);
@@ -388,12 +391,12 @@ export class OfferPreview {
 
   async downloadFinalizedPdf(): Promise<void> {
     const offerId = this.finalizedOfferId();
-    if (!offerId || this.isDownloadingPdf()) return;
+    if (this.demo() || !offerId || this.isDownloadingPdf()) return;
     this.isDownloadingPdf.set(true);
     this.pdfError.set('');
     try {
-      const saved = await this.offerService.getOffer(offerId);
-      await this.pdfService.download(saved);
+      const saved = await this.injector.get(OfferService).getOffer(offerId);
+      await this.injector.get(OfferPdfService).download(saved);
     } catch (error) {
       console.error('Could not download finalized offer:', error);
       this.pdfError.set('PDF kunne ikke hentes. Dit tilbud er gemt. Prøv igen eller vælg Se tilbud.');
@@ -403,7 +406,7 @@ export class OfferPreview {
   }
 
   startEditing(focusField?: 'hourlyRate', customerMode: CustomerMode | null = null): void {
-    if (this.isSaving() || this.isEditing()) return;
+    if (this.demo() || this.isSaving() || this.isEditing()) return;
     const project = this.data().project;
     this.originalCustomerId = project.customer_id;
     this.customerMode.set(customerMode);
@@ -450,7 +453,7 @@ export class OfferPreview {
   }
 
   async saveDetails(): Promise<void> {
-    if (this.isSaving() || !this.originalDetails) {
+    if (this.demo() || this.isSaving() || !this.originalDetails) {
       return;
     }
 
@@ -518,7 +521,7 @@ export class OfferPreview {
     this.saveError.set('');
 
     try {
-      await this.projectService.updateProjectDetails(this.data().project.id, changes, customer.choice ?? undefined, this.originalCustomerId);
+      await this.injector.get(ProjectService).updateProjectDetails(this.data().project.id, changes, customer.choice ?? undefined, this.originalCustomerId);
 
       this.isEditing.set(false);
       this.detailsDialog().nativeElement.close();

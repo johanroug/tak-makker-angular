@@ -2,8 +2,8 @@
   <div class="quotation-workspace">
   <div class="quotation-editor" [attr.data-active-section]="selectedTab()">
     <div class="quotation-tabs" role="tablist" aria-label="Tilbuddets indhold">
-      <button id="tasks-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() !== 'materials'" aria-controls="tasks-panel" [attr.tabindex]="selectedTab() === 'materials' ? -1 : 0" (click)="selectSection('tasks')" (keydown.arrowright)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" (keydown.arrowleft)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" #tasksTab><app-workspace-icon name="wrench" />Arbejdsopgaver ({{ data().workItems.length }})</button>
-      <button id="materials-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() === 'materials'" aria-controls="materials-panel" [attr.tabindex]="selectedTab() === 'materials' ? 0 : -1" (click)="selectSection('materials')" (keydown.arrowleft)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" (keydown.arrowright)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" #materialsTab><app-workspace-icon name="materials" />Materialer ({{ data().materials.length }})</button>
+      <button id="tasks-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() !== 'materials'" aria-controls="tasks-panel" [attr.tabindex]="selectedTab() === 'materials' ? -1 : 0" (click)="selectSection('tasks')" (keydown.arrowright)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" (keydown.arrowleft)="selectSection('materials'); materialsTab.focus(); $event.preventDefault()" #tasksTab><app-workspace-icon name="wrench" /><span>{{ demo() ? 'AI-forslag · ' : '' }}Arbejdsopgaver ({{ data().workItems.length }})</span></button>
+      <button id="materials-tab" type="button" role="tab" [attr.aria-selected]="selectedTab() === 'materials'" aria-controls="materials-panel" [attr.tabindex]="selectedTab() === 'materials' ? 0 : -1" (click)="selectSection('materials')" (keydown.arrowleft)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" (keydown.arrowright)="selectSection('tasks'); tasksTab.focus(); $event.preventDefault()" #materialsTab><app-workspace-icon name="materials" /><span>{{ demo() ? 'AI-forslag · ' : '' }}Materialer ({{ data().materials.length }})</span></button>
     </div>
   <div class="draft-columns" (click)="selectInputValue($event)">
     @if (unreviewedCount) {
@@ -53,11 +53,12 @@
                     class="draft-text desktop-work-name"
                     aria-label="Arbejdsbeskrivelse"
                     placeholder="Beskriv opgaven"
+                    [readOnly]="demo()"
                     [value]="item.description || ''"
                     (input)="editField('work', item.id, 'description', $event, false)"
                     (blur)="editField('work', item.id, 'description', $event, true)"
                   />
-                  <textarea class="mobile-work-description" rows="1" aria-label="Arbejdsbeskrivelse på mobil" [value]="item.description || ''" (input)="editField('work', item.id, 'description', $event, false)" (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
+                  <textarea class="mobile-work-description" rows="1" aria-label="Arbejdsbeskrivelse på mobil" [readOnly]="demo()" [value]="item.description || ''" (input)="editField('work', item.id, 'description', $event, false)" (blur)="editField('work', item.id, 'description', $event, true)"></textarea>
                   <span class="draft-save-status" role="status">{{
                     textSaveLabel('work', item.id, 'description')
                   }}</span>
@@ -71,6 +72,7 @@
                     min="0"
                     step="0.5"
                     aria-label="Estimeret tid i timer"
+                    [readOnly]="demo()"
                     [value]="item.estimated_hours ?? ''"
                     (input)="editField('work', item.id, 'hours', $event, false)"
                     (blur)="editField('work', item.id, 'hours', $event, true)"
@@ -78,7 +80,7 @@
                     textSaveLabel('work', item.id, 'hours')
                   }}</span></label
                 >
-                <button type="button" class="draft-rate desktop-work-rate" [attr.aria-label]="data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')"
+                <button type="button" class="draft-rate desktop-work-rate" [attr.aria-label]="demo() ? 'Vejledende timepris' : data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="demo() || hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')"
                   ><span class="field-caption">Kr./time</span
                   >{{
                     data().project.hourly_rate === null
@@ -86,7 +88,7 @@
                       : (data().project.hourly_rate | number: '1.0-2' : 'da')
                   }}</button
                 >
-                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" [attr.aria-label]="data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? '—' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}<app-workspace-icon name="adjustments" /></button></div>
+                <div class="mobile-work-rate"><span class="field-caption">Timepris</span><button type="button" [attr.aria-label]="demo() ? 'Vejledende timepris' : data().project.hourly_rate === null ? 'Timepris mangler. Klik for at angive timepris' : 'Ret projektets timepris'" [disabled]="demo() || hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">{{ data().project.hourly_rate === null ? '—' : (data().project.hourly_rate | number: '1.0-2' : 'da') + ' kr.' }}@if (!demo()) { <app-workspace-icon name="adjustments" /> }</button></div>
                 </div>
                 <strong class="draft-line-total"
                   ><span class="field-caption"><span class="desktop-work-caption">Beløb</span><span class="mobile-work-caption">Samlet pris</span></span>
@@ -95,7 +97,7 @@
                   <span class="mobile-price">{{ getWorkItemPrice(item) | number: '1.0-0' : 'da' }} kr.</span></strong
                 >
               </div>
-              @if (data().project.hourly_rate === null) {
+              @if (!demo() && data().project.hourly_rate === null) {
                 <button type="button" class="missing-hourly-rate-link" [disabled]="hasPendingChanges() || isFinalizing() || isSaving()" (click)="startEditing('hourlyRate')">Timepris mangler · Angiv her</button>
               }
             </article>
@@ -103,7 +105,7 @@
         </section>
       } @empty {
         <p class="offer-empty">
-          Beskriv projektet i samtalen. Opgaveforslag vises her med det samme.
+          {{ demo() ? 'Send et eksempel i samtalen. Opgaveforslagene vises her.' : 'Beskriv projektet i samtalen. Opgaveforslag vises her med det samme.' }}
         </p>
       }
       <div class="column-total">
@@ -111,10 +113,10 @@
         <strong class="desktop-price">{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
         <strong class="mobile-price">{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
       </div>
-      <div class="draft-add-line">
+      @if (!demo()) { <div class="draft-add-line">
         <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('work')"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" /></svg></span> Tilføj opgave</button>
         @if (!canAddLine()) { <small>Kræver abonnement</small> }
-      </div>
+      </div> }
     </section>
 
     <section
@@ -160,10 +162,11 @@
                     class="draft-text desktop-material-name"
                     type="text"
                     aria-label="Materialenavn"
+                    [readOnly]="demo()"
                     [value]="material.name || ''"
                     (input)="editField('material', material.id, 'name', $event, false)"
                     (blur)="editField('material', material.id, 'name', $event, true)"
-                  /><textarea class="mobile-material-description" rows="2" aria-label="Materialebeskrivelse" [value]="material.name || ''" (input)="editField('material', material.id, 'name', $event, false)" (blur)="editField('material', material.id, 'name', $event, true)"></textarea><span class="draft-save-status" role="status">{{
+                  /><textarea class="mobile-material-description" rows="2" aria-label="Materialebeskrivelse" [readOnly]="demo()" [value]="material.name || ''" (input)="editField('material', material.id, 'name', $event, false)" (blur)="editField('material', material.id, 'name', $event, true)"></textarea><span class="draft-save-status" role="status">{{
                     textSaveLabel('material', material.id, 'name')
                   }}</span></label
                 >
@@ -176,6 +179,7 @@
                     min="0"
                     step="any"
                     aria-label="Antal"
+                    [readOnly]="demo()"
                     [value]="material.quantity ?? ''"
                     (input)="editField('material', material.id, 'quantity', $event, false)"
                     (blur)="editField('material', material.id, 'quantity', $event, true)"
@@ -188,6 +192,7 @@
                   ><input
                     type="text"
                     aria-label="Enhed"
+                    [readOnly]="demo()"
                     [value]="material.unit || ''"
                     (input)="editField('material', material.id, 'unit', $event, false)"
                     (blur)="editField('material', material.id, 'unit', $event, true)"
@@ -203,6 +208,7 @@
                     min="0"
                     step="any"
                     aria-label="Enhedspris i kroner"
+                    [readOnly]="demo()"
                     [value]="material.unit_price ?? ''"
                     (input)="editField('material', material.id, 'unitPrice', $event, false)"
                     (blur)="editField('material', material.id, 'unitPrice', $event, true)"
@@ -231,15 +237,15 @@
         <strong class="desktop-price">{{ materialsTotal | number: '1.0-2' : 'da' }} kr.</strong>
         <strong class="mobile-price">{{ materialsTotal | number: '1.0-2' : 'da' }} kr.</strong>
       </div>
-      <div class="draft-add-line">
+      @if (!demo()) { <div class="draft-add-line">
         <button type="button" aria-haspopup="dialog" [disabled]="!canAddLine() || addLineBusy()" (click)="addLine.emit('material')"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14" /></svg></span> Tilføj materiale</button>
         @if (!canAddLine()) { <small>Kræver abonnement</small> }
-      </div>
+      </div> }
     </section>
   </div>
   </div>
   <aside class="quotation-summary" aria-label="Tilbudsoverblik" tabindex="-1">
-    <header class="quotation-summary-heading"><h2><app-workspace-icon name="offers" />Tilbud</h2><span>{{ missingRequirements.length ? 'Udkast' : 'Klar' }}</span></header>
+    <header class="quotation-summary-heading"><h2><app-workspace-icon name="offers" />Tilbud</h2><span>{{ demo() || missingRequirements.length ? 'Udkast' : 'Klar' }}</span></header>
   <section class="draft-details draft-price-details" aria-label="Prisoversigt og moms">
     <div class="pricing-row">
       <span>Arbejde</span><strong>{{ laborTotal | number: '1.0-2' : 'da' }} kr.</strong>
@@ -257,6 +263,9 @@
   </section>
 
   <div #offerFooter class="offer-footer">
+  @if (demo()) {
+    <ng-content select="[demo-actions]" />
+  } @else {
   @if (!finalizedOfferId()) {
     <div class="readiness-slot">
     <details class="draft-readiness" [class.is-ready]="!missingRequirements.length">
@@ -344,6 +353,7 @@
         </div>
       </div>
     }
+  }
   </div>
   </aside>
   </div>

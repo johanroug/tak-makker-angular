@@ -1,3 +1,5 @@
+@use 'project-picker';
+
 :host {
   display: block;
   min-height: 100dvh;
@@ -77,85 +79,6 @@
   align-items: center;
   margin-left: auto;
   min-width: 0;
-}
-.project-picker {
-  position: relative;
-  border: 1px solid #dce2da;
-  border-radius: 9px;
-  background: #fff;
-  min-width: 0;
-}
-.project-selector {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-sizing: border-box;
-  cursor: pointer;
-  list-style: none;
-  appearance: none;
-  width: clamp(180px, 22vw, 290px);
-  max-width: 100%;
-  padding: 10px 40px 10px 8px;
-  border: 0;
-  border-radius: 9px;
-  background: url('/icons/chevron-down.svg') right 14px center / 16px 16px no-repeat;
-  color: #263d32;
-  font: inherit;
-  font-size: 13px;
-  &::-webkit-details-marker { display: none; }
-  app-workspace-icon { flex: none; }
-  span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-}
-.project-dropdown {
-  position: absolute;
-  z-index: 100;
-  top: calc(100% + 8px);
-  right: 0;
-  width: min(420px, calc(100vw - 28px));
-  box-sizing: border-box;
-  padding: 10px;
-  border: 1px solid #dce2da;
-  border-radius: 14px;
-  background: #fffaf3;
-  color: #12372a;
-  box-shadow: 0 12px 32px #082f2630;
-  input {
-    box-sizing: border-box;
-    width: 100%;
-    min-height: 44px;
-    padding: 10px 12px;
-    border: 1px solid #a1b6a3;
-    border-radius: 8px;
-    background: #fff;
-    color: #12372a;
-    font: inherit;
-    font-size: 16px;
-  }
-  :is(input, a):focus-visible { outline: 2px solid #2574b8; outline-offset: -2px; }
-}
-.project-results {
-  margin-top: 8px;
-  max-height: min(360px, 50dvh);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-.project-result {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #12372a;
-  text-decoration: none;
-  font-size: 14px;
-  overflow-wrap: anywhere;
-  &:hover, &[aria-current='page'] { background: #e6eedf; }
-}
-.project-number { color: #52664f; font-size: 12px; }
-.project-empty { margin: 0; padding: 16px 12px; font-size: 14px; }
-.project-selector:focus-visible {
-  outline: 2px solid #2574b8;
-  outline-offset: 3px;
 }
 .new-project-button {
   display: inline-flex;

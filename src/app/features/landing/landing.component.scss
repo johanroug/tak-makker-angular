@@ -15,7 +15,7 @@ main {
 }
 .hero-copy {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 h1 {
   font-size: clamp(36px, 4.2vw, 60px);
@@ -39,29 +39,74 @@ h1 {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 26px;
+  gap: 12px 16px;
 }
-.demo-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 13px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #17392d;
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
+
+.hero-actions .marketing-button {
+  min-height: clamp(54px, 4.1vw, 72px);
+  padding: 10px clamp(16px, 1.5vw, 28px);
+  gap: clamp(9px, .9vw, 16px);
+  border-width: 2px;
+  border-radius: clamp(15px, 1.3vw, 23px);
+  font-size: clamp(15px, 1.34vw, 23px);
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+
+  app-workspace-icon {
+    width: clamp(22px, 1.8vw, 32px);
+    height: clamp(22px, 1.8vw, 32px);
+  }
 }
+
+.hero-actions .demo-link {
+  min-width: clamp(202px, 18.5vw, 330px);
+  border-color: #ff954f;
+  background: linear-gradient(180deg, #ff710b, #ff5c00);
+  box-shadow: inset 0 1px 0 #ffffff26;
+  justify-content: flex-start;
+}
+
+.hero-action-arrow {
+  margin-inline-start: auto;
+}
+
+.hero-actions .hero-register {
+  border-color: #fff;
+  background: #06372e;
+  box-shadow: none;
+
+  &:hover {
+    background: #104b3e;
+  }
+}
+
+@media (min-width: 1250px) {
+  .hero-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    max-width: 640px;
+  }
+
+  .hero-actions .demo-link {
+    min-width: 0;
+  }
+}
+
 .play {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  flex: none;
+  width: clamp(25px, 1.9vw, 34px);
+  height: clamp(25px, 1.9vw, 34px);
   padding-left: 2px;
-  border: 1px solid #12372a;
+  border: 2px solid currentColor;
   border-radius: 50%;
-  font-size: 10px;
+
+  svg {
+    width: 68%;
+    height: 68%;
+  }
 }
 .access-note {
   font-size: 11px;
@@ -459,12 +504,8 @@ h2 {
       letter-spacing: inherit;
     }
   }
-  .hero-actions {
-    gap: 18px;
-  }
-  .demo-link {
-    font-size: 10px;
-    gap: 8px;
+  .hero-actions .marketing-button {
+    width: 100%;
   }
   .steps {
     gap: 12px;

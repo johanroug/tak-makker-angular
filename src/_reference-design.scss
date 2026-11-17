@@ -29,9 +29,6 @@ app-landing .marketing-page.marketing-page {
   .hero h1 em { font-size: 1em; letter-spacing: inherit; white-space: normal; font-style: italic; }
   .hero .eyebrow { font-size: 12px; line-height: 1.5; letter-spacing: .1em; margin-bottom: 18px; color: #fff; }
   .hero .intro { font-size: 18px; line-height: 1.6; max-width: 500px; margin-bottom: 28px; color: #fff; }
-  .hero-actions { gap: 24px; }
-  .demo-link { color: white; font-size: 15px; font-weight: 700; gap: 10px; }
-  .play { border-color: #fff; }
   .access-note { color: #e2e9df; margin-top: 15px; font-size: 11px; }
   .hero-benefits { display: flex; flex-wrap: wrap; gap: 28px; list-style: none; padding: 0; margin: 26px 0 0; font-size: 14px; }
   .hero-benefits li::before { content: '✓'; color: #ff6a00; font-size: 24px; font-weight: 800; margin-right: 7px; vertical-align: middle; }
@@ -251,9 +248,6 @@ app-new-project-dialog .start-dialog {
     .hero h1 { font-size: clamp(32px, 5.7vw, 46px); letter-spacing: -.035em; }
     .hero h1 em { letter-spacing: inherit; }
     .hero .intro { font-size: 17px; max-width: 440px; }
-    .hero-actions { gap: 18px; }
-    .hero-actions .marketing-button { font-size: 14px; padding: 14px 20px; }
-    .demo-link { font-size: 12px; }
     .hero-benefits { gap: 18px; font-size: 12px; margin-top: 18px; }
     .hero-visual { height: 400px; min-height: 400px; width: 100%; max-width: 440px; }
     .hero-phone { width: 285px; top: 15px; right: 18px; transform: rotate(6deg); }

@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js';
 import { AiBudget, AiBudgetError, BUDGET_MESSAGE, TRANSCRIPTION_MODEL } from '../_shared/ai/budget.ts';
+import { isOpenAiBudgetError } from '../_shared/ai/openai-errors.ts';
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
@@ -62,6 +63,8 @@ Deno.serve(async request => {
     });
     if (!response.ok) {
       console.error('Transcription failed', { status: response.status, requestId: response.headers.get('x-request-id') });
+      const failure = await response.json().catch(() => null);
+      if (isOpenAiBudgetError(failure)) return Response.json({ code: 'AI_BUDGET_REACHED', error: BUDGET_MESSAGE }, { status: 503, headers });
       return reply('Lydoptagelsen kunne ikke behandles. Prøv igen om lidt.', 502);
     }
     const result = await response.json();

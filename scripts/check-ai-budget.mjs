@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { stripTypeScriptTypes } from 'node:module';
 import { AiBudget, AiBudgetError, TRANSCRIPTION_MODEL } from '../supabase/functions/_shared/ai/budget.ts';
+import * as openaiErrors from '../supabase/functions/_shared/ai/openai-errors.ts';
 
 // Uses the existing isolated PostgreSQL test runtime, never the linked project.
 const require = createRequire(resolve('tmp/customer-db-test/package.json'));
@@ -96,6 +97,7 @@ assert.equal(calls.length, 2, 'Failed settlement must not issue a compensating r
 // Execute the actual transcription endpoint with the actual budget helper.
 let handler, providerCalls = 0, finishes = [], failProvider = false;
 let speechAllowed = true, budgetError = false;
+let providerResponse;
 const speechClient = {
   auth: { getUser: async () => ({ data: { user: { id: 'user' } } }) },
   rpc: async (name, args) => {
@@ -109,9 +111,9 @@ const speechClient = {
 };
 const helpers = await import('../supabase/functions/_shared/ai/budget.ts');
 runInNewContext(stripTypeScriptTypes(readFileSync('supabase/functions/transcribe-audio/index.ts', 'utf8').replace(/^import .*;\r?\n/gm, '')), {
-  ...helpers, createClient: () => speechClient, Response, File, FormData, AbortSignal, console,
+  ...helpers, ...openaiErrors, createClient: () => speechClient, Response, File, FormData, AbortSignal, console,
   Deno: { env: { get: name => name === 'OPENAI_TRANSCRIPTION_MODEL' ? TRANSCRIPTION_MODEL : 'test' }, serve: callback => handler = callback },
-  fetch: async () => { providerCalls++; if (failProvider) throw Error('Timeout'); return Response.json({ text: 'Hej', usage: { input_tokens: 500, output_tokens: 10 } }); },
+  fetch: async () => { providerCalls++; if (failProvider) throw Error('Timeout'); return providerResponse?.clone() ?? Response.json({ text: 'Hej', usage: { input_tokens: 500, output_tokens: 10 } }); },
 });
 const speech = () => { const form = new FormData(); form.append('file', new File(['test audio'], 'test.webm', { type: 'audio/webm' }));
   return handler(new Request('https://test.invalid', { method: 'POST', headers: { Authorization: 'Bearer test' }, body: form })); };
@@ -128,4 +130,31 @@ assert.equal(finishes.find(c => c.name === 'settle_global_ai_budget').args.p_amo
 finishes = []; failProvider = true;
 assert.equal((await speech()).status, 500);
 assert.ok(!finishes.some(c => c.name === 'settle_global_ai_budget'), 'Provider failure must retain budget');
+failProvider = false;
+for (const details of [
+  ...['insufficient_quota', 'credit_balance_exhausted', 'organization_spend_limit_exceeded', 'project_spend_limit_exceeded', 'organization_usage_limit_exceeded'].map(code => ({ code, type: 'insufficient_quota' })),
+  { code: null, type: 'insufficient_quota' },
+]) {
+  finishes = []; providerResponse = Response.json({ error: { ...details, message: 'Private provider details' } }, { status: 429 });
+  const before = providerCalls; const response = await speech();
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { code: 'AI_BUDGET_REACHED', error: helpers.BUDGET_MESSAGE });
+  assert.equal(providerCalls, before + 1, 'No retries on billing errors');
+  assert.equal(finishes.at(-1).args.p_succeeded, false, 'Billing errors refund the customer quota');
+  assert.ok(!finishes.some(c => c.name === 'settle_global_ai_budget'), 'Keep budget reservations on provider errors');
+}
+for (const response of [
+  Response.json({ error: { code: 'rate_limit_exceeded', type: 'rate_limit_error', message: 'Private details' } }, { status: 429 }),
+  Response.json({ error: { code: 'slow_down', type: 'rate_limit_error' } }, { status: 429 }),
+  Response.json({ error: {} }, { status: 429 }),
+  new Response('Not JSON: private provider details', { status: 429 }),
+  Response.json({ error: { code: 'invalid_api_key' } }, { status: 401 }),
+  new Response('Server error', { status: 500 }),
+]) {
+  finishes = []; providerResponse = response;
+  const result = await speech(); assert.equal(result.status, 502);
+  assert.deepEqual(await result.json(), { error: 'Lydoptagelsen kunne ikke behandles. Prøv igen om lidt.' });
+  assert.equal(finishes.at(-1).args.p_succeeded, false);
+  assert.ok(!finishes.some(c => c.name === 'settle_global_ai_budget'));
+}
 console.log('AI budget checks passed: SQL limits, permissions, shared reservations, settlement, month rollover, fail-closed and actual speech endpoint. No remote calls.');

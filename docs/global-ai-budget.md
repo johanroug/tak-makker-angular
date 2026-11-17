@@ -112,6 +112,19 @@ for hele den aktuelle måned. Ændring af grænser sker kun via SQL Editor/backe
 
 Se også [beskyttelse mod gentagne tilbudskald](offer-request-protection.md).
 
+OpenAI-fejl med `insufficient_quota`, `credit_balance_exhausted`,
+`organization_spend_limit_exceeded`, `project_spend_limit_exceeded` eller
+`organization_usage_limit_exceeded` viser samme pausebesked som budgetstoppet.
+Typen `insufficient_quota` genkendes også, når en specifik kode mangler.
+Almindelige hastighedsgrænser (`rate_limit_exceeded` og `slow_down`) og ukendte
+HTTP 429-svar beholder den eksisterende generelle fejlbesked. Udbyderens rå
+fejltekst sendes aldrig til brugeren. Kvoterefusion, guard og udgiftsreservation
+følger fortsat det eksisterende fejlforløb. Koderne følger
+[OpenAI Docs](https://developers.openai.com/api/docs/guides/error-codes).
+
+- `node scripts/check-openai-errors.mjs`: SDK-/fetch-formater, saldo- og
+  forbrugsstop, rate limiting og ugyldige/ukendte fejl.
+
 - `node scripts/check-ai-budget.mjs`: migration i isoleret PGlite/PostgreSQL,
   budgetgrænser, rettigheder, fælles reservationer, afregning, periodeskift,
   nødstop, manglende konfiguration og transskriptionsendpointet med mocks.

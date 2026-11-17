@@ -4,6 +4,7 @@ import { runInNewContext } from 'node:vm';
 import assert from 'node:assert/strict';
 import * as budgetHelpers from '../supabase/functions/_shared/ai/budget.ts';
 import * as imageHelpers from '../supabase/functions/_shared/ai/image-input.ts';
+import * as openaiErrors from '../supabase/functions/_shared/ai/openai-errors.ts';
 
 const scope = { Object };
 const contextSource = readFileSync('supabase/functions/_shared/ai/company-trade-context.ts', 'utf8');
@@ -67,7 +68,7 @@ const client = {
 const endpoint = readFileSync('supabase/functions/generate-offer/index.ts', 'utf8')
   .replace(/^import .*;\r?\n/gm, '');
 runInNewContext(stripTypeScriptTypes(endpoint), {
-  ...budgetHelpers, ...imageHelpers,
+  ...budgetHelpers, ...imageHelpers, ...openaiErrors,
   OpenAI, createClient: () => client, createCompanyTradeContext,
   aiInstructions: 'General instructions', ProjectResponseSchema: {}, zodTextFormat: () => ({}),
   createProjectDetailsContext: () => 'Project context',

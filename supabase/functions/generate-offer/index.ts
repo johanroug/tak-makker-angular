@@ -1,5 +1,6 @@
 import { ImageInputError, readImageRequest, validateImageInput } from '../_shared/ai/image-input.ts';
 import { AiBudget, AiBudgetError, BUDGET_MESSAGE, OFFER_MODEL } from '../_shared/ai/budget.ts';
+import { isOpenAiBudgetError } from '../_shared/ai/openai-errors.ts';
 import OpenAI from 'npm:openai';
 import { zodTextFormat } from 'npm:openai/helpers/zod';
 import { createClient } from 'npm:@supabase/supabase-js';
@@ -340,7 +341,7 @@ Deno.serve(async (request) => {
         if (releaseError) console.error('Could not release request reservation');
       } catch { console.error('Could not release request reservation'); }
     }
-    if (error instanceof AiBudgetError) return Response.json({ code: 'AI_BUDGET_REACHED', error: BUDGET_MESSAGE }, { status: 503, headers: corsHeaders });
+    if (error instanceof AiBudgetError || isOpenAiBudgetError(error)) return Response.json({ code: 'AI_BUDGET_REACHED', error: BUDGET_MESSAGE }, { status: 503, headers: corsHeaders });
     if (error instanceof ImageInputError) return Response.json({ code: 'IMAGE_INPUT_INVALID', error: error.message }, { status: 400, headers: corsHeaders });
     // Provider errors can contain request bodies. Never log image payloads.
     console.error('GENERATE OFFER ERROR');

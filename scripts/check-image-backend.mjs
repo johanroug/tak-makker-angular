@@ -4,6 +4,7 @@ import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
 import * as imageHelpers from '../supabase/functions/_shared/ai/image-input.ts';
 import * as budgetHelpers from '../supabase/functions/_shared/ai/budget.ts';
+import * as openaiErrors from '../supabase/functions/_shared/ai/openai-errors.ts';
 
 const messageId = '11111111-1111-4111-8111-111111111111';
 const imageId = '22222222-2222-4222-8222-222222222222';
@@ -20,6 +21,7 @@ function reset(overrides = {}) {
 class OpenAI {
   responses = { parse: async input => {
     providerCalls.push(input);
+    if (state.providerError) throw state.providerError;
     if (state.providerFailure) throw new Error(`provider error with sensitive payload ${dataUrl}`);
     return { output_parsed: { questions: [], workItems: [], materials: [] }, usage: {} };
   } };
@@ -64,6 +66,7 @@ runInNewContext(compiled, {
     : name === 'npm:@supabase/supabase-js' ? { createClient: () => client }
     : name.includes('image-input') ? imageHelpers
     : name.includes('/ai/budget') ? budgetHelpers
+    : name.includes('/ai/openai-errors') ? openaiErrors
     : name.includes('schemas/project') ? { ProjectResponseSchema: {} }
     : name.endsWith('instructions.ts') ? { aiInstructions: 'Existing accepted/rejected rules' }
     : new Proxy({}, { get: () => () => '' }),
@@ -88,6 +91,33 @@ assert.ok(!logs.join(' ').includes(dataUrl), 'Never log provider errors containi
 assert.equal(state.quotaReleased, true);
 assert.equal(state.budgetCharge, undefined, 'Unknown provider failure retains the budget');
 assert.equal(state.guardFinishes.at(-1), null);
+for (const code of ['insufficient_quota', 'credit_balance_exhausted', 'organization_spend_limit_exceeded', 'project_spend_limit_exceeded', 'organization_usage_limit_exceeded']) {
+  reset({ providerError: Object.assign(new Error(`Private provider detail ${dataUrl}`), { status: 429, code }) });
+  const response = await call();
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { code: 'AI_BUDGET_REACHED', error: budgetHelpers.BUDGET_MESSAGE });
+  assert.equal(providerCalls.length, 1, 'No automatic retry on provider billing errors');
+  assert.equal(state.quotaReleased, true, 'Billing errors refund the customer quota');
+  assert.equal(state.budgetCharge, undefined, 'Billing error follows existing conservative cost accounting');
+  assert.equal(state.guardFinishes.at(-1), null, 'Billing errors still complete the request guard');
+  assert.ok(!logs.join(' ').includes(dataUrl), 'Never log SDK error messages');
+}
+for (const providerError of [
+  { status: 429, type: 'insufficient_quota' },
+  { status: 429, error: { code: 'organization_spend_limit_exceeded', type: 'insufficient_quota' } },
+]) {
+  reset({ providerError }); const response = await call();
+  assert.equal(response.status, 503); assert.equal((await response.json()).error, budgetHelpers.BUDGET_MESSAGE);
+}
+for (const providerError of [
+  { status: 429, code: 'rate_limit_exceeded' }, { status: 429, code: 'slow_down' },
+  { status: 429 }, { status: 500 }, { status: 401, code: 'invalid_api_key' },
+]) {
+  reset({ providerError }); const response = await call();
+  assert.equal(response.status, 500, 'Ordinary provider errors keep their existing generic response');
+  assert.notEqual((await response.json()).code, 'AI_BUDGET_REACHED');
+  assert.equal(state.quotaReleased, true); assert.equal(state.budgetCharge, undefined);
+}
 for (const [guard, status, code] of [
   [{ state: 'busy' }, 409, 'AI_PROJECT_BUSY'],
   [{ state: 'cooldown', retryAfter: 60 }, 429, 'AI_COOLDOWN'],

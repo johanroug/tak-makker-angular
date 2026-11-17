@@ -35,6 +35,7 @@ Deno.serve(async (request) => {
   const started = performance.now();
   const timings: Record<string, number> = {};
   let requestId: string | undefined;
+  let generationId: string | undefined;
   const billing = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   const budget = new AiBudget(billing);
   const measure = async <T>(name: string, action: () => PromiseLike<T>): Promise<T> => {
@@ -209,6 +210,35 @@ Deno.serve(async (request) => {
       );
     }
 
+    // Older clients omit messageId; derive it from stored history, never a client nonce.
+    const latestUserMessage = messagesResult.data?.filter(message => message.role === 'user').at(-1);
+    const messageId = body.messageId ?? latestUserMessage?.id;
+    if (typeof messageId !== 'string' || !messagesResult.data?.some(message => message.id === messageId && message.role === 'user')) {
+      return Response.json({ error: 'Beskeden kunne ikke findes i projektet.' }, { status: 400, headers: corsHeaders });
+    }
+    const { data: generation, error: claimError } = await billing.rpc('claim_offer_generation', {
+      p_project_id: projectId, p_message_id: messageId, p_user_id: authData.user.id,
+    });
+    if (claimError || !generation) throw new Error('Could not claim generation');
+    if (generation.state === 'cached') {
+      const { data: usage, error } = await supabase.rpc('get_company_billing', { p_company_id: project.company_id });
+      if (error) throw new Error('Could not load usage');
+      return Response.json({ ...generation.response, usage }, { headers: corsHeaders });
+    }
+    if (generation.state !== 'claimed') {
+      const cooldown = generation.state === 'cooldown';
+      const busy = generation.state === 'busy';
+      return Response.json({
+        code: cooldown ? 'AI_COOLDOWN' : busy ? 'AI_PROJECT_BUSY' : generation.state === 'stale' ? 'AI_MESSAGE_STALE' : 'AI_MESSAGE_FAILED',
+        error: cooldown ? 'AI har haft flere fejl. Vent et minut, og prøv igen.'
+          : busy ? 'AI arbejder allerede på projektet. Vent på svaret, og prøv igen.'
+          : generation.state === 'stale' ? 'Der er en nyere besked i projektet. Genindlæs projektet.'
+          : 'AI-kaldet for denne besked fejlede. Send en ny besked for at fortsætte.',
+        retryAfter: generation.retryAfter ?? null,
+      }, { status: cooldown ? 429 : 409, headers: { ...corsHeaders, ...(cooldown ? { 'Retry-After': String(generation.retryAfter) } : {}) } });
+    }
+    generationId = generation.requestId;
+
     const { data: reservation, error: reserveError } = await billing.rpc('reserve_company_ai_request', {
       p_project_id: projectId, p_user_id: authData.user.id,
     });
@@ -222,6 +252,10 @@ Deno.serve(async (request) => {
     }, { status: 402, headers: corsHeaders });
     requestId = reservation.requestId;
     await budget.reserve('offer');
+    const { error: startError } = await billing.rpc('start_offer_generation', {
+      p_request_id: generationId, p_quota_request_id: requestId,
+    });
+    if (startError) throw new Error('Could not start generation');
     budget.start();
 
     const response = await measure('aiMs', () =>
@@ -287,12 +321,14 @@ Deno.serve(async (request) => {
       conversationMessages: messages.length,
     });
 
-    const { data: usage, error: finishError } = await billing.rpc('finish_company_ai_request', {
-      p_request_id: requestId, p_success: true,
+    const payload = { ...response.output_parsed, analyzedImageIds: imageInput?.images.map(image => image.id) ?? [] };
+    const { data: usage, error: finishError } = await billing.rpc('finish_offer_generation', {
+      p_request_id: generationId, p_response: payload,
     });
     if (finishError || !usage) throw new Error('Could not finish request');
     requestId = undefined;
-    return Response.json({ ...response.output_parsed, usage, analyzedImageIds: imageInput?.images.map(image => image.id) ?? [] }, {
+    generationId = undefined;
+    return Response.json({ ...payload, usage }, {
       headers: corsHeaders,
     });
   } catch (error) {
@@ -314,6 +350,12 @@ Deno.serve(async (request) => {
       { status: 500, headers: corsHeaders },
     );
   } finally {
+    if (generationId) {
+      try {
+        const { error } = await billing.rpc('finish_offer_generation', { p_request_id: generationId, p_response: null });
+        if (error) console.error('Could not finish generation guard');
+      } catch { console.error('Could not finish generation guard'); }
+    }
     await budget.releaseUnsent();
     console.info('GENERATE OFFER TIMING', {
       ...timings,

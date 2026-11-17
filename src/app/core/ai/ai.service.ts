@@ -13,7 +13,7 @@ export class AiService {
   private readonly images = inject(ProjectImagesService);
   private readonly activity = inject(ActivityService);
   private readonly billing = inject(BillingService);
-  async generateOffer(projectId: string, imageInput?: ImageAnalysisInput): Promise<ProjectResponse> {
+  async generateOffer(projectId: string, messageId: string, imageInput?: ImageAnalysisInput): Promise<ProjectResponse> {
     return this.activity.measure(
       'ai_request',
       async () => {
@@ -27,7 +27,7 @@ export class AiService {
             catch (error) { throw new TrialError(error instanceof Error ? error.message : 'Billedkvoten kunne ikke kontrolleres. Prøv igen.'); }
           }
           const { data, error } = await supabase.functions.invoke('generate-offer', {
-            body: { projectId, ...(imageInput ? { messageId: imageInput.messageId, images: imageInput.images } : {}) },
+            body: { projectId, messageId, ...(imageInput ? { images: imageInput.images } : {}) },
           });
 
           if (error) {
@@ -35,6 +35,7 @@ export class AiService {
               const body = await error.context.clone().json().catch(() => null);
               if (billingVersion === this.billing.version) this.billing.accept(body?.usage, true);
               if (body?.code === 'AI_BUDGET_REACHED') throw new TrialError('AI er midlertidigt sat på pause. Prøv igen senere.');
+              if (['AI_COOLDOWN', 'AI_PROJECT_BUSY', 'AI_MESSAGE_STALE', 'AI_MESSAGE_FAILED'].includes(body?.code)) throw new TrialError(body.error);
               if (body?.code === 'IMAGE_INPUT_INVALID' || body?.code === 'IMAGE_SUBSCRIPTION_REQUIRED') throw new TrialError(body.error);
               if (body?.code === 'TRIAL_EXHAUSTED') throw new TrialError('Du har brugt dine 10 gratis forespørgsler. Se dit abonnement i virksomhedsprofilen.');
               if (body?.code === 'TRIAL_BUSY') throw new TrialError('Dine resterende gratis forespørgsler er i gang. Vent på svar, og prøv igen.');

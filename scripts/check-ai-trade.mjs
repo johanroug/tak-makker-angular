@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import assert from 'node:assert/strict';
+import * as budgetHelpers from '../supabase/functions/_shared/ai/budget.ts';
+import * as imageHelpers from '../supabase/functions/_shared/ai/image-input.ts';
 
 const scope = { Object };
 const contextSource = readFileSync('supabase/functions/_shared/ai/company-trade-context.ts', 'utf8');
@@ -37,6 +39,9 @@ const client = {
   rpc: async (name, args) => {
     if (name === 'reserve_company_ai_request') return { data: { allowed, requestId: 'reservation', usage: allowed ? usage : { ...usage, status: 'exhausted' } }, error: null };
     if (name === 'finish_company_ai_request') { settlements.push(args.p_success); return { data: usage, error: null }; }
+    if (name === 'claim_offer_generation') return { data: { state: 'claimed', requestId: 'generation' } };
+    if (name === 'reserve_global_ai_budget') return { data: { allowed: true, requestId: 'budget' } };
+    if (name === 'finish_offer_generation') { if (args.p_response) settlements.push(true); return { data: usage }; }
     return { data: true, error: null };
   },
   from(table) {
@@ -52,7 +57,7 @@ const client = {
         const data = table === 'projects' ? { company_id: 'project-company' } :
           table === 'company_members' ? (member ? { id: 'membership' } : null) :
           table === 'companies' ? (companyError ? null : { trade, trades }) :
-          table === 'project_messages' ? [{ role: 'user', content: 'Renover badeværelset' }] : [];
+          table === 'project_messages' ? [{ id: 'message', role: 'user', content: 'Renover badeværelset' }] : [];
         return Promise.resolve({ data, error: companyError && table === 'companies' ? {} : null }).then(resolve, reject);
       },
     };
@@ -62,6 +67,7 @@ const client = {
 const endpoint = readFileSync('supabase/functions/generate-offer/index.ts', 'utf8')
   .replace(/^import .*;\r?\n/gm, '');
 runInNewContext(stripTypeScriptTypes(endpoint), {
+  ...budgetHelpers, ...imageHelpers,
   OpenAI, createClient: () => client, createCompanyTradeContext,
   aiInstructions: 'General instructions', ProjectResponseSchema: {}, zodTextFormat: () => ({}),
   createProjectDetailsContext: () => 'Project context',
@@ -74,15 +80,15 @@ const request = () => handler(new Request('https://example.test', {
   body: JSON.stringify({ projectId: 'project', trade: 'Maler' }),
 }));
 assert.equal((await request()).status, 200);
-assert.match(aiInputs[0].input[1].content, /ENTREPRISEGRÆNSE: VVS/,
+assert.match(aiInputs[0].input.find(item => item.content.includes('ENTREPRISEGRÆNSE:')).content, /ENTREPRISEGRÆNSE: VVS/,
   'Trade must come from the project company, never the request body');
 trade = 'Maler';
 assert.equal((await request()).status, 200);
-assert.match(aiInputs[1].input[1].content, /ENTREPRISEGRÆNSE: Maler/,
+assert.match(aiInputs[1].input.find(item => item.content.includes('ENTREPRISEGRÆNSE:')).content, /ENTREPRISEGRÆNSE: Maler/,
   'The company trade must be refreshed for every request');
 trades = ['VVS', 'Murer'];
 assert.equal((await request()).status, 200);
-assert.match(aiInputs[2].input[1].content, /ENTREPRISEGRÆNSE: VVS, Murer/);
+assert.match(aiInputs[2].input.find(item => item.content.includes('ENTREPRISEGRÆNSE:')).content, /ENTREPRISEGRÆNSE: VVS, Murer/);
 companyError = true;
 assert.equal((await request()).status, 500);
 assert.equal(aiInputs.length, 3, 'Do not generate unrestricted proposals if company lookup fails');

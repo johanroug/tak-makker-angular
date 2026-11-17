@@ -26,11 +26,24 @@ class OpenAI {
 }
 const client = {
   auth: { getUser: async () => ({ data: { user: state.authenticated ? { id: 'user' } : null } }) },
-  rpc: async name => ({ data: name === 'can_access_app' ? true
+  rpc: async (name, args) => {
+    if (name === 'claim_offer_generation') {
+      state.claims = (state.claims ?? 0) + 1;
+      return { data: state.guard ?? { state: 'claimed', requestId: 'generation' } };
+    }
+    if (name === 'start_offer_generation') { state.started = true; return { error: state.startFailure ? {} : null }; }
+    if (name === 'finish_offer_generation') {
+      state.guardFinishes ??= []; state.guardFinishes.push(args.p_response);
+      return { data: state.finishFailure ? null : { status: state.status }, error: state.finishFailure ? {} : null };
+    }
+    if (name === 'finish_company_ai_request') { state.quotaReleased = args.p_success === false; return { data: {} }; }
+    if (name === 'settle_global_ai_budget') { state.budgetCharge = args.p_amount; return { error: null }; }
+    return { data: name === 'can_access_app' ? true
     : name === 'get_company_billing' ? { companyId: 'company', status: state.status }
     : name === 'reserve_company_ai_request' ? { allowed: true, requestId: 'reservation' }
     : name === 'reserve_global_ai_budget' ? state.budgetUnavailable ? null : { allowed: !state.budgetDenied, requestId: 'budget' }
-    : { status: state.status } }),
+    : { status: state.status } };
+  },
   from: table => {
     const query = { select: () => query, eq: () => query, order: () => query, single: () => query, maybeSingle: () => query,
       then: (resolve, reject) => Promise.resolve({ data: table === 'projects' ? state.exists ? { id: 'project', company_id: 'company' } : null
@@ -72,6 +85,27 @@ reset({ status: 'trial' }); assert.equal((await call({ projectId: 'project' })).
 assert.equal(typeof providerCalls[0].input.at(-1).content, 'string');
 reset({ providerFailure: true }); assert.equal((await call()).status, 500);
 assert.ok(!logs.join(' ').includes(dataUrl), 'Never log provider errors containing images');
+assert.equal(state.quotaReleased, true);
+assert.equal(state.budgetCharge, undefined, 'Unknown provider failure retains the budget');
+assert.equal(state.guardFinishes.at(-1), null);
+for (const [guard, status, code] of [
+  [{ state: 'busy' }, 409, 'AI_PROJECT_BUSY'],
+  [{ state: 'cooldown', retryAfter: 60 }, 429, 'AI_COOLDOWN'],
+  [{ state: 'failed' }, 409, 'AI_MESSAGE_FAILED'],
+  [{ state: 'stale' }, 409, 'AI_MESSAGE_STALE'],
+]) {
+  reset({ guard }); const response = await call();
+  assert.equal(response.status, status); assert.equal((await response.json()).code, code);
+  assert.equal(providerCalls.length, 0);
+}
+reset({ guard: { state: 'cached', response: { questions: ['Cached'], analyzedImageIds: [imageId] } } });
+assert.deepEqual((await (await call()).json()).questions, ['Cached']);
+assert.equal(providerCalls.length, 0, 'A retry replays the cached response');
+reset({ startFailure: true }); assert.equal((await call()).status, 500);
+assert.equal(providerCalls.length, 0); assert.equal(state.budgetCharge, 0);
+reset({ finishFailure: true }); assert.equal((await call()).status, 500);
+assert.equal(providerCalls.length, 1); assert.equal(state.quotaReleased, true);
+assert.equal(state.budgetCharge, undefined);
 for (const status of ['active', 'internal', 'trial']) {
   for (const failure of [{ budgetDenied: true }, { budgetUnavailable: true }]) {
     reset({ status, ...failure });

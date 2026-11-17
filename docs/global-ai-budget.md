@@ -46,7 +46,7 @@ Kilder kontrolleret 17. november 2026:
 ## Drift og aktivering
 
 1. Anvend `supabase/migrations/202611170001_global_ai_budget.sql`.
-2. Deploy begge Edge Functions med den fælles `budget.ts`.
+2. Anvend også `supabase/migrations/202611170002_offer_request_guard.sql`, og deploy begge Edge Functions med den fælles `budget.ts`.
 3. Deploy frontend for den venlige pausebesked ved tilbudskald.
 
 Indstillingerne starter med ovenstående grænser og `enabled=true`. Regnskabet
@@ -109,6 +109,8 @@ justeres administrativt; nulstil ikke automatisk ved fejl. Ledgeren skal bevares
 for hele den aktuelle måned. Ændring af grænser sker kun via SQL Editor/backend.
 
 ## Kontrol
+
+Se også [beskyttelse mod gentagne tilbudskald](offer-request-protection.md).
 
 - `node scripts/check-ai-budget.mjs`: migration i isoleret PGlite/PostgreSQL,
   budgetgrænser, rettigheder, fælles reservationer, afregning, periodeskift,

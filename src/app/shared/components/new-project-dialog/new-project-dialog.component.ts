@@ -174,8 +174,9 @@ export class NewProjectDialog implements OnDestroy {
       if (this.destroyed) return;
 
       if (!this.isPrepared) {
+        if (!this.savedMessageId) throw new Error('Den gemte besked kunne ikke findes.');
         const images = this.savedMessageId && this.photos()?.hasPending() ? await this.photos()?.attach(projectId, this.savedMessageId) : undefined;
-        this.response ??= await this.aiService.generateOffer(projectId, images);
+        this.response ??= await this.aiService.generateOffer(projectId, this.savedMessageId, images);
         if (this.destroyed) return;
         await this.projectService.saveAiResponse(projectId, this.response);
         const questions = [
